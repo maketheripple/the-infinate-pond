@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The Infinite Pond | Make the Ripple</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #063c46;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    text-align: center;
+
+    padding: 30px 20px;
+
+    background:
+        linear-gradient(
+            rgba(3,45,53,0.95),
+            rgba(3,45,53,0.85)
+        );
+
+    backdrop-filter: blur(10px);
+
+    border-bottom:
+        1px solid rgba(255,255,255,0.15);
+}
+
+.logo {
+
+    font-size: 15px;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+    opacity: 0.8;
+}
+
+h1 {
+
+    margin: 8px 0;
+
+    font-size: clamp(32px, 6vw, 70px);
+
+    font-weight: 700;
+}
+
+.subtitle {
+
+    font-size: 18px;
+
+    opacity: 0.8;
+
+    margin-bottom: 20px;
+}
+
+.ripple-count {
+
+    font-size: 14px;
+
+    letter-spacing: 2px;
+
+    opacity: 0.7;
+}
+
+/* =========================
+   POND
+========================= */
+
+.pond {
+
+    position: relative;
+
+    min-height: 6000px;
+
+    overflow: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(76,180,190,0.35),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 80% 60%,
+            rgba(45,130,150,0.3),
+            transparent 40%
+        ),
+
+        linear-gradient(
+            135deg,
+            #075766,
+            #063e4b,
+            #052f3a
+        );
+}
+
+/* subtle moving water */
+
+.pond::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -50%;
+
+    background:
+
+        repeating-radial-gradient(
+            ellipse at center,
+            transparent 0,
+            transparent 80px,
+            rgba(255,255,255,0.025) 82px,
+            transparent 85px
+        );
+
+    animation:
+        waterMove 35s linear infinite;
+
+    pointer-events: none;
+}
+
+@keyframes waterMove {
+
+    from {
+        transform:
+            translate(-3%, -3%)
+            scale(1);
+    }
+
+    to {
+        transform:
+            translate(3%, 3%)
+            scale(1.05);
+    }
+}
+
+/* =========================
+   RIPPLE
+========================= */
+
+.ripple {
+
+    position: absolute;
+
+    width: 90px;
+
+    height: 90px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255,255,255,0.35);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.4s ease,
+        border-color 0.4s ease;
+
+    z-index: 5;
+}
+
+.ripple::before,
+.ripple::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 12px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255,255,255,0.25);
+}
+
+.ripple::after {
+
+    inset: 25px;
+
+    border-color:
+        rgba(255,255,255,0.2);
+}
+
+.ripple:hover {
+
+    transform: scale(1.35);
+
+    border-color:
+        rgba(255,255,255,0.8);
+
+    z-index: 50;
+}
+
+/* =========================
+   RIPPLE MESSAGE
+========================= */
+
+.message {
+
+    position: fixed;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.9);
+
+    width: min(90%, 500px);
+
+    padding: 35px;
+
+    background:
+        rgba(3,45,53,0.96);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 25px 80px
+        rgba(0,0,0,0.5);
+
+    text-align: center;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+    z-index: 2000;
+}
+
+.message.active {
+
+    opacity: 1;
+
+    pointer-events: auto;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+}
+
+.message-number {
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+
+    opacity: 0.6;
+
+    margin-bottom: 20px;
+}
+
+.message-text {
+
+    font-size: 22px;
+
+    line-height: 1.6;
+
+    margin-bottom: 20px;
+}
+
+.message-location {
+
+    font-size: 14px;
+
+    opacity: 0.6;
+}
+
+.close {
+
+    margin-top: 25px;
+
+    padding: 10px 25px;
+
+    border:
+        1px solid rgba(255,255,255,0.4);
+
+    background: transparent;
+
+    color: white;
+
+    border-radius: 30px;
+
+    cursor: pointer;
+}
+
+/* =========================
+   MAKE YOUR RIPPLE
+========================= */
+
+.make-ripple {
+
+    position: fixed;
+
+    right: 25px;
+
+    bottom: 25px;
+
+    z-index: 1500;
+
+    padding:
+        14px 24px;
+
+    border: none;
+
+    border-radius: 50px;
+
+    background: white;
+
+    color: #063c46;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,0.25);
+
+    transition:
+        transform 0.2s ease;
+}
+
+.make-ripple:hover {
+
+    transform:
+        translateY(-3px);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px) {
+
+    .pond {
+
+        min-height: 5000px;
+    }
+
+    .ripple {
+
+        width: 65px;
+
+        height: 65px;
+    }
+
+    .message-text {
+
+        font-size: 19px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        Make the Ripple
+    </div>
+
+    <h1>
+        The Infinite Pond
+    </h1>
+
+    <div class="subtitle">
+        Every ripple starts with one person.
+    </div>
+
+    <div class="ripple-count">
+        🌊 100 RIPPLE MAKERS
+    </div>
+
+</header>
+
+
+<main class="pond" id="pond"></main>
+
+
+<div class="message" id="message">
+
+    <div class="message-number"
+         id="messageNumber">
+    </div>
+
+    <div class="message-text"
+         id="messageText">
+    </div>
+
+    <div class="message-location"
+         id="messageLocation">
+    </div>
+
+    <button class="close"
+            onclick="closeMessage()">
+        Close Ripple
+    </button>
+
+</div>
+
+
+<button class="make-ripple"
+        onclick="makeRipple()">
+
+    🌊 Make Your Ripple
+
+</button>
+
+
+<script>
+
+/* =========================
+   RIPPLE DATA
+========================= */
+
+const messages = [
+
+{
+    text:
+    "Today I checked in on someone who seemed like they needed someone to talk to.",
+
+    location:
+    "Kitchener, Ontario"
+},
+
+{
+    text:
+    "Asking for help doesn't make you weak.",
+
+    location:
+    "Waterloo, Ontario"
+},
+
+{
+    text:
+    "Today I chose kindness.",
+
+    location:
+    "Cambridge, Ontario"
+},
+
+{
+    text:
+    "I reminded someone that they aren't alone.",
+
+    location:
+    "Guelph, Ontario"
+},
+
+{
+    text:
+    "Today I took a moment to look after myself.",
+
+    location:
+    "Toronto, Ontario"
+},
+
+{
+    text:
+    "Sometimes the smallest act of kindness can make the biggest difference.",
+
+    location:
+    "Hamilton, Ontario"
+},
+
+{
+    text:
+    "I asked someone how they were really doing.",
+
+    location:
+    "London, Ontario"
+},
+
+{
+    text:
+    "Today I decided that reaching out was worth it.",
+
+    location:
+    "Ottawa, Ontario"
+}
+
+];
+
+
+/* =========================
+   CREATE RIPPLE
+========================= */
+
+const pond =
+    document.getElementById("pond");
+
+let rippleNumber = 0;
+
+
+function createRipple() {
+
+    rippleNumber++;
+
+    const ripple =
+        document.createElement("div");
+
+    ripple.className =
+        "ripple";
+
+    const data =
+        messages[
+            Math.floor(
+                Math.random()
+                * messages.length
+            )
+        ];
+
+    ripple.dataset.text =
+        data.text;
+
+    ripple.dataset.location =
+        data.location;
+
+    ripple.dataset.number =
+        rippleNumber;
+
+    ripple.style.left =
+        Math.random() * 90 + "%";
+
+    ripple.style.top =
+        Math.random() * 98 + "%";
+
+    ripple.addEventListener(
+        "click",
+        function() {
+
+            showMessage(
+                ripple.dataset.number,
+                ripple.dataset.text,
+                ripple.dataset.location
+            );
+
+        }
+    );
+
+    pond.appendChild(ripple);
+
+}
+
+
+/* =========================
+   INITIAL RIPPLES
+========================= */
+
+for (
+    let i = 0;
+    i < 100;
+    i++
+) {
+
+    createRipple();
+
+}
+
+
+/* =========================
+   MESSAGE WINDOW
+========================= */
+
+function showMessage(
+    number,
+    text,
+    location
+) {
+
+    document.getElementById(
+        "messageNumber"
+    ).innerText =
+        "RIPPLE #" + number;
+
+    document.getElementById(
+        "messageText"
+    ).innerText =
+        '"' + text + '"';
+
+    document.getElementById(
+        "messageLocation"
+    ).innerText =
+        "— " + location;
+
+    document.getElementById(
+        "message"
+    ).classList.add(
+        "active"
+    );
+
+}
+
+
+function closeMessage() {
+
+    document.getElementById(
+        "message"
+    ).classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =========================
+   MAKE YOUR RIPPLE
+========================= */
+
+function makeRipple() {
+
+    alert(
+        "The Ripple submission form will be connected here in the next version."
+    );
+
+}
+
+</script>
+
+</body>
+</html>
