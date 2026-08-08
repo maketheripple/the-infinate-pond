@@ -29,7 +29,7 @@ body {
 
     margin: 0;
 
-    background: #063f4b;
+    background: #020d18;
 
     color: white;
 
@@ -63,24 +63,25 @@ body {
 
     background:
         linear-gradient(
-            rgba(2,25,32,0.90),
-            rgba(2,25,32,0.28)
+            rgba(1,9,18,0.94),
+            rgba(1,12,22,0.35)
         );
 
     backdrop-filter:
-        blur(8px);
+        blur(10px);
 
     -webkit-backdrop-filter:
-        blur(8px);
+        blur(10px);
 
     border-bottom:
         1px solid
-        rgba(255,255,255,0.08);
+        rgba(180,220,255,0.08);
 
     transition:
         opacity 0.6s ease,
         transform 0.6s ease;
 }
+
 
 .header.hidden {
 
@@ -90,6 +91,7 @@ body {
         translateY(-100%);
 }
 
+
 .logo {
 
     font-size: 13px;
@@ -98,8 +100,10 @@ body {
 
     text-transform: uppercase;
 
-    opacity: 0.75;
+    color:
+        rgba(220,240,255,0.72);
 }
+
 
 h1 {
 
@@ -109,403 +113,399 @@ h1 {
     font-size:
         clamp(32px, 6vw, 68px);
 
-    font-weight: 500;
+    font-weight:
+        500;
 
-    letter-spacing: 1px;
+    letter-spacing:
+        1px;
 
     text-shadow:
-        0 3px 15px
-        rgba(0,0,0,0.45);
+        0 3px 20px
+        rgba(0,0,0,0.8);
 }
+
 
 .subtitle {
 
-    font-size: 17px;
+    font-size:
+        17px;
 
-    opacity: 0.78;
+    opacity:
+        0.72;
 
-    font-style: italic;
+    font-style:
+        italic;
 }
+
 
 .ripple-count {
 
-    margin-top: 13px;
+    margin-top:
+        13px;
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    letter-spacing: 3px;
+    letter-spacing:
+        3px;
 
-    opacity: 0.6;
+    opacity:
+        0.55;
 }
 
 
 /* =========================================================
-   INFINITE POND
+   POND
 ========================================================= */
 
 .pond {
 
-    position: relative;
+    position:
+        relative;
 
-    min-height: 12000px;
+    min-height:
+        12000px;
 
-    overflow: hidden;
+    overflow:
+        hidden;
 
     background:
-        #063f4b;
+        linear-gradient(
+            180deg,
+            #061a2b 0%,
+            #041827 25%,
+            #031421 50%,
+            #02111c 75%,
+            #010c16 100%
+        );
 }
 
 
 /* =========================================================
-   WATER TEXTURE SYSTEM
+   MOONLIGHT GLOW
 ========================================================= */
 
-.water-layer {
+.moon-glow {
 
-    position: absolute;
+    position:
+        absolute;
 
-    top: -15%;
+    top:
+        4%;
 
-    left: -15%;
+    left:
+        50%;
 
-    width: 130%;
+    width:
+        700px;
 
-    height: 130%;
+    height:
+        700px;
 
-    background-image:
-        url("water-texture.jpg");
+    transform:
+        translateX(-50%);
 
-    background-repeat:
-        repeat;
-
-    background-size:
-        700px 700px;
-
-    background-position:
-        center center;
-
-    pointer-events:
-        none;
-}
-
-
-/* First water layer */
-
-.water-layer.one {
-
-    z-index: 1;
-
-    opacity: 0.92;
-
-    filter:
-        saturate(1.15)
-        contrast(1.05);
-
-    animation:
-        waterDriftOne
-        75s
-        linear
-        infinite;
-}
-
-
-/* Second water layer */
-
-.water-layer.two {
-
-    z-index: 2;
-
-    opacity: 0.38;
-
-    background-size:
-        950px 950px;
-
-    mix-blend-mode:
-        soft-light;
-
-    animation:
-        waterDriftTwo
-        105s
-        linear
-        infinite;
-}
-
-
-/* Third water layer */
-
-.water-layer.three {
-
-    z-index: 3;
-
-    opacity: 0.22;
-
-    background-size:
-        1200px 1200px;
-
-    mix-blend-mode:
-        screen;
-
-    animation:
-        waterDriftThree
-        140s
-        linear
-        infinite;
-}
-
-
-/* =========================================================
-   WATER MOVEMENT
-========================================================= */
-
-@keyframes waterDriftOne {
-
-    0% {
-
-        transform:
-            translate3d(
-                -2%,
-                -2%,
-                0
-            );
-    }
-
-    50% {
-
-        transform:
-            translate3d(
-                2%,
-                1%,
-                0
-            );
-    }
-
-    100% {
-
-        transform:
-            translate3d(
-                -2%,
-                -2%,
-                0
-            );
-    }
-}
-
-
-@keyframes waterDriftTwo {
-
-    0% {
-
-        transform:
-            translate3d(
-                3%,
-                -2%,
-                0
-            )
-            rotate(0.2deg);
-    }
-
-    50% {
-
-        transform:
-            translate3d(
-                -2%,
-                3%,
-                0
-            )
-            rotate(-0.2deg);
-    }
-
-    100% {
-
-        transform:
-            translate3d(
-                3%,
-                -2%,
-                0
-            )
-            rotate(0.2deg);
-    }
-}
-
-
-@keyframes waterDriftThree {
-
-    0% {
-
-        transform:
-            translate3d(
-                -3%,
-                2%,
-                0
-            );
-    }
-
-    50% {
-
-        transform:
-            translate3d(
-                2%,
-                -3%,
-                0
-            );
-    }
-
-    100% {
-
-        transform:
-            translate3d(
-                -3%,
-                2%,
-                0
-            );
-    }
-}
-
-
-/* =========================================================
-   WATER LIGHT
-========================================================= */
-
-.water-light {
-
-    position: absolute;
-
-    inset: 0;
-
-    z-index: 4;
+    border-radius:
+        50%;
 
     pointer-events:
         none;
 
+    z-index:
+        2;
+
     background:
-
         radial-gradient(
-            ellipse at 20% 15%,
-            rgba(190,245,245,0.18),
-            transparent 28%
-        ),
-
-        radial-gradient(
-            ellipse at 80% 40%,
-            rgba(120,220,225,0.12),
-            transparent 32%
-        ),
-
-        radial-gradient(
-            ellipse at 35% 90%,
-            rgba(0,35,45,0.28),
-            transparent 42%
+            circle,
+            rgba(210,235,255,0.16) 0%,
+            rgba(150,200,240,0.07) 28%,
+            rgba(80,140,190,0.025) 50%,
+            transparent 72%
         );
 
-    mix-blend-mode:
-        screen;
+    filter:
+        blur(8px);
 
     opacity:
-        0.65;
+        0.8;
 
     animation:
-        lightMovement
-        28s
+        moonBreath
+        12s
         ease-in-out
         infinite
         alternate;
 }
 
 
-@keyframes lightMovement {
+@keyframes moonBreath {
 
-    0% {
+    from {
+
+        opacity:
+            0.65;
 
         transform:
-            translate(
-                -2%,
-                -1%
-            )
-            scale(1);
+            translateX(-50%)
+            scale(0.98);
     }
 
-    100% {
+    to {
+
+        opacity:
+            0.9;
 
         transform:
-            translate(
-                2%,
-                2%
-            )
-            scale(1.05);
+            translateX(-50%)
+            scale(1.04);
     }
 }
 
 
 /* =========================================================
-   WATER SHIMMER
+   MOONLIGHT REFLECTION
 ========================================================= */
 
-.water-shimmer {
+.moon-reflection {
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 0;
+    top:
+        0;
 
-    z-index: 5;
+    left:
+        50%;
+
+    width:
+        320px;
+
+    height:
+        100%;
+
+    transform:
+        translateX(-50%);
+
+    z-index:
+        3;
 
     pointer-events:
         none;
 
     opacity:
-        0.12;
+        0.32;
 
     background:
 
         repeating-linear-gradient(
-            110deg,
+            172deg,
+
             transparent 0px,
-            transparent 80px,
-            rgba(220,255,255,0.12) 82px,
-            transparent 86px,
-            transparent 150px
+
+            transparent 32px,
+
+            rgba(205,230,255,0.12) 36px,
+
+            rgba(230,245,255,0.28) 39px,
+
+            rgba(205,230,255,0.10) 43px,
+
+            transparent 48px,
+
+            transparent 75px
         );
 
-    background-size:
-        350px 350px;
+    filter:
+        blur(3px);
 
     animation:
-        shimmerMove
-        50s
-        linear
-        infinite;
-
-    mix-blend-mode:
-        overlay;
+        reflectionMove
+        17s
+        ease-in-out
+        infinite
+        alternate;
 }
 
 
-@keyframes shimmerMove {
+@keyframes reflectionMove {
 
-    from {
+    0% {
 
         transform:
-            translateX(-5%);
+            translateX(-50%)
+            translateY(-2%)
+            scaleX(0.90);
     }
 
-    to {
+    50% {
 
         transform:
-            translateX(5%);
+            translateX(-50%)
+            translateY(1%)
+            scaleX(1.12);
+    }
+
+    100% {
+
+        transform:
+            translateX(-50%)
+            translateY(3%)
+            scaleX(0.95);
     }
 }
 
 
 /* =========================================================
-   DARK EDGE / DEPTH
+   SUBTLE WATER WAVES
+========================================================= */
+
+.water-waves {
+
+    position:
+        absolute;
+
+    inset:
+        -100px;
+
+    z-index:
+        4;
+
+    pointer-events:
+        none;
+
+    opacity:
+        0.17;
+
+    background:
+
+        repeating-radial-gradient(
+            ellipse at center,
+
+            transparent 0px,
+
+            transparent 45px,
+
+            rgba(150,205,235,0.14) 48px,
+
+            transparent 52px
+        );
+
+    background-size:
+        800px 800px;
+
+    animation:
+        waveDrift
+        55s
+        linear
+        infinite;
+
+    mix-blend-mode:
+        screen;
+}
+
+
+@keyframes waveDrift {
+
+    from {
+
+        transform:
+            translate(
+                -3%,
+                -2%
+            )
+            scale(1);
+    }
+
+    to {
+
+        transform:
+            translate(
+                3%,
+                2%
+            )
+            scale(1.08);
+    }
+}
+
+
+/* =========================================================
+   MOVING WATER LINES
+========================================================= */
+
+.water-lines {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    z-index:
+        5;
+
+    pointer-events:
+        none;
+
+    opacity:
+        0.13;
+
+    background:
+
+        repeating-linear-gradient(
+            177deg,
+
+            transparent 0px,
+
+            transparent 19px,
+
+            rgba(180,220,245,0.12) 21px,
+
+            transparent 24px,
+
+            transparent 55px
+        );
+
+    background-size:
+        100% 320px;
+
+    animation:
+        linesMove
+        38s
+        linear
+        infinite;
+}
+
+
+@keyframes linesMove {
+
+    from {
+
+        background-position:
+            0 0;
+    }
+
+    to {
+
+        background-position:
+            140px 500px;
+    }
+}
+
+
+/* =========================================================
+   DEPTH
 ========================================================= */
 
 .water-depth {
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 0;
+    inset:
+        0;
 
-    z-index: 6;
+    z-index:
+        6;
 
     pointer-events:
         none;
@@ -514,9 +514,12 @@ h1 {
 
         radial-gradient(
             ellipse at center,
-            transparent 45%,
-            rgba(0,25,32,0.15) 70%,
-            rgba(0,18,25,0.45) 100%
+
+            transparent 20%,
+
+            rgba(0,8,16,0.08) 55%,
+
+            rgba(0,5,12,0.42) 100%
         );
 }
 
@@ -527,20 +530,29 @@ h1 {
 
 .ripple {
 
-    position: absolute;
+    position:
+        absolute;
 
-    width: 105px;
+    width:
+        105px;
 
-    height: 105px;
+    height:
+        105px;
 
-    border-radius: 50%;
+    border-radius:
+        50%;
 
-    z-index: 20;
+    z-index:
+        20;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     transform:
-        translate(-50%, -50%);
+        translate(
+            -50%,
+            -50%
+        );
 
     transition:
         transform 0.5s ease;
@@ -549,103 +561,125 @@ h1 {
 
         radial-gradient(
             circle,
+
             transparent 0,
+
             transparent 18px,
 
-            rgba(230,255,255,0.25)
-            19px,
+            rgba(210,235,255,0.20) 19px,
 
             transparent 22px,
 
             transparent 31px,
 
-            rgba(230,255,255,0.20)
-            32px,
+            rgba(210,235,255,0.17) 32px,
 
             transparent 35px
         );
 
     filter:
         drop-shadow(
-            0 4px 8px
-            rgba(0,0,0,0.18)
+            0 0 8px
+            rgba(150,205,255,0.18)
         );
 }
 
 
 .ripple::before {
 
-    content: "";
+    content:
+        "";
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 0;
+    inset:
+        0;
 
-    border-radius: 50%;
+    border-radius:
+        50%;
 
     border:
         2px solid
-        rgba(230,255,255,0.55);
+        rgba(215,238,255,0.50);
 
     box-shadow:
-        0 0 8px
-        rgba(220,255,255,0.18);
+        0 0 12px
+        rgba(150,205,255,0.15);
 }
 
 
 .ripple::after {
 
-    content: "";
+    content:
+        "";
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 17px;
+    inset:
+        17px;
 
-    border-radius: 50%;
+    border-radius:
+        50%;
 
     border:
         2px solid
-        rgba(230,255,255,0.38);
+        rgba(215,238,255,0.34);
 }
 
 
 .ripple-dot {
 
-    position: absolute;
+    position:
+        absolute;
 
-    width: 7px;
+    width:
+        7px;
 
-    height: 7px;
+    height:
+        7px;
 
-    left: 50%;
-    top: 50%;
+    left:
+        50%;
+
+    top:
+        50%;
 
     transform:
-        translate(-50%, -50%);
+        translate(
+            -50%,
+            -50%
+        );
 
-    border-radius: 50%;
+    border-radius:
+        50%;
 
     background:
-        rgba(235,255,255,0.75);
+        rgba(225,242,255,0.75);
 
     box-shadow:
-        0 0 10px
-        rgba(220,255,255,0.45);
+        0 0 12px
+        rgba(180,220,255,0.45);
 }
 
 
 .ripple:hover {
 
     transform:
-        translate(-50%, -50%)
+        translate(
+            -50%,
+            -50%
+        )
         scale(1.45);
 
-    z-index: 100;
+    z-index:
+        100;
 
     filter:
         drop-shadow(
-            0 8px 18px
-            rgba(0,0,0,0.25)
+            0 0 18px
+            rgba(170,215,255,0.35)
         );
 }
 
@@ -656,22 +690,26 @@ h1 {
 
 .message-overlay {
 
-    position: fixed;
+    position:
+        fixed;
 
-    inset: 0;
+    inset:
+        0;
 
-    z-index: 2000;
+    z-index:
+        2000;
 
     background:
-        rgba(0,15,20,0.42);
+        rgba(0,5,12,0.52);
 
     backdrop-filter:
-        blur(4px);
+        blur(5px);
 
     -webkit-backdrop-filter:
-        blur(4px);
+        blur(5px);
 
-    opacity: 0;
+    opacity:
+        0;
 
     pointer-events:
         none;
@@ -683,7 +721,8 @@ h1 {
 
 .message-overlay.active {
 
-    opacity: 1;
+    opacity:
+        1;
 
     pointer-events:
         auto;
@@ -692,10 +731,14 @@ h1 {
 
 .message {
 
-    position: fixed;
+    position:
+        fixed;
 
-    left: 50%;
-    top: 50%;
+    left:
+        50%;
+
+    top:
+        50%;
 
     width:
         min(90%, 520px);
@@ -704,27 +747,30 @@ h1 {
         40px 35px;
 
     transform:
-        translate(-50%, -50%)
+        translate(
+            -50%,
+            -50%
+        )
         scale(0.90);
 
     background:
 
         linear-gradient(
             145deg,
-            rgba(7,61,72,0.98),
-            rgba(2,37,46,0.98)
+            rgba(7,35,53,0.98),
+            rgba(2,18,30,0.98)
         );
 
     border:
         1px solid
-        rgba(255,255,255,0.16);
+        rgba(200,230,255,0.15);
 
     border-radius:
         24px;
 
     box-shadow:
         0 30px 100px
-        rgba(0,0,0,0.60);
+        rgba(0,0,0,0.75);
 
     text-align:
         center;
@@ -741,10 +787,14 @@ h1 {
 .message-overlay.active
 .message {
 
-    opacity: 1;
+    opacity:
+        1;
 
     transform:
-        translate(-50%, -50%)
+        translate(
+            -50%,
+            -50%
+        )
         scale(1);
 }
 
@@ -801,7 +851,7 @@ h1 {
 
     border:
         1px solid
-        rgba(255,255,255,0.35);
+        rgba(215,235,255,0.35);
 
     background:
         transparent;
@@ -820,7 +870,7 @@ h1 {
 .close:hover {
 
     background:
-        rgba(255,255,255,0.10);
+        rgba(200,230,255,0.10);
 }
 
 
@@ -830,27 +880,32 @@ h1 {
 
 .make-ripple {
 
-    position: fixed;
+    position:
+        fixed;
 
-    right: 25px;
+    right:
+        25px;
 
-    bottom: 25px;
+    bottom:
+        25px;
 
-    z-index: 1500;
+    z-index:
+        1500;
 
     padding:
         15px 25px;
 
-    border: none;
+    border:
+        none;
 
     border-radius:
         50px;
 
     background:
-        rgba(255,255,255,0.95);
+        rgba(225,240,255,0.96);
 
     color:
-        #06414c;
+        #06253a;
 
     font-weight:
         bold;
@@ -860,7 +915,7 @@ h1 {
 
     box-shadow:
         0 10px 35px
-        rgba(0,0,0,0.30);
+        rgba(0,0,0,0.45);
 
     transition:
         transform 0.2s ease,
@@ -875,7 +930,7 @@ h1 {
 
     box-shadow:
         0 14px 40px
-        rgba(0,0,0,0.38);
+        rgba(0,0,0,0.55);
 }
 
 
@@ -988,47 +1043,55 @@ h1 {
 <main class="pond"
       id="pond">
 
-    <div class="water-layer one">
+
+    <div class="moon-glow">
     </div>
 
-    <div class="water-layer two">
+
+    <div class="moon-reflection">
     </div>
 
-    <div class="water-layer three">
+
+    <div class="water-waves">
     </div>
 
-    <div class="water-light">
+
+    <div class="water-lines">
     </div>
 
-    <div class="water-shimmer">
-    </div>
 
     <div class="water-depth">
     </div>
+
 
 </main>
 
 
 <!-- =====================================================
-     MESSAGE OVERLAY
+     MESSAGE
 ===================================================== -->
 
 <div class="message-overlay"
      id="messageOverlay">
 
+
     <div class="message">
+
 
         <div class="message-number"
              id="messageNumber">
         </div>
 
+
         <div class="message-text"
              id="messageText">
         </div>
 
+
         <div class="message-location"
              id="messageLocation">
         </div>
+
 
         <button class="close"
                 onclick="closeMessage()">
@@ -1036,6 +1099,7 @@ h1 {
             Close Ripple
 
         </button>
+
 
     </div>
 
@@ -1147,11 +1211,13 @@ const messages = [
 
 
 /* =========================================================
-   CREATE RIPPLES
+   CREATE RIPPLE
 ========================================================= */
 
 const pond =
-    document.getElementById("pond");
+    document.getElementById(
+        "pond"
+    );
 
 let rippleNumber = 0;
 
@@ -1160,15 +1226,22 @@ function createRipple() {
 
     rippleNumber++;
 
+
     const ripple =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     ripple.className =
         "ripple";
 
 
     const dot =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     dot.className =
         "ripple-dot";
@@ -1192,8 +1265,10 @@ function createRipple() {
     ripple.dataset.text =
         data.text;
 
+
     ripple.dataset.location =
         data.location;
+
 
     ripple.dataset.number =
         rippleNumber;
@@ -1221,10 +1296,15 @@ function createRipple() {
 
             event.stopPropagation();
 
+
             showMessage(
+
                 ripple.dataset.number,
+
                 ripple.dataset.text,
+
                 ripple.dataset.location
+
             );
 
         }
@@ -1254,7 +1334,7 @@ for (
 
 
 /* =========================================================
-   MESSAGE
+   SHOW MESSAGE
 ========================================================= */
 
 function showMessage(
@@ -1266,7 +1346,8 @@ function showMessage(
     document.getElementById(
         "messageNumber"
     ).innerText =
-        "RIPPLE #" + number;
+        "RIPPLE #" +
+        number;
 
 
     document.getElementById(
@@ -1305,11 +1386,13 @@ function closeMessage() {
 
 
 /* =========================================================
-   CLICK OUTSIDE MESSAGE
+   CLOSE MESSAGE OUTSIDE
 ========================================================= */
 
 document
-    .getElementById("messageOverlay")
+    .getElementById(
+        "messageOverlay"
+    )
     .addEventListener(
         "click",
         function(event) {
@@ -1386,6 +1469,7 @@ window.addEventListener(
 
     }
 );
+
 
 </script>
 
