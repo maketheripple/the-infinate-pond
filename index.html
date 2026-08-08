@@ -10,6 +10,7 @@
 
 <title>The Infinite Pond | Make the Ripple</title>
 
+
 <style>
 
 /* =========================================================
@@ -28,7 +29,7 @@ body {
 
     margin: 0;
 
-    background: #031f27;
+    background: #063f4b;
 
     color: white;
 
@@ -50,7 +51,6 @@ body {
     position: fixed;
 
     top: 0;
-
     left: 0;
 
     width: 100%;
@@ -63,8 +63,8 @@ body {
 
     background:
         linear-gradient(
-            rgba(2,25,32,0.88),
-            rgba(2,25,32,0.30)
+            rgba(2,25,32,0.90),
+            rgba(2,25,32,0.28)
         );
 
     backdrop-filter:
@@ -140,7 +140,7 @@ h1 {
 
 
 /* =========================================================
-   POND
+   INFINITE POND
 ========================================================= */
 
 .pond {
@@ -151,49 +151,219 @@ h1 {
 
     overflow: hidden;
 
-    background-color: #064550;
+    background:
+        #063f4b;
+}
+
+
+/* =========================================================
+   WATER TEXTURE SYSTEM
+========================================================= */
+
+.water-layer {
+
+    position: absolute;
+
+    top: -15%;
+
+    left: -15%;
+
+    width: 130%;
+
+    height: 130%;
 
     background-image:
-        url("water.jpg");
-
-    background-size:
-        1200px auto;
+        url("water-texture.jpg");
 
     background-repeat:
         repeat;
 
+    background-size:
+        700px 700px;
+
     background-position:
-        center top;
+        center center;
+
+    pointer-events:
+        none;
 }
 
 
-/* =========================================================
-   WATER CANVAS
-========================================================= */
+/* First water layer */
 
-#waterCanvas {
+.water-layer.one {
 
-    position: absolute;
+    z-index: 1;
 
-    top: 0;
+    opacity: 0.92;
 
-    left: 0;
+    filter:
+        saturate(1.15)
+        contrast(1.05);
 
-    width: 100%;
+    animation:
+        waterDriftOne
+        75s
+        linear
+        infinite;
+}
 
-    height: 100%;
+
+/* Second water layer */
+
+.water-layer.two {
 
     z-index: 2;
 
-    pointer-events: none;
+    opacity: 0.38;
 
-    opacity: 0.18;
+    background-size:
+        950px 950px;
 
+    mix-blend-mode:
+        soft-light;
+
+    animation:
+        waterDriftTwo
+        105s
+        linear
+        infinite;
+}
+
+
+/* Third water layer */
+
+.water-layer.three {
+
+    z-index: 3;
+
+    opacity: 0.22;
+
+    background-size:
+        1200px 1200px;
+
+    mix-blend-mode:
+        screen;
+
+    animation:
+        waterDriftThree
+        140s
+        linear
+        infinite;
 }
 
 
 /* =========================================================
-   ATMOSPHERIC WATER LIGHT
+   WATER MOVEMENT
+========================================================= */
+
+@keyframes waterDriftOne {
+
+    0% {
+
+        transform:
+            translate3d(
+                -2%,
+                -2%,
+                0
+            );
+    }
+
+    50% {
+
+        transform:
+            translate3d(
+                2%,
+                1%,
+                0
+            );
+    }
+
+    100% {
+
+        transform:
+            translate3d(
+                -2%,
+                -2%,
+                0
+            );
+    }
+}
+
+
+@keyframes waterDriftTwo {
+
+    0% {
+
+        transform:
+            translate3d(
+                3%,
+                -2%,
+                0
+            )
+            rotate(0.2deg);
+    }
+
+    50% {
+
+        transform:
+            translate3d(
+                -2%,
+                3%,
+                0
+            )
+            rotate(-0.2deg);
+    }
+
+    100% {
+
+        transform:
+            translate3d(
+                3%,
+                -2%,
+                0
+            )
+            rotate(0.2deg);
+    }
+}
+
+
+@keyframes waterDriftThree {
+
+    0% {
+
+        transform:
+            translate3d(
+                -3%,
+                2%,
+                0
+            );
+    }
+
+    50% {
+
+        transform:
+            translate3d(
+                2%,
+                -3%,
+                0
+            );
+    }
+
+    100% {
+
+        transform:
+            translate3d(
+                -3%,
+                2%,
+                0
+            );
+    }
+}
+
+
+/* =========================================================
+   WATER LIGHT
 ========================================================= */
 
 .water-light {
@@ -202,130 +372,152 @@ h1 {
 
     inset: 0;
 
-    z-index: 2;
+    z-index: 4;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
     background:
 
         radial-gradient(
             ellipse at 20% 15%,
-            rgba(170,235,232,0.16),
-            transparent 30%
+            rgba(190,245,245,0.18),
+            transparent 28%
         ),
 
         radial-gradient(
-            ellipse at 75% 45%,
-            rgba(100,205,210,0.10),
-            transparent 35%
+            ellipse at 80% 40%,
+            rgba(120,220,225,0.12),
+            transparent 32%
         ),
 
         radial-gradient(
-            ellipse at 35% 85%,
-            rgba(0,40,55,0.30),
-            transparent 40%
+            ellipse at 35% 90%,
+            rgba(0,35,45,0.28),
+            transparent 42%
         );
 
     mix-blend-mode:
         screen;
 
     opacity:
-        0.7;
+        0.65;
 
     animation:
-        lightShift 22s ease-in-out infinite alternate;
+        lightMovement
+        28s
+        ease-in-out
+        infinite
+        alternate;
 }
 
-@keyframes lightShift {
+
+@keyframes lightMovement {
 
     0% {
+
         transform:
-            translate(-2%, -1%)
+            translate(
+                -2%,
+                -1%
+            )
             scale(1);
     }
 
     100% {
+
         transform:
-            translate(2%, 2%)
-            scale(1.04);
+            translate(
+                2%,
+                2%
+            )
+            scale(1.05);
     }
 }
 
 
 /* =========================================================
-   VERY SUBTLE SURFACE WAVES
+   WATER SHIMMER
 ========================================================= */
 
-.surface-waves {
+.water-shimmer {
 
     position: absolute;
 
-    inset: -200px;
+    inset: 0;
 
-    z-index: 3;
+    z-index: 5;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
-    opacity: 0.12;
+    opacity:
+        0.12;
 
-    background-image:
-        url("water.jpg");
+    background:
+
+        repeating-linear-gradient(
+            110deg,
+            transparent 0px,
+            transparent 80px,
+            rgba(220,255,255,0.12) 82px,
+            transparent 86px,
+            transparent 150px
+        );
 
     background-size:
-        1350px auto;
-
-    background-repeat:
-        repeat;
-
-    background-position:
-        center center;
-
-    mix-blend-mode:
-        soft-light;
+        350px 350px;
 
     animation:
-        waterTextureMove 45s linear infinite;
+        shimmerMove
+        50s
+        linear
+        infinite;
 
+    mix-blend-mode:
+        overlay;
 }
 
-@keyframes waterTextureMove {
 
-    0% {
+@keyframes shimmerMove {
 
-        transform:
-            translate3d(
-                -1%,
-                -1%,
-                0
-            )
-            scale(1.02);
-
-    }
-
-    50% {
+    from {
 
         transform:
-            translate3d(
-                1%,
-                0.5%,
-                0
-            )
-            scale(1.04);
-
+            translateX(-5%);
     }
 
-    100% {
+    to {
 
         transform:
-            translate3d(
-                -1%,
-                1%,
-                0
-            )
-            scale(1.02);
-
+            translateX(5%);
     }
+}
 
+
+/* =========================================================
+   DARK EDGE / DEPTH
+========================================================= */
+
+.water-depth {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 6;
+
+    pointer-events:
+        none;
+
+    background:
+
+        radial-gradient(
+            ellipse at center,
+            transparent 45%,
+            rgba(0,25,32,0.15) 70%,
+            rgba(0,18,25,0.45) 100%
+        );
 }
 
 
@@ -343,7 +535,7 @@ h1 {
 
     border-radius: 50%;
 
-    z-index: 10;
+    z-index: 20;
 
     cursor: pointer;
 
@@ -353,6 +545,26 @@ h1 {
     transition:
         transform 0.5s ease;
 
+    background:
+
+        radial-gradient(
+            circle,
+            transparent 0,
+            transparent 18px,
+
+            rgba(230,255,255,0.25)
+            19px,
+
+            transparent 22px,
+
+            transparent 31px,
+
+            rgba(230,255,255,0.20)
+            32px,
+
+            transparent 35px
+        );
+
     filter:
         drop-shadow(
             0 4px 8px
@@ -360,8 +572,6 @@ h1 {
         );
 }
 
-
-/* Main wave */
 
 .ripple::before {
 
@@ -375,19 +585,13 @@ h1 {
 
     border:
         2px solid
-        rgba(220,255,255,0.58);
+        rgba(230,255,255,0.55);
 
     box-shadow:
-
-        0 0 5px
-        rgba(200,255,255,0.20),
-
-        inset 0 0 7px
-        rgba(200,255,255,0.08);
+        0 0 8px
+        rgba(220,255,255,0.18);
 }
 
-
-/* Second wave */
 
 .ripple::after {
 
@@ -401,48 +605,9 @@ h1 {
 
     border:
         2px solid
-        rgba(220,255,255,0.40);
+        rgba(230,255,255,0.38);
 }
 
-
-/* Inner wave */
-
-.ripple {
-
-    background:
-
-        radial-gradient(
-            circle,
-            transparent 0,
-            transparent 20px,
-            rgba(220,255,255,0.18) 21px,
-            transparent 23px,
-            transparent 31px,
-            rgba(220,255,255,0.18) 33px,
-            transparent 35px
-        );
-}
-
-
-/* Ripple interaction */
-
-.ripple:hover {
-
-    transform:
-        translate(-50%, -50%)
-        scale(1.45);
-
-    filter:
-        drop-shadow(
-            0 8px 18px
-            rgba(0,0,0,0.25)
-        );
-
-    z-index: 100;
-}
-
-
-/* Small central disturbance */
 
 .ripple-dot {
 
@@ -453,7 +618,6 @@ h1 {
     height: 7px;
 
     left: 50%;
-
     top: 50%;
 
     transform:
@@ -470,8 +634,24 @@ h1 {
 }
 
 
+.ripple:hover {
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.45);
+
+    z-index: 100;
+
+    filter:
+        drop-shadow(
+            0 8px 18px
+            rgba(0,0,0,0.25)
+        );
+}
+
+
 /* =========================================================
-   RIPPLE MESSAGE
+   MESSAGE
 ========================================================= */
 
 .message-overlay {
@@ -493,17 +673,20 @@ h1 {
 
     opacity: 0;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
     transition:
         opacity 0.35s ease;
 }
 
+
 .message-overlay.active {
 
     opacity: 1;
 
-    pointer-events: auto;
+    pointer-events:
+        auto;
 }
 
 
@@ -512,7 +695,6 @@ h1 {
     position: fixed;
 
     left: 50%;
-
     top: 50%;
 
     width:
@@ -526,6 +708,7 @@ h1 {
         scale(0.90);
 
     background:
+
         linear-gradient(
             145deg,
             rgba(7,61,72,0.98),
@@ -536,20 +719,24 @@ h1 {
         1px solid
         rgba(255,255,255,0.16);
 
-    border-radius: 24px;
+    border-radius:
+        24px;
 
     box-shadow:
         0 30px 100px
         rgba(0,0,0,0.60);
 
-    text-align: center;
+    text-align:
+        center;
 
-    opacity: 0;
+    opacity:
+        0;
 
     transition:
         transform 0.35s ease,
         opacity 0.35s ease;
 }
+
 
 .message-overlay.active
 .message {
@@ -564,36 +751,50 @@ h1 {
 
 .message-number {
 
-    font-size: 11px;
+    font-size:
+        11px;
 
-    letter-spacing: 4px;
+    letter-spacing:
+        4px;
 
-    opacity: 0.55;
+    opacity:
+        0.55;
 
-    margin-bottom: 25px;
+    margin-bottom:
+        25px;
 }
+
 
 .message-text {
 
-    font-size: 22px;
+    font-size:
+        22px;
 
-    line-height: 1.6;
+    line-height:
+        1.6;
 
-    font-style: italic;
+    font-style:
+        italic;
 
-    margin-bottom: 25px;
+    margin-bottom:
+        25px;
 }
+
 
 .message-location {
 
-    font-size: 13px;
+    font-size:
+        13px;
 
-    opacity: 0.55;
+    opacity:
+        0.55;
 }
+
 
 .close {
 
-    margin-top: 28px;
+    margin-top:
+        28px;
 
     padding:
         11px 28px;
@@ -605,15 +806,16 @@ h1 {
     background:
         transparent;
 
-    color: white;
+    color:
+        white;
 
-    border-radius: 30px;
+    border-radius:
+        30px;
 
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease;
+    cursor:
+        pointer;
 }
+
 
 .close:hover {
 
@@ -641,7 +843,8 @@ h1 {
 
     border: none;
 
-    border-radius: 50px;
+    border-radius:
+        50px;
 
     background:
         rgba(255,255,255,0.95);
@@ -649,9 +852,11 @@ h1 {
     color:
         #06414c;
 
-    font-weight: bold;
+    font-weight:
+        bold;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     box-shadow:
         0 10px 35px
@@ -661,6 +866,7 @@ h1 {
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
+
 
 .make-ripple:hover {
 
@@ -687,26 +893,32 @@ h1 {
 
     .logo {
 
-        font-size: 10px;
+        font-size:
+            10px;
 
-        letter-spacing: 3px;
+        letter-spacing:
+            3px;
     }
 
     h1 {
 
-        font-size: 34px;
+        font-size:
+            34px;
     }
 
     .subtitle {
 
-        font-size: 14px;
+        font-size:
+            14px;
     }
 
     .ripple {
 
-        width: 75px;
+        width:
+            75px;
 
-        height: 75px;
+        height:
+            75px;
     }
 
     .message {
@@ -717,14 +929,17 @@ h1 {
 
     .message-text {
 
-        font-size: 19px;
+        font-size:
+            19px;
     }
 
     .make-ripple {
 
-        right: 15px;
+        right:
+            15px;
 
-        bottom: 15px;
+        bottom:
+            15px;
 
         padding:
             13px 20px;
@@ -773,13 +988,22 @@ h1 {
 <main class="pond"
       id="pond">
 
-    <canvas id="waterCanvas">
-    </canvas>
+    <div class="water-layer one">
+    </div>
+
+    <div class="water-layer two">
+    </div>
+
+    <div class="water-layer three">
+    </div>
 
     <div class="water-light">
     </div>
 
-    <div class="surface-waves">
+    <div class="water-shimmer">
+    </div>
+
+    <div class="water-depth">
     </div>
 
 </main>
@@ -832,6 +1056,7 @@ h1 {
 
 <script>
 
+
 /* =========================================================
    RIPPLE DATA
 ========================================================= */
@@ -841,6 +1066,7 @@ const messages = [
     {
         text:
         "Today I checked in on someone who seemed like they needed someone to talk to.",
+
         location:
         "Kitchener, Ontario"
     },
@@ -848,6 +1074,7 @@ const messages = [
     {
         text:
         "Asking for help doesn't make you weak.",
+
         location:
         "Waterloo, Ontario"
     },
@@ -855,6 +1082,7 @@ const messages = [
     {
         text:
         "Today I chose kindness.",
+
         location:
         "Cambridge, Ontario"
     },
@@ -862,6 +1090,7 @@ const messages = [
     {
         text:
         "I reminded someone that they aren't alone.",
+
         location:
         "Guelph, Ontario"
     },
@@ -869,6 +1098,7 @@ const messages = [
     {
         text:
         "Today I took a moment to look after myself.",
+
         location:
         "Toronto, Ontario"
     },
@@ -876,6 +1106,7 @@ const messages = [
     {
         text:
         "Sometimes the smallest act of kindness can make the biggest difference.",
+
         location:
         "Hamilton, Ontario"
     },
@@ -883,6 +1114,7 @@ const messages = [
     {
         text:
         "I asked someone how they were really doing.",
+
         location:
         "London, Ontario"
     },
@@ -890,6 +1122,7 @@ const messages = [
     {
         text:
         "Today I decided that reaching out was worth it.",
+
         location:
         "Ottawa, Ontario"
     },
@@ -897,6 +1130,7 @@ const messages = [
     {
         text:
         "You never know what someone is carrying. Be kind.",
+
         location:
         "Windsor, Ontario"
     },
@@ -904,6 +1138,7 @@ const messages = [
     {
         text:
         "I don't have to solve everything. Sometimes listening is enough.",
+
         location:
         "Kingston, Ontario"
     }
@@ -912,7 +1147,7 @@ const messages = [
 
 
 /* =========================================================
-   CREATE RIPPLE
+   CREATE RIPPLES
 ========================================================= */
 
 const pond =
@@ -931,21 +1166,28 @@ function createRipple() {
     ripple.className =
         "ripple";
 
+
     const dot =
         document.createElement("div");
 
     dot.className =
         "ripple-dot";
 
-    ripple.appendChild(dot);
+
+    ripple.appendChild(
+        dot
+    );
+
 
     const data =
         messages[
             Math.floor(
                 Math.random()
-                * messages.length
+                *
+                messages.length
             )
         ];
+
 
     ripple.dataset.text =
         data.text;
@@ -956,11 +1198,22 @@ function createRipple() {
     ripple.dataset.number =
         rippleNumber;
 
+
     ripple.style.left =
-        (5 + Math.random() * 90) + "%";
+        (
+            5 +
+            Math.random() * 90
+        )
+        + "%";
+
 
     ripple.style.top =
-        (100 + Math.random() * 11800) + "px";
+        (
+            150 +
+            Math.random() * 11700
+        )
+        + "px";
+
 
     ripple.addEventListener(
         "click",
@@ -977,7 +1230,10 @@ function createRipple() {
         }
     );
 
-    pond.appendChild(ripple);
+
+    pond.appendChild(
+        ripple
+    );
 
 }
 
@@ -998,7 +1254,7 @@ for (
 
 
 /* =========================================================
-   MESSAGE WINDOW
+   MESSAGE
 ========================================================= */
 
 function showMessage(
@@ -1012,15 +1268,21 @@ function showMessage(
     ).innerText =
         "RIPPLE #" + number;
 
+
     document.getElementById(
         "messageText"
     ).innerText =
-        '"' + text + '"';
+        '"' +
+        text +
+        '"';
+
 
     document.getElementById(
         "messageLocation"
     ).innerText =
-        "— " + location;
+        "— " +
+        location;
+
 
     document.getElementById(
         "messageOverlay"
@@ -1043,7 +1305,7 @@ function closeMessage() {
 
 
 /* =========================================================
-   CLOSE WHEN CLICKING OUTSIDE
+   CLICK OUTSIDE MESSAGE
 ========================================================= */
 
 document
@@ -1084,6 +1346,7 @@ function makeRipple() {
 let lastScroll =
     window.scrollY;
 
+
 window.addEventListener(
     "scroll",
     function() {
@@ -1091,10 +1354,12 @@ window.addEventListener(
         const currentScroll =
             window.scrollY;
 
+
         const header =
             document.getElementById(
                 "header"
             );
+
 
         if (
             currentScroll > 500 &&
@@ -1106,6 +1371,7 @@ window.addEventListener(
             );
 
         }
+
         else {
 
             header.classList.remove(
@@ -1114,333 +1380,15 @@ window.addEventListener(
 
         }
 
+
         lastScroll =
             currentScroll;
 
     }
 );
 
-
-/* =========================================================
-   REALISTIC WATER CANVAS
-========================================================= */
-
-const canvas =
-    document.getElementById(
-        "waterCanvas"
-    );
-
-const ctx =
-    canvas.getContext("2d");
-
-let width;
-let height;
-
-let animationTime = 0;
-
-
-function resizeCanvas() {
-
-    const pixelRatio =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
-
-    width =
-        pond.clientWidth;
-
-    height =
-        pond.scrollHeight;
-
-    canvas.width =
-        width * pixelRatio;
-
-    canvas.height =
-        height * pixelRatio;
-
-    canvas.style.width =
-        width + "px";
-
-    canvas.style.height =
-        height + "px";
-
-    ctx.setTransform(
-        pixelRatio,
-        0,
-        0,
-        pixelRatio,
-        0,
-        0
-    );
-
-}
-
-resizeCanvas();
-
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-
-/* =========================================================
-   WATER SHADING
-========================================================= */
-
-function drawWater() {
-
-    animationTime += 0.006;
-
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-       Base water
-    */
-
-    const base =
-        ctx.createLinearGradient(
-            0,
-            0,
-            width,
-            height
-        );
-
-    base.addColorStop(
-        0,
-        "#075765"
-    );
-
-    base.addColorStop(
-        0.35,
-        "#064553"
-    );
-
-    base.addColorStop(
-        0.7,
-        "#053b49"
-    );
-
-    base.addColorStop(
-        1,
-        "#022e3a"
-    );
-
-    ctx.fillStyle =
-        base;
-
-    ctx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-       Organic light bands
-    */
-
-    for (
-        let i = 0;
-        i < 35;
-        i++
-    ) {
-
-        const y =
-            i * 360 +
-            Math.sin(
-                animationTime * 0.7 +
-                i
-            ) * 80;
-
-        const x =
-            width * 0.5 +
-            Math.sin(
-                animationTime +
-                i * 0.8
-            ) * width * 0.35;
-
-        const radius =
-            180 +
-            Math.sin(
-                animationTime * 0.5 +
-                i
-            ) * 70;
-
-        const glow =
-            ctx.createRadialGradient(
-                x,
-                y,
-                0,
-                x,
-                y,
-                radius
-            );
-
-        glow.addColorStop(
-            0,
-            "rgba(120,220,220,0.08)"
-        );
-
-        glow.addColorStop(
-            0.5,
-            "rgba(80,180,195,0.035)"
-        );
-
-        glow.addColorStop(
-            1,
-            "rgba(0,0,0,0)"
-        );
-
-        ctx.fillStyle =
-            glow;
-
-        ctx.fillRect(
-            0,
-            y - radius,
-            width,
-            radius * 2
-        );
-
-    }
-
-
-    /*
-       Subtle horizontal water movement
-    */
-
-    ctx.globalAlpha =
-        0.08;
-
-    for (
-        let y = 0;
-        y < height;
-        y += 22
-    ) {
-
-        const wave =
-            Math.sin(
-                y * 0.018 +
-                animationTime * 2
-            ) * 7;
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            y
-        );
-
-        for (
-            let x = 0;
-            x <= width;
-            x += 30
-        ) {
-
-            const offset =
-                Math.sin(
-                    x * 0.012 +
-                    y * 0.018 +
-                    animationTime * 2
-                ) * 5;
-
-            ctx.lineTo(
-                x,
-                y + offset + wave
-            );
-
-        }
-
-        ctx.strokeStyle =
-            "rgba(190,245,245,0.7)";
-
-        ctx.lineWidth =
-            1;
-
-        ctx.stroke();
-
-    }
-
-    ctx.globalAlpha =
-        1;
-
-
-    /*
-       Fine surface shimmer
-    */
-
-    ctx.globalAlpha =
-        0.10;
-
-    for (
-        let i = 0;
-        i < 220;
-        i++
-    ) {
-
-        const x =
-            (
-                i * 137
-                +
-                animationTime * 15
-            ) % width;
-
-        const y =
-            (
-                i * 277
-                +
-                Math.sin(
-                    animationTime +
-                    i
-                ) * 20
-            ) % height;
-
-        const length =
-            10 +
-            Math.sin(i) * 8;
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            y
-        );
-
-        ctx.lineTo(
-            x + length,
-            y
-        );
-
-        ctx.strokeStyle =
-            "rgba(220,255,255,0.7)";
-
-        ctx.lineWidth =
-            1;
-
-        ctx.stroke();
-
-    }
-
-    ctx.globalAlpha =
-        1;
-
-    requestAnimationFrame(
-        drawWater
-    );
-
-}
-
-drawWater();
-
 </script>
+
 
 </body>
 
