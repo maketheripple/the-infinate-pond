@@ -1,7 +1,7 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.4 — REMOVE MIRRORED RIPPLE REFLECTION
-   BASED ON VERSION 8.4.1 — IMPACT DISPLACEMENT
+   VERSION 8.4.5 — DARK NATURAL POND
+   RIPPLE BASELINE PRESERVED
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -477,7 +477,202 @@ if (!canvas) {
 
 
             /* =================================================
+               NATURAL DARK WATER
+               
+               Slow, broad tonal movement intended to make
+               the surface read as a dark pond or lake rather
+               than a digital texture.
+               
+               This affects appearance only.
+               It does NOT create ripples.
+            ================================================= */
+
+            float naturalWaterSurface(vec2 p) {
+
+                vec2 slowDriftA =
+
+                    vec2(
+
+                        time *
+                        0.006,
+
+                        -time *
+                        0.004
+
+                    );
+
+
+                vec2 slowDriftB =
+
+                    vec2(
+
+                        -time *
+                        0.004,
+
+                        time *
+                        0.003
+
+                    );
+
+
+                /*
+                 * Very broad tonal regions.
+                 */
+
+                float broadA =
+
+                    fbm(
+
+                        p *
+                        0.48
+                        +
+                        slowDriftA
+
+                    );
+
+
+                float broadB =
+
+                    fbm(
+
+                        p *
+                        0.82
+                        +
+                        slowDriftB
+
+                    );
+
+
+                /*
+                 * Extremely soft medium-scale variation.
+                 */
+
+                float mediumA =
+
+                    fbm(
+
+                        p *
+                        1.55
+                        -
+                        slowDriftA *
+                        1.4
+
+                    );
+
+
+                /*
+                 * Combine them heavily toward the
+                 * broad patterns.
+                 */
+
+                float broadVariation =
+
+                    broadA *
+                    0.52
+
+                    +
+
+                    broadB *
+                    0.30
+
+                    +
+
+                    mediumA *
+                    0.18;
+
+
+                /*
+                 * A very subtle directional movement.
+                 *
+                 * This is intentionally much softer
+                 * than the previous wind streaks.
+                 */
+
+                vec2 windDirection =
+
+                    normalize(
+
+                        vec2(
+                            0.94,
+                            0.18
+                        )
+
+                    );
+
+
+                float windNoise =
+
+                    fbm(
+
+                        p *
+                        1.8
+
+                        +
+
+                        vec2(
+
+                            time *
+                            0.008,
+
+                            -time *
+                            0.005
+
+                        )
+
+                    );
+
+
+                float windMovement =
+
+                    sin(
+
+                        dot(
+                            p,
+                            windDirection
+                        )
+                        *
+                        3.8
+                        +
+                        time *
+                        0.10
+
+                    );
+
+
+                windMovement *=
+
+                    0.25
+                    +
+                    windNoise *
+                    0.75;
+
+
+                /*
+                 * Keep the total contribution extremely
+                 * subtle.
+                 */
+
+                return
+
+                    (
+                        broadVariation -
+                        0.5
+                    )
+                    *
+                    0.105
+
+                    +
+
+                    windMovement *
+                    0.012;
+
+            }
+
+
+            /* =================================================
                RIPPLE INTERFERENCE
+
+               PRESERVED FROM 8.4.4
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -624,6 +819,8 @@ if (!canvas) {
 
             /* =================================================
                IMPACT DISPLACEMENT
+
+               PRESERVED FROM 8.4.4
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -667,12 +864,6 @@ if (!canvas) {
                                 );
 
 
-                            /*
-                             * The initial impact starts
-                             * as a small concentrated
-                             * disturbance.
-                             */
-
                             float impactRadius =
 
                                 0.055 +
@@ -695,12 +886,6 @@ if (!canvas) {
 
                                 );
 
-
-                            /*
-                             * The center briefly dips
-                             * into the water before
-                             * relaxing.
-                             */
 
                             float impactWave =
 
@@ -1043,15 +1228,131 @@ if (!canvas) {
 
 
                 /*
-                 * VERSION 8.4.4
-                 *
-                 * The separate impactReflection calculation
-                 * has been removed.
-                 *
-                 * This prevents the moon reflection from
-                 * generating a second vertically mirrored
-                 * ripple at the opposite side of the pond.
+                 * Impact displacement also
+                 * affects the moon reflection.
                  */
+
+                float impactReflection =
+
+                    0.0;
+
+
+                for (
+                    int i = 0;
+                    i < MAX_RIPPLES;
+                    i++
+                ) {
+
+                    float strength =
+
+                        rippleStrengths[i];
+
+
+                    if (
+                        strength > 0.0
+                    ) {
+
+                        float elapsed =
+
+                            max(
+
+                                0.0,
+
+                                time -
+                                rippleStarts[i]
+
+                            );
+
+
+                        if (
+                            elapsed < 2.5
+                        ) {
+
+                            vec2 rippleP =
+
+                                vec2(
+
+                                    uv.x -
+                                    0.5,
+
+                                    (
+                                        1.0 -
+                                        uv.y
+                                    )
+                                    *
+                                    1.55
+                                    -
+                                    0.775
+
+                                );
+
+
+                            float d =
+
+                                distance(
+
+                                    rippleP,
+
+                                    ripplePositions[i]
+
+                                );
+
+
+                            float influence =
+
+                                exp(
+
+                                    -pow(
+
+                                        d /
+                                        (
+                                            0.12 +
+                                            elapsed *
+                                            0.06
+                                        ),
+
+                                        2.0
+
+                                    )
+
+                                );
+
+
+                            float decay =
+
+                                exp(
+
+                                    -elapsed *
+                                    1.35
+
+                                );
+
+
+                            impactReflection +=
+
+                                influence
+                                *
+                                decay
+                                *
+                                strength;
+
+                        }
+
+                    }
+
+                }
+
+
+                breakup +=
+
+                    sin(
+
+                        impactReflection *
+                        8.0
+
+                    )
+                    *
+                    0.08;
 
 
                 breakup =
@@ -1175,6 +1476,20 @@ if (!canvas) {
                     0.5;
 
 
+                /* ---------------------------------------------
+                   Natural dark pond variation
+                --------------------------------------------- */
+
+                float naturalSurface =
+
+                    naturalWaterSurface(p);
+
+
+                variation +=
+
+                    naturalSurface;
+
+
                 variation =
 
                     clamp(
@@ -1237,6 +1552,38 @@ if (!canvas) {
                     *
 
                     highlight;
+
+
+                /* ---------------------------------------------
+                   Very subtle natural sheen
+                --------------------------------------------- */
+
+                float surfaceSheen =
+
+                    max(
+
+                        naturalSurface,
+
+                        0.0
+
+                    );
+
+
+                color +=
+
+                    vec3(
+
+                        0.0035,
+
+                        0.008,
+
+                        0.012
+
+                    )
+
+                    *
+
+                    surfaceSheen;
 
 
                 /* ---------------------------------------------
@@ -1765,10 +2112,6 @@ if (!canvas) {
                         canvas.getBoundingClientRect();
 
 
-                    /* -----------------------------------------
-                       Convert browser position to canvas position
-                    ----------------------------------------- */
-
                     const localX =
 
                         clientX -
@@ -1780,10 +2123,6 @@ if (!canvas) {
                         clientY -
                         rect.top;
 
-
-                    /* -----------------------------------------
-                       Convert to normalized coordinates
-                    ----------------------------------------- */
 
                     const uvX =
 
@@ -1812,19 +2151,11 @@ if (!canvas) {
                         0.5;
 
 
-                    /* -----------------------------------------
-                       Match shader aspect ratio
-                    ----------------------------------------- */
-
                     rippleX *=
 
                         rect.width /
                         rect.height;
 
-
-                    /* -----------------------------------------
-                       Match pond vertical scale
-                    ----------------------------------------- */
 
                     rippleY *=
 
@@ -1837,10 +2168,6 @@ if (!canvas) {
                         *
                         0.001;
 
-
-                    /* -----------------------------------------
-                       Add new ripple
-                    ----------------------------------------- */
 
                     ripples.push({
 
@@ -1858,10 +2185,6 @@ if (!canvas) {
 
                     });
 
-
-                    /* -----------------------------------------
-                       Keep maximum number
-                    ----------------------------------------- */
 
                     if (
 
@@ -2014,10 +2337,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Remove expired ripples
-                    ----------------------------------------- */
-
                     while (
 
                         ripples.length > 0 &&
@@ -2032,10 +2351,6 @@ if (!canvas) {
 
                     }
 
-
-                    /* -----------------------------------------
-                       Prepare uniform arrays
-                    ----------------------------------------- */
 
                     const positions =
 
@@ -2135,10 +2450,6 @@ if (!canvas) {
                     }
 
 
-                    /* -----------------------------------------
-                       Send uniforms
-                    ----------------------------------------- */
-
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2194,10 +2505,6 @@ if (!canvas) {
 
                     );
 
-
-                    /* -----------------------------------------
-                       Draw
-                    ----------------------------------------- */
 
                     gl.drawArrays(
 
