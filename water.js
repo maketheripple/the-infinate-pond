@@ -1326,31 +1326,24 @@ if (!canvas) {
                     );
 
 
-                /* =============================================
-                   RIPPLE STATE
-                ============================================= */
+/* =============================================
+   RIPPLE STATE
+   ============================================= */
 
-                let rippleX =
-                    0.0;
+let rippleX = 0.0;
 
+let rippleY = 0.0;
 
-                let rippleY =
-                    0.0;
+let rippleStart = -100.0;
 
-
-                let rippleStart =
-                    -100.0;
+let rippleStrength = 0.0;
 
 
-                let rippleStrength =
-                    0.0;
+/* =============================================
+   CREATE RIPPLE
+   ============================================= */
 
-
-                /* =============================================
-                   CREATE RIPPLE
-                ============================================= */
-
-                function createRipple(
+function createRipple(
     clientX,
     clientY
 ) {
@@ -1364,17 +1357,15 @@ if (!canvas) {
 
     /*
      * Convert browser coordinates
-     * to normalized coordinates.
+     * to normalized screen coordinates.
      */
 
     const uvX =
-
         clientX /
         window.innerWidth;
 
 
     const uvY =
-
         1.0 -
         (
             clientY /
@@ -1387,45 +1378,45 @@ if (!canvas) {
      */
 
     rippleX =
-
         uvX -
         0.5;
 
 
     rippleY =
-
         uvY -
         0.5;
 
 
     /*
-     * Match the shader's aspect ratio.
+     * Match shader aspect ratio.
      */
 
     rippleX *=
-
         window.innerWidth /
         window.innerHeight;
 
 
     /*
-     * Match the pond's vertical scale.
+     * Match shader vertical scale.
      */
 
     rippleY *=
         1.55;
 
 
-    rippleStart =
+    /*
+     * Start the ripple.
 
+     */
+
+    rippleStart =
         performance.now()
         *
         0.001;
 
 
     /*
-     * Make the first test deliberately
-     * strong and obvious.
+     * Strong while testing.
      */
 
     rippleStrength =
@@ -1433,94 +1424,23 @@ if (!canvas) {
 
 }
 
-                    /*
-                     * Convert browser coordinates
-                     * into normalized screen coordinates.
-                     */
 
-                    const uvX =
+/* =============================================
+   POINTER RIPPLE
+   ============================================= */
 
-                        clientX /
-                        window.innerWidth;
-
-
-                    const uvY =
-
-                        1.0 -
-                        (
-                            clientY /
-                            window.innerHeight
-                        );
-
-
-                    /*
-                     * Convert to the same coordinate
-                     * system used by the shader.
-                     */
-
-                    rippleX =
-
-                        uvX -
-                        0.5;
-
-
-                    rippleY =
-
-                        uvY -
-                        0.5;
-
-
-                    /*
-                     * Match the shader's
-                     * aspect correction.
-                     */
-
-                    rippleX *=
-
-                        window.innerWidth /
-                        window.innerHeight;
-
-
-                    /*
-                     * Match the shader's
-                     * vertical scaling.
-                     */
-
-                    rippleY *=
-                        1.55;
-
-
-                    rippleStart =
-
-                        performance.now()
-                        *
-                        0.001;
-
-
-                    rippleStrength =
-                        1.0;
-
-                }
-
-
-                /* =============================================
-                   MOUSE + TOUCH
-                   
-                   We use pointerdown instead of separate
-                   mouse and touch listeners. This prevents
-                   mobile devices from creating two ripples.
-                ============================================= */
-
-                window.addEventListener(
-
+window.addEventListener(
     "pointerdown",
-
-    function(event) {
+    function (event) {
 
         console.log(
             "POINTER DETECTED"
         );
 
+
+        /*
+         * Ignore right-click.
+         */
 
         if (
             event.button !== 0 &&
@@ -1533,17 +1453,12 @@ if (!canvas) {
 
 
         createRipple(
-
             event.clientX,
-
             event.clientY
-
         );
 
     },
-
     true
-
 );
 
                         /*
