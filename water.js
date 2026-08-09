@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.3 — RIPPLE IMPACT & WATER DISPLACEMENT
+   VERSION 8.3.1 — SINGLE RIPPLE IMPACT
    ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -466,16 +466,17 @@ if (!canvas) {
 
 
             /* =================================================
-               RIPPLE DISPLACEMENT
+               RIPPLE IMPACT
                
-               This creates the physical "push" of the
-               water surface without creating another
-               visible ripple ring.
+               IMPORTANT:
+               This is ONLY a localized depression.
+
+               It does NOT create an outward ring.
             ================================================= */
 
-            float rippleDisplacement(vec2 p) {
+            float rippleImpact(vec2 p) {
 
-                float displacement =
+                float impactField =
                     0.0;
 
 
@@ -503,7 +504,7 @@ if (!canvas) {
 
 
                         if (
-                            elapsed < 12.0
+                            elapsed < 2.5
                         ) {
 
                             float d =
@@ -515,8 +516,8 @@ if (!canvas) {
 
 
                             /*
-                             * Small depression at
-                             * the point of impact.
+                             * Small circular depression
+                             * exactly where the click occurs.
                              */
 
                             float impact =
@@ -524,83 +525,40 @@ if (!canvas) {
                                 exp(
 
                                     -pow(
-                                        d / 0.075,
+
+                                        d /
+                                        0.065,
+
                                         2.0
+
                                     )
 
                                 );
 
 
                             /*
-                             * The depression fades
-                             * quickly after impact.
+                             * Impact disappears quickly.
                              */
 
-                            float impactFade =
+                            float fade =
 
                                 exp(
+
                                     -elapsed *
-                                    2.8
-                                );
-
-
-                            /*
-                             * Gentle outward
-                             * displacement.
-                             */
-
-                            float outwardRadius =
-
-                                0.22
-                                +
-                                elapsed *
-                                0.22;
-
-
-                            float outwardDistance =
-
-                                abs(
-                                    d -
-                                    outwardRadius
-                                );
-
-
-                            float outward =
-
-                                exp(
-
-                                    -pow(
-                                        outwardDistance /
-                                        0.16,
-                                        2.0
-                                    )
+                                    2.6
 
                                 );
 
 
-                            float outwardFade =
+                            impactField +=
 
-                                exp(
-                                    -elapsed *
-                                    0.85
-                                );
-
-
-                            displacement +=
-
-                                (
-                                    impact *
-                                    impactFade *
-                                    -0.32
-                                )
-
-                                +
-
-                                (
-                                    outward *
-                                    outwardFade *
-                                    0.10
-                                );
+                                impact
+                                *
+                                fade
+                                *
+                                strength
+                                *
+                                -0.18;
 
                         }
 
@@ -609,15 +567,15 @@ if (!canvas) {
                 }
 
 
-                return displacement;
+                return impactField;
 
             }
 
 
             /* =================================================
-               RIPPLE INTERFERENCE FIELD
+               SINGLE RIPPLE FIELD
                
-               One visible travelling wavefront per ripple.
+               This is the ONLY expanding ripple.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -654,7 +612,7 @@ if (!canvas) {
                         ) {
 
                             /*
-                             * Expanding ripple radius.
+                             * Expanding radius.
                              */
 
                             float radius =
@@ -683,20 +641,22 @@ if (!canvas) {
 
 
                             /*
-                             * Distance from
-                             * travelling wavefront.
+                             * Distance from the
+                             * single travelling wavefront.
                              */
 
                             float ringDistance =
 
                                 abs(
+
                                     d -
                                     radius
+
                                 );
 
 
                             /*
-                             * ONE visible ripple.
+                             * ONE visible ring.
                              */
 
                             float ring =
@@ -716,14 +676,16 @@ if (!canvas) {
 
 
                             /*
-                             * Slight organic variation.
+                             * Subtle natural variation.
                              */
 
                             float variation =
 
                                 sin(
+
                                     d *
                                     7.0
+
                                 );
 
 
@@ -736,14 +698,16 @@ if (!canvas) {
 
 
                             /*
-                             * Natural decay.
+                             * Natural energy decay.
                              */
 
                             float decay =
 
                                 exp(
+
                                     -elapsed *
                                     0.40
+
                                 );
 
 
@@ -814,9 +778,9 @@ if (!canvas) {
                     rippleInterference(p);
 
 
-                float displacement =
+                float impact =
 
-                    rippleDisplacement(p);
+                    rippleImpact(p);
 
 
                 return
@@ -829,7 +793,7 @@ if (!canvas) {
 
                     +
 
-                    displacement;
+                    impact;
 
             }
 
@@ -907,23 +871,27 @@ if (!canvas) {
                 float baseDistance =
 
                     abs(
+
                         uv.x -
                         0.50
+
                     );
 
 
                 float spread =
 
                     mix(
+
                         0.025,
                         0.45,
                         uv.y
+
                     );
 
 
                 /*
-                 * Surface movement bends the
-                 * moonlight reflection.
+                 * Water movement bends
+                 * the moonlight.
                  */
 
                 float surfaceDistortion =
@@ -971,9 +939,13 @@ if (!canvas) {
                     normalize(
 
                         vec3(
+
                             0.0,
+
                             0.38,
+
                             1.0
+
                         )
 
                     );
@@ -984,8 +956,11 @@ if (!canvas) {
                     max(
 
                         dot(
+
                             normal,
+
                             moonDirection
+
                         ),
 
                         0.0
@@ -996,8 +971,11 @@ if (!canvas) {
                 float sparkle =
 
                     pow(
+
                         angle,
+
                         25.0
+
                     );
 
 
@@ -1061,7 +1039,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Ripple interaction with moonlight
+                   Ripple effect on moonlight
                 --------------------------------------------- */
 
                 vec2 rippleP =
@@ -1105,9 +1083,12 @@ if (!canvas) {
                         float elapsed =
 
                             max(
+
                                 0.0,
+
                                 time -
                                 rippleStarts[i]
+
                             );
 
 
@@ -1199,8 +1180,8 @@ if (!canvas) {
 
 
                 /*
-                 * The ripple bends the
-                 * reflected moonlight.
+                 * Ripple changes the
+                 * moonlight breakup.
                  */
 
                 breakup +=
@@ -1235,6 +1216,7 @@ if (!canvas) {
 
                         0.28,
                         0.72,
+
                         breakup
 
                     );
@@ -1312,18 +1294,26 @@ if (!canvas) {
                 vec3 deepWater =
 
                     vec3(
+
                         0.0015,
+
                         0.010,
+
                         0.020
+
                     );
 
 
                 vec3 blueWater =
 
                     vec3(
+
                         0.004,
+
                         0.032,
+
                         0.055
+
                     );
 
 
@@ -1369,8 +1359,11 @@ if (!canvas) {
                     pow(
 
                         max(
+
                             normal.z,
+
                             0.0
+
                         ),
 
                         7.0
@@ -1381,9 +1374,13 @@ if (!canvas) {
                 color +=
 
                     vec3(
+
                         0.012,
+
                         0.035,
+
                         0.055
+
                     )
 
                     *
@@ -1409,9 +1406,13 @@ if (!canvas) {
                 vec3 moonColor =
 
                     vec3(
+
                         0.72,
+
                         0.87,
+
                         1.0
+
                     );
 
 
@@ -1455,9 +1456,13 @@ if (!canvas) {
                 color +=
 
                     vec3(
+
                         0.022,
+
                         0.045,
+
                         0.070
+
                     )
 
                     *
@@ -1476,6 +1481,7 @@ if (!canvas) {
                     smoothstep(
 
                         0.30,
+
                         0.88,
 
                         distance(
@@ -1483,8 +1489,11 @@ if (!canvas) {
                             uv,
 
                             vec2(
+
                                 0.5,
+
                                 0.43
+
                             )
 
                         )
@@ -1497,6 +1506,7 @@ if (!canvas) {
                     mix(
 
                         0.58,
+
                         1.0,
 
                         vignette
@@ -1515,7 +1525,9 @@ if (!canvas) {
                         color,
 
                         vec3(
+
                             0.86
+
                         )
 
                     );
@@ -1526,6 +1538,7 @@ if (!canvas) {
                     vec4(
 
                         color,
+
                         1.0
 
                     );
@@ -1550,7 +1563,9 @@ if (!canvas) {
             const shader =
 
                 gl.createShader(
+
                     type
+
                 );
 
 
@@ -1587,7 +1602,9 @@ if (!canvas) {
                     "The Infinite Pond shader error:",
 
                     gl.getShaderInfoLog(
+
                         shader
+
                     )
 
                 );
@@ -1692,7 +1709,9 @@ if (!canvas) {
                     "The Infinite Pond program error:",
 
                     gl.getProgramInfoLog(
+
                         program
+
                     )
 
                 );
