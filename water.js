@@ -6,7 +6,11 @@
 const canvas = document.getElementById("waterCanvas");
 
 if (!canvas) {
-    console.error("The Infinite Pond: waterCanvas not found.");
+
+    console.error(
+        "The Infinite Pond: waterCanvas not found."
+    );
+
 } else {
 
     const gl = canvas.getContext("webgl", {
@@ -1326,125 +1330,146 @@ if (!canvas) {
                     );
 
 
-/* =============================================
-   RIPPLE STATE
-============================================= */
+                /* =============================================
+                   RIPPLE STATE
+                ============================================= */
 
-let rippleX = 0.0;
+                let rippleX = 0.0;
 
-let rippleY = 0.0;
+                let rippleY = 0.0;
 
-let rippleStart = -100.0;
+                let rippleStart = -100.0;
 
-let rippleStrength = 0.0;
-
-
-/* =============================================
-   CREATE RIPPLE
-============================================= */
-
-function createRipple(
-    clientX,
-    clientY
-) {
-
-    console.log(
-        "INFINITE POND RIPPLE:",
-        clientX,
-        clientY
-    );
+                let rippleStrength = 0.0;
 
 
-    /*
-     * Convert browser coordinates
-     * to normalized screen coordinates.
-     */
+                /* =============================================
+                   CREATE RIPPLE
+                ============================================= */
 
-    const uvX =
-        clientX /
-        window.innerWidth;
+                function createRipple(
+                    clientX,
+                    clientY
+                ) {
 
-
-    const uvY =
-        1.0 -
-        (
-            clientY /
-            window.innerHeight
-        );
+                    console.log(
+                        "INFINITE POND RIPPLE:",
+                        clientX,
+                        clientY
+                    );
 
 
-    /*
-     * Convert to pond coordinates.
-     */
+                    /*
+                     * Convert browser coordinates
+                     * to normalized screen coordinates.
+                     */
 
-    rippleX =
-        uvX -
-        0.5;
-
-
-    rippleY =
-        uvY -
-        0.5;
+                    const uvX =
+                        clientX /
+                        window.innerWidth;
 
 
-    /*
-     * Match shader aspect ratio.
-     */
-
-    rippleX *=
-        window.innerWidth /
-        window.innerHeight;
-
-
-    /*
-     * Match shader vertical scale.
-     */
-
-    rippleY *=
-        1.55;
+                    const uvY =
+                        1.0 -
+                        (
+                            clientY /
+                            window.innerHeight
+                        );
 
 
-    /*
-     * Start the ripple.
-     */
+                    /*
+                     * Convert to pond coordinates.
+                     */
 
-    rippleStart =
-        performance.now()
-        *
-        0.001;
-
-
-    /*
-     * Strong while testing.
-     */
-
-    rippleStrength =
-        3.0;
-
-}
+                    rippleX =
+                        uvX -
+                        0.5;
 
 
-/* =============================================
-   POINTER RIPPLE
-============================================= */
-
-window.addEventListener(
-    "pointerdown",
-    function (event) {
-
-        console.log(
-            "POINTER DETECTED"
-        );
+                    rippleY =
+                        uvY -
+                        0.5;
 
 
-        
+                    /*
+                     * Match shader aspect ratio.
+                     */
+
+                    rippleX *=
+                        window.innerWidth /
+                        window.innerHeight;
 
 
-/* =============================================
-   RESIZE
-============================================= */
+                    /*
+                     * Match shader vertical scale.
+                     */
 
-function resizeWater() {
+                    rippleY *=
+                        1.55;
+
+
+                    /*
+                     * Start the ripple.
+                     */
+
+                    rippleStart =
+                        performance.now()
+                        *
+                        0.001;
+
+
+                    /*
+                     * Strong while testing.
+                     */
+
+                    rippleStrength =
+                        3.0;
+
+                }
+
+
+                /* =============================================
+                   POINTER RIPPLE
+                ============================================= */
+
+                window.addEventListener(
+                    "pointerdown",
+                    function (event) {
+
+                        console.log(
+                            "POINTER DETECTED"
+                        );
+
+
+                        /*
+                         * Ignore right-click.
+                         */
+
+                        if (
+                            event.button !== 0 &&
+                            event.pointerType !== "touch"
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        createRipple(
+                            event.clientX,
+                            event.clientY
+                        );
+
+                    },
+                    true
+                );
+
+
+                /* =============================================
+                   RESIZE
+                ============================================= */
+
+                function resizeWater() {
 
                     const ratio =
 
@@ -1641,4 +1666,4 @@ function resizeWater() {
 
     }
 
-
+}
