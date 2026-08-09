@@ -1,11 +1,9 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.1 — SURFACE RIPPLES
-========================================================= */
+   VERSION 8.2 — RIPPLE IMPACT
+   ========================================================= */
 
-const canvas =
-    document.getElementById("waterCanvas");
-
+const canvas = document.getElementById("waterCanvas");
 
 if (!canvas) {
 
@@ -15,16 +13,11 @@ if (!canvas) {
 
 } else {
 
-    const gl =
-        canvas.getContext(
-            "webgl",
-            {
-                alpha: false,
-                antialias: false,
-                powerPreference: "high-performance"
-            }
-        );
-
+    const gl = canvas.getContext("webgl", {
+        alpha: false,
+        antialias: false,
+        powerPreference: "high-performance"
+    });
 
     if (!gl) {
 
@@ -33,7 +26,6 @@ if (!canvas) {
         );
 
     } else {
-
 
         /* =================================================
            SETTINGS
@@ -73,16 +65,16 @@ if (!canvas) {
             precision highp float;
 
 
-            /* =============================================
+            /* =================================================
                CONSTANTS
-            ============================================= */
+            ================================================= */
 
             const int MAX_RIPPLES = 12;
 
 
-            /* =============================================
+            /* =================================================
                UNIFORMS
-            ============================================= */
+            ================================================= */
 
             uniform vec2 resolution;
 
@@ -97,27 +89,22 @@ if (!canvas) {
             uniform float rippleStrengths[MAX_RIPPLES];
 
 
-            /* =============================================
+            /* =================================================
                HASH
-            ============================================= */
+            ================================================= */
 
             float hash(vec2 p) {
 
                 return fract(
 
                     sin(
-
                         dot(
-
                             p,
-
                             vec2(
                                 127.1,
                                 311.7
                             )
-
                         )
-
                     )
                     *
                     43758.5453123
@@ -127,9 +114,9 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                SMOOTH NOISE
-            ============================================= */
+            ================================================= */
 
             float noise(vec2 p) {
 
@@ -141,12 +128,10 @@ if (!canvas) {
 
 
                 f =
-                    f *
-                    f *
+                    f * f *
                     (
                         3.0 -
-                        2.0 *
-                        f
+                        2.0 * f
                     );
 
 
@@ -156,37 +141,31 @@ if (!canvas) {
 
                 float b =
                     hash(
-
                         i +
                         vec2(
                             1.0,
                             0.0
                         )
-
                     );
 
 
                 float c =
                     hash(
-
                         i +
                         vec2(
                             0.0,
                             1.0
                         )
-
                     );
 
 
                 float d =
                     hash(
-
                         i +
                         vec2(
                             1.0,
                             1.0
                         )
-
                     );
 
 
@@ -211,32 +190,26 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                FRACTAL BROWNIAN MOTION
-            ============================================= */
+            ================================================= */
 
             float fbm(vec2 p) {
 
                 float value =
                     0.0;
 
-
                 float amplitude =
                     0.5;
 
 
                 for (
-
                     int i = 0;
-
                     i < 5;
-
                     i++
-
                 ) {
 
                     value +=
-
                         noise(p)
                         *
                         amplitude;
@@ -257,9 +230,9 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                LARGE WATER MOTION
-            ============================================= */
+            ================================================= */
 
             float largeWave(vec2 p) {
 
@@ -268,18 +241,13 @@ if (!canvas) {
                     sin(
 
                         dot(
-
                             p,
-
                             normalize(
-
                                 vec2(
                                     1.0,
                                     0.22
                                 )
-
                             )
-
                         )
                         *
                         1.35
@@ -295,18 +263,13 @@ if (!canvas) {
                     sin(
 
                         dot(
-
                             p,
-
                             normalize(
-
                                 vec2(
                                     -0.45,
                                     1.0
                                 )
-
                             )
-
                         )
                         *
                         1.05
@@ -322,18 +285,13 @@ if (!canvas) {
                     sin(
 
                         dot(
-
                             p,
-
                             normalize(
-
                                 vec2(
                                     0.58,
                                     0.81
                                 )
-
                             )
-
                         )
                         *
                         1.85
@@ -362,9 +320,9 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                SMALL SURFACE WAVES
-            ============================================= */
+            ================================================= */
 
             float smallWaves(vec2 p) {
 
@@ -373,18 +331,13 @@ if (!canvas) {
                     sin(
 
                         dot(
-
                             p,
-
                             normalize(
-
                                 vec2(
                                     0.24,
                                     1.0
                                 )
-
                             )
-
                         )
                         *
                         4.5
@@ -400,18 +353,13 @@ if (!canvas) {
                     sin(
 
                         dot(
-
                             p,
-
                             normalize(
-
                                 vec2(
                                     -0.76,
                                     0.48
                                 )
-
                             )
-
                         )
                         *
                         5.8
@@ -427,18 +375,13 @@ if (!canvas) {
                     sin(
 
                         dot(
-
                             p,
-
                             normalize(
-
                                 vec2(
                                     0.91,
                                     0.28
                                 )
-
                             )
-
                         )
                         *
                         7.2
@@ -467,9 +410,9 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                ORGANIC MOTION
-            ============================================= */
+            ================================================= */
 
             float organicMotion(vec2 p) {
 
@@ -532,102 +475,61 @@ if (!canvas) {
             }
 
 
-            /* =============================================
-               CONVERT RIPPLE TO POND COORDINATES
-            ============================================= */
+            /* =================================================
+               RIPPLE IMPACT FIELD
+            ================================================= */
 
-            vec2 rippleToPond(
-
-                vec2 rippleUV
-
-            ) {
-
-                vec2 result =
-
-                    rippleUV -
-                    0.5;
-
-
-                result.x *=
-
-                    resolution.x /
-                    resolution.y;
-
-
-                result.y +=
-
-                    scroll *
-                    0.00022;
-
-
-                result.y *=
-                    1.55;
-
-
-                return result;
-
-            }
-
-
-            /* =============================================
-               RIPPLE FIELD
-            ============================================= */
-
-            float rippleField(
-
-                vec2 p
-
-            ) {
+            float rippleImpact(vec2 p) {
 
                 float field =
                     0.0;
 
 
                 for (
-
                     int i = 0;
-
                     i < MAX_RIPPLES;
-
                     i++
-
                 ) {
 
                     float strength =
-
                         rippleStrengths[i];
 
 
                     if (
-
                         strength > 0.0
-
                     ) {
 
                         float elapsed =
 
                             max(
-
                                 0.0,
-
                                 time -
                                 rippleStarts[i]
-
                             );
 
 
                         if (
-
                             elapsed < 12.0
-
                         ) {
 
-                            vec2 ripplePoint =
+                            /* ---------------------------------
+                               Ripple position
+                            --------------------------------- */
 
-                                rippleToPond(
+                            vec2 source =
 
-                                    ripplePositions[i]
+                                ripplePositions[i];
 
+
+                            /* ---------------------------------
+                               Distance from impact point
+                            --------------------------------- */
+
+                            float d =
+
+                                distance(
+                                    p,
+                                    source
                                 );
 
 
@@ -649,56 +551,18 @@ if (!canvas) {
 
 
                             /* ---------------------------------
-                               Distance from ripple
+                               Moving wavefront
                             --------------------------------- */
 
-                            float d =
+                            float waveDistance =
 
-                                distance(
-
-                                    p,
-
-                                    ripplePoint
-
-                                );
+                                d -
+                                radius;
 
 
                             /* ---------------------------------
-                               Wave profile
-
-                               Two closely spaced bands
-                               create a more physical
-                               crest and trough.
+                               Main ripple ring
                             --------------------------------- */
-
-                            float wavePhase =
-
-                                (
-                                    d -
-                                    radius
-                                )
-                                *
-                                42.0;
-
-
-                            float wave =
-
-                                sin(
-
-                                    wavePhase
-
-                                );
-
-
-                            /* ---------------------------------
-                               Concentrate the wave around
-                               the moving front.
-                            --------------------------------- */
-
-                            float ringWidth =
-
-                                0.105;
-
 
                             float ring =
 
@@ -706,12 +570,8 @@ if (!canvas) {
 
                                     -pow(
 
-                                        (
-                                            d -
-                                            radius
-                                        )
-                                        /
-                                        ringWidth,
+                                        waveDistance /
+                                        0.085,
 
                                         2.0
 
@@ -721,27 +581,32 @@ if (!canvas) {
 
 
                             /* ---------------------------------
-                               Secondary smaller disturbance
+                               Secondary disturbance
                             --------------------------------- */
 
                             float secondaryRadius =
 
-                                radius -
-                                0.12;
+                                max(
+                                    0.0,
+                                    radius -
+                                    0.12
+                                );
 
 
-                            float secondary =
+                            float secondaryDistance =
+
+                                d -
+                                secondaryRadius;
+
+
+                            float secondaryRing =
 
                                 exp(
 
                                     -pow(
 
-                                        (
-                                            d -
-                                            secondaryRadius
-                                        )
-                                        /
-                                        0.065,
+                                        secondaryDistance /
+                                        0.16,
 
                                         2.0
 
@@ -751,25 +616,46 @@ if (!canvas) {
 
 
                             /* ---------------------------------
-                               Natural variation
+                               Center impact
                             --------------------------------- */
 
-                            float variation =
+                            float impactFade =
 
-                                0.82 +
+                                exp(
+                                    -elapsed *
+                                    5.5
+                                );
 
-                                sin(
 
+                            float impact =
+
+                                exp(
+
+                                    -d *
                                     d *
-                                    8.0
+                                    65.0
 
                                 )
                                 *
-                                0.18;
+                                impactFade;
 
 
                             /* ---------------------------------
-                               Energy decay
+                               Wave oscillation
+                            --------------------------------- */
+
+                            float wave =
+
+                                sin(
+
+                                    waveDistance *
+                                    45.0
+
+                                );
+
+
+                            /* ---------------------------------
+                               Natural decay
                             --------------------------------- */
 
                             float decay =
@@ -777,7 +663,7 @@ if (!canvas) {
                                 exp(
 
                                     -elapsed *
-                                    0.38
+                                    0.40
 
                                 );
 
@@ -793,39 +679,21 @@ if (!canvas) {
                                 smoothstep(
 
                                     8.0,
-
                                     11.5,
-
                                     elapsed
 
                                 );
 
 
                             /* ---------------------------------
-                               Combined surface displacement
+                               Combine the disturbance
                             --------------------------------- */
-
-                            float displacement =
-
-                                (
-                                    wave *
-                                    ring *
-                                    0.78
-                                )
-
-                                +
-
-                                (
-                                    secondary *
-                                    0.22
-                                );
-
 
                             field +=
 
-                                displacement
+                                ring
                                 *
-                                variation
+                                wave
                                 *
                                 decay
                                 *
@@ -833,7 +701,31 @@ if (!canvas) {
                                 *
                                 strength
                                 *
-                                0.34;
+                                0.32;
+
+
+                            field +=
+
+                                secondaryRing
+                                *
+                                wave
+                                *
+                                decay
+                                *
+                                lifetime
+                                *
+                                strength
+                                *
+                                0.08;
+
+
+                            field +=
+
+                                impact
+                                *
+                                strength
+                                *
+                                0.16;
 
                         }
 
@@ -847,67 +739,42 @@ if (!canvas) {
             }
 
 
-            /* =============================================
-               RIPPLE CREST FIELD
-            ============================================= */
+            /* =================================================
+               RIPPLE LIGHT INTERACTION
+            ================================================= */
 
-            float rippleCrest(
+            float rippleLight(vec2 p) {
 
-                vec2 p
-
-            ) {
-
-                float crest =
+                float lightField =
                     0.0;
 
 
                 for (
-
                     int i = 0;
-
                     i < MAX_RIPPLES;
-
                     i++
-
                 ) {
 
                     float strength =
-
                         rippleStrengths[i];
 
 
                     if (
-
                         strength > 0.0
-
                     ) {
 
                         float elapsed =
 
                             max(
-
                                 0.0,
-
                                 time -
                                 rippleStarts[i]
-
                             );
 
 
                         if (
-
                             elapsed < 12.0
-
                         ) {
-
-                            vec2 ripplePoint =
-
-                                rippleToPond(
-
-                                    ripplePositions[i]
-
-                                );
-
 
                             float radius =
 
@@ -928,25 +795,25 @@ if (!canvas) {
 
                                     p,
 
-                                    ripplePoint
+                                    ripplePositions[i]
 
                                 );
 
 
-                            float ringDistance =
+                            float waveDistance =
 
                                 d -
                                 radius;
 
 
-                            float ring =
+                            float influence =
 
                                 exp(
 
                                     -pow(
 
-                                        ringDistance /
-                                        0.075,
+                                        waveDistance /
+                                        0.16,
 
                                         2.0
 
@@ -959,8 +826,8 @@ if (!canvas) {
 
                                 sin(
 
-                                    ringDistance *
-                                    38.0
+                                    waveDistance *
+                                    42.0
 
                                 );
 
@@ -982,25 +849,23 @@ if (!canvas) {
                                 smoothstep(
 
                                     8.0,
-
                                     11.5,
-
                                     elapsed
 
                                 );
 
 
-                            crest +=
+                            lightField +=
 
-                                ring
-                                *
                                 wave
+                                *
+                                influence
+                                *
+                                strength
                                 *
                                 decay
                                 *
-                                lifetime
-                                *
-                                strength;
+                                lifetime;
 
                         }
 
@@ -1009,20 +874,16 @@ if (!canvas) {
                 }
 
 
-                return crest;
+                return lightField;
 
             }
 
 
-            /* =============================================
+            /* =================================================
                TOTAL WATER HEIGHT
-            ============================================= */
+            ================================================= */
 
-            float waterHeight(
-
-                vec2 p
-
-            ) {
+            float waterHeight(vec2 p) {
 
                 float baseWater =
 
@@ -1037,31 +898,25 @@ if (!canvas) {
                     organicMotion(p);
 
 
-                float ripples =
+                float ripple =
 
-                    rippleField(p);
+                    rippleImpact(p);
 
 
                 return
 
                     baseWater
-
                     +
-
-                    ripples;
+                    ripple;
 
             }
 
 
-            /* =============================================
+            /* =================================================
                SURFACE NORMAL
-            ============================================= */
+            ================================================= */
 
-            vec3 surfaceNormal(
-
-                vec2 p
-
-            ) {
+            vec3 surfaceNormal(vec2 p) {
 
                 float e =
                     0.0025;
@@ -1115,9 +970,9 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                MOON REFLECTION
-            ============================================= */
+            ================================================= */
 
             float moonReflection(
 
@@ -1142,17 +997,15 @@ if (!canvas) {
                     mix(
 
                         0.025,
-
                         0.45,
-
                         uv.y
 
                     );
 
 
-                /* -----------------------------------------
-                   Surface distortion
-                ----------------------------------------- */
+                /* ---------------------------------------------
+                   Water surface distortion
+                --------------------------------------------- */
 
                 float surfaceDistortion =
 
@@ -1190,9 +1043,9 @@ if (!canvas) {
                     );
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
                    Moon direction
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 vec3 moonDirection =
 
@@ -1201,9 +1054,7 @@ if (!canvas) {
                         vec3(
 
                             0.0,
-
                             0.38,
-
                             1.0
 
                         )
@@ -1218,7 +1069,6 @@ if (!canvas) {
                         dot(
 
                             normal,
-
                             moonDirection
 
                         ),
@@ -1233,15 +1083,14 @@ if (!canvas) {
                     pow(
 
                         angle,
-
                         25.0
 
                     );
 
 
-                /* -----------------------------------------
-                   Organic reflection breakup
-                ----------------------------------------- */
+                /* ---------------------------------------------
+                   Organic breakup
+                --------------------------------------------- */
 
                 float breakupA =
 
@@ -1298,262 +1147,52 @@ if (!canvas) {
                     0.40;
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
+                   Convert screen position into pond position
+                --------------------------------------------- */
+
+                vec2 rippleP =
+
+                    vec2(
+
+                        uv.x -
+                        0.5,
+
+                        (
+                            1.0 -
+                            uv.y
+                        )
+                        *
+                        1.55
+                        -
+                        0.775
+
+                    );
+
+
+                /* ---------------------------------------------
                    Ripple interaction with moonlight
-                ----------------------------------------- */
+                --------------------------------------------- */
 
-                vec2 currentP =
+                float rippleInteraction =
 
-                    uv -
-                    0.5;
+                    rippleLight(
+                        rippleP
+                    );
 
-
-                currentP.x *=
-
-                    resolution.x /
-                    resolution.y;
-
-
-                currentP.y +=
-
-                    scroll *
-                    0.00022;
-
-
-                currentP.y *=
-
-                    1.55;
-
-
-                float rippleLight =
-                    0.0;
-
-
-                float rippleCrestLight =
-                    0.0;
-
-
-                for (
-
-                    int i = 0;
-
-                    i < MAX_RIPPLES;
-
-                    i++
-
-                ) {
-
-                    float strength =
-
-                        rippleStrengths[i];
-
-
-                    if (
-
-                        strength > 0.0
-
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
-
-
-                        if (
-
-                            elapsed < 12.0
-
-                        ) {
-
-                            vec2 ripplePoint =
-
-                                rippleToPond(
-
-                                    ripplePositions[i]
-
-                                );
-
-
-                            float radius =
-
-                                (
-                                    1.0 -
-                                    exp(
-                                        -elapsed *
-                                        0.55
-                                    )
-                                )
-                                *
-                                2.25;
-
-
-                            float d =
-
-                                distance(
-
-                                    currentP,
-
-                                    ripplePoint
-
-                                );
-
-
-                            float ringDistance =
-
-                                d -
-                                radius;
-
-
-                            /* ---------------------------------
-                               Main ripple highlight
-                            --------------------------------- */
-
-                            float influence =
-
-                                exp(
-
-                                    -pow(
-
-                                        ringDistance /
-                                        0.12,
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float wave =
-
-                                sin(
-
-                                    ringDistance *
-                                    42.0
-
-                                );
-
-
-                            /* ---------------------------------
-                               Sharp crest
-                            --------------------------------- */
-
-                            float crest =
-
-                                exp(
-
-                                    -pow(
-
-                                        ringDistance /
-                                        0.055,
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    0.38
-
-                                );
-
-
-                            float lifetime =
-
-                                1.0 -
-
-                                smoothstep(
-
-                                    8.0,
-
-                                    11.5,
-
-                                    elapsed
-
-                                );
-
-
-                            rippleLight +=
-
-                                wave
-                                *
-                                influence
-                                *
-                                strength
-                                *
-                                decay
-                                *
-                                lifetime;
-
-
-                            rippleCrestLight +=
-
-                                crest
-                                *
-                                strength
-                                *
-                                decay
-                                *
-                                lifetime;
-
-                        }
-
-                    }
-
-                }
-
-
-                /* -----------------------------------------
-                   Make moonlight respond to ripple
-                ----------------------------------------- */
 
                 breakup +=
 
-                    rippleLight *
-                    0.30;
+                    rippleInteraction *
+                    0.22;
 
 
                 sparkle *=
 
                     1.0 +
 
-                    rippleLight *
-                    0.16;
-
-
-                /* -----------------------------------------
-                   Add sharp reflected light to the
-                   wave crest.
-                ----------------------------------------- */
-
-                float crestHighlight =
-
-                    max(
-
-                        rippleCrestLight,
-
-                        0.0
-
-                    );
-
-
-                sparkle +=
-
-                    crestHighlight *
-                    0.45;
+                    rippleInteraction *
+                    0.10;
 
 
                 breakup =
@@ -1573,10 +1212,8 @@ if (!canvas) {
 
                     smoothstep(
 
-                        0.26,
-
+                        0.28,
                         0.72,
-
                         breakup
 
                     );
@@ -1593,9 +1230,9 @@ if (!canvas) {
             }
 
 
-            /* =============================================
+            /* =================================================
                MAIN IMAGE
-            ============================================= */
+            ================================================= */
 
             void main() {
 
@@ -1606,9 +1243,9 @@ if (!canvas) {
                     resolution;
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
                    Pond coordinates
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 vec2 p =
 
@@ -1633,36 +1270,30 @@ if (!canvas) {
                     1.55;
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
                    Water surface
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 float surface =
 
                     waterHeight(p);
 
 
-                /* -----------------------------------------
-                   Surface normal
-                ----------------------------------------- */
-
                 vec3 normal =
 
                     surfaceNormal(p);
 
 
-                /* -----------------------------------------
-                   Base water colors
-                ----------------------------------------- */
+                /* ---------------------------------------------
+                   Base water
+                --------------------------------------------- */
 
                 vec3 deepWater =
 
                     vec3(
 
                         0.0015,
-
                         0.010,
-
                         0.020
 
                     );
@@ -1673,9 +1304,7 @@ if (!canvas) {
                     vec3(
 
                         0.004,
-
                         0.032,
-
                         0.055
 
                     );
@@ -1696,7 +1325,6 @@ if (!canvas) {
                         variation,
 
                         0.0,
-
                         1.0
 
                     );
@@ -1715,9 +1343,9 @@ if (!canvas) {
                     );
 
 
-                /* -----------------------------------------
-                   General surface highlights
-                ----------------------------------------- */
+                /* ---------------------------------------------
+                   Surface highlights
+                --------------------------------------------- */
 
                 float highlight =
 
@@ -1741,9 +1369,7 @@ if (!canvas) {
                     vec3(
 
                         0.012,
-
                         0.035,
-
                         0.055
 
                     )
@@ -1753,54 +1379,15 @@ if (!canvas) {
                     highlight;
 
 
-                /* -----------------------------------------
-                   Ripple crest illumination
-                ----------------------------------------- */
-
-                float rippleCrestValue =
-
-                    rippleCrest(p);
-
-
-                float crestBrightness =
-
-                    max(
-
-                        rippleCrestValue,
-
-                        0.0
-
-                    );
-
-
-                color +=
-
-                    vec3(
-
-                        0.015,
-
-                        0.040,
-
-                        0.070
-
-                    )
-
-                    *
-                    crestBrightness
-                    *
-                    0.35;
-
-
-                /* -----------------------------------------
+                /* ---------------------------------------------
                    Moon reflection
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 float reflection =
 
                     moonReflection(
 
                         uv,
-
                         normal
 
                     );
@@ -1811,9 +1398,7 @@ if (!canvas) {
                     vec3(
 
                         0.72,
-
                         0.87,
-
                         1.0
 
                     );
@@ -1822,19 +1407,15 @@ if (!canvas) {
                 color +=
 
                     moonColor
-
                     *
-
                     reflection
-
                     *
-
                     1.90;
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
                    Ambient moon illumination
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 float ambientMoon =
 
@@ -1861,9 +1442,7 @@ if (!canvas) {
                     vec3(
 
                         0.022,
-
                         0.045,
-
                         0.070
 
                     )
@@ -1873,9 +1452,108 @@ if (!canvas) {
                     ambientMoon;
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
+                   Subtle impact illumination
+                --------------------------------------------- */
+
+                float impactGlow =
+
+                    0.0;
+
+
+                for (
+                    int i = 0;
+                    i < MAX_RIPPLES;
+                    i++
+                ) {
+
+                    float strength =
+                        rippleStrengths[i];
+
+
+                    if (
+                        strength > 0.0
+                    ) {
+
+                        float elapsed =
+
+                            max(
+
+                                0.0,
+
+                                time -
+                                rippleStarts[i]
+
+                            );
+
+
+                        if (
+                            elapsed < 1.0
+                        ) {
+
+                            float d =
+
+                                distance(
+
+                                    p,
+
+                                    ripplePositions[i]
+
+                                );
+
+
+                            float glow =
+
+                                exp(
+
+                                    -d *
+                                    d *
+                                    45.0
+
+                                )
+
+                                *
+
+                                exp(
+
+                                    -elapsed *
+                                    4.0
+
+                                );
+
+
+                            impactGlow +=
+
+                                glow *
+                                strength;
+
+                        }
+
+                    }
+
+                }
+
+
+                color +=
+
+                    vec3(
+
+                        0.025,
+                        0.060,
+                        0.085
+
+                    )
+
+                    *
+
+                    impactGlow
+                    *
+                    0.35;
+
+
+                /* ---------------------------------------------
                    Cinematic vignette
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 float vignette =
 
@@ -1884,7 +1562,6 @@ if (!canvas) {
                     smoothstep(
 
                         0.30,
-
                         0.88,
 
                         distance(
@@ -1894,7 +1571,6 @@ if (!canvas) {
                             vec2(
 
                                 0.5,
-
                                 0.43
 
                             )
@@ -1909,17 +1585,15 @@ if (!canvas) {
                     mix(
 
                         0.58,
-
                         1.0,
-
                         vignette
 
                     );
 
 
-                /* -----------------------------------------
+                /* ---------------------------------------------
                    Final contrast
-                ----------------------------------------- */
+                --------------------------------------------- */
 
                 color =
 
@@ -1941,7 +1615,6 @@ if (!canvas) {
                     vec4(
 
                         color,
-
                         1.0
 
                     );
@@ -1951,9 +1624,9 @@ if (!canvas) {
         `;
 
 
-        /* =================================================
+        /* =====================================================
            SHADER COMPILATION
-        ================================================= */
+        ===================================================== */
 
         function createShader(
 
@@ -1993,7 +1666,6 @@ if (!canvas) {
                 !gl.getShaderParameter(
 
                     shader,
-
                     gl.COMPILE_STATUS
 
                 )
@@ -2048,7 +1720,6 @@ if (!canvas) {
         if (
 
             !vertexShader ||
-
             !fragmentShader
 
         ) {
@@ -2074,7 +1745,6 @@ if (!canvas) {
             gl.attachShader(
 
                 program,
-
                 vertexShader
 
             );
@@ -2083,7 +1753,6 @@ if (!canvas) {
             gl.attachShader(
 
                 program,
-
                 fragmentShader
 
             );
@@ -2101,7 +1770,6 @@ if (!canvas) {
                 !gl.getProgramParameter(
 
                     program,
-
                     gl.LINK_STATUS
 
                 )
@@ -2142,7 +1810,6 @@ if (!canvas) {
                 gl.bindBuffer(
 
                     gl.ARRAY_BUFFER,
-
                     buffer
 
                 );
@@ -2182,7 +1849,6 @@ if (!canvas) {
                     gl.getAttribLocation(
 
                         program,
-
                         "position"
 
                     );
@@ -2221,7 +1887,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "resolution"
 
                     );
@@ -2232,7 +1897,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "time"
 
                     );
@@ -2243,7 +1907,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "scroll"
 
                     );
@@ -2318,7 +1981,7 @@ if (!canvas) {
 
 
                     /* -----------------------------------------
-                       Browser → canvas coordinates
+                       Convert browser position to canvas position
                     ----------------------------------------- */
 
                     const localX =
@@ -2334,23 +1997,58 @@ if (!canvas) {
 
 
                     /* -----------------------------------------
-                       Canvas → normalized WebGL coordinates
+                       Normalized screen coordinates
                     ----------------------------------------- */
 
-                    const rippleX =
+                    const uvX =
 
                         localX /
                         rect.width;
 
 
-                    const rippleY =
+                    const uvY =
 
                         1.0 -
-
                         (
                             localY /
                             rect.height
                         );
+
+
+                    /* -----------------------------------------
+                       Convert into the same coordinate system
+                       used by the shader.
+                    ----------------------------------------- */
+
+                    let rippleX =
+
+                        uvX -
+                        0.5;
+
+
+                    let rippleY =
+
+                        uvY -
+                        0.5;
+
+
+                    /* -----------------------------------------
+                       Match shader aspect ratio
+                    ----------------------------------------- */
+
+                    rippleX *=
+
+                        rect.width /
+                        rect.height;
+
+
+                    /* -----------------------------------------
+                       Match shader vertical scale
+                    ----------------------------------------- */
+
+                    rippleY *=
+
+                        1.55;
 
 
                     const now =
@@ -2361,7 +2059,7 @@ if (!canvas) {
 
 
                     /* -----------------------------------------
-                       Store ripple
+                       Add ripple
                     ----------------------------------------- */
 
                     ripples.push({
@@ -2396,17 +2094,6 @@ if (!canvas) {
 
                     }
 
-
-                    console.log(
-
-                        "RIPPLE UV:",
-
-                        rippleX,
-
-                        rippleY
-
-                    );
-
                 }
 
 
@@ -2427,10 +2114,13 @@ if (!canvas) {
                         );
 
 
+                        /* -------------------------------------
+                           Ignore right mouse button
+                        ------------------------------------- */
+
                         if (
 
                             event.button !== 0 &&
-
                             event.pointerType !== "touch"
 
                         ) {
@@ -2567,7 +2257,7 @@ if (!canvas) {
 
 
                     /* -----------------------------------------
-                       Prepare uniform arrays
+                       Prepare ripple arrays
                     ----------------------------------------- */
 
                     const positions =
@@ -2669,7 +2359,7 @@ if (!canvas) {
 
 
                     /* -----------------------------------------
-                       Send uniforms
+                       Send uniforms to GPU
                     ----------------------------------------- */
 
                     gl.uniform2f(
@@ -2729,7 +2419,7 @@ if (!canvas) {
 
 
                     /* -----------------------------------------
-                       Draw
+                       Draw pond
                     ----------------------------------------- */
 
                     gl.drawArrays(
@@ -2751,10 +2441,6 @@ if (!canvas) {
 
                 }
 
-
-                /* =============================================
-                   START
-                ============================================= */
 
                 requestAnimationFrame(
 
