@@ -808,7 +808,7 @@ h1 {
 <script>
 
 /* =========================================================
-   PROCEDURAL WATER
+   VERSION 2 — NATURAL MOONLIT WATER
 ========================================================= */
 
 const canvas =
@@ -822,12 +822,68 @@ const ctx =
     );
 
 
-let width;
-let height;
+let width = 0;
+let height = 0;
 
-let waves = [];
+let time = 0;
 
-const waveCount = 110;
+
+/* =========================================================
+   WATER SETTINGS
+========================================================= */
+
+const WATER = {
+
+    /* Overall movement */
+
+    speed:
+        0.18,
+
+
+    /* Large surface movement */
+
+    largeWave:
+
+        {
+            amplitude: 18,
+            frequency: 0.0022,
+            speed: 0.18
+        },
+
+
+    /* Medium surface movement */
+
+    mediumWave:
+
+        {
+            amplitude: 9,
+            frequency: 0.006,
+            speed: 0.31
+        },
+
+
+    /* Small surface movement */
+
+    smallWave:
+
+        {
+            amplitude: 4,
+            frequency: 0.018,
+            speed: 0.47
+        },
+
+
+    /* Tiny surface detail */
+
+    microWave:
+
+        {
+            amplitude: 2,
+            frequency: 0.045,
+            speed: 0.63
+        }
+
+};
 
 
 /* =========================================================
@@ -836,15 +892,53 @@ const waveCount = 110;
 
 function resizeCanvas() {
 
-    width =
-        canvas.width =
-        window.innerWidth;
-
-    height =
-        canvas.height =
+    const pond =
         document.getElementById(
             "pond"
-        ).offsetHeight;
+        );
+
+
+    width =
+        window.innerWidth;
+
+
+    height =
+        pond.offsetHeight;
+
+
+    const pixelRatio =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+
+    canvas.width =
+        width *
+        pixelRatio;
+
+
+    canvas.height =
+        height *
+        pixelRatio;
+
+
+    canvas.style.width =
+        width + "px";
+
+
+    canvas.style.height =
+        height + "px";
+
+
+    ctx.setTransform(
+        pixelRatio,
+        0,
+        0,
+        pixelRatio,
+        0,
+        0
+    );
 
 }
 
@@ -854,69 +948,117 @@ window.addEventListener(
     resizeCanvas
 );
 
+
 resizeCanvas();
 
 
 /* =========================================================
-   CREATE WATER WAVES
+   SMOOTH WAVE FUNCTION
 ========================================================= */
 
-for (
-    let i = 0;
-    i < waveCount;
-    i++
+function wave(
+    x,
+    y,
+    frequency,
+    speed,
+    offset
 ) {
 
-    waves.push({
+    return Math.sin(
 
-        y:
-            Math.random()
-            * height,
+        x * frequency
 
-        amplitude:
-            2 +
-            Math.random() * 8,
+        +
 
-        wavelength:
-            100 +
-            Math.random() * 280,
+        y * frequency * 0.35
 
-        speed:
-            0.15 +
-            Math.random() * 0.35,
+        +
 
-        phase:
-            Math.random()
-            * Math.PI
-            * 2,
+        time * speed
 
-        opacity:
-            0.03 +
-            Math.random() * 0.08
+        +
 
-    });
+        offset
+
+    );
 
 }
 
 
 /* =========================================================
-   DRAW WATER
+   SURFACE HEIGHT
 ========================================================= */
 
-let time = 0;
+function surface(
+
+    x,
+    y
+
+) {
+
+    const large =
+        wave(
+            x,
+            y,
+            WATER.largeWave.frequency,
+            WATER.largeWave.speed,
+            0
+        )
+        *
+        WATER.largeWave.amplitude;
 
 
-function drawWater() {
+    const medium =
+        wave(
+            x + 500,
+            y,
+            WATER.mediumWave.frequency,
+            WATER.mediumWave.speed,
+            2.4
+        )
+        *
+        WATER.mediumWave.amplitude;
 
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
+
+    const small =
+        wave(
+            x,
+            y + 900,
+            WATER.smallWave.frequency,
+            WATER.smallWave.speed,
+            4.7
+        )
+        *
+        WATER.smallWave.amplitude;
+
+
+    const micro =
+        wave(
+            x + 1700,
+            y + 300,
+            WATER.microWave.frequency,
+            WATER.microWave.speed,
+            1.2
+        )
+        *
+        WATER.microWave.amplitude;
+
+
+    return (
+        large +
+        medium +
+        small +
+        micro
     );
 
+}
 
-    /* Deep water */
+
+/* =========================================================
+   WATER BASE
+========================================================= */
+
+function drawWaterBase() {
 
     const gradient =
         ctx.createLinearGradient(
@@ -929,18 +1071,21 @@ function drawWater() {
 
     gradient.addColorStop(
         0,
-        "#071c30"
+        "#071c2e"
     );
 
-    gradient.addColorStop(
-        0.35,
-        "#041625"
-    );
 
     gradient.addColorStop(
-        0.70,
-        "#02111d"
+        0.30,
+        "#041726"
     );
+
+
+    gradient.addColorStop(
+        0.65,
+        "#02121e"
+    );
+
 
     gradient.addColorStop(
         1,
@@ -959,120 +1104,191 @@ function drawWater() {
         height
     );
 
+}
 
-    /* Individual waves */
+
+/* =========================================================
+   IRREGULAR WATER HIGHLIGHTS
+========================================================= */
+
+function drawHighlights() {
+
+    const spacing =
+        14;
+
 
     for (
-        let i = 0;
-        i < waves.length;
-        i++
+        let y = -20;
+        y < height + 20;
+        y += spacing
     ) {
-
-        const wave =
-            waves[i];
-
-
-        ctx.beginPath();
 
 
         for (
-            let x = -50;
-            x < width + 50;
-            x += 8
+            let x = -20;
+            x < width + 20;
+            x += spacing
         ) {
 
-            const y =
-                wave.y
-                +
-                Math.sin(
-                    (
-                        x /
-                        wave.wavelength
-                    )
-                    +
-                    wave.phase
-                    +
-                    time
-                    * wave.speed
-                )
-                *
-                wave.amplitude;
 
+            const value =
+                surface(
+                    x,
+                    y
+                );
+
+
+            /*
+             * Convert the wave height
+             * into a highlight value.
+             */
+
+            let brightness =
+                (
+                    value + 30
+                )
+                /
+                60;
+
+
+            brightness =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        brightness
+                    )
+                );
+
+
+            /*
+             * Only draw the brightest
+             * parts of the surface.
+             */
 
             if (
-                x === -50
+                brightness >
+                0.63
             ) {
 
-                ctx.moveTo(
+
+                const size =
+                    1 +
+                    brightness * 3;
+
+
+                const alpha =
+                    (
+                        brightness -
+                        0.63
+                    )
+                    *
+                    0.18;
+
+
+                ctx.beginPath();
+
+
+                ctx.ellipse(
+
                     x,
-                    y
+
+                    y,
+
+                    size * 3.2,
+
+                    size * 0.65,
+
+                    -0.08,
+
+                    0,
+
+                    Math.PI * 2
+
                 );
 
-            }
 
-            else {
+                ctx.fillStyle =
 
-                ctx.lineTo(
-                    x,
-                    y
-                );
+                    `rgba(
+                        155,
+                        205,
+                        235,
+                        ${alpha}
+                    )`;
+
+
+                ctx.fill();
 
             }
 
         }
 
-
-        ctx.strokeStyle =
-            `rgba(
-                150,
-                205,
-                235,
-                ${wave.opacity}
-            )`;
-
-
-        ctx.lineWidth =
-            0.6 +
-            Math.random()
-            * 0.8;
-
-
-        ctx.stroke();
-
     }
 
+}
 
-    /* Moon reflection */
 
-    const reflection =
+/* =========================================================
+   MOONLIGHT ON WATER
+========================================================= */
+
+function drawMoonlight() {
+
+    const moonX =
+        width * 0.50;
+
+
+    const moonY =
+        height * 0.035;
+
+
+    /*
+     * Broad atmospheric glow
+     */
+
+    const glow =
         ctx.createRadialGradient(
-            width / 2,
-            height * 0.05,
-            10,
-            width / 2,
-            height * 0.05,
-            600
+
+            moonX,
+            moonY,
+
+            20,
+
+            moonX,
+            moonY,
+
+            width * 0.65
+
         );
 
 
-    reflection.addColorStop(
+    glow.addColorStop(
         0,
-        "rgba(220,240,255,0.13)"
+        "rgba(220,240,255,0.12)"
     );
 
-    reflection.addColorStop(
-        0.25,
-        "rgba(150,200,240,0.06)"
+
+    glow.addColorStop(
+        0.22,
+        "rgba(150,200,235,0.055)"
     );
 
-    reflection.addColorStop(
+
+    glow.addColorStop(
+        0.50,
+        "rgba(90,150,200,0.018)"
+    );
+
+
+    glow.addColorStop(
         1,
-        "rgba(80,140,190,0)"
+        "rgba(0,0,0,0)"
     );
 
 
     ctx.fillStyle =
-        reflection;
+        glow;
 
 
     ctx.fillRect(
@@ -1083,18 +1299,256 @@ function drawWater() {
     );
 
 
-    time +=
-        0.008;
+    /*
+     * Broken moon reflection
+     */
+
+    const reflectionWidth =
+        Math.min(
+            width * 0.32,
+            430
+        );
 
 
-    requestAnimationFrame(
-        drawWater
+    const center =
+        width / 2;
+
+
+    for (
+        let i = 0;
+        i < 260;
+        i++
+    ) {
+
+
+        const y =
+            80 +
+            i *
+            (
+                height /
+                290
+            );
+
+
+        /*
+         * Reflection gets wider
+         * as it moves away.
+         */
+
+        const spread =
+            15 +
+            (
+                i /
+                260
+            )
+            *
+            reflectionWidth;
+
+
+        /*
+         * Surface movement makes
+         * every reflection segment
+         * different.
+         */
+
+        const offset =
+            surface(
+                center,
+                y
+            );
+
+
+        const x =
+            center +
+            offset * 2;
+
+
+        const segmentWidth =
+            12 +
+            Math.random()
+            *
+            (
+                spread *
+                0.35
+            );
+
+
+        /*
+         * Fade reflection
+         * toward the bottom.
+         */
+
+        const fade =
+            Math.max(
+                0,
+                1 -
+                (
+                    y /
+                    height
+                )
+                *
+                0.9
+            );
+
+
+        /*
+         * Random gaps make the
+         * reflection look broken
+         * by waves.
+         */
+
+        if (
+            Math.random()
+            >
+            0.43
+        ) {
+
+            continue;
+
+        }
+
+
+        const alpha =
+            (
+                0.04 +
+                Math.random()
+                *
+                0.12
+            )
+            *
+            fade;
+
+
+        ctx.beginPath();
+
+
+        ctx.ellipse(
+
+            x,
+
+            y,
+
+            segmentWidth,
+
+            1.1 +
+            Math.random() * 2,
+
+            0,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+
+        ctx.fillStyle =
+
+            `rgba(
+                225,
+                242,
+                255,
+                ${alpha}
+            )`;
+
+
+        ctx.fill();
+
+    }
+
+}
+
+
+/* =========================================================
+   ATMOSPHERIC VIGNETTE
+========================================================= */
+
+function drawVignette() {
+
+    const vignette =
+        ctx.createRadialGradient(
+
+            width / 2,
+            height * 0.25,
+            width * 0.15,
+
+            width / 2,
+            height * 0.40,
+            width * 0.80
+
+        );
+
+
+    vignette.addColorStop(
+        0,
+        "rgba(0,0,0,0)"
+    );
+
+
+    vignette.addColorStop(
+        0.65,
+        "rgba(0,5,12,0.08)"
+    );
+
+
+    vignette.addColorStop(
+        1,
+        "rgba(0,3,8,0.42)"
+    );
+
+
+    ctx.fillStyle =
+        vignette;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
     );
 
 }
 
 
-drawWater();
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animateWater() {
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    drawWaterBase();
+
+
+    drawHighlights();
+
+
+    drawMoonlight();
+
+
+    drawVignette();
+
+
+    time +=
+        0.016;
+
+
+    requestAnimationFrame(
+        animateWater
+    );
+
+}
+
+
+animateWater();
 
 
 /* =========================================================
