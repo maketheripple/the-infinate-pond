@@ -514,7 +514,7 @@ if (!canvas) {
                  */
 
                 float width =
-                    0.045;
+                    0.075;
 
 
                 /*
@@ -582,7 +582,7 @@ if (!canvas) {
                     *
                     rippleStrength
                     *
-                    0.20;
+                    0.75;
 
             }
 
@@ -1351,9 +1351,87 @@ if (!canvas) {
                 ============================================= */
 
                 function createRipple(
-                    clientX,
-                    clientY
-                ) {
+    clientX,
+    clientY
+) {
+
+    console.log(
+        "INFINITE POND RIPPLE:",
+        clientX,
+        clientY
+    );
+
+
+    /*
+     * Convert browser coordinates
+     * to normalized coordinates.
+     */
+
+    const uvX =
+
+        clientX /
+        window.innerWidth;
+
+
+    const uvY =
+
+        1.0 -
+        (
+            clientY /
+            window.innerHeight
+        );
+
+
+    /*
+     * Convert to pond coordinates.
+     */
+
+    rippleX =
+
+        uvX -
+        0.5;
+
+
+    rippleY =
+
+        uvY -
+        0.5;
+
+
+    /*
+     * Match the shader's aspect ratio.
+     */
+
+    rippleX *=
+
+        window.innerWidth /
+        window.innerHeight;
+
+
+    /*
+     * Match the pond's vertical scale.
+     */
+
+    rippleY *=
+        1.55;
+
+
+    rippleStart =
+
+        performance.now()
+        *
+        0.001;
+
+
+    /*
+     * Make the first test deliberately
+     * strong and obvious.
+     */
+
+    rippleStrength =
+        3.0;
+
+}
 
                     /*
                      * Convert browser coordinates
@@ -1433,11 +1511,40 @@ if (!canvas) {
                    mobile devices from creating two ripples.
                 ============================================= */
 
-                document.addEventListener(
+                window.addEventListener(
 
-                    "pointerdown",
+    "pointerdown",
 
-                    function(event) {
+    function(event) {
+
+        console.log(
+            "POINTER DETECTED"
+        );
+
+
+        if (
+            event.button !== 0 &&
+            event.pointerType !== "touch"
+        ) {
+
+            return;
+
+        }
+
+
+        createRipple(
+
+            event.clientX,
+
+            event.clientY
+
+        );
+
+    },
+
+    true
+
+);
 
                         /*
                          * Ignore right-click.
