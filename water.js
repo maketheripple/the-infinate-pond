@@ -744,10 +744,10 @@ if (!canvas) {
                 ----------------------------------------- */
 
                 float d =
-                    distance(
-                        p,
-                        ripplePositions[i]
-                    );
+    distance(
+        p,
+        ripplePositions[i] - 0.5
+    );
 
 
                 /* -----------------------------------------
@@ -2068,18 +2068,12 @@ const uvY =
     );
 
 
-/*
- * Convert to pond coordinates.
- */
-
 let rippleX =
-    uvX -
-    0.5;
+    uvX;
 
 
 let rippleY =
-    uvY -
-    0.5;
+    uvY;
 
 
 /*
