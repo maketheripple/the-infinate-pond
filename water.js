@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.5.0 — NATURAL WATER SURFACE ENHANCEMENT
+   VERSION 8.5.1 — NATURAL WATER MOVEMENT
    ========================================================= */
 
 
@@ -245,7 +245,11 @@ if (!canvas) {
                CALM MOONLIT POND
 
                Very slow, broad undulation.
-               The water should feel almost still.
+
+               VERSION 8.5.1:
+
+               Slightly more organic movement is introduced
+               while keeping the pond extremely calm.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -422,10 +426,9 @@ if (!canvas) {
 
                VERSION 8.5.0
 
-               Adds a layered, organic surface variation.
+               Layered organic surface variation.
 
-               This affects appearance only and is NOT used
-               to create ripple displacement.
+               The fine layers remain appearance-only.
             ================================================= */
 
             float naturalWaterSurface(vec2 p) {
@@ -443,10 +446,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Very broad, slow surface variation.
-                --------------------------------------------- */
-
                 float broadA =
 
                     fbm(
@@ -458,13 +457,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Medium-scale surface variation.
-
-                   This adds gentle variation without creating
-                   visible repeating wave patterns.
-                --------------------------------------------- */
 
                 float broadB =
 
@@ -478,13 +470,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Fine surface variation.
-
-                   Kept extremely restrained so the pond remains
-                   calm rather than becoming noisy.
-                --------------------------------------------- */
 
                 float fine =
 
@@ -503,12 +488,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Combine the layers.
-
-                   Broad movement dominates.
-                --------------------------------------------- */
 
                 float surfaceVariation =
 
@@ -539,6 +518,106 @@ if (!canvas) {
 
 
             /* =================================================
+               NATURAL WATER MOVEMENT
+
+               VERSION 8.5.1
+
+               This is the new physical movement layer.
+
+               It is intentionally separate from the
+               appearance-only naturalWaterSurface() layer.
+
+               The movement is:
+
+               • broad
+               • slow
+               • non-repeating
+               • extremely low amplitude
+
+               It should make the pond feel alive without
+               looking like a wave simulator.
+            ================================================= */
+
+            float naturalWaterMovement(vec2 p) {
+
+                vec2 movementDrift =
+
+                    vec2(
+
+                        time *
+                        0.006,
+
+                        -time *
+                        0.004
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Very broad organic movement.
+                --------------------------------------------- */
+
+                float broadA =
+
+                    fbm(
+
+                        p *
+                        0.30
+                        +
+                        movementDrift
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Second movement layer travelling in a
+                   slightly different direction.
+                --------------------------------------------- */
+
+                float broadB =
+
+                    fbm(
+
+                        p *
+                        0.52
+                        -
+                        movementDrift *
+                        1.15
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Blend the two broad fields.
+
+                   Keeping this weighted heavily toward the
+                   broadest layer prevents visible texture.
+                --------------------------------------------- */
+
+                float movement =
+
+                    broadA *
+                    0.68
+
+                    +
+
+                    broadB *
+                    0.32;
+
+
+                return
+
+                    (
+                        movement -
+                        0.5
+                    )
+                    *
+                    0.018;
+
+            }
+
+
+            /* =================================================
                RIPPLE INTERFERENCE
 
                Disabled.
@@ -557,10 +636,9 @@ if (!canvas) {
             /* =================================================
                IMPACT DISPLACEMENT
 
-               The ONLY active ripple displacement.
+               The ONLY click-generated ripple displacement.
 
-               Ripple polarity is preserved from the working
-               8.4.9 version.
+               Ripple polarity is preserved from 8.4.9.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -680,6 +758,10 @@ if (!canvas) {
                RIPPLE MICRO-WAVES
 
                Disabled.
+
+               This remains disabled so the new natural
+               movement cannot accidentally create the old
+               secondary ripple effect.
             ================================================= */
 
             float rippleMicroWaves(vec2 p) {
@@ -692,11 +774,14 @@ if (!canvas) {
             /* =================================================
                TOTAL WATER HEIGHT
 
-               Moonlight, clouds and visual background
-               effects are NOT included here.
+               VERSION 8.5.1
 
-               This prevents them from generating
-               additional physical ripples.
+               Natural movement is now part of the physical
+               surface height.
+
+               Natural appearance remains separate.
+
+               Click ripples remain independent.
             ================================================= */
 
             float waterHeight(vec2 p) {
@@ -712,6 +797,11 @@ if (!canvas) {
                     +
 
                     organicMotion(p);
+
+
+                float naturalMovement =
+
+                    naturalWaterMovement(p);
 
 
                 float interference =
@@ -732,6 +822,10 @@ if (!canvas) {
                 return
 
                     baseWater
+
+                    +
+
+                    naturalMovement
 
                     +
 
@@ -1219,6 +1313,10 @@ if (!canvas) {
                     1.55;
 
 
+                /* ---------------------------------------------
+                   Actual water surface
+                --------------------------------------------- */
+
                 float surface =
 
                     waterHeight(p);
@@ -1265,6 +1363,9 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    Natural surface appearance
+
+                   This remains separate from the physical
+                   movement so we can tune the two independently.
                 --------------------------------------------- */
 
                 float naturalSurface =
@@ -2365,4 +2466,3 @@ if (!canvas) {
     }
 
 }
-
