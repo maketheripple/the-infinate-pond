@@ -1,6 +1,7 @@
+```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.8 — RIPPLE ORIENTATION CORRECTION
+   VERSION 8.5.0 — NATURAL WATER SURFACE ENHANCEMENT
    ========================================================= */
 
 
@@ -420,10 +421,12 @@ if (!canvas) {
             /* =================================================
                NATURAL WATER SURFACE
 
-               Appearance-only variation.
+               VERSION 8.5.0
 
-               This is intentionally NOT used for ripple
-               displacement.
+               Adds a layered, organic surface variation.
+
+               This affects appearance only and is NOT used
+               to create ripple displacement.
             ================================================= */
 
             float naturalWaterSurface(vec2 p) {
@@ -433,58 +436,105 @@ if (!canvas) {
                     vec2(
 
                         time *
-                        0.003,
+                        0.0025,
 
                         -time *
-                        0.002
+                        0.0018
 
                     );
 
+
+                /* ---------------------------------------------
+                   Very broad, slow surface variation.
+                --------------------------------------------- */
 
                 float broadA =
 
                     fbm(
 
                         p *
-                        0.42
+                        0.36
                         +
                         slowDrift
 
                     );
 
 
+                /* ---------------------------------------------
+                   Medium-scale surface variation.
+
+                   This adds gentle variation without creating
+                   visible repeating wave patterns.
+                --------------------------------------------- */
+
                 float broadB =
 
                     fbm(
 
                         p *
-                        0.78
+                        0.68
                         -
                         slowDrift *
-                        1.2
+                        1.35
 
                     );
 
 
-                float broadVariation =
+                /* ---------------------------------------------
+                   Fine surface variation.
+
+                   Kept extremely restrained so the pond remains
+                   calm rather than becoming noisy.
+                --------------------------------------------- */
+
+                float fine =
+
+                    fbm(
+
+                        p *
+                        1.35
+                        +
+                        slowDrift *
+                        0.65
+                        +
+                        vec2(
+                            4.7,
+                            8.2
+                        )
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Combine the layers.
+
+                   Broad movement dominates.
+                --------------------------------------------- */
+
+                float surfaceVariation =
 
                     broadA *
-                    0.70
+                    0.58
 
                     +
 
                     broadB *
-                    0.30;
+                    0.30
+
+                    +
+
+                    fine *
+                    0.12;
 
 
                 return
 
                     (
-                        broadVariation -
+                        surfaceVariation -
                         0.5
                     )
                     *
-                    0.055;
+                    0.060;
 
             }
 
@@ -510,11 +560,8 @@ if (!canvas) {
 
                The ONLY active ripple displacement.
 
-               8.4.8 restores the known-good 8.4.6
-               displacement polarity.
-
-               Ripple orientation is corrected through
-               the surface normal instead.
+               Ripple polarity is preserved from the working
+               8.4.9 version.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -616,7 +663,7 @@ if (!canvas) {
                                 *
                                 strength
                                 *
-                                0.075;
+                                -0.075;
 
                         }
 
@@ -704,14 +751,6 @@ if (!canvas) {
 
             /* =================================================
                SURFACE NORMAL
-
-               VERSION 8.4.8 ORIENTATION CORRECTION
-
-               The water displacement itself remains unchanged.
-
-               Only the interpretation of the surface slope is
-               reversed so the lighting reads the ripple from
-               the opposite physical orientation.
             ================================================= */
 
             vec3 surfaceNormal(vec2 p) {
@@ -755,9 +794,9 @@ if (!canvas) {
 
                     vec3(
 
-                        x - center,
+                        center - x,
 
-                        y - center,
+                        center - y,
 
                         e
 
@@ -1181,10 +1220,6 @@ if (!canvas) {
                     1.55;
 
 
-                /* ---------------------------------------------
-                   Actual water surface
-                --------------------------------------------- */
-
                 float surface =
 
                     waterHeight(p);
@@ -1197,8 +1232,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    BASE WATER
-
-                   Deliberately visible deep blue.
                 --------------------------------------------- */
 
                 vec3 deepWater =
@@ -1434,8 +1467,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    AMBIENT MOONLIGHT
-
-                   Broad illumination toward the top center.
                 --------------------------------------------- */
 
                 float upperLight =
@@ -1492,8 +1523,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    CINEMATIC VIGNETTE
-
-                   Kept restrained so the pond remains visible.
                 --------------------------------------------- */
 
                 float vignette =
@@ -1917,6 +1946,11 @@ if (!canvas) {
                         rect.width;
 
 
+                    /* -----------------------------------------
+                       Browser Y coordinates are inverted for
+                       WebGL fragment coordinates.
+                    ----------------------------------------- */
+
                     const uvY =
 
                         localY /
@@ -1986,8 +2020,6 @@ if (!canvas) {
 
                 /* =============================================
                    POINTER RIPPLE
-
-                   Preserved from the known-good version.
                 ============================================= */
 
                 window.addEventListener(
@@ -2334,3 +2366,4 @@ if (!canvas) {
     }
 
 }
+
