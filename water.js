@@ -1,7 +1,7 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.4 — REMOVE MIRRORED RIPPLE REFLECTION
-   BASED ON VERSION 8.4.1 — IMPACT DISPLACEMENT
+   VERSION 8.4.5 — NATURAL WATER VARIATION
+   BASED ON VERSION 8.4.4
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -477,6 +477,76 @@ if (!canvas) {
 
 
             /* =================================================
+               NATURAL WATER VARIATION
+               VERSION 8.4.5
+            ================================================= */
+
+            float naturalWaterVariation(vec2 p) {
+
+                vec2 drift =
+
+                    vec2(
+
+                        time *
+                        0.006,
+
+                        -time *
+                        0.004
+
+                    );
+
+
+                float broadVariation =
+
+                    fbm(
+
+                        p *
+                        0.42
+                        +
+                        drift
+
+                    );
+
+
+                float fineVariation =
+
+                    fbm(
+
+                        p *
+                        1.15
+                        -
+                        drift *
+                        1.6
+
+                    );
+
+
+                float variation =
+
+                    (
+                        broadVariation -
+                        0.5
+                    )
+                    *
+                    0.055;
+
+
+                variation +=
+
+                    (
+                        fineVariation -
+                        0.5
+                    )
+                    *
+                    0.018;
+
+
+                return variation;
+
+            }
+
+
+            /* =================================================
                RIPPLE INTERFERENCE
             ================================================= */
 
@@ -667,12 +737,6 @@ if (!canvas) {
                                 );
 
 
-                            /*
-                             * The initial impact starts
-                             * as a small concentrated
-                             * disturbance.
-                             */
-
                             float impactRadius =
 
                                 0.055 +
@@ -695,12 +759,6 @@ if (!canvas) {
 
                                 );
 
-
-                            /*
-                             * The center briefly dips
-                             * into the water before
-                             * relaxing.
-                             */
 
                             float impactWave =
 
@@ -778,7 +836,11 @@ if (!canvas) {
 
                     +
 
-                    organicMotion(p);
+                    organicMotion(p)
+
+                    +
+
+                    naturalWaterVariation(p);
 
 
                 float interference =
@@ -1043,14 +1105,13 @@ if (!canvas) {
 
 
                 /*
-                 * VERSION 8.4.4
+                 * IMPORTANT:
                  *
-                 * The separate impactReflection calculation
-                 * has been removed.
+                 * There is intentionally NO separate
+                 * impactReflection calculation here.
                  *
-                 * This prevents the moon reflection from
-                 * generating a second vertically mirrored
-                 * ripple at the opposite side of the pond.
+                 * This is the fix from Version 8.4.4
+                 * that removed the faint mirrored ripple.
                  */
 
 
@@ -1765,10 +1826,6 @@ if (!canvas) {
                         canvas.getBoundingClientRect();
 
 
-                    /* -----------------------------------------
-                       Convert browser position to canvas position
-                    ----------------------------------------- */
-
                     const localX =
 
                         clientX -
@@ -1780,10 +1837,6 @@ if (!canvas) {
                         clientY -
                         rect.top;
 
-
-                    /* -----------------------------------------
-                       Convert to normalized coordinates
-                    ----------------------------------------- */
 
                     const uvX =
 
@@ -1812,19 +1865,11 @@ if (!canvas) {
                         0.5;
 
 
-                    /* -----------------------------------------
-                       Match shader aspect ratio
-                    ----------------------------------------- */
-
                     rippleX *=
 
                         rect.width /
                         rect.height;
 
-
-                    /* -----------------------------------------
-                       Match pond vertical scale
-                    ----------------------------------------- */
 
                     rippleY *=
 
@@ -1837,10 +1882,6 @@ if (!canvas) {
                         *
                         0.001;
 
-
-                    /* -----------------------------------------
-                       Add new ripple
-                    ----------------------------------------- */
 
                     ripples.push({
 
@@ -1858,10 +1899,6 @@ if (!canvas) {
 
                     });
 
-
-                    /* -----------------------------------------
-                       Keep maximum number
-                    ----------------------------------------- */
 
                     if (
 
