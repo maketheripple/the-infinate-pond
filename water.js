@@ -1,8 +1,7 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.6 — NATURAL WATER SURFACE
-   VERSION 8.4.4 — RIPPLE BASELINE
+   VERSION 8.4.4 — REMOVE MIRRORED RIPPLE REFLECTION
+   BASED ON VERSION 8.4.1 — IMPACT DISPLACEMENT
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -478,210 +477,7 @@ if (!canvas) {
 
 
             /* =================================================
-               NATURAL WATER SURFACE
-               
-               This layer is visual texture only.
-               It does NOT alter the ripple system.
-            ================================================= */
-
-            float naturalWaterSurface(vec2 p) {
-
-                /*
-                 * Slow broad movement.
-                 *
-                 * Large bodies of water do not have
-                 * perfectly uniform surface brightness.
-                 */
-
-                vec2 slowDrift =
-
-                    vec2(
-
-                        time *
-                        0.010,
-
-                        -time *
-                        0.007
-
-                    );
-
-
-                float broadA =
-
-                    fbm(
-
-                        p *
-                        0.85
-                        +
-                        slowDrift
-
-                    );
-
-
-                float broadB =
-
-                    fbm(
-
-                        p *
-                        1.45
-                        -
-                        slowDrift *
-                        1.7
-
-                    );
-
-
-                /*
-                 * Combine the broad variations.
-                 */
-
-                float broadVariation =
-
-                    broadA *
-                    0.62
-
-                    +
-
-                    broadB *
-                    0.38;
-
-
-                /*
-                 * Create very subtle elongated
-                 * wind-driven surface streaks.
-                 *
-                 * These are intentionally soft.
-                 */
-
-                vec2 windDirection =
-
-                    normalize(
-
-                        vec2(
-                            0.92,
-                            0.24
-                        )
-
-                    );
-
-
-                float windPattern =
-
-                    sin(
-
-                        dot(
-                            p,
-                            windDirection
-                        )
-                        *
-                        13.0
-                        +
-                        time *
-                        0.12
-
-                    );
-
-
-                /*
-                 * Break up the regularity of
-                 * the wind pattern with noise.
-                 */
-
-                float windNoise =
-
-                    fbm(
-
-                        p *
-                        2.8
-
-                        +
-
-                        vec2(
-                            time *
-                            0.012,
-
-                            -time *
-                            0.009
-                        )
-
-                    );
-
-
-                float windTexture =
-
-                    windPattern *
-                    (
-                        0.35 +
-                        windNoise *
-                        0.65
-                    );
-
-
-                /*
-                 * Very fine surface variation.
-                 *
-                 * Kept extremely low so it reads
-                 * as water texture rather than noise.
-                 */
-
-                float fineTexture =
-
-                    fbm(
-
-                        p *
-                        7.5
-
-                        +
-
-                        vec2(
-                            time *
-                            0.020,
-
-                            -time *
-                            0.014
-
-                        )
-
-                    );
-
-
-                /*
-                 * Combine the layers.
-                 */
-
-                float surface =
-
-                    (
-                        broadVariation -
-                        0.5
-                    )
-                    *
-                    0.12
-
-                    +
-
-                    windTexture *
-                    0.018
-
-                    +
-
-                    (
-                        fineTexture -
-                        0.5
-                    )
-                    *
-                    0.025;
-
-
-                return surface;
-
-            }
-
-
-            /* =================================================
                RIPPLE INTERFERENCE
-
-               PRESERVED FROM RIPPLE BASELINE
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -828,8 +624,6 @@ if (!canvas) {
 
             /* =================================================
                IMPACT DISPLACEMENT
-
-               PRESERVED FROM RIPPLE BASELINE
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -873,6 +667,12 @@ if (!canvas) {
                                 );
 
 
+                            /*
+                             * The initial impact starts
+                             * as a small concentrated
+                             * disturbance.
+                             */
+
                             float impactRadius =
 
                                 0.055 +
@@ -895,6 +695,12 @@ if (!canvas) {
 
                                 );
 
+
+                            /*
+                             * The center briefly dips
+                             * into the water before
+                             * relaxing.
+                             */
 
                             float impactWave =
 
@@ -1237,136 +1043,15 @@ if (!canvas) {
 
 
                 /*
-                 * Impact displacement also
-                 * affects the moon reflection.
+                 * VERSION 8.4.4
+                 *
+                 * The separate impactReflection calculation
+                 * has been removed.
+                 *
+                 * This prevents the moon reflection from
+                 * generating a second vertically mirrored
+                 * ripple at the opposite side of the pond.
                  */
-
-                float impactReflection =
-
-                    0.0;
-
-
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
-
-                    float strength =
-
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
-
-
-                        if (
-                            elapsed < 2.5
-                        ) {
-
-                            vec2 rippleP =
-
-                                vec2(
-
-                                    uv.x -
-                                    0.5,
-
-                                    (
-                                        1.0 -
-                                        uv.y
-                                    )
-                                    *
-                                    1.55
-                                    -
-                                    0.775
-
-                                );
-
-
-                            float d =
-
-                                distance(
-
-                                    rippleP,
-
-                                    ripplePositions[i]
-
-                                );
-
-
-                            float influence =
-
-                                exp(
-
-                                    -pow(
-
-                                        d /
-                                        (
-                                            0.12 +
-                                            elapsed *
-                                            0.06
-                                        ),
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    1.35
-
-                                );
-
-
-                            impactReflection +=
-
-                                influence
-                                *
-                                decay
-                                *
-                                strength;
-
-                        }
-
-                    }
-
-                }
-
-
-                /*
-                 * Slightly disturb the breakup
-                 * around the point of impact.
-                 */
-
-                breakup +=
-
-                    sin(
-
-                        impactReflection *
-                        8.0
-
-                    )
-                    *
-                    0.08;
 
 
                 breakup =
@@ -1490,24 +1175,6 @@ if (!canvas) {
                     0.5;
 
 
-                /*
-                 * Natural surface variation is deliberately
-                 * added separately from water height.
-                 *
-                 * This means the new texture cannot create
-                 * additional physical ripples.
-                 */
-
-                float naturalSurface =
-
-                    naturalWaterSurface(p);
-
-
-                variation +=
-
-                    naturalSurface;
-
-
                 variation =
 
                     clamp(
@@ -1570,36 +1237,6 @@ if (!canvas) {
                     *
 
                     highlight;
-
-
-                /*
-                 * Very subtle natural surface sheen.
-                 *
-                 * This is intentionally restrained so the
-                 * water remains dark and calm.
-                 */
-
-                float surfaceSheen =
-
-                    naturalSurface *
-                    0.55;
-
-
-                color +=
-
-                    vec3(
-
-                        0.004,
-
-                        0.010,
-
-                        0.014
-
-                    )
-
-                    *
-
-                    surfaceSheen;
 
 
                 /* ---------------------------------------------
@@ -2595,4 +2232,3 @@ if (!canvas) {
     }
 
 }
-```
