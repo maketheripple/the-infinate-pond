@@ -832,127 +832,90 @@ if (!canvas) {
 
             float rippleMicroWaves(vec2 p) {
 
-                float result =
-                    0.0;
+    float result = 0.0;
 
+    for (
+        int i = 0;
+        i < MAX_RIPPLES;
+        i++
+    ) {
 
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
+        float strength =
+            rippleStrengths[i];
 
-                    float strength =
+        if (
+            strength > 0.0
+        ) {
 
-                        rippleStrengths[i];
+            float elapsed =
+                max(
+                    0.0,
+                    time -
+                    rippleStarts[i]
+                );
 
+            if (
+                elapsed < 12.0
+            ) {
 
-                    if (
-                        strength > 0.0
-                    ) {
+                float radius =
+                    (
+                        1.0 -
+                        exp(
+                            -elapsed *
+                            0.55
+                        )
+                    )
+                    *
+                    2.25;
 
-                        float elapsed =
+                float d =
+                    distance(
+                        p,
+                        ripplePositions[i]
+                    );
 
-                            max(
+                float wave =
+                    sin(
+                        (
+                            d -
+                            radius
+                        )
+                        *
+                        14.0
+                    );
 
-                                0.0,
+                float envelope =
+                    exp(
+                        -pow(
+                            (
+                                d -
+                                radius
+                            )
+                            /
+                            0.30,
+                            2.0
+                        )
+                    );
 
-                                time -
-                                rippleStarts[i]
+                float decay =
+                    exp(
+                        -elapsed *
+                        0.50
+                    );
 
-                            );
-
-
-                        if (
-                            elapsed < 12.0
-                        ) {
-
-                            float radius =
-
-                                (
-                                    1.0 -
-                                    exp(
-                                        -elapsed *
-                                        0.55
-                                    )
-                                )
-                                *
-                                2.25;
-
-
-                            float d =
-
-                                distance(
-
-                                    p,
-
-                                    ripplePositions[i]
-
-                                );
-
-
-                            float wave =
-
-                                sin(
-
-                                    (
-                                        d -
-                                        radius
-                                    )
-                                    *
-                                    21.0
-
-                                );
-
-
-                            float envelope =
-
-                                exp(
-
-                                    -pow(
-
-                                        (
-                                            d -
-                                            radius
-                                        )
-                                        /
-                                        0.22,
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    0.45
-
-                                );
-
-
-                            result +=
-
-                                wave *
-                                envelope *
-                                decay *
-                                strength *
-                                0.09;
-
-                        }
-
-                    }
-
-                }
-
-
-                return result;
-
+                result +=
+                    wave *
+                    envelope *
+                    decay *
+                    strength *
+                    0.025;
             }
+        }
+    }
+
+    return result;
+}
 
 
             /* =================================================
