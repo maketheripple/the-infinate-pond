@@ -1,6 +1,7 @@
+```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.2 — RIPPLE MAKER COUNTER
+     VERSION 9.3 — INTERACTION CUE
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -376,6 +377,100 @@
 
 
     /* =========================================================
+       INTERACTION CUE
+       ========================================================= */
+
+    .interaction-cue {
+
+        position: fixed;
+
+        left: 50%;
+
+        bottom: 32px;
+
+        transform:
+            translateX(-50%);
+
+        z-index: 5;
+
+        padding:
+            9px
+            16px;
+
+        border-radius: 20px;
+
+        background:
+            rgba(
+                0,
+                15,
+                30,
+                0.30
+            );
+
+        border:
+            1px solid
+            rgba(
+                180,
+                220,
+                255,
+                0.16
+            );
+
+        backdrop-filter:
+            blur(6px);
+
+        font-size: 13px;
+
+        letter-spacing: 0.8px;
+
+        opacity: 0.65;
+
+        white-space: nowrap;
+
+        pointer-events: none;
+
+        transition:
+            opacity 1s ease,
+            transform 1s ease;
+
+        animation:
+            cuePulse 3s ease-in-out infinite;
+
+    }
+
+
+    .interaction-cue.hidden {
+
+        opacity: 0;
+
+        transform:
+            translateX(-50%)
+            translateY(8px);
+
+        animation: none;
+
+    }
+
+
+    @keyframes cuePulse {
+
+        0%,
+        100% {
+
+            opacity: 0.45;
+
+        }
+
+        50% {
+
+            opacity: 0.75;
+
+        }
+
+    }
+
+
+    /* =========================================================
        RIPPLE MESSAGE
        ========================================================= */
 
@@ -732,6 +827,19 @@
         }
 
 
+        .interaction-cue {
+
+            bottom: 78px;
+
+            font-size: 11px;
+
+            padding:
+                8px
+                12px;
+
+        }
+
+
         .make-ripple {
 
             right: 50%;
@@ -827,6 +935,19 @@
 
 
 <!-- =========================================================
+     INTERACTION CUE
+     ========================================================= -->
+
+<div
+    class="interaction-cue"
+    id="interactionCue">
+
+    Click anywhere on the pond to make a ripple
+
+</div>
+
+
+<!-- =========================================================
      WATER
      ========================================================= -->
 
@@ -914,6 +1035,24 @@
     }
 
 
+    function hideInteractionCue() {
+
+        const cue =
+            document.getElementById(
+                "interactionCue"
+            );
+
+        if (cue) {
+
+            cue.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+
+
     function makeRipple() {
 
         const x =
@@ -932,8 +1071,39 @@
                 y
             );
 
+            hideInteractionCue();
+
         }
 
     }
 
+
+    document.addEventListener(
+        "pointerdown",
+        function(event) {
+
+            if (
+                event.target.closest(
+                    ".make-ripple, .message, button"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                typeof createRipple ===
+                "function"
+            ) {
+
+                hideInteractionCue();
+
+            }
+
+        }
+    );
+
 </script>
+```
