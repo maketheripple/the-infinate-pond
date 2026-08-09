@@ -1,7 +1,6 @@
-```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.4 — FIRST RIPPLE MESSAGE
+     VERSION 9.5 — RIPPLE IDENTITY
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -602,6 +601,150 @@
 
 
     /* =========================================================
+       RIPPLE IDENTITY
+       ========================================================= */
+
+    .ripple-identity {
+
+        position: fixed;
+
+        left: 50%;
+
+        top: 62%;
+
+        transform:
+            translate(
+                -50%,
+                12px
+            );
+
+        z-index: 6;
+
+        width: min(
+            90%,
+            360px
+        );
+
+        padding:
+            10px
+            18px;
+
+        box-sizing: border-box;
+
+        text-align: center;
+
+        border-radius: 20px;
+
+        background:
+            rgba(
+                0,
+                15,
+                30,
+                0.38
+            );
+
+        border:
+            1px solid
+            rgba(
+                180,
+                220,
+                255,
+                0.18
+            );
+
+        backdrop-filter:
+            blur(7px);
+
+        box-shadow:
+            0 6px 25px
+            rgba(
+                0,
+                0,
+                0,
+                0.22
+            );
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        transition:
+            opacity 0.9s ease,
+            transform 0.9s ease;
+
+    }
+
+
+    .ripple-identity.show {
+
+        opacity: 1;
+
+        transform:
+            translate(
+                -50%,
+                0
+            );
+
+    }
+
+
+    .ripple-identity.hide {
+
+        opacity: 0;
+
+        transform:
+            translate(
+                -50%,
+                -8px
+            );
+
+    }
+
+
+    .ripple-identity-label {
+
+        display: block;
+
+        font-size: 10px;
+
+        font-weight: 600;
+
+        letter-spacing: 3px;
+
+        text-transform: uppercase;
+
+        opacity: 0.55;
+
+        margin-bottom: 4px;
+
+    }
+
+
+    .ripple-identity-number {
+
+        display: block;
+
+        font-size: 16px;
+
+        font-weight: 500;
+
+        letter-spacing: 2px;
+
+        text-transform: uppercase;
+
+        text-shadow:
+            0 0 12px
+            rgba(
+                150,
+                220,
+                255,
+                0.25
+            );
+
+    }
+
+
+    /* =========================================================
        RIPPLE MESSAGE
        ========================================================= */
 
@@ -798,8 +941,7 @@
         cursor: pointer;
 
         backdrop-filter:
-            blur(8px
-            );
+            blur(8px);
 
         box-shadow:
             0 4px 20px
@@ -994,6 +1136,26 @@
         }
 
 
+        .ripple-identity {
+
+            top: 60%;
+
+            width: 82%;
+
+            padding:
+                9px
+                14px;
+
+        }
+
+
+        .ripple-identity-number {
+
+            font-size: 14px;
+
+        }
+
+
         .make-ripple {
 
             right: 50%;
@@ -1117,6 +1279,29 @@
 
 
 <!-- =========================================================
+     RIPPLE IDENTITY
+     ========================================================= -->
+
+<div
+    class="ripple-identity"
+    id="rippleIdentity">
+
+    <span class="ripple-identity-label">
+        Your Ripple
+    </span>
+
+    <span
+        class="ripple-identity-number"
+        id="rippleIdentityNumber">
+
+        Ripple #101
+
+    </span>
+
+</div>
+
+
+<!-- =========================================================
      WATER
      ========================================================= -->
 
@@ -1189,9 +1374,13 @@
 
     let interactionCueTimer;
 
+    let firstRippleMessageTimer;
+
+    let rippleIdentityTimer;
+
     let hasMadeFirstRipple = false;
 
-    let firstRippleMessageTimer;
+    let rippleNumber = 101;
 
 
     function closeMessage() {
@@ -1320,6 +1509,97 @@
     }
 
 
+    function showRippleIdentity() {
+
+        const identity =
+            document.getElementById(
+                "rippleIdentity"
+            );
+
+        const number =
+            document.getElementById(
+                "rippleIdentityNumber"
+            );
+
+
+        if (
+            !identity ||
+            !number
+        ) {
+
+            return;
+
+        }
+
+
+        number.textContent =
+            "Ripple #" +
+            rippleNumber;
+
+
+        clearTimeout(
+            rippleIdentityTimer
+        );
+
+
+        identity.classList.remove(
+            "hide"
+        );
+
+
+        identity.classList.add(
+            "show"
+        );
+
+
+        rippleIdentityTimer =
+            setTimeout(
+                function() {
+
+                    identity.classList.remove(
+                        "show"
+                    );
+
+                    identity.classList.add(
+                        "hide"
+                    );
+
+                },
+                4500
+            );
+
+    }
+
+
+    function createVisitorRipple(
+        x,
+        y
+    ) {
+
+        if (
+            typeof createRipple !==
+            "function"
+        ) {
+
+            return false;
+
+        }
+
+
+        createRipple(
+            x,
+            y
+        );
+
+
+        rippleNumber++;
+
+
+        return true;
+
+    }
+
+
     function makeRipple() {
 
         const x =
@@ -1328,19 +1608,19 @@
         const y =
             window.innerHeight / 2;
 
-        if (
-            typeof createRipple ===
-            "function"
-        ) {
 
-            createRipple(
+        if (
+            createVisitorRipple(
                 x,
                 y
-            );
+            )
+        ) {
 
             hideInteractionCue();
 
             showFirstRippleMessage();
+
+            showRippleIdentity();
 
         }
 
@@ -1362,14 +1642,22 @@
             }
 
 
+            const rippleCreated =
+                createVisitorRipple(
+                    event.clientX,
+                    event.clientY
+                );
+
+
             if (
-                typeof createRipple ===
-                "function"
+                rippleCreated
             ) {
 
                 hideInteractionCue();
 
                 showFirstRippleMessage();
+
+                showRippleIdentity();
 
             }
 
@@ -1377,4 +1665,3 @@
     );
 
 </script>
-```
