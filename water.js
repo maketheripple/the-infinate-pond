@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 7 — INTERACTIVE WATER
+   VERSION 7.6 — LIVING WATER
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -112,6 +112,7 @@ if (!canvas) {
                 vec2 f =
                     fract(p);
 
+
                 f =
                     f * f *
                     (
@@ -119,8 +120,10 @@ if (!canvas) {
                         2.0 * f
                     );
 
+
                 float a =
                     hash(i);
+
 
                 float b =
                     hash(
@@ -131,6 +134,7 @@ if (!canvas) {
                         )
                     );
 
+
                 float c =
                     hash(
                         i +
@@ -140,6 +144,7 @@ if (!canvas) {
                         )
                     );
 
+
                 float d =
                     hash(
                         i +
@@ -148,6 +153,7 @@ if (!canvas) {
                             1.0
                         )
                     );
+
 
                 return mix(
 
@@ -171,7 +177,7 @@ if (!canvas) {
 
 
             /* =================================================
-               MULTI-OCTAVE NOISE
+               FRACTAL BROWNIAN MOTION
             ================================================= */
 
             float fbm(vec2 p) {
@@ -182,24 +188,29 @@ if (!canvas) {
                 float amplitude =
                     0.5;
 
+
                 for (
                     int i = 0;
-                    i < 4;
+                    i < 5;
                     i++
                 ) {
 
                     value +=
+
                         noise(p)
                         *
                         amplitude;
 
+
                     p *=
                         2.0;
+
 
                     amplitude *=
                         0.5;
 
                 }
+
 
                 return value;
 
@@ -207,271 +218,242 @@ if (!canvas) {
 
 
             /* =================================================
-               ORGANIC DIRECTIONAL WAVE
+               LARGE WATER MOTION
             ================================================= */
 
-            float directionalWave(
+            float largeWave(vec2 p) {
 
-                vec2 p,
+                float waveA =
 
-                vec2 direction,
+                    sin(
 
-                float frequency,
-
-                float speed,
-
-                float amplitude,
-
-                float phase
-
-            ) {
-
-                float distortion =
-
-                    noise(
-
-                        p * 0.72
-                        +
-                        vec2(
-                            time * 0.018,
-                            -time * 0.011
+                        dot(
+                            p,
+                            normalize(
+                                vec2(
+                                    1.0,
+                                    0.22
+                                )
+                            )
                         )
+                        *
+                        1.35
+                        +
+                        time *
+                        0.34
 
-                    )
-                    -
-                    0.5;
-
-
-                float position =
-
-                    dot(
-                        p,
-                        direction
-                    )
-                    *
-                    frequency;
+                    );
 
 
-                position +=
+                float waveB =
 
-                    distortion *
-                    0.55;
+                    sin(
+
+                        dot(
+                            p,
+                            normalize(
+                                vec2(
+                                    -0.45,
+                                    1.0
+                                )
+                            )
+                        )
+                        *
+                        1.05
+                        -
+                        time *
+                        0.27
+
+                    );
 
 
-                position +=
+                float waveC =
 
-                    time *
-                    speed;
+                    sin(
 
+                        dot(
+                            p,
+                            normalize(
+                                vec2(
+                                    0.58,
+                                    0.81
+                                )
+                            )
+                        )
+                        *
+                        1.85
+                        +
+                        time *
+                        0.41
 
-                position +=
-                    phase;
+                    );
 
 
                 return
 
-                    sin(position)
-                    *
-                    amplitude;
+                    waveA *
+                    0.34
+
+                    +
+
+                    waveB *
+                    0.28
+
+                    +
+
+                    waveC *
+                    0.16;
 
             }
 
 
             /* =================================================
-               BASE WATER HEIGHT
+               SMALL SURFACE RIPPLE DETAIL
             ================================================= */
 
-            float waterHeight(vec2 p) {
+            float smallWaves(vec2 p) {
 
-                float result =
-                    0.0;
+                float waveA =
 
+                    sin(
 
-                /* ---------------------------------------------
-                   Large primary swells
-                --------------------------------------------- */
-
-                result +=
-
-                    directionalWave(
-
-                        p,
-
-                        normalize(
-                            vec2(
-                                1.0,
-                                0.19
+                        dot(
+                            p,
+                            normalize(
+                                vec2(
+                                    0.24,
+                                    1.0
+                                )
                             )
-                        ),
-
-                        1.17,
-
-                        0.43,
-
-                        0.32,
-
-                        0.37
+                        )
+                        *
+                        4.5
+                        +
+                        time *
+                        0.62
 
                     );
 
 
-                result +=
+                float waveB =
 
-                    directionalWave(
+                    sin(
 
-                        p,
-
-                        normalize(
-                            vec2(
-                                -0.41,
-                                1.0
+                        dot(
+                            p,
+                            normalize(
+                                vec2(
+                                    -0.76,
+                                    0.48
+                                )
                             )
-                        ),
-
-                        0.93,
-
-                        -0.29,
-
-                        0.27,
-
-                        2.11
+                        )
+                        *
+                        5.8
+                        -
+                        time *
+                        0.51
 
                     );
 
 
-                /* ---------------------------------------------
-                   Secondary swells
-                --------------------------------------------- */
+                float waveC =
 
-                result +=
+                    sin(
 
-                    directionalWave(
-
-                        p,
-
-                        normalize(
-                            vec2(
-                                0.63,
-                                0.78
+                        dot(
+                            p,
+                            normalize(
+                                vec2(
+                                    0.91,
+                                    0.28
+                                )
                             )
-                        ),
-
-                        1.71,
-
-                        0.52,
-
-                        0.17,
-
-                        4.73
+                        )
+                        *
+                        7.2
+                        +
+                        time *
+                        0.73
 
                     );
 
 
-                result +=
+                return
 
-                    directionalWave(
+                    waveA *
+                    0.08
 
-                        p,
+                    +
 
-                        normalize(
-                            vec2(
-                                -0.88,
-                                0.34
-                            )
-                        ),
+                    waveB *
+                    0.06
 
-                        2.13,
+                    +
 
-                        -0.41,
+                    waveC *
+                    0.045;
 
-                        0.13,
-
-                        1.29
-
-                    );
+            }
 
 
-                /* ---------------------------------------------
-                   Smaller crossing waves
-                --------------------------------------------- */
+            /* =================================================
+               ORGANIC WATER DISTORTION
+            ================================================= */
 
-                result +=
+            float organicMotion(vec2 p) {
 
-                    directionalWave(
+                vec2 drift =
 
-                        p,
+                    vec2(
 
-                        normalize(
-                            vec2(
-                                0.22,
-                                1.0
-                            )
-                        ),
+                        time *
+                        0.018,
 
-                        3.27,
-
-                        0.71,
-
-                        0.075,
-
-                        3.81
+                        -time *
+                        0.013
 
                     );
 
 
-                result +=
-
-                    directionalWave(
-
-                        p,
-
-                        normalize(
-                            vec2(
-                                -0.72,
-                                0.51
-                            )
-                        ),
-
-                        4.13,
-
-                        -0.57,
-
-                        0.052,
-
-                        5.37
-
-                    );
-
-
-                /* ---------------------------------------------
-                   Very subtle organic distortion
-                --------------------------------------------- */
-
-                float organicNoise =
+                float n1 =
 
                     fbm(
-
-                        p * 1.15
+                        p *
+                        0.75
                         +
-                        vec2(
-                            time * 0.021,
-                            -time * 0.015
-                        )
-
+                        drift
                     );
 
 
-                result +=
+                float n2 =
+
+                    fbm(
+                        p *
+                        1.65
+                        -
+                        drift *
+                        1.4
+                    );
+
+
+                return
 
                     (
-                        organicNoise -
+                        n1 -
                         0.5
                     )
                     *
-                    0.12;
+                    0.22
 
+                    +
 
-                return result;
+                    (
+                        n2 -
+                        0.5
+                    )
+                    *
+                    0.10;
 
             }
 
@@ -491,19 +473,11 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Ripple travels outward.
-                 */
-
                 float radius =
 
                     elapsed *
-                    0.48;
+                    0.62;
 
-
-                /*
-                 * Distance from click/touch.
-                 */
 
                 float distanceFromRipple =
 
@@ -513,17 +487,10 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Width of ripple ring.
-                 */
-
                 float width =
-                    0.075;
 
+                    0.065;
 
-                /*
-                 * Travelling wave.
-                 */
 
                 float wave =
 
@@ -534,15 +501,10 @@ if (!canvas) {
                             radius
                         )
                         *
-                        72.0
+                        78.0
 
                     );
 
-
-                /*
-                 * Keep the wave concentrated
-                 * around its moving edge.
-                 */
 
                 float ring =
 
@@ -564,15 +526,11 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Ripple fades naturally.
-                 */
-
                 float fade =
 
                     exp(
                         -elapsed *
-                        0.55
+                        0.48
                     );
 
 
@@ -586,22 +544,46 @@ if (!canvas) {
                     *
                     rippleStrength
                     *
-                    0.75;
+                    0.85;
 
             }
 
 
             /* =================================================
-               COMBINED SURFACE
+               TOTAL WATER HEIGHT
             ================================================= */
 
-            float totalWaterHeight(vec2 p) {
+            float waterHeight(vec2 p) {
+
+                float base =
+
+                    largeWave(p);
+
+
+                float detail =
+
+                    smallWaves(p);
+
+
+                float organic =
+
+                    organicMotion(p);
+
+
+                float ripple =
+
+                    interactiveRipple(p);
+
 
                 return
 
-                    waterHeight(p)
+                    base
                     +
-                    interactiveRipple(p);
+                    detail
+                    +
+                    organic
+                    +
+                    ripple;
 
             }
 
@@ -613,17 +595,17 @@ if (!canvas) {
             vec3 surfaceNormal(vec2 p) {
 
                 float e =
-                    0.0025;
+                    0.003;
 
 
                 float center =
 
-                    totalWaterHeight(p);
+                    waterHeight(p);
 
 
                 float x =
 
-                    totalWaterHeight(
+                    waterHeight(
 
                         p +
                         vec2(
@@ -636,7 +618,7 @@ if (!canvas) {
 
                 float y =
 
-                    totalWaterHeight(
+                    waterHeight(
 
                         p +
                         vec2(
@@ -676,10 +658,6 @@ if (!canvas) {
 
             ) {
 
-                /*
-                 * Center of moon reflection.
-                 */
-
                 float distanceFromCenter =
 
                     abs(
@@ -688,16 +666,11 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Reflection widens
-                 * toward the viewer.
-                 */
-
                 float spread =
 
                     mix(
-                        0.035,
-                        0.42,
+                        0.028,
+                        0.45,
                         uv.y
                     );
 
@@ -719,17 +692,13 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Direction of moonlight.
-                 */
-
                 vec3 moonDirection =
 
                     normalize(
 
                         vec3(
                             0.0,
-                            0.35,
+                            0.38,
                             1.0
                         )
 
@@ -750,32 +719,29 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Sharp water highlights.
-                 */
-
                 float sparkle =
 
                     pow(
                         angle,
-                        31.0
+                        26.0
                     );
 
-
-                /*
-                 * Break up the reflection
-                 * using two scales of noise.
-                 */
 
                 float breakupA =
 
                     fbm(
 
-                        uv * 9.7
+                        uv *
+                        10.0
+
                         +
+
                         vec2(
-                            time * 0.043,
-                            -time * 0.027
+                            time *
+                            0.045,
+
+                            -time *
+                            0.030
                         )
 
                     );
@@ -785,11 +751,17 @@ if (!canvas) {
 
                     fbm(
 
-                        uv * 17.3
+                        uv *
+                        18.0
+
                         +
+
                         vec2(
-                            -time * 0.031,
-                            time * 0.019
+                            -time *
+                            0.035,
+
+                            time *
+                            0.022
                         )
 
                     );
@@ -797,17 +769,25 @@ if (!canvas) {
 
                 float breakup =
 
-                    breakupA * 0.65
+                    breakupA *
+                    0.62
+
                     +
-                    breakupB * 0.35;
+
+                    breakupB *
+                    0.38;
 
 
                 breakup =
 
                     smoothstep(
-                        0.40,
-                        0.72,
+
+                        0.34,
+
+                        0.69,
+
                         breakup
+
                     );
 
 
@@ -835,20 +815,11 @@ if (!canvas) {
                     resolution;
 
 
-                /*
-                 * Convert screen coordinates
-                 * into pond coordinates.
-                 */
-
                 vec2 p =
 
                     uv -
                     0.5;
 
-
-                /*
-                 * Correct for screen aspect ratio.
-                 */
 
                 p.x *=
 
@@ -856,36 +827,20 @@ if (!canvas) {
                     resolution.y;
 
 
-                /*
-                 * Scroll through the pond.
-                 */
-
                 p.y +=
 
                     scroll *
                     0.00022;
 
 
-                /*
-                 * Give the water more depth.
-                 */
-
                 p.y *=
                     1.55;
 
 
-                /*
-                 * Calculate the water surface.
-                 */
-
                 float surface =
 
-                    totalWaterHeight(p);
+                    waterHeight(p);
 
-
-                /*
-                 * Calculate surface normal.
-                 */
 
                 vec3 normal =
 
@@ -893,31 +848,31 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Base water colors
+                   WATER COLORS
                 --------------------------------------------- */
 
                 vec3 deepWater =
 
                     vec3(
-                        0.002,
-                        0.014,
-                        0.026
+                        0.0015,
+                        0.010,
+                        0.020
                     );
 
 
                 vec3 blueWater =
 
                     vec3(
-                        0.006,
-                        0.040,
-                        0.065
+                        0.004,
+                        0.032,
+                        0.055
                     );
 
 
                 float variation =
 
                     surface *
-                    0.5
+                    0.55
                     +
                     0.5;
 
@@ -925,9 +880,13 @@ if (!canvas) {
                 variation =
 
                     clamp(
+
                         variation,
+
                         0.0,
+
                         1.0
+
                     );
 
 
@@ -945,23 +904,55 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Moon reflection
+                   WATER HIGHLIGHTS
+                --------------------------------------------- */
+
+                float highlight =
+
+                    pow(
+
+                        max(
+                            normal.z,
+                            0.0
+                        ),
+
+                        7.0
+
+                    );
+
+
+                color +=
+
+                    vec3(
+                        0.012,
+                        0.035,
+                        0.055
+                    )
+                    *
+                    highlight;
+
+
+                /* ---------------------------------------------
+                   MOONLIGHT
                 --------------------------------------------- */
 
                 float reflection =
 
                     moonReflection(
+
                         uv,
+
                         normal
+
                     );
 
 
                 vec3 moonColor =
 
                     vec3(
-                        0.70,
-                        0.86,
-                        1.00
+                        0.72,
+                        0.87,
+                        1.0
                     );
 
 
@@ -971,11 +962,11 @@ if (!canvas) {
                     *
                     reflection
                     *
-                    1.65;
+                    1.85;
 
 
                 /* ---------------------------------------------
-                   Ambient moon illumination
+                   AMBIENT MOON GLOW
                 --------------------------------------------- */
 
                 float ambientMoon =
@@ -1001,16 +992,16 @@ if (!canvas) {
                 color +=
 
                     vec3(
-                        0.025,
-                        0.050,
-                        0.075
+                        0.022,
+                        0.045,
+                        0.070
                     )
                     *
                     ambientMoon;
 
 
                 /* ---------------------------------------------
-                   Dark cinematic edges
+                   CINEMATIC VIGNETTE
                 --------------------------------------------- */
 
                 float vignette =
@@ -1019,16 +1010,19 @@ if (!canvas) {
 
                     smoothstep(
 
-                        0.35,
+                        0.30,
 
-                        0.85,
+                        0.88,
 
                         distance(
+
                             uv,
+
                             vec2(
                                 0.5,
                                 0.43
                             )
+
                         )
 
                     );
@@ -1037,31 +1031,41 @@ if (!canvas) {
                 color *=
 
                     mix(
-                        0.60,
+
+                        0.58,
+
                         1.0,
+
                         vignette
+
                     );
 
 
                 /* ---------------------------------------------
-                   Final contrast
+                   FINAL CONTRAST
                 --------------------------------------------- */
 
                 color =
 
                     pow(
+
                         color,
+
                         vec3(
-                            0.88
+                            0.86
                         )
+
                     );
 
 
                 gl_FragColor =
 
                     vec4(
+
                         color,
+
                         1.0
+
                     );
 
             }
@@ -1149,7 +1153,9 @@ if (!canvas) {
         ) {
 
             console.error(
+
                 "The Infinite Pond: Shader creation failed."
+
             );
 
         } else {
@@ -1348,81 +1354,72 @@ if (!canvas) {
                 ============================================= */
 
                 function createRipple(
+
                     clientX,
+
                     clientY
+
                 ) {
 
                     console.log(
+
                         "INFINITE POND RIPPLE:",
+
                         clientX,
+
                         clientY
+
                     );
 
 
-                    /*
-                     * Convert browser coordinates
-                     * to normalized screen coordinates.
-                     */
-
                     const uvX =
+
                         clientX /
                         window.innerWidth;
 
 
                     const uvY =
+
                         1.0 -
+
                         (
                             clientY /
                             window.innerHeight
                         );
 
 
-                    /*
-                     * Convert to pond coordinates.
-                     */
-
                     rippleX =
+
                         uvX -
                         0.5;
 
 
                     rippleY =
+
                         uvY -
                         0.5;
 
 
-                    /*
-                     * Match shader aspect ratio.
-                     */
-
                     rippleX *=
+
                         window.innerWidth /
                         window.innerHeight;
 
 
-                    /*
-                     * Match shader vertical scale.
-                     */
-
                     rippleY *=
+
                         1.55;
 
 
-                    /*
-                     * Start the ripple.
-                     */
-
                     rippleStart =
+
                         performance.now()
                         *
                         0.001;
 
 
-                    /*
-                     * Strong while testing.
-                     */
-
                     rippleStrength =
+
                         3.0;
 
                 }
@@ -1433,21 +1430,24 @@ if (!canvas) {
                 ============================================= */
 
                 window.addEventListener(
+
                     "pointerdown",
+
                     function (event) {
 
                         console.log(
+
                             "POINTER DETECTED"
+
                         );
 
 
-                        /*
-                         * Ignore right-click.
-                         */
-
                         if (
+
                             event.button !== 0 &&
+
                             event.pointerType !== "touch"
+
                         ) {
 
                             return;
@@ -1456,12 +1456,17 @@ if (!canvas) {
 
 
                         createRipple(
+
                             event.clientX,
+
                             event.clientY
+
                         );
 
                     },
+
                     true
+
                 );
 
 
@@ -1475,7 +1480,8 @@ if (!canvas) {
 
                         Math.min(
 
-                            window.devicePixelRatio || 1,
+                            window.devicePixelRatio ||
+                            1,
 
                             2
 
@@ -1538,7 +1544,9 @@ if (!canvas) {
                 ============================================= */
 
                 function renderWater(
+
                     milliseconds
+
                 ) {
 
                     const currentTime =
@@ -1548,13 +1556,11 @@ if (!canvas) {
 
 
                     gl.useProgram(
+
                         program
+
                     );
 
-
-                    /* -----------------------------------------
-                       Resolution
-                    ----------------------------------------- */
 
                     gl.uniform2f(
 
@@ -1567,10 +1573,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Time
-                    ----------------------------------------- */
-
                     gl.uniform1f(
 
                         timeLocation,
@@ -1580,10 +1582,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Page scrolling
-                    ----------------------------------------- */
-
                     gl.uniform1f(
 
                         scrollLocation,
@@ -1592,10 +1590,6 @@ if (!canvas) {
 
                     );
 
-
-                    /* -----------------------------------------
-                       Ripple position
-                    ----------------------------------------- */
 
                     gl.uniform2f(
 
@@ -1608,10 +1602,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Ripple start time
-                    ----------------------------------------- */
-
                     gl.uniform1f(
 
                         rippleStartLocation,
@@ -1621,10 +1611,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Ripple strength
-                    ----------------------------------------- */
-
                     gl.uniform1f(
 
                         rippleStrengthLocation,
@@ -1633,10 +1619,6 @@ if (!canvas) {
 
                     );
 
-
-                    /* -----------------------------------------
-                       Draw
-                    ----------------------------------------- */
 
                     gl.drawArrays(
 
@@ -1650,14 +1632,18 @@ if (!canvas) {
 
 
                     requestAnimationFrame(
+
                         renderWater
+
                     );
 
                 }
 
 
                 requestAnimationFrame(
+
                     renderWater
+
                 );
 
             }
