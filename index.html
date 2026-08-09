@@ -1,7 +1,7 @@
 ```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.3 — INTERACTION CUE
+     VERSION 9.3.1 — INTERACTION CUE RETURNS AFTER INACTIVITY
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -1018,6 +1018,9 @@
 
 <script>
 
+    let interactionCueTimer;
+
+
     function closeMessage() {
 
         const message =
@@ -1029,6 +1032,24 @@
 
             message.style.display =
                 "none";
+
+        }
+
+    }
+
+
+    function showInteractionCue() {
+
+        const cue =
+            document.getElementById(
+                "interactionCue"
+            );
+
+        if (cue) {
+
+            cue.classList.remove(
+                "hidden"
+            );
 
         }
 
@@ -1049,6 +1070,18 @@
             );
 
         }
+
+
+        clearTimeout(
+            interactionCueTimer
+        );
+
+
+        interactionCueTimer =
+            setTimeout(
+                showInteractionCue,
+                5000
+            );
 
     }
 
