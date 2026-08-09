@@ -29,7 +29,7 @@ body {
 
     margin: 0;
 
-    background: #020d18;
+    background: #010914;
 
     color: white;
 
@@ -63,15 +63,15 @@ body {
 
     background:
         linear-gradient(
-            rgba(1,9,18,0.94),
-            rgba(1,12,22,0.35)
+            rgba(1,8,17,0.92),
+            rgba(1,8,17,0.20)
         );
 
     backdrop-filter:
-        blur(10px);
+        blur(8px);
 
     -webkit-backdrop-filter:
-        blur(10px);
+        blur(8px);
 
     border-bottom:
         1px solid
@@ -81,7 +81,6 @@ body {
         opacity 0.6s ease,
         transform 0.6s ease;
 }
-
 
 .header.hidden {
 
@@ -100,8 +99,7 @@ body {
 
     text-transform: uppercase;
 
-    color:
-        rgba(220,240,255,0.72);
+    opacity: 0.70;
 }
 
 
@@ -121,7 +119,7 @@ h1 {
 
     text-shadow:
         0 3px 20px
-        rgba(0,0,0,0.8);
+        rgba(0,0,0,0.9);
 }
 
 
@@ -131,7 +129,7 @@ h1 {
         17px;
 
     opacity:
-        0.72;
+        0.70;
 
     font-style:
         italic;
@@ -163,116 +161,143 @@ h1 {
     position:
         relative;
 
-    min-height:
+    width:
+        100%;
+
+    height:
         12000px;
 
     overflow:
         hidden;
 
     background:
-    radial-gradient(
-        ellipse at 50% 8%,
-        #102d46 0%,
-        #071a2c 25%,
-        #031321 55%,
-        #010a13 100%
-    );
+        #010914;
 }
 
 
 /* =========================================================
-   MOONLIGHT GLOW
+   WATER CANVAS
 ========================================================= */
 
-.moon-glow {
+#waterCanvas {
 
-    position: absolute;
+    position:
+        absolute;
 
-    top: 2%;
+    top:
+        0;
 
-    left: 50%;
+    left:
+        0;
 
-    width: 900px;
+    width:
+        100%;
 
-    height: 900px;
+    height:
+        100%;
+
+    z-index:
+        1;
+
+    display:
+        block;
+}
+
+
+/* =========================================================
+   MOONLIGHT ATMOSPHERE
+========================================================= */
+
+.moonGlow {
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        50%;
+
+    width:
+        800px;
+
+    height:
+        800px;
 
     transform:
         translateX(-50%);
 
-    border-radius: 50%;
+    z-index:
+        2;
 
-    pointer-events: none;
-
-    z-index: 2;
+    pointer-events:
+        none;
 
     background:
         radial-gradient(
             circle,
-            rgba(225,245,255,0.22) 0%,
-            rgba(185,225,255,0.12) 18%,
-            rgba(120,180,225,0.055) 38%,
-            rgba(60,120,180,0.02) 55%,
-            transparent 72%
+            rgba(210,235,255,0.14),
+            rgba(100,160,210,0.04) 35%,
+            transparent 70%
         );
 
     filter:
         blur(12px);
-
-    opacity:
-        0.9;
-
-    animation:
-        moonBreath
-        10s
-        ease-in-out
-        infinite
-        alternate;
 }
 
 
 /* =========================================================
-   MOONLIGHT REFLECTION
+   MOON REFLECTION
 ========================================================= */
 
-.moon-reflection {
+.moonReflection {
 
-    position: absolute;
+    position:
+        absolute;
 
-    top: 0;
+    top:
+        0;
 
-    left: 50%;
+    left:
+        50%;
 
-    width: 420px;
+    width:
+        400px;
 
-    height: 100%;
+    height:
+        100%;
 
     transform:
         translateX(-50%);
 
-    z-index: 3;
+    z-index:
+        3;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
-    opacity: 0.42;
+    opacity:
+        0.38;
 
     background:
 
         repeating-linear-gradient(
-            174deg,
+            173deg,
 
             transparent 0px,
 
-            transparent 18px,
+            transparent 17px,
 
-            rgba(220,240,255,0.08) 20px,
+            rgba(220,240,255,0.10) 19px,
 
-            rgba(245,250,255,0.34) 23px,
+            rgba(245,250,255,0.28) 22px,
 
-            rgba(210,235,255,0.12) 27px,
+            rgba(210,235,255,0.08) 26px,
 
-            transparent 31px,
+            transparent 30px,
 
-            transparent 55px
+            transparent 58px
         );
 
     filter:
@@ -281,196 +306,45 @@ h1 {
     mask-image:
         linear-gradient(
             to bottom,
-            transparent 0%,
-            black 7%,
+            transparent,
+            black 8%,
             black 80%,
-            transparent 100%
+            transparent
         );
 
     -webkit-mask-image:
         linear-gradient(
             to bottom,
-            transparent 0%,
-            black 7%,
+            transparent,
+            black 8%,
             black 80%,
-            transparent 100%
+            transparent
         );
 
     animation:
         reflectionMove
-        13s
+        14s
         ease-in-out
         infinite
         alternate;
 }
 
 
-/* =========================================================
-   SUBTLE WATER WAVES
-========================================================= */
-
-.water-waves {
-
-    position:
-        absolute;
-
-    inset:
-        -100px;
-
-    z-index:
-        4;
-
-    pointer-events:
-        none;
-
-    opacity:
-        0.17;
-
-    background:
-
-        repeating-radial-gradient(
-            ellipse at center,
-
-            transparent 0px,
-
-            transparent 45px,
-
-            rgba(150,205,235,0.14) 48px,
-
-            transparent 52px
-        );
-
-    background-size:
-        800px 800px;
-
-    animation:
-        waveDrift
-        55s
-        linear
-        infinite;
-
-    mix-blend-mode:
-        screen;
-}
-
-
-@keyframes waveDrift {
+@keyframes reflectionMove {
 
     from {
 
         transform:
-            translate(
-                -3%,
-                -2%
-            )
-            scale(1);
+            translateX(-50%)
+            scaleX(0.85);
     }
 
     to {
 
         transform:
-            translate(
-                3%,
-                2%
-            )
-            scale(1.08);
+            translateX(-50%)
+            scaleX(1.15);
     }
-}
-
-
-/* =========================================================
-   MOVING WATER LINES
-========================================================= */
-
-.water-lines {
-
-    position:
-        absolute;
-
-    inset:
-        0;
-
-    z-index:
-        5;
-
-    pointer-events:
-        none;
-
-    opacity:
-        0.13;
-
-    background:
-
-        repeating-linear-gradient(
-            177deg,
-
-            transparent 0px,
-
-            transparent 19px,
-
-            rgba(180,220,245,0.12) 21px,
-
-            transparent 24px,
-
-            transparent 55px
-        );
-
-    background-size:
-        100% 320px;
-
-    animation:
-        linesMove
-        38s
-        linear
-        infinite;
-}
-
-
-@keyframes linesMove {
-
-    from {
-
-        background-position:
-            0 0;
-    }
-
-    to {
-
-        background-position:
-            140px 500px;
-    }
-}
-
-
-/* =========================================================
-   DEPTH
-========================================================= */
-
-.water-depth {
-
-    position:
-        absolute;
-
-    inset:
-        0;
-
-    z-index:
-        6;
-
-    pointer-events:
-        none;
-
-    background:
-
-        radial-gradient(
-            ellipse at center,
-
-            transparent 20%,
-
-            rgba(0,8,16,0.08) 55%,
-
-            rgba(0,5,12,0.42) 100%
-        );
 }
 
 
@@ -505,37 +379,20 @@ h1 {
         );
 
     transition:
-        transform 0.5s ease;
-
-    background:
-
-        radial-gradient(
-            circle,
-
-            transparent 0,
-
-            transparent 18px,
-
-            rgba(210,235,255,0.20) 19px,
-
-            transparent 22px,
-
-            transparent 31px,
-
-            rgba(210,235,255,0.17) 32px,
-
-            transparent 35px
-        );
+        transform
+        0.5s ease;
 
     filter:
-    drop-shadow(
-        0 0 5px
-        rgba(150,210,255,0.45)
-    )
-    drop-shadow(
-        0 0 18px
-        rgba(110,185,255,0.28)
-    );
+
+        drop-shadow(
+            0 0 5px
+            rgba(150,210,255,0.55)
+        )
+
+        drop-shadow(
+            0 0 18px
+            rgba(90,175,255,0.28)
+        );
 }
 
 
@@ -554,19 +411,19 @@ h1 {
         50%;
 
     border:
-    2px solid
-    rgba(225,245,255,0.72);
+        2px solid
+        rgba(225,245,255,0.72);
 
-box-shadow:
+    box-shadow:
 
-    0 0 5px
-    rgba(220,245,255,0.65),
+        0 0 5px
+        rgba(220,245,255,0.65),
 
-    0 0 18px
-    rgba(100,190,255,0.38),
+        0 0 18px
+        rgba(100,190,255,0.38),
 
-    inset 0 0 8px
-    rgba(200,235,255,0.18);
+        inset 0 0 8px
+        rgba(200,235,255,0.18);
 }
 
 
@@ -586,7 +443,7 @@ box-shadow:
 
     border:
         2px solid
-        rgba(215,238,255,0.34);
+        rgba(215,238,255,0.42);
 }
 
 
@@ -617,18 +474,18 @@ box-shadow:
         50%;
 
     background:
-    rgba(240,250,255,0.95);
+        rgba(240,250,255,0.95);
 
-box-shadow:
+    box-shadow:
 
-    0 0 5px
-    rgba(240,250,255,1),
+        0 0 5px
+        rgba(240,250,255,1),
 
-    0 0 15px
-    rgba(150,215,255,0.85),
+        0 0 15px
+        rgba(150,215,255,0.85),
 
-    0 0 30px
-    rgba(90,175,255,0.45);
+        0 0 30px
+        rgba(90,175,255,0.45);
 }
 
 
@@ -640,15 +497,6 @@ box-shadow:
             -50%
         )
         scale(1.45);
-
-    z-index:
-        100;
-
-    filter:
-        drop-shadow(
-            0 0 18px
-            rgba(170,215,255,0.35)
-        );
 }
 
 
@@ -668,7 +516,7 @@ box-shadow:
         2000;
 
     background:
-        rgba(0,5,12,0.52);
+        rgba(0,5,12,0.55);
 
     backdrop-filter:
         blur(5px);
@@ -886,8 +734,7 @@ box-shadow:
         rgba(0,0,0,0.45);
 
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        transform 0.2s ease;
 }
 
 
@@ -895,10 +742,6 @@ box-shadow:
 
     transform:
         translateY(-4px);
-
-    box-shadow:
-        0 14px 40px
-        rgba(0,0,0,0.55);
 }
 
 
@@ -978,10 +821,6 @@ box-shadow:
 <body>
 
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
 <header class="header"
         id="header">
 
@@ -1004,40 +843,24 @@ box-shadow:
 </header>
 
 
-<!-- =====================================================
-     POND
-===================================================== -->
-
 <main class="pond"
       id="pond">
 
 
-    <div class="moon-glow">
+    <canvas id="waterCanvas">
+    </canvas>
+
+
+    <div class="moonGlow">
     </div>
 
 
-    <div class="moon-reflection">
-    </div>
-
-
-    <div class="water-waves">
-    </div>
-
-
-    <div class="water-lines">
-    </div>
-
-
-    <div class="water-depth">
+    <div class="moonReflection">
     </div>
 
 
 </main>
 
-
-<!-- =====================================================
-     MESSAGE
-===================================================== -->
 
 <div class="message-overlay"
      id="messageOverlay">
@@ -1074,10 +897,6 @@ box-shadow:
 </div>
 
 
-<!-- =====================================================
-     MAKE YOUR RIPPLE
-===================================================== -->
-
 <button class="make-ripple"
         onclick="makeRipple()">
 
@@ -1087,6 +906,295 @@ box-shadow:
 
 
 <script>
+
+/* =========================================================
+   PROCEDURAL WATER
+========================================================= */
+
+const canvas =
+    document.getElementById(
+        "waterCanvas"
+    );
+
+const ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+
+let width;
+let height;
+
+let waves = [];
+
+const waveCount = 110;
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resizeCanvas() {
+
+    width =
+        canvas.width =
+        window.innerWidth;
+
+    height =
+        canvas.height =
+        document.getElementById(
+            "pond"
+        ).offsetHeight;
+
+}
+
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+
+/* =========================================================
+   CREATE WATER WAVES
+========================================================= */
+
+for (
+    let i = 0;
+    i < waveCount;
+    i++
+) {
+
+    waves.push({
+
+        y:
+            Math.random()
+            * height,
+
+        amplitude:
+            2 +
+            Math.random() * 8,
+
+        wavelength:
+            100 +
+            Math.random() * 280,
+
+        speed:
+            0.15 +
+            Math.random() * 0.35,
+
+        phase:
+            Math.random()
+            * Math.PI
+            * 2,
+
+        opacity:
+            0.03 +
+            Math.random() * 0.08
+
+    });
+
+}
+
+
+/* =========================================================
+   DRAW WATER
+========================================================= */
+
+let time = 0;
+
+
+function drawWater() {
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /* Deep water */
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            height
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#071c30"
+    );
+
+    gradient.addColorStop(
+        0.35,
+        "#041625"
+    );
+
+    gradient.addColorStop(
+        0.70,
+        "#02111d"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#010912"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /* Individual waves */
+
+    for (
+        let i = 0;
+        i < waves.length;
+        i++
+    ) {
+
+        const wave =
+            waves[i];
+
+
+        ctx.beginPath();
+
+
+        for (
+            let x = -50;
+            x < width + 50;
+            x += 8
+        ) {
+
+            const y =
+                wave.y
+                +
+                Math.sin(
+                    (
+                        x /
+                        wave.wavelength
+                    )
+                    +
+                    wave.phase
+                    +
+                    time
+                    * wave.speed
+                )
+                *
+                wave.amplitude;
+
+
+            if (
+                x === -50
+            ) {
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            }
+
+            else {
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+
+
+        ctx.strokeStyle =
+            `rgba(
+                150,
+                205,
+                235,
+                ${wave.opacity}
+            )`;
+
+
+        ctx.lineWidth =
+            0.6 +
+            Math.random()
+            * 0.8;
+
+
+        ctx.stroke();
+
+    }
+
+
+    /* Moon reflection */
+
+    const reflection =
+        ctx.createRadialGradient(
+            width / 2,
+            height * 0.05,
+            10,
+            width / 2,
+            height * 0.05,
+            600
+        );
+
+
+    reflection.addColorStop(
+        0,
+        "rgba(220,240,255,0.13)"
+    );
+
+    reflection.addColorStop(
+        0.25,
+        "rgba(150,200,240,0.06)"
+    );
+
+    reflection.addColorStop(
+        1,
+        "rgba(80,140,190,0)"
+    );
+
+
+    ctx.fillStyle =
+        reflection;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    time +=
+        0.008;
+
+
+    requestAnimationFrame(
+        drawWater
+    );
+
+}
+
+
+drawWater();
 
 
 /* =========================================================
@@ -1178,10 +1286,6 @@ const messages = [
 ];
 
 
-/* =========================================================
-   CREATE RIPPLE
-========================================================= */
-
 const pond =
     document.getElementById(
         "pond"
@@ -1189,6 +1293,10 @@ const pond =
 
 let rippleNumber = 0;
 
+
+/* =========================================================
+   CREATE RIPPLE
+========================================================= */
 
 function createRipple() {
 
@@ -1302,7 +1410,7 @@ for (
 
 
 /* =========================================================
-   SHOW MESSAGE
+   MESSAGE
 ========================================================= */
 
 function showMessage(
@@ -1354,7 +1462,7 @@ function closeMessage() {
 
 
 /* =========================================================
-   CLOSE MESSAGE OUTSIDE
+   CLOSE MESSAGE
 ========================================================= */
 
 document
@@ -1391,7 +1499,7 @@ function makeRipple() {
 
 
 /* =========================================================
-   HEADER FADE
+   HEADER BEHAVIOUR
 ========================================================= */
 
 let lastScroll =
@@ -1437,7 +1545,6 @@ window.addEventListener(
 
     }
 );
-
 
 </script>
 
