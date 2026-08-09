@@ -1,7 +1,7 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.5 — DARK NATURAL POND
-   RIPPLE BASELINE PRESERVED
+   VERSION 8.4.5 — NATURAL WATER SURFACE (SAFE LAYER)
+   RIPPLE BASELINE PRESERVED FROM VERSION 8.4.4
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -477,46 +477,51 @@ if (!canvas) {
 
 
             /* =================================================
-               NATURAL DARK WATER
-               
-               Slow, broad tonal movement intended to make
-               the surface read as a dark pond or lake rather
-               than a digital texture.
-               
-               This affects appearance only.
-               It does NOT create ripples.
+               NATURAL WATER COLOUR VARIATION
+
+               IMPORTANT:
+
+               This layer affects ONLY the final colour.
+
+               It does NOT enter waterHeight().
+               It does NOT affect surfaceNormal().
+               It does NOT affect ripple displacement.
+               It does NOT affect moon reflection geometry.
+
+               This is specifically designed to prevent
+               the phantom/faint second ripple from returning.
             ================================================= */
 
-            float naturalWaterSurface(vec2 p) {
+            float naturalWaterVariation(vec2 p) {
 
-                vec2 slowDriftA =
+                vec2 driftA =
 
                     vec2(
 
                         time *
-                        0.006,
+                        0.0045,
 
                         -time *
-                        0.004
+                        0.0030
 
                     );
 
 
-                vec2 slowDriftB =
+                vec2 driftB =
 
                     vec2(
 
                         -time *
-                        0.004,
+                        0.0030,
 
                         time *
-                        0.003
+                        0.0022
 
                     );
 
 
                 /*
-                 * Very broad tonal regions.
+                 * Very broad tonal movement.
                  */
 
                 float broadA =
@@ -524,9 +529,9 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        0.48
+                        0.42
                         +
-                        slowDriftA
+                        driftA
 
                     );
 
@@ -536,56 +541,47 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        0.82
+                        0.70
                         +
-                        slowDriftB
+                        driftB
 
                     );
 
 
                 /*
-                 * Extremely soft medium-scale variation.
+                 * Gentle medium-scale variation.
                  */
 
-                float mediumA =
+                float medium =
 
                     fbm(
 
                         p *
-                        1.55
+                        1.25
                         -
-                        slowDriftA *
-                        1.4
+                        driftA
 
                     );
 
 
-                /*
-                 * Combine them heavily toward the
-                 * broad patterns.
-                 */
-
                 float broadVariation =
 
                     broadA *
-                    0.52
+                    0.50
 
                     +
 
                     broadB *
-                    0.30
+                    0.32
 
                     +
 
-                    mediumA *
+                    medium *
                     0.18;
 
 
                 /*
-                 * A very subtle directional movement.
-                 *
-                 * This is intentionally much softer
-                 * than the previous wind streaks.
+                 * Very subtle directional movement.
                  */
 
                 vec2 windDirection =
@@ -594,7 +590,7 @@ if (!canvas) {
 
                         vec2(
                             0.94,
-                            0.18
+                            0.20
                         )
 
                     );
@@ -605,17 +601,17 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        1.8
+                        1.35
 
                         +
 
                         vec2(
 
                             time *
-                            0.008,
+                            0.006,
 
                             -time *
-                            0.005
+                            0.004
 
                         )
 
@@ -631,25 +627,26 @@ if (!canvas) {
                             windDirection
                         )
                         *
-                        3.8
+                        3.2
                         +
                         time *
-                        0.10
+                        0.075
 
                     );
 
 
                 windMovement *=
 
-                    0.25
+                    0.30
                     +
                     windNoise *
-                    0.75;
+                    0.70;
 
 
                 /*
-                 * Keep the total contribution extremely
-                 * subtle.
+                 * Keep this extremely subtle.
+
+                 * This is colour variation only.
                  */
 
                 return
@@ -659,12 +656,12 @@ if (!canvas) {
                         0.5
                     )
                     *
-                    0.105
+                    0.085
 
                     +
 
                     windMovement *
-                    0.012;
+                    0.008;
 
             }
 
@@ -672,7 +669,7 @@ if (!canvas) {
             /* =================================================
                RIPPLE INTERFERENCE
 
-               PRESERVED FROM 8.4.4
+               PRESERVED EXACTLY FROM 8.4.4
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -820,7 +817,7 @@ if (!canvas) {
             /* =================================================
                IMPACT DISPLACEMENT
 
-               PRESERVED FROM 8.4.4
+               PRESERVED EXACTLY FROM 8.4.4
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -949,6 +946,13 @@ if (!canvas) {
 
             /* =================================================
                TOTAL WATER HEIGHT
+
+               PRESERVED FROM 8.4.4
+
+               NOTICE:
+
+               naturalWaterVariation() is intentionally
+               NOT included here.
             ================================================= */
 
             float waterHeight(vec2 p) {
@@ -1002,6 +1006,8 @@ if (!canvas) {
 
             /* =================================================
                SURFACE NORMAL
+
+               PRESERVED FROM 8.4.4
             ================================================= */
 
             vec3 surfaceNormal(vec2 p) {
@@ -1060,6 +1066,8 @@ if (!canvas) {
 
             /* =================================================
                MOON REFLECTION
+
+               PRESERVED FROM 8.4.4
             ================================================= */
 
             float moonReflection(
@@ -1428,6 +1436,12 @@ if (!canvas) {
                     1.55;
 
 
+                /* ---------------------------------------------
+                   WATER HEIGHT
+
+                   Ripple system remains completely unchanged.
+                --------------------------------------------- */
+
                 float surface =
 
                     waterHeight(p);
@@ -1477,17 +1491,26 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Natural dark pond variation
+                   SAFE NATURAL WATER COLOUR LAYER
+
+                   This is intentionally applied ONLY here.
+
+                   It cannot affect:
+                   - ripple position
+                   - ripple geometry
+                   - surface normal
+                   - impact displacement
+                   - moon reflection
                 --------------------------------------------- */
 
-                float naturalSurface =
+                float naturalVariation =
 
-                    naturalWaterSurface(p);
+                    naturalWaterVariation(p);
 
 
                 variation +=
 
-                    naturalSurface;
+                    naturalVariation;
 
 
                 variation =
@@ -1518,6 +1541,8 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    Surface highlights
+
+                   Uses original water normal only.
                 --------------------------------------------- */
 
                 float highlight =
@@ -1555,14 +1580,16 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Very subtle natural sheen
+                   Very subtle broad water sheen
+
+                   Colour-only effect.
                 --------------------------------------------- */
 
-                float surfaceSheen =
+                float waterSheen =
 
                     max(
 
-                        naturalSurface,
+                        naturalVariation,
 
                         0.0
 
@@ -1573,21 +1600,23 @@ if (!canvas) {
 
                     vec3(
 
-                        0.0035,
+                        0.0025,
 
-                        0.008,
+                        0.006,
 
-                        0.012
+                        0.009
 
                     )
 
                     *
 
-                    surfaceSheen;
+                    waterSheen;
 
 
                 /* ---------------------------------------------
                    Moon reflection
+
+                   Uses the ORIGINAL normal.
                 --------------------------------------------- */
 
                 float reflection =
@@ -2112,6 +2141,10 @@ if (!canvas) {
                         canvas.getBoundingClientRect();
 
 
+                    /* -----------------------------------------
+                       Convert browser position to canvas position
+                    ----------------------------------------- */
+
                     const localX =
 
                         clientX -
@@ -2123,6 +2156,10 @@ if (!canvas) {
                         clientY -
                         rect.top;
 
+
+                    /* -----------------------------------------
+                       Convert to normalized coordinates
+                    ----------------------------------------- */
 
                     const uvX =
 
@@ -2151,11 +2188,19 @@ if (!canvas) {
                         0.5;
 
 
+                    /* -----------------------------------------
+                       Match shader aspect ratio
+                    ----------------------------------------- */
+
                     rippleX *=
 
                         rect.width /
                         rect.height;
 
+
+                    /* -----------------------------------------
+                       Match pond vertical scale
+                    ----------------------------------------- */
 
                     rippleY *=
 
@@ -2168,6 +2213,10 @@ if (!canvas) {
                         *
                         0.001;
 
+
+                    /* -----------------------------------------
+                       Add new ripple
+                    ----------------------------------------- */
 
                     ripples.push({
 
@@ -2185,6 +2234,10 @@ if (!canvas) {
 
                     });
 
+
+                    /* -----------------------------------------
+                       Keep maximum number
+                    ----------------------------------------- */
 
                     if (
 
@@ -2337,6 +2390,10 @@ if (!canvas) {
                     );
 
 
+                    /* -----------------------------------------
+                       Remove expired ripples
+                    ----------------------------------------- */
+
                     while (
 
                         ripples.length > 0 &&
@@ -2351,6 +2408,10 @@ if (!canvas) {
 
                     }
 
+
+                    /* -----------------------------------------
+                       Prepare uniform arrays
+                    ----------------------------------------- */
 
                     const positions =
 
@@ -2450,6 +2511,10 @@ if (!canvas) {
                     }
 
 
+                    /* -----------------------------------------
+                       Send uniforms
+                    ----------------------------------------- */
+
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2505,6 +2570,10 @@ if (!canvas) {
 
                     );
 
+
+                    /* -----------------------------------------
+                       Draw
+                    ----------------------------------------- */
 
                     gl.drawArrays(
 
