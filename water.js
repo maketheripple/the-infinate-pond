@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 7.7 — REACTIVE MOONLIGHT
+   VERSION 7.8 — MULTIPLE RIPPLES
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -26,6 +26,13 @@ if (!canvas) {
         );
 
     } else {
+
+        /* =====================================================
+           SETTINGS
+        ===================================================== */
+
+        const MAX_RIPPLES = 12;
+
 
         /* =====================================================
            VERTEX SHADER
@@ -59,6 +66,13 @@ if (!canvas) {
 
 
             /* =================================================
+               CONSTANTS
+            ================================================= */
+
+            const int MAX_RIPPLES = 12;
+
+
+            /* =================================================
                UNIFORMS
             ================================================= */
 
@@ -68,11 +82,11 @@ if (!canvas) {
 
             uniform float scroll;
 
-            uniform vec2 ripplePosition;
+            uniform vec2 ripplePositions[MAX_RIPPLES];
 
-            uniform float rippleStart;
+            uniform float rippleStarts[MAX_RIPPLES];
 
-            uniform float rippleStrength;
+            uniform float rippleStrengths[MAX_RIPPLES];
 
 
             /* =================================================
@@ -196,7 +210,6 @@ if (!canvas) {
                 ) {
 
                     value +=
-
                         noise(p)
                         *
                         amplitude;
@@ -463,17 +476,30 @@ if (!canvas) {
 
 
             /* =================================================
-               INTERACTIVE RIPPLE
+               ONE RIPPLE
             ================================================= */
 
-            float interactiveRipple(vec2 p) {
+            float singleRipple(
+
+                vec2 p,
+
+                vec2 position,
+
+                float start,
+
+                float strength
+
+            ) {
 
                 float elapsed =
 
                     max(
+
                         0.0,
+
                         time -
-                        rippleStart
+                        start
+
                     );
 
 
@@ -486,17 +512,19 @@ if (!canvas) {
                 float distanceFromRipple =
 
                     distance(
+
                         p,
-                        ripplePosition
+
+                        position
+
                     );
 
 
-                float width =
+                /* ---------------------------------------------
+                   Primary wave
+                --------------------------------------------- */
 
-                    0.060;
-
-
-                float wave =
+                float primaryWave =
 
                     sin(
 
@@ -510,7 +538,7 @@ if (!canvas) {
                     );
 
 
-                float ring =
+                float primaryRing =
 
                     exp(
 
@@ -521,7 +549,7 @@ if (!canvas) {
                                 radius
                             )
                             /
-                            width,
+                            0.060,
 
                             2.0
 
@@ -530,6 +558,10 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   Secondary wave
+                --------------------------------------------- */
+
                 float secondaryWave =
 
                     sin(
@@ -537,10 +569,10 @@ if (!canvas) {
                         (
                             distanceFromRipple -
                             radius *
-                            0.82
+                            0.80
                         )
                         *
-                        42.0
+                        43.0
 
                     );
 
@@ -554,10 +586,10 @@ if (!canvas) {
                             (
                                 distanceFromRipple -
                                 radius *
-                                0.82
+                                0.80
                             )
                             /
-                            0.11,
+                            0.115,
 
                             2.0
 
@@ -565,6 +597,40 @@ if (!canvas) {
 
                     );
 
+
+                /* ---------------------------------------------
+                   Soft disturbance around the ripple
+                --------------------------------------------- */
+
+                float disturbance =
+
+                    sin(
+
+                        distanceFromRipple *
+                        18.0
+                        -
+                        elapsed *
+                        5.0
+
+                    )
+
+                    *
+
+                    exp(
+
+                        -distanceFromRipple *
+                        0.65
+
+                    )
+
+                    *
+
+                    elapsed;
+
+
+                /* ---------------------------------------------
+                   Natural fade
+                --------------------------------------------- */
 
                 float fade =
 
@@ -580,14 +646,19 @@ if (!canvas) {
 
                     (
 
-                        wave *
-                        ring
+                        primaryWave *
+                        primaryRing
 
                         +
 
                         secondaryWave *
                         secondaryRing *
                         0.18
+
+                        +
+
+                        disturbance *
+                        0.025
 
                     )
 
@@ -597,11 +668,49 @@ if (!canvas) {
 
                     *
 
-                    rippleStrength
+                    strength
 
                     *
 
                     0.85;
+
+            }
+
+
+            /* =================================================
+               ALL RIPPLES
+            ================================================= */
+
+            float rippleHeight(vec2 p) {
+
+                float result =
+                    0.0;
+
+
+                for (
+                    int i = 0;
+                    i < MAX_RIPPLES;
+                    i++
+                ) {
+
+                    result +=
+
+                        singleRipple(
+
+                            p,
+
+                            ripplePositions[i],
+
+                            rippleStarts[i],
+
+                            rippleStrengths[i]
+
+                        );
+
+                }
+
+
+                return result;
 
             }
 
@@ -626,7 +735,7 @@ if (!canvas) {
 
                     +
 
-                    interactiveRipple(p);
+                    rippleHeight(p);
 
             }
 
@@ -690,7 +799,7 @@ if (!canvas) {
 
 
             /* =================================================
-               REACTIVE MOON REFLECTION
+               MOON REFLECTION
             ================================================= */
 
             float moonReflection(
@@ -701,9 +810,9 @@ if (!canvas) {
 
             ) {
 
-                /*
-                 * Base position of moon reflection.
-                 */
+                /* ---------------------------------------------
+                   Reflection shape
+                --------------------------------------------- */
 
                 float baseDistance =
 
@@ -714,11 +823,6 @@ if (!canvas) {
 
                     );
 
-
-                /*
-                 * Reflection gets wider
-                 * toward the viewer.
-                 */
 
                 float spread =
 
@@ -733,11 +837,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Slightly distort the
-                 * reflection using the
-                 * water surface itself.
-                 */
+                /* ---------------------------------------------
+                   Water-based distortion
+                --------------------------------------------- */
 
                 float surfaceDistortion =
 
@@ -776,9 +878,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Moon direction.
-                 */
+                /* ---------------------------------------------
+                   Moon direction
+                --------------------------------------------- */
 
                 vec3 moonDirection =
 
@@ -797,11 +899,6 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * How directly the
-                 * surface faces the moon.
-                 */
-
                 float angle =
 
                     max(
@@ -819,11 +916,6 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Sharper highlights
-                 * create broken moonlight.
-                 */
-
                 float sparkle =
 
                     pow(
@@ -835,9 +927,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                 * Moving breakup.
-                 */
+                /* ---------------------------------------------
+                   Moving breakup
+                --------------------------------------------- */
 
                 float breakupA =
 
@@ -894,104 +986,118 @@ if (!canvas) {
                     0.40;
 
 
-                /*
-                 * Ripple-specific
-                 * moonlight distortion.
-                 */
+                /* ---------------------------------------------
+                   Ripple interaction with moonlight
+                --------------------------------------------- */
 
-                float elapsed =
+                vec2 rippleP =
 
-                    max(
+                    vec2(
 
-                        0.0,
-
-                        time -
-                        rippleStart
-
-                    );
-
-
-                float rippleRadius =
-
-                    elapsed *
-                    0.62;
-
-
-                float rippleDistance =
-
-                    distance(
-
-                        vec2(
-
-                            uv.x -
-                            0.5,
-
-                            (
-                                1.0 -
-                                uv.y
-                            )
-                            *
-                            1.55
-                            -
-                            0.775
-
-                        ),
-
-                        ripplePosition
-
-                    );
-
-
-                float rippleWave =
-
-                    sin(
+                        uv.x -
+                        0.5,
 
                         (
-                            rippleDistance -
-                            rippleRadius
+                            1.0 -
+                            uv.y
                         )
                         *
-                        24.0
+                        1.55
+                        -
+                        0.775
 
                     );
 
 
-                float rippleInfluence =
+                float rippleMoonEffect =
+                    0.0;
 
-                    exp(
 
-                        -pow(
+                for (
+                    int i = 0;
+                    i < MAX_RIPPLES;
+                    i++
+                ) {
+
+                    float elapsed =
+
+                        max(
+
+                            0.0,
+
+                            time -
+                            rippleStarts[i]
+
+                        );
+
+
+                    float radius =
+
+                        elapsed *
+                        0.62;
+
+
+                    float distanceFromRipple =
+
+                        distance(
+
+                            rippleP,
+
+                            ripplePositions[i]
+
+                        );
+
+
+                    float wave =
+
+                        sin(
 
                             (
-                                rippleDistance -
-                                rippleRadius
+                                distanceFromRipple -
+                                radius
                             )
-                            /
-                            0.14,
+                            *
+                            24.0
 
-                            2.0
-
-                        )
-
-                    );
+                        );
 
 
-                /*
-                 * Break the reflection
-                 * as the ripple passes.
-                 */
+                    float influence =
 
-                float reactiveBreak =
+                        exp(
 
-                    rippleWave *
-                    rippleInfluence *
-                    rippleStrength *
-                    0.45;
+                            -pow(
+
+                                (
+                                    distanceFromRipple -
+                                    radius
+                                )
+                                /
+                                0.14,
+
+                                2.0
+
+                            )
+
+                        );
+
+
+                    rippleMoonEffect +=
+
+                        wave
+                        *
+                        influence
+                        *
+                        rippleStrengths[i]
+                        *
+                        0.42;
+
+                }
 
 
                 breakup +=
 
-                    reactiveBreak;
+                    rippleMoonEffect;
 
 
                 breakup =
@@ -1044,9 +1150,9 @@ if (!canvas) {
                     resolution;
 
 
-                /*
-                 * Convert to pond coordinates.
-                 */
+                /* ---------------------------------------------
+                   Pond coordinates
+                --------------------------------------------- */
 
                 vec2 p =
 
@@ -1054,19 +1160,11 @@ if (!canvas) {
                     0.5;
 
 
-                /*
-                 * Correct aspect ratio.
-                 */
-
                 p.x *=
 
                     resolution.x /
                     resolution.y;
 
-
-                /*
-                 * Slow vertical movement.
-                 */
 
                 p.y +=
 
@@ -1074,26 +1172,18 @@ if (!canvas) {
                     0.00022;
 
 
-                /*
-                 * Give the pond depth.
-                 */
-
                 p.y *=
                     1.55;
 
 
-                /*
-                 * Calculate water.
-                 */
+                /* ---------------------------------------------
+                   Water
+                --------------------------------------------- */
 
                 float surface =
 
                     waterHeight(p);
 
-
-                /*
-                 * Calculate normal.
-                 */
 
                 vec3 normal =
 
@@ -1101,7 +1191,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   BASE WATER
+                   Base water colors
                 --------------------------------------------- */
 
                 vec3 deepWater =
@@ -1165,7 +1255,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   WATER SURFACE HIGHLIGHT
+                   Water surface highlights
                 --------------------------------------------- */
 
                 float highlight =
@@ -1203,7 +1293,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   REACTIVE MOONLIGHT
+                   Moonlight
                 --------------------------------------------- */
 
                 float reflection =
@@ -1244,7 +1334,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   AMBIENT MOONLIGHT
+                   Ambient moon glow
                 --------------------------------------------- */
 
                 float ambientMoon =
@@ -1285,7 +1375,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   CINEMATIC VIGNETTE
+                   Cinematic vignette
                 --------------------------------------------- */
 
                 float vignette =
@@ -1329,7 +1419,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   FINAL CONTRAST
+                   Final contrast
                 --------------------------------------------- */
 
                 color =
@@ -1660,50 +1750,44 @@ if (!canvas) {
                     );
 
 
-                const ripplePositionLocation =
+                const ripplePositionsLocation =
 
                     gl.getUniformLocation(
 
                         program,
 
-                        "ripplePosition"
+                        "ripplePositions"
 
                     );
 
 
-                const rippleStartLocation =
+                const rippleStartsLocation =
 
                     gl.getUniformLocation(
 
                         program,
 
-                        "rippleStart"
+                        "rippleStarts"
 
                     );
 
 
-                const rippleStrengthLocation =
+                const rippleStrengthsLocation =
 
                     gl.getUniformLocation(
 
                         program,
 
-                        "rippleStrength"
+                        "rippleStrengths"
 
                     );
 
 
                 /* =============================================
-                   RIPPLE STATE
+                   RIPPLE STORAGE
                 ============================================= */
 
-                let rippleX = 0.0;
-
-                let rippleY = 0.0;
-
-                let rippleStart = -100.0;
-
-                let rippleStrength = 0.0;
+                const ripples = [];
 
 
                 /* =============================================
@@ -1747,13 +1831,13 @@ if (!canvas) {
                         );
 
 
-                    rippleX =
+                    let rippleX =
 
                         uvX -
                         0.5;
 
 
-                    rippleY =
+                    let rippleY =
 
                         uvY -
                         0.5;
@@ -1770,16 +1854,48 @@ if (!canvas) {
                         1.55;
 
 
-                    rippleStart =
+                    const now =
 
                         performance.now()
                         *
                         0.001;
 
 
-                    rippleStrength =
+                    /* -----------------------------------------
+                       Add new ripple
+                    ----------------------------------------- */
 
-                        3.0;
+                    ripples.push({
+
+                        x:
+                            rippleX,
+
+                        y:
+                            rippleY,
+
+                        start:
+                            now,
+
+                        strength:
+                            3.0
+
+                    });
+
+
+                    /* -----------------------------------------
+                       Remove oldest ripple if necessary
+                    ----------------------------------------- */
+
+                    if (
+
+                        ripples.length >
+                        MAX_RIPPLES
+
+                    ) {
+
+                        ripples.shift();
+
+                    }
 
                 }
 
@@ -1921,6 +2037,131 @@ if (!canvas) {
                     );
 
 
+                    /* -----------------------------------------
+                       Remove very old ripples
+                    ----------------------------------------- */
+
+                    while (
+
+                        ripples.length > 0 &&
+
+                        currentTime -
+                        ripples[0].start >
+                        12.0
+
+                    ) {
+
+                        ripples.shift();
+
+                    }
+
+
+                    /* -----------------------------------------
+                       Prepare uniform arrays
+                    ----------------------------------------- */
+
+                    const positions =
+
+                        new Float32Array(
+
+                            MAX_RIPPLES *
+                            2
+
+                        );
+
+
+                    const starts =
+
+                        new Float32Array(
+
+                            MAX_RIPPLES
+
+                        );
+
+
+                    const strengths =
+
+                        new Float32Array(
+
+                            MAX_RIPPLES
+
+                        );
+
+
+                    for (
+
+                        let i = 0;
+
+                        i < MAX_RIPPLES;
+
+                        i++
+
+                    ) {
+
+                        if (
+
+                            i <
+                            ripples.length
+
+                        ) {
+
+                            positions[
+                                i * 2
+                            ] =
+
+                                ripples[i].x;
+
+
+                            positions[
+                                i * 2 + 1
+                            ] =
+
+                                ripples[i].y;
+
+
+                            starts[i] =
+
+                                ripples[i].start;
+
+
+                            strengths[i] =
+
+                                ripples[i].strength;
+
+                        } else {
+
+                            positions[
+                                i * 2
+                            ] =
+
+                                0.0;
+
+
+                            positions[
+                                i * 2 + 1
+                            ] =
+
+                                0.0;
+
+
+                            starts[i] =
+
+                                -100.0;
+
+
+                            strengths[i] =
+
+                                0.0;
+
+                        }
+
+                    }
+
+
+                    /* -----------------------------------------
+                       Send data to shader
+                    ----------------------------------------- */
+
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -1950,34 +2191,36 @@ if (!canvas) {
                     );
 
 
-                    gl.uniform2f(
+                    gl.uniform2fv(
 
-                        ripplePositionLocation,
+                        ripplePositionsLocation,
 
-                        rippleX,
-
-                        rippleY
+                        positions
 
                     );
 
 
-                    gl.uniform1f(
+                    gl.uniform1fv(
 
-                        rippleStartLocation,
+                        rippleStartsLocation,
 
-                        rippleStart
+                        starts
+
+                    );
+
+
+                    gl.uniform1fv(
+
+                        rippleStrengthsLocation,
+
+                        strengths
 
                     );
 
 
-                    gl.uniform1f(
-
-                        rippleStrengthLocation,
-
-                        rippleStrength
-
-                    );
-
+                    /* -----------------------------------------
+                       Draw
+                    ----------------------------------------- */
 
                     gl.drawArrays(
 
