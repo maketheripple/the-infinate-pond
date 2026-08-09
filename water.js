@@ -1,4 +1,3 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
    VERSION 8.5.0 — NATURAL WATER SURFACE ENHANCEMENT
