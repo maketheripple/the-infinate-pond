@@ -1,7 +1,8 @@
 /* =========================================================
    THE INFINITE POND
+   VERSION 8.4.2 — SINGLE POINTER RIPPLE
    VERSION 8.4.1 — IMPACT DISPLACEMENT
-   ========================================================= */
+========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
 
@@ -126,7 +127,6 @@ if (!canvas) {
                 vec2 f =
                     fract(p);
 
-
                 f =
                     f * f *
                     (
@@ -134,10 +134,8 @@ if (!canvas) {
                         2.0 * f
                     );
 
-
                 float a =
                     hash(i);
-
 
                 float b =
                     hash(
@@ -148,7 +146,6 @@ if (!canvas) {
                         )
                     );
 
-
                 float c =
                     hash(
                         i +
@@ -158,7 +155,6 @@ if (!canvas) {
                         )
                     );
 
-
                 float d =
                     hash(
                         i +
@@ -167,7 +163,6 @@ if (!canvas) {
                             1.0
                         )
                     );
-
 
                 return mix(
 
@@ -202,7 +197,6 @@ if (!canvas) {
                 float amplitude =
                     0.5;
 
-
                 for (
                     int i = 0;
                     i < 5;
@@ -214,16 +208,13 @@ if (!canvas) {
                         *
                         amplitude;
 
-
                     p *=
                         2.0;
-
 
                     amplitude *=
                         0.5;
 
                 }
-
 
                 return value;
 
@@ -666,12 +657,6 @@ if (!canvas) {
                                 );
 
 
-                            /*
-                             * The initial impact starts
-                             * as a small concentrated
-                             * disturbance.
-                             */
-
                             float impactRadius =
 
                                 0.055 +
@@ -694,12 +679,6 @@ if (!canvas) {
 
                                 );
 
-
-                            /*
-                             * The center briefly dips
-                             * into the water before
-                             * relaxing.
-                             */
 
                             float impactWave =
 
@@ -1041,11 +1020,6 @@ if (!canvas) {
                     0.40;
 
 
-                /*
-                 * Impact displacement also
-                 * affects the moon reflection.
-                 */
-
                 float impactReflection =
 
                     0.0;
@@ -1157,11 +1131,6 @@ if (!canvas) {
                 }
 
 
-                /*
-                 * Slightly disturb the breakup
-                 * around the point of impact.
-                 */
-
                 breakup +=
 
                     sin(
@@ -1257,10 +1226,6 @@ if (!canvas) {
                     surfaceNormal(p);
 
 
-                /* ---------------------------------------------
-                   Base water
-                --------------------------------------------- */
-
                 vec3 deepWater =
 
                     vec3(
@@ -1321,10 +1286,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Surface highlights
-                --------------------------------------------- */
-
                 float highlight =
 
                     pow(
@@ -1358,10 +1319,6 @@ if (!canvas) {
 
                     highlight;
 
-
-                /* ---------------------------------------------
-                   Moon reflection
-                --------------------------------------------- */
 
                 float reflection =
 
@@ -1400,10 +1357,6 @@ if (!canvas) {
                     1.90;
 
 
-                /* ---------------------------------------------
-                   Ambient moon illumination
-                --------------------------------------------- */
-
                 float ambientMoon =
 
                     exp(
@@ -1440,10 +1393,6 @@ if (!canvas) {
 
                     ambientMoon;
 
-
-                /* ---------------------------------------------
-                   Cinematic vignette
-                --------------------------------------------- */
 
                 float vignette =
 
@@ -1484,10 +1433,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Final contrast
-                --------------------------------------------- */
 
                 color =
 
@@ -1858,6 +1803,17 @@ if (!canvas) {
 
 
                 /* =============================================
+                   DUPLICATE POINTER PROTECTION
+                ============================================= */
+
+                let lastPointerTime = 0;
+
+                let lastPointerX = 0;
+
+                let lastPointerY = 0;
+
+
+                /* =============================================
                    CREATE RIPPLE
                 ============================================= */
 
@@ -1885,10 +1841,6 @@ if (!canvas) {
                         canvas.getBoundingClientRect();
 
 
-                    /* -----------------------------------------
-                       Convert browser position to canvas position
-                    ----------------------------------------- */
-
                     const localX =
 
                         clientX -
@@ -1900,10 +1852,6 @@ if (!canvas) {
                         clientY -
                         rect.top;
 
-
-                    /* -----------------------------------------
-                       Convert to normalized coordinates
-                    ----------------------------------------- */
 
                     const uvX =
 
@@ -1932,19 +1880,11 @@ if (!canvas) {
                         0.5;
 
 
-                    /* -----------------------------------------
-                       Match shader aspect ratio
-                    ----------------------------------------- */
-
                     rippleX *=
 
                         rect.width /
                         rect.height;
 
-
-                    /* -----------------------------------------
-                       Match pond vertical scale
-                    ----------------------------------------- */
 
                     rippleY *=
 
@@ -1957,10 +1897,6 @@ if (!canvas) {
                         *
                         0.001;
 
-
-                    /* -----------------------------------------
-                       Add new ripple
-                    ----------------------------------------- */
 
                     ripples.push({
 
@@ -1979,10 +1915,6 @@ if (!canvas) {
                     });
 
 
-                    /* -----------------------------------------
-                       Keep maximum number
-                    ----------------------------------------- */
-
                     if (
 
                         ripples.length >
@@ -1999,9 +1931,12 @@ if (!canvas) {
 
                 /* =============================================
                    POINTER RIPPLE
+                   
+                   VERSION 8.4.2
+                   SINGLE POINTER EVENT
                 ============================================= */
 
-                window.addEventListener(
+                canvas.addEventListener(
 
                     "pointerdown",
 
@@ -2009,16 +1944,25 @@ if (!canvas) {
 
                         console.log(
 
-                            "POINTER DETECTED"
+                            "POINTER DETECTED",
+
+                            event.pointerType,
+
+                            event.button
 
                         );
 
 
+                        /*
+                         * Only accept the primary
+                         * pointer/button.
+                         */
+
                         if (
 
-                            event.button !== 0 &&
+                            event.pointerType === "mouse" &&
 
-                            event.pointerType !== "touch"
+                            event.button !== 0
 
                         ) {
 
@@ -2026,6 +1970,116 @@ if (!canvas) {
 
                         }
 
+
+                        /*
+                         * Ignore any pointer that
+                         * somehow falls outside
+                         * the actual canvas bounds.
+                         */
+
+                        const rect =
+
+                            canvas.getBoundingClientRect();
+
+
+                        if (
+
+                            event.clientX <
+                            rect.left ||
+
+                            event.clientX >
+                            rect.right ||
+
+                            event.clientY <
+                            rect.top ||
+
+                            event.clientY >
+                            rect.bottom
+
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * Prevent duplicate pointer
+                         * events from creating a
+                         * second ripple.
+                         *
+                         * This is intentionally tiny
+                         * so two legitimate clicks
+                         * remain separate.
+                         */
+
+                        const now =
+
+                            performance.now();
+
+
+                        const distanceX =
+
+                            Math.abs(
+
+                                event.clientX -
+                                lastPointerX
+
+                            );
+
+
+                        const distanceY =
+
+                            Math.abs(
+
+                                event.clientY -
+                                lastPointerY
+
+                            );
+
+
+                        if (
+
+                            now -
+                            lastPointerTime <
+                            50 &&
+
+                            distanceX <
+                            2 &&
+
+                            distanceY <
+                            2
+
+                        ) {
+
+                            console.log(
+
+                                "DUPLICATE POINTER IGNORED"
+
+                            );
+
+                            return;
+
+                        }
+
+
+                        lastPointerTime =
+                            now;
+
+
+                        lastPointerX =
+                            event.clientX;
+
+
+                        lastPointerY =
+                            event.clientY;
+
+
+                        /*
+                         * Create exactly one
+                         * ripple for this pointer
+                         * action.
+                         */
 
                         createRipple(
 
@@ -2037,7 +2091,7 @@ if (!canvas) {
 
                     },
 
-                    true
+                    false
 
                 );
 
