@@ -743,10 +743,17 @@ if (!canvas) {
                    Distance from ripple source
                 ----------------------------------------- */
 
-                float d =
+                vec2 ripplePoint =
+    ripplePosition;
+
+ripplePoint.y =
+    1.0 -
+    ripplePoint.y;
+
+float d =
     distance(
-        p,
-        ripplePositions[i] - 0.5
+        rippleUV,
+        ripplePoint
     );
 
 
@@ -1372,10 +1379,9 @@ if (!canvas) {
                    Pond coordinates
                 --------------------------------------------- */
 
-                vec2 p =
+                vec2 rippleUV = uv;
 
-                    uv -
-                    0.5;
+rippleUV.y = 1.0 - rippleUV.y;
 
 
                 p.x *=
@@ -2013,91 +2019,96 @@ if (!canvas) {
                    CREATE RIPPLE
                 ============================================= */
 
-                function createRipple(
+function createRipple(
+    clientX,
+    clientY
+) {
 
-                    clientX,
-
-                    clientY
-
-                ) {
-
-                    console.log(
-
-                        "INFINITE POND RIPPLE:",
-
-                        clientX,
-
-                        clientY
-
-                    );
-
-
-                    const rect =
-    canvas.getBoundingClientRect();
-
-
-/*
- * Convert the browser click position
- * into coordinates relative to the canvas.
- */
-
-const localX =
-    clientX -
-    rect.left;
-
-
-const localY =
-    clientY -
-    rect.top;
-
-
-/*
- * Convert to normalized coordinates.
- */
-
-const uvX =
-    localX /
-    rect.width;
-
-
-const uvY =
-    1.0 -
-    (
-        localY /
-        rect.height
+    console.log(
+        "INFINITE POND RIPPLE:",
+        clientX,
+        clientY
     );
 
 
-let rippleX =
-    uvX;
+    /*
+     * Get the actual canvas rectangle.
+     */
+
+    const rect =
+        canvas.getBoundingClientRect();
 
 
-let rippleY =
-    uvY;
+    /*
+     * Convert the click to
+     * normalized canvas coordinates.
+     *
+     * X:
+     * left  = 0
+     * right = 1
+     *
+     * Y:
+     * top    = 0
+     * bottom = 1
+     */
+
+    const uvX =
+        (
+            clientX -
+            rect.left
+        )
+        /
+        rect.width;
 
 
-/*
- * Match the shader's aspect ratio.
- */
-
-rippleX *=
-    rect.width /
-    rect.height;
-
-
-/*
- * Match the pond's vertical scale.
- */
-
-rippleY *=
-    1.55;
+    const uvY =
+        (
+            clientY -
+            rect.top
+        )
+        /
+        rect.height;
 
 
-                    const now =
+    /*
+     * Store the coordinates
+     * exactly as they appear
+     * on the screen.
+     */
 
-                        performance.now()
-                        *
-                        0.001;
+    rippleX =
+        uvX;
+
+
+    rippleY =
+        uvY;
+
+
+    /*
+     * Start time.
+     */
+
+    rippleStart =
+        performance.now()
+        *
+        0.001;
+
+
+    /*
+     * Turn ripple back ON.
+     */
+
+    rippleStrength =
+        3.0;
+
+
+    console.log(
+        "RIPPLE UV:",
+        rippleX,
+        rippleY
+    );
+
+}
 
 
                     /* -----------------------------------------
