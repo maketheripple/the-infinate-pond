@@ -1,8 +1,6 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.6 — SUBTLE DEPTH & LIGHT VARIATION
-   BASELINE: VERSION 8.4.5
+   VERSION 8.4.5 — NATURAL WATER + SINGLE RIPPLE
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -479,12 +477,6 @@ if (!canvas) {
 
             /* =================================================
                NATURAL WATER SURFACE
-               
-               PRESERVED FROM 8.4.5
-               
-               IMPORTANT:
-               This affects only visual surface variation.
-               It does NOT create ripples.
             ================================================= */
 
             float naturalWaterSurface(vec2 p) {
@@ -612,7 +604,6 @@ if (!canvas) {
 
                             -time *
                             0.014
-
                         )
 
                     );
@@ -650,155 +641,20 @@ if (!canvas) {
             /* =================================================
                RIPPLE INTERFERENCE
 
-               UNCHANGED FROM STABLE RIPPLE BASELINE
+               DISABLED AS A VISUAL RIPPLE.
+               PRESERVED SO THE RIPPLE SYSTEM STRUCTURE
+               REMAINS COMPATIBLE.
             ================================================= */
 
             float rippleInterference(vec2 p) {
 
-                float field =
-                    0.0;
-
-
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
-
-                    float strength =
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-                                0.0,
-                                time -
-                                rippleStarts[i]
-                            );
-
-
-                        if (
-                            elapsed < 12.0
-                        ) {
-
-                            float radius =
-
-                                (
-                                    1.0 -
-                                    exp(
-                                        -elapsed *
-                                        0.55
-                                    )
-                                )
-                                *
-                                2.25;
-
-
-                            float d =
-
-                                distance(
-                                    p,
-                                    ripplePositions[i]
-                                );
-
-
-                            float ringDistance =
-
-                                abs(
-                                    d -
-                                    radius
-                                );
-
-
-                            float ring =
-
-                                exp(
-
-                                    -pow(
-
-                                        ringDistance /
-                                        0.085,
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float variation =
-
-                                sin(
-                                    d *
-                                    7.0
-                                );
-
-
-                            variation =
-
-                                0.80 +
-                                variation *
-                                0.20;
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    0.40
-
-                                );
-
-
-                            float lifetime =
-
-                                1.0 -
-
-                                smoothstep(
-
-                                    8.0,
-                                    11.5,
-                                    elapsed
-
-                                );
-
-
-                            field +=
-
-                                ring
-                                *
-                                variation
-                                *
-                                decay
-                                *
-                                lifetime
-                                *
-                                strength
-                                *
-                                0.0;
-
-                        }
-
-                    }
-
-                }
-
-
-                return field;
+                return 0.0;
 
             }
 
 
             /* =================================================
                IMPACT DISPLACEMENT
-
-               UNCHANGED FROM STABLE RIPPLE BASELINE
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -916,8 +772,6 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE MICRO-WAVES
-
-               UNCHANGED
             ================================================= */
 
             float rippleMicroWaves(vec2 p) {
@@ -1040,8 +894,16 @@ if (!canvas) {
 
             /* =================================================
                MOON REFLECTION
-               
-               PRESERVED
+
+               IMPORTANT:
+               The previous impactReflection system has been
+               completely removed.
+
+               The moon reflection now responds ONLY to the
+               actual water surface normal.
+
+               This prevents the reflection system from creating
+               a second visual ripple.
             ================================================= */
 
             float moonReflection(
@@ -1209,129 +1071,6 @@ if (!canvas) {
                     0.40;
 
 
-                float impactReflection =
-
-                    0.0;
-
-
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
-
-                    float strength =
-
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
-
-
-                        if (
-                            elapsed < 2.5
-                        ) {
-
-                            vec2 rippleP =
-
-                                vec2(
-
-                                    uv.x -
-                                    0.5,
-
-                                    (
-                                        1.0 -
-                                        uv.y
-                                    )
-                                    *
-                                    1.55
-                                    -
-                                    0.775
-
-                                );
-
-
-                            float d =
-
-                                distance(
-
-                                    rippleP,
-
-                                    ripplePositions[i]
-
-                                );
-
-
-                            float influence =
-
-                                exp(
-
-                                    -pow(
-
-                                        d /
-                                        (
-                                            0.12 +
-                                            elapsed *
-                                            0.06
-                                        ),
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    1.35
-
-                                );
-
-
-                            impactReflection +=
-
-                                influence
-                                *
-                                decay
-                                *
-                                strength;
-
-                        }
-
-                    }
-
-                }
-
-
-                breakup +=
-
-                    sin(
-
-                        impactReflection *
-                        8.0
-
-                    )
-                    *
-                    0.08;
-
-
                 breakup =
 
                     clamp(
@@ -1481,157 +1220,6 @@ if (!canvas) {
 
 
                 vec3 color =
-
-                    mix(
-
-                        deepWater,
-
-                        blueWater,
-
-                        variation
-
-                    );
-
-
-                /* ---------------------------------------------
-                   SUBTLE DEPTH VARIATION — VERSION 8.4.6
-                   
-                   This is purely visual lighting.
-                   It does NOT modify waterHeight().
-                   It does NOT interact with ripples.
-                --------------------------------------------- */
-
-                float depthNoiseA =
-
-                    fbm(
-
-                        p *
-                        0.42
-
-                        +
-
-                        vec2(
-
-                            time *
-                            0.004,
-
-                            -time *
-                            0.003
-
-                        )
-
-                    );
-
-
-                float depthNoiseB =
-
-                    fbm(
-
-                        p *
-                        0.95
-
-                        -
-
-                        vec2(
-
-                            time *
-                            0.003,
-
-                            time *
-                            0.002
-
-                        )
-
-                    );
-
-
-                float depthVariation =
-
-                    depthNoiseA *
-                    0.65
-
-                    +
-
-                    depthNoiseB *
-                    0.35;
-
-
-                /*
-                 * Keep the effect centered around zero.
-                 *
-                 * The strength is intentionally tiny.
-                 */
-
-                float depthLight =
-
-                    (
-                        depthVariation -
-                        0.5
-                    )
-                    *
-                    0.035;
-
-
-                /*
-                 * Slightly brighter central water.
-                 *
-                 * This helps suggest moonlight reaching
-                 * across a large, open surface.
-                 */
-
-                float centralLight =
-
-                    exp(
-
-                        -pow(
-
-                            (
-                                uv.x -
-                                0.50
-                            )
-                            /
-                            0.65,
-
-                            2.0
-
-                        )
-
-                        *
-
-                        1.4
-
-                    );
-
-
-                depthLight +=
-
-                    (
-                        centralLight -
-                        0.55
-                    )
-                    *
-                    0.012;
-
-
-                variation +=
-
-                    depthLight;
-
-
-                variation =
-
-                    clamp(
-
-                        variation,
-
-                        0.0,
-
-                        1.0
-
-                    );
-
-
-                color =
 
                     mix(
 
@@ -2662,4 +2250,3 @@ if (!canvas) {
     }
 
 }
-```
