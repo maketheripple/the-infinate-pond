@@ -1,7 +1,6 @@
-```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.1 — BRANDED TITLE TREATMENT
+     VERSION 9.2 — RIPPLE MAKER COUNTER
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -290,7 +289,7 @@
 
 
     /* =========================================================
-       RIPPLE MAKER COUNT
+       RIPPLE MAKERS
        ========================================================= */
 
     .ripple-count {
@@ -302,18 +301,22 @@
 
         z-index: 5;
 
+        min-width: 145px;
+
         padding:
-            9px
+            11px
             15px;
 
-        border-radius: 20px;
+        box-sizing: border-box;
+
+        border-radius: 18px;
 
         background:
             rgba(
                 0,
                 15,
                 30,
-                0.30
+                0.38
             );
 
         border:
@@ -322,21 +325,52 @@
                 180,
                 220,
                 255,
-                0.20
+                0.24
             );
 
         backdrop-filter:
-            blur(6px);
+            blur(8px);
 
-        font-size: 14px;
-
-        letter-spacing: 1px;
-
-        opacity: 0.9;
+        text-align: center;
 
         box-shadow:
             0 4px 20px
-            rgba(0, 0, 0, 0.20);
+            rgba(
+                0,
+                0,
+                0,
+                0.22
+            );
+
+    }
+
+
+    .ripple-count-number {
+
+        display: block;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        letter-spacing: 1px;
+
+        opacity: 0.95;
+
+    }
+
+
+    .ripple-count-subtext {
+
+        display: block;
+
+        margin-top: 3px;
+
+        font-size: 11px;
+
+        letter-spacing: 1px;
+
+        opacity: 0.55;
 
     }
 
@@ -394,7 +428,12 @@
 
         box-shadow:
             0 10px 40px
-            rgba(0, 0, 0, 0.35);
+            rgba(
+                0,
+                0,
+                0,
+                0.35
+            );
 
     }
 
@@ -617,11 +656,25 @@
             top: 20px;
             right: 20px;
 
-            font-size: 12px;
+            min-width: 125px;
 
             padding:
                 8px
                 11px;
+
+        }
+
+
+        .ripple-count-number {
+
+            font-size: 12px;
+
+        }
+
+
+        .ripple-count-subtext {
+
+            font-size: 9px;
 
         }
 
@@ -737,7 +790,7 @@
 <div class="title-block">
 
     <div class="title-kicker">
-        presents
+        Presents
     </div>
 
 
@@ -756,8 +809,20 @@
 </div>
 
 
+<!-- =========================================================
+     RIPPLE MAKER COUNT
+     ========================================================= -->
+
 <div class="ripple-count">
-    🌊 100 RIPPLE MAKERS
+
+    <span class="ripple-count-number">
+        🌊 100 RIPPLE MAKERS
+    </span>
+
+    <span class="ripple-count-subtext">
+        and counting
+    </span>
+
 </div>
 
 
@@ -872,4 +937,3 @@
     }
 
 </script>
-```
