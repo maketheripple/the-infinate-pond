@@ -1471,18 +1471,20 @@ let rippleStrength =
    MOUSE RIPPLE
 ========================================================= */
 
-canvas.addEventListener(
+/* =========================================================
+   DOCUMENT CLICK RIPPLE
+========================================================= */
+
+document.addEventListener(
     "click",
     function(event) {
 
         rippleX =
-
             event.clientX /
             window.innerWidth;
 
 
         rippleY =
-
             1.0 -
             (
                 event.clientY /
@@ -1491,7 +1493,6 @@ canvas.addEventListener(
 
 
         rippleStart =
-
             performance.now()
             *
             0.001;
@@ -1501,11 +1502,16 @@ canvas.addEventListener(
             1.0;
 
     }
-);/* =========================================================
+);
+/* =========================================================
    TOUCH RIPPLE
 ========================================================= */
 
-canvas.addEventListener(
+/* =========================================================
+   DOCUMENT TOUCH RIPPLE
+========================================================= */
+
+document.addEventListener(
 
     "touchstart",
 
