@@ -225,37 +225,62 @@ float fbm(
 
 
 /* =========================================================
-   DIRECTIONAL WAVE
+   VERSION 6.1 — ORGANIC WAVE FIELD
 ========================================================= */
 
 float directionalWave(
-
     vec2 p,
-
     vec2 direction,
-
     float frequency,
-
     float speed,
-
-    float amplitude
-
+    float amplitude,
+    float phase
 ) {
 
-    float phase =
+    /*
+     * Slight distortion prevents the wave
+     * from remaining perfectly sinusoidal.
+     */
+
+    float distortion =
+        noise(
+            p * 0.72
+            +
+            vec2(
+                time * 0.018,
+                -time * 0.011
+            )
+        )
+        -
+        0.5;
+
+
+    float position =
         dot(
             p,
             direction
         )
         *
-        frequency
-        +
+        frequency;
+
+
+    position +=
+        distortion
+        *
+        0.55;
+
+
+    position +=
         time *
         speed;
 
 
+    position +=
+        phase;
+
+
     return
-        sin(phase)
+        sin(position)
         *
         amplitude;
 
@@ -263,12 +288,212 @@ float directionalWave(
 
 
 /* =========================================================
-   WATER HEIGHT
+   ORGANIC WATER HEIGHT
 ========================================================= */
 
 float waterHeight(
     vec2 p
 ) {
+
+    float result =
+        0.0;
+
+
+    /*
+     * LARGE PRIMARY SWELLS
+     *
+     * Notice that the frequencies
+     * aren't neat multiples of one
+     * another.
+     */
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    1.0,
+                    0.19
+                )
+            ),
+
+            1.17,
+
+            0.43,
+
+            0.32,
+
+            0.37
+
+        );
+
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    -0.41,
+                    1.0
+                )
+            ),
+
+            0.93,
+
+            -0.29,
+
+            0.27,
+
+            2.11
+
+        );
+
+
+    /*
+     * SECONDARY SWELLS
+     */
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    0.63,
+                    0.78
+                )
+            ),
+
+            1.71,
+
+            0.52,
+
+            0.17,
+
+            4.73
+
+        );
+
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    -0.88,
+                    0.34
+                )
+            ),
+
+            2.13,
+
+            -0.41,
+
+            0.13,
+
+            1.29
+
+        );
+
+
+    /*
+     * SMALLER CROSS WAVES
+     */
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    0.22,
+                    1.0
+                )
+            ),
+
+            3.27,
+
+            0.71,
+
+            0.075,
+
+            3.81
+
+        );
+
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    -0.72,
+                    0.51
+                )
+            ),
+
+            4.13,
+
+            -0.57,
+
+            0.052,
+
+            5.37
+
+        );
+
+
+    /*
+     * VERY SUBTLE surface distortion.
+     *
+     * This should break up the
+     * mathematical appearance without
+     * becoming visible texture.
+     */
+
+    float organicNoise =
+
+        fbm(
+
+            p * 1.15
+            +
+            vec2(
+                time * 0.021,
+                -time * 0.015
+            )
+
+        );
+
+
+    result +=
+
+        (
+            organicNoise -
+            0.5
+        )
+        *
+        0.12;
+
+
+    return result;
+
+}
 
     float result =
         0.0;
@@ -405,7 +630,7 @@ vec3 surfaceNormal(
 ) {
 
     float e =
-        0.004;
+        0.0025;
 
 
     float center =
@@ -549,7 +774,7 @@ float moonReflection(
 
         pow(
             angle,
-            24.0
+            31.0
         );
 
 
@@ -559,19 +784,39 @@ float moonReflection(
 
     float breakup =
 
-        fbm(
+        float breakupA =
 
-            vec2(
+    fbm(
 
-                uv.x * 12.0,
+        uv * 9.7
+        +
+        vec2(
+            time * 0.043,
+            -time * 0.027
+        )
 
-                uv.y * 7.0
+    );
 
-            )
-            +
-            time * 0.08
 
-        );
+float breakupB =
+
+    fbm(
+
+        uv * 17.3
+        +
+        vec2(
+            -time * 0.031,
+            time * 0.019
+        )
+
+    );
+
+
+float breakup =
+
+    breakupA * 0.65
+    +
+    breakupB * 0.35;
 
 
     breakup =
