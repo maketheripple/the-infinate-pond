@@ -1198,12 +1198,53 @@ if (!canvas) {
 
                 float naturalSurface =
 
-                    naturalWaterSurface(p);
+    naturalWaterSurface(p);
 
 
-                variation +=
+/* ---------------------------------------------
+   Subtle natural background variation
 
-                    naturalSurface;
+   This affects only the visual brightness.
+   It does NOT affect waterHeight() or normals,
+   preventing it from creating another ripple.
+--------------------------------------------- */
+
+float backgroundVariation =
+
+    fbm(
+
+        p * 0.42
+
+        +
+
+        vec2(
+
+            time * 0.004,
+
+            -time * 0.003
+
+        )
+
+    );
+
+
+backgroundVariation =
+
+    (
+        backgroundVariation -
+        0.5
+    )
+    *
+    0.035;
+
+
+variation +=
+
+    naturalSurface
+
+    +
+
+    backgroundVariation;
 
 
                 variation =
