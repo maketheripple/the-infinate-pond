@@ -3,714 +3,361 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<title>The Infinite Pond | Make the Ripple</title>
+    <title>The Infinite Pond | Make the Ripple</title>
 
+    <style>
 
-<style>
+        html,
+        body {
 
-/* =========================================================
-   BASIC PAGE
-========================================================= */
+            margin: 0;
+            padding: 0;
 
-* {
-    box-sizing: border-box;
-}
+            width: 100%;
+            height: 100%;
 
-html {
-    scroll-behavior: smooth;
-}
+            overflow: hidden;
 
-body {
+            background: #000;
 
-    margin: 0;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
-    background: #010914;
+        }
 
-    color: white;
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+        body {
 
-    overflow-x: hidden;
-}
+            position: relative;
 
+            color: white;
 
-/* =========================================================
-   HEADER
-========================================================= */
+        }
 
-.header {
 
-    position: fixed;
+        #waterCanvas {
 
-    top: 0;
-    left: 0;
+            position: fixed;
 
-    width: 100%;
+            top: 0;
+            left: 0;
 
-    z-index: 1000;
+            width: 100%;
+            height: 100%;
 
-    text-align: center;
+            display: block;
 
-    padding: 28px 20px 22px;
+            z-index: 0;
 
-    background:
-        linear-gradient(
-            rgba(1,8,17,0.92),
-            rgba(1,8,17,0.20)
-        );
+        }
 
-    backdrop-filter:
-        blur(8px);
 
-    -webkit-backdrop-filter:
-        blur(8px);
+        .moonGlow {
 
-    border-bottom:
-        1px solid
-        rgba(180,220,255,0.08);
+            position: fixed;
 
-    transition:
-        opacity 0.6s ease,
-        transform 0.6s ease;
-}
+            top: 12%;
+            left: 50%;
 
-.header.hidden {
+            width: 180px;
+            height: 180px;
 
-    opacity: 0;
+            transform:
+                translateX(-50%);
 
-    transform:
-        translateY(-100%);
-}
+            border-radius: 50%;
 
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(210, 235, 255, 0.20) 0%,
+                    rgba(170, 215, 255, 0.08) 35%,
+                    rgba(100, 160, 220, 0.02) 60%,
+                    transparent 75%
+                );
 
-.logo {
+            pointer-events: none;
 
-    font-size: 13px;
+            z-index: 1;
 
-    letter-spacing: 5px;
+        }
 
-    text-transform: uppercase;
 
-    opacity: 0.70;
-}
+        .logo {
 
+            position: fixed;
 
-h1 {
+            top: 30px;
+            left: 40px;
 
-    margin:
-        7px 0 5px;
+            z-index: 5;
 
-    font-size:
-        clamp(32px, 6vw, 68px);
+            font-size: 20px;
 
-    font-weight:
-        500;
+            font-weight: bold;
 
-    letter-spacing:
-        1px;
+            letter-spacing: 3px;
 
-    text-shadow:
-        0 3px 20px
-        rgba(0,0,0,0.9);
-}
+        }
 
 
-.subtitle {
+        h1 {
 
-    font-size:
-        17px;
+            position: fixed;
 
-    opacity:
-        0.70;
+            top: 42%;
+            left: 50%;
 
-    font-style:
-        italic;
-}
+            transform:
+                translate(
+                    -50%,
+                    -50%
+                );
 
+            z-index: 5;
 
-.ripple-count {
+            margin: 0;
 
-    margin-top:
-        13px;
+            font-size: clamp(
+                36px,
+                7vw,
+                90px
+            );
 
-    font-size:
-        12px;
+            text-align: center;
 
-    letter-spacing:
-        3px;
+            font-weight: 300;
 
-    opacity:
-        0.55;
-}
+            letter-spacing: 4px;
 
+            pointer-events: none;
 
-/* =========================================================
-   POND
-========================================================= */
+        }
 
-.pond {
 
-    position:
-        relative;
+        .subtitle {
 
-    width:
-        100%;
+            position: fixed;
 
-    height:
-        12000px;
+            top: calc(42% + 65px);
+            left: 50%;
 
-    overflow:
-        hidden;
+            transform:
+                translateX(-50%);
 
-    background:
-        #010914;
-}
+            z-index: 5;
 
+            text-align: center;
 
-/* =========================================================
-   WATER CANVAS
-========================================================= */
+            font-size: 18px;
 
-#waterCanvas {
+            opacity: 0.8;
 
-    position: fixed;
+            pointer-events: none;
 
-    top: 0;
+        }
 
-    left: 0;
 
-    width: 100vw;
+        .ripple-count {
 
-    height: 100vh;
+            position: fixed;
 
-    z-index: 1;
+            top: 30px;
+            right: 40px;
 
-    pointer-events: none;
+            z-index: 5;
 
-    display: block;
-}
+            font-size: 15px;
 
+            letter-spacing: 1px;
 
-/* =========================================================
-   MOONLIGHT ATMOSPHERE
-========================================================= */
+            opacity: 0.85;
 
-.moonGlow {
+        }
 
-    position:
-        absolute;
 
-    top:
-        0;
+        .message {
 
-    left:
-        50%;
+            position: fixed;
 
-    width:
-        800px;
+            left: 50%;
+            bottom: 40px;
 
-    height:
-        800px;
+            transform:
+                translateX(-50%);
 
-    transform:
-        translateX(-50%);
+            z-index: 10;
 
-    z-index:
-        2;
+            width: min(
+                90%,
+                500px
+            );
 
-    pointer-events:
-        none;
+            padding: 25px;
 
-    background:
-        radial-gradient(
-            circle,
-            rgba(210,235,255,0.14),
-            rgba(100,160,210,0.04) 35%,
-            transparent 70%
-        );
+            box-sizing: border-box;
 
-    filter:
-        blur(12px);
-}
+            text-align: center;
 
+            border-radius: 16px;
 
+            background:
+                rgba(
+                    0,
+                    15,
+                    30,
+                    0.82
+                );
 
+            border:
+                1px solid
+                rgba(
+                    180,
+                    220,
+                    255,
+                    0.25
+                );
 
+            backdrop-filter:
+                blur(10px);
 
-/* =========================================================
-   RIPPLE
-========================================================= */
+            display: none;
 
-.ripple {
+        }
 
-    position:
-        absolute;
 
-    width:
-        105px;
+        .message-number {
 
-    height:
-        105px;
+            font-size: 14px;
 
-    border-radius:
-        50%;
+            opacity: 0.6;
 
-    z-index:
-        20;
+            margin-bottom: 10px;
 
-    cursor:
-        pointer;
+        }
 
-    transform:
-        translate(
-            -50%,
-            -50%
-        );
 
-    transition:
-        transform
-        0.5s ease;
+        .message-text {
 
-    filter:
+            font-size: 22px;
 
-        drop-shadow(
-            0 0 5px
-            rgba(150,210,255,0.55)
-        )
+            line-height: 1.4;
 
-        drop-shadow(
-            0 0 18px
-            rgba(90,175,255,0.28)
-        );
-}
+            margin-bottom: 10px;
 
+        }
 
-.ripple::before {
 
-    content:
-        "";
+        .message-location {
 
-    position:
-        absolute;
+            font-size: 14px;
 
-    inset:
-        0;
+            opacity: 0.65;
 
-    border-radius:
-        50%;
+            margin-bottom: 20px;
 
-    border:
-        2px solid
-        rgba(225,245,255,0.72);
+        }
 
-    box-shadow:
 
-        0 0 5px
-        rgba(220,245,255,0.65),
+        .close {
 
-        0 0 18px
-        rgba(100,190,255,0.38),
+            padding:
+                10px
+                20px;
 
-        inset 0 0 8px
-        rgba(200,235,255,0.18);
-}
+            border: none;
 
+            border-radius: 20px;
 
-.ripple::after {
+            cursor: pointer;
 
-    content:
-        "";
+            background: rgba(
+                255,
+                255,
+                255,
+                0.15
+            );
 
-    position:
-        absolute;
+            color: white;
 
-    inset:
-        17px;
+        }
 
-    border-radius:
-        50%;
 
-    border:
-        2px solid
-        rgba(215,238,255,0.42);
-}
+        .close:hover {
 
+            background: rgba(
+                255,
+                255,
+                255,
+                0.25
+            );
 
-.ripple-dot {
+        }
 
-    position:
-        absolute;
 
-    width:
-        7px;
+        .make-ripple {
 
-    height:
-        7px;
+            position: fixed;
 
-    left:
-        50%;
+            bottom: 25px;
+            right: 30px;
 
-    top:
-        50%;
+            z-index: 5;
 
-    transform:
-        translate(
-            -50%,
-            -50%
-        );
+            padding:
+                12px
+                20px;
 
-    border-radius:
-        50%;
+            border-radius: 25px;
 
-    background:
-        rgba(240,250,255,0.95);
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.10
+                );
 
-    box-shadow:
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.20
+                );
 
-        0 0 5px
-        rgba(240,250,255,1),
+            color: white;
 
-        0 0 15px
-        rgba(150,215,255,0.85),
+            font-size: 15px;
 
-        0 0 30px
-        rgba(90,175,255,0.45);
-}
+            cursor: pointer;
 
+        }
 
-.ripple:hover {
 
-    transform:
-        translate(
-            -50%,
-            -50%
-        )
-        scale(1.45);
-}
+        .make-ripple:hover {
 
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.20
+                );
 
-/* =========================================================
-   MESSAGE
-========================================================= */
+        }
 
-.message-overlay {
-
-    position:
-        fixed;
-
-    inset:
-        0;
-
-    z-index:
-        2000;
-
-    background:
-        rgba(0,5,12,0.55);
-
-    backdrop-filter:
-        blur(5px);
-
-    -webkit-backdrop-filter:
-        blur(5px);
-
-    opacity:
-        0;
-
-    pointer-events:
-        none;
-
-    transition:
-        opacity 0.35s ease;
-}
-
-
-.message-overlay.active {
-
-    opacity:
-        1;
-
-    pointer-events:
-        auto;
-}
-
-
-.message {
-
-    position:
-        fixed;
-
-    left:
-        50%;
-
-    top:
-        50%;
-
-    width:
-        min(90%, 520px);
-
-    padding:
-        40px 35px;
-
-    transform:
-        translate(
-            -50%,
-            -50%
-        )
-        scale(0.90);
-
-    background:
-
-        linear-gradient(
-            145deg,
-            rgba(7,35,53,0.98),
-            rgba(2,18,30,0.98)
-        );
-
-    border:
-        1px solid
-        rgba(200,230,255,0.15);
-
-    border-radius:
-        24px;
-
-    box-shadow:
-        0 30px 100px
-        rgba(0,0,0,0.75);
-
-    text-align:
-        center;
-
-    opacity:
-        0;
-
-    transition:
-        transform 0.35s ease,
-        opacity 0.35s ease;
-}
-
-
-.message-overlay.active
-.message {
-
-    opacity:
-        1;
-
-    transform:
-        translate(
-            -50%,
-            -50%
-        )
-        scale(1);
-}
-
-
-.message-number {
-
-    font-size:
-        11px;
-
-    letter-spacing:
-        4px;
-
-    opacity:
-        0.55;
-
-    margin-bottom:
-        25px;
-}
-
-
-.message-text {
-
-    font-size:
-        22px;
-
-    line-height:
-        1.6;
-
-    font-style:
-        italic;
-
-    margin-bottom:
-        25px;
-}
-
-
-.message-location {
-
-    font-size:
-        13px;
-
-    opacity:
-        0.55;
-}
-
-
-.close {
-
-    margin-top:
-        28px;
-
-    padding:
-        11px 28px;
-
-    border:
-        1px solid
-        rgba(215,235,255,0.35);
-
-    background:
-        transparent;
-
-    color:
-        white;
-
-    border-radius:
-        30px;
-
-    cursor:
-        pointer;
-}
-
-
-.close:hover {
-
-    background:
-        rgba(200,230,255,0.10);
-}
-
-
-/* =========================================================
-   MAKE YOUR RIPPLE
-========================================================= */
-
-.make-ripple {
-
-    position:
-        fixed;
-
-    right:
-        25px;
-
-    bottom:
-        25px;
-
-    z-index:
-        1500;
-
-    padding:
-        15px 25px;
-
-    border:
-        none;
-
-    border-radius:
-        50px;
-
-    background:
-        rgba(225,240,255,0.96);
-
-    color:
-        #06253a;
-
-    font-weight:
-        bold;
-
-    cursor:
-        pointer;
-
-    box-shadow:
-        0 10px 35px
-        rgba(0,0,0,0.45);
-
-    transition:
-        transform 0.2s ease;
-}
-
-
-.make-ripple:hover {
-
-    transform:
-        translateY(-4px);
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:600px) {
-
-    .header {
-
-        padding:
-            20px 15px;
-    }
-
-    .logo {
-
-        font-size:
-            10px;
-
-        letter-spacing:
-            3px;
-    }
-
-    h1 {
-
-        font-size:
-            34px;
-    }
-
-    .subtitle {
-
-        font-size:
-            14px;
-    }
-
-    .ripple {
-
-        width:
-            75px;
-
-        height:
-            75px;
-    }
-
-    .message {
-
-        padding:
-            30px 24px;
-    }
-
-    .message-text {
-
-        font-size:
-            19px;
-    }
-
-    .make-ripple {
-
-        right:
-            15px;
-
-        bottom:
-            15px;
-
-        padding:
-            13px 20px;
-    }
-
-}
-
-</style>
+    </style>
 
 </head>
 
@@ -718,1243 +365,119 @@ h1 {
 <body>
 
 
-<header class="header"
-        id="header">
-
     <div class="logo">
         MAKE THE RIPPLE
     </div>
+
 
     <h1>
         The Infinite Pond
     </h1>
 
+
     <div class="subtitle">
         Every ripple starts with one person.
     </div>
+
 
     <div class="ripple-count">
         🌊 100 RIPPLE MAKERS
     </div>
 
-</header>
+
+    <canvas id="waterCanvas"></canvas>
 
 
-<main class="pond"
-      id="pond">
-
-
-    <canvas id="waterCanvas">
-    </canvas>
-
-
-    <div class="moonGlow">
-    </div>
-
-
-    
-
-</main>
-
-
-<div class="message-overlay"
-     id="messageOverlay">
+    <div class="moonGlow"></div>
 
 
     <div class="message">
 
-
-        <div class="message-number"
-             id="messageNumber">
+        <div
+            class="message-number"
+            id="messageNumber">
         </div>
 
 
-        <div class="message-text"
-             id="messageText">
+        <div
+            class="message-text"
+            id="messageText">
         </div>
 
 
-        <div class="message-location"
-             id="messageLocation">
+        <div
+            class="message-location"
+            id="messageLocation">
         </div>
 
 
-        <button class="close"
-                onclick="closeMessage()">
+        <button
+            class="close"
+            onclick="closeMessage()">
 
             Close Ripple
 
         </button>
 
-
     </div>
 
-</div>
 
-
-<button class="make-ripple"
+    <button
+        class="make-ripple"
         onclick="makeRipple()">
 
-    🌊 Make Your Ripple
+        🌊 Make Your Ripple
 
-</button>
+    </button>
 
 
-<script>
+    <script src="water.js"></script>
 
-/* =========================================================
-   VERSION 4 — INFINITE VIEWPORT WATER
-========================================================= */
 
-const canvas =
-    document.getElementById("waterCanvas");
+    <script>
 
-const ctx =
-    canvas.getContext("2d", {
-        alpha: false
-    });
+        function closeMessage() {
 
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-const WATER = {
-
-    /*
-     * Internal rendering resolution.
-     *
-     * Lower = faster
-     * Higher = more detailed
-     */
-
-    resolution:
-        5,
-
-
-    /*
-     * Water movement.
-     */
-
-    speed:
-        0.00045,
-
-
-    /*
-     * Wave scales.
-     */
-
-    large:
-        0.002,
-
-    medium:
-        0.006,
-
-    small:
-        0.018,
-
-    micro:
-        0.045,
-
-
-    /*
-     * Moon position.
-     */
-
-    moonX:
-        0.50,
-
-    moonY:
-        0.08
-
-};
-
-
-/* =========================================================
-   CANVAS SIZE
-========================================================= */
-
-let canvasWidth = 0;
-let canvasHeight = 0;
-
-let scale = 1;
-
-
-function resizeWater() {
-
-    canvasWidth =
-        window.innerWidth;
-
-
-    canvasHeight =
-        window.innerHeight;
-
-
-    scale =
-        Math.min(
-            window.devicePixelRatio || 1,
-            1.5
-        );
-
-
-    canvas.width =
-        Math.floor(
-            canvasWidth /
-            WATER.resolution
-            *
-            scale
-        );
-
-
-    canvas.height =
-        Math.floor(
-            canvasHeight /
-            WATER.resolution
-            *
-            scale
-        );
-
-
-    canvas.style.width =
-        canvasWidth +
-        "px";
-
-
-    canvas.style.height =
-        canvasHeight +
-        "px";
-
-
-    ctx.setTransform(
-        scale,
-        0,
-        0,
-        scale,
-        0,
-        0
-    );
-
-}
-
-
-window.addEventListener(
-    "resize",
-    resizeWater
-);
-
-
-resizeWater();
-
-
-/* =========================================================
-   SMOOTH NOISE
-========================================================= */
-
-function noise(
-    x,
-    y,
-    scale,
-    offset
-) {
-
-    const nx =
-        x *
-        scale +
-        offset;
-
-
-    const ny =
-        y *
-        scale +
-        offset *
-        0.73;
-
-
-    return (
-
-        Math.sin(
-            nx * 1.71 +
-            Math.sin(
-                ny * 2.17
-            )
-        )
-
-        +
-
-        Math.sin(
-            ny * 1.43 +
-            Math.sin(
-                nx * 1.87
-            )
-        )
-
-        +
-
-        Math.sin(
-            (nx + ny)
-            * 0.82
-        )
-
-    ) / 3;
-
-}
-
-
-/* =========================================================
-   WATER HEIGHT
-========================================================= */
-
-function waterHeight(
-    x,
-    y,
-    t
-) {
-
-    const large =
-        noise(
-            x,
-            y,
-            WATER.large,
-            t * 0.7
-        );
-
-
-    const medium =
-        noise(
-            x + 900,
-            y - 300,
-            WATER.medium,
-            t * 1.2
-        )
-        *
-        0.55;
-
-
-    const small =
-        noise(
-            x - 700,
-            y + 1200,
-            WATER.small,
-            t * 1.9
-        )
-        *
-        0.25;
-
-
-    const micro =
-        noise(
-            x + 1800,
-            y + 500,
-            WATER.micro,
-            t * 3.1
-        )
-        *
-        0.10;
-
-
-    return (
-        large +
-        medium +
-        small +
-        micro
-    );
-
-}
-
-
-/* =========================================================
-   SURFACE NORMAL
-========================================================= */
-
-function surfaceNormal(
-    x,
-    y,
-    t
-) {
-
-    const distance =
-        8;
-
-
-    const left =
-        waterHeight(
-            x - distance,
-            y,
-            t
-        );
-
-
-    const right =
-        waterHeight(
-            x + distance,
-            y,
-            t
-        );
-
-
-    const up =
-        waterHeight(
-            x,
-            y - distance,
-            t
-        );
-
-
-    const down =
-        waterHeight(
-            x,
-            y + distance,
-            t
-        );
-
-
-    return {
-
-        x:
-            left - right,
-
-        y:
-            up - down
-
-    };
-
-}
-
-
-/* =========================================================
-   MOON REFLECTION
-========================================================= */
-
-function calculateMoonReflection(
-    x,
-    y,
-    normal
-) {
-
-    const moonX =
-        canvasWidth *
-        WATER.moonX;
-
-
-    /*
-     * The moon itself is above
-     * the visible water.
-     */
-
-    const dx =
-        x -
-        moonX;
-
-
-    /*
-     * The further away we are,
-     * the wider the reflection.
-     */
-
-    const spread =
-        40 +
-        (
-            y /
-            canvasHeight
-        )
-        *
-        420;
-
-
-    const horizontal =
-        Math.exp(
-
-            -(
-                dx * dx
-            )
-            /
-            (
-                spread *
-                spread
-            )
-
-        );
-
-
-    /*
-     * Surface orientation.
-     */
-
-    const angle =
-        Math.max(
-            0,
-            1 -
-            Math.abs(
-                normal.x
-            )
-        );
-
-
-    /*
-     * Break the reflection apart.
-     */
-
-    const variation =
-        noise(
-            x,
-            y,
-            0.012,
-            performance.now()
-            * 0.0001
-        );
-
-
-    const breakup =
-        Math.max(
-            0,
-            variation +
-            0.35
-        );
-
-
-    return (
-        horizontal *
-        angle *
-        breakup
-    );
-
-}
-
-
-/* =========================================================
-   DRAW BASE WATER
-========================================================= */
-
-function drawBaseWater() {
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            canvasHeight
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "#071d31"
-    );
-
-
-    gradient.addColorStop(
-        0.35,
-        "#041827"
-    );
-
-
-    gradient.addColorStop(
-        0.70,
-        "#02121e"
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "#010910"
-    );
-
-
-    ctx.fillStyle =
-        gradient;
-
-
-    ctx.fillRect(
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-    );
-
-}
-
-
-/* =========================================================
-   DRAW WATER SURFACE
-========================================================= */
-
-function drawSurface(
-    t
-) {
-
-    const step =
-        WATER.resolution;
-
-
-    for (
-        let y = 0;
-        y < canvasHeight;
-        y += step
-    ) {
-
-
-        for (
-            let x = 0;
-            x < canvasWidth;
-            x += step
-        ) {
-
-
-            const normal =
-                surfaceNormal(
-                    x,
-                    y,
-                    t
+            const message =
+                document.querySelector(
+                    ".message"
                 );
 
+            if (message) {
 
-            const reflection =
-                calculateMoonReflection(
-                    x,
-                    y,
-                    normal
-                );
-
-
-            /*
-             * General surface
-             * variation.
-             */
-
-            const surface =
-                waterHeight(
-                    x,
-                    y,
-                    t
-                );
-
-
-            /*
-             * Small amount of
-             * ambient reflected light.
-             */
-
-            const ambient =
-                Math.max(
-                    0,
-                    surface
-                    * 0.08
-                    +
-                    0.08
-                );
-
-
-            const brightness =
-                ambient +
-                reflection *
-                0.85;
-
-
-            if (
-                brightness >
-                0.075
-            ) {
-
-
-                /*
-                 * Long horizontal
-                 * glints.
-                 */
-
-                const length =
-                    1.5 +
-                    reflection *
-                    15;
-
-
-                const thickness =
-                    0.35 +
-                    reflection *
-                    1.4;
-
-
-                ctx.beginPath();
-
-
-                ctx.ellipse(
-
-                    x,
-
-                    y,
-
-                    length,
-
-                    thickness,
-
-                    normal.x
-                    *
-                    0.20,
-
-                    0,
-
-                    Math.PI * 2
-
-                );
-
-
-                const alpha =
-                    Math.min(
-                        0.32,
-                        brightness
-                        * 0.34
-                    );
-
-
-                ctx.fillStyle =
-
-                    `rgba(
-                        190,
-                        225,
-                        245,
-                        ${alpha}
-                    )`;
-
-
-                ctx.fill();
+                message.style.display =
+                    "none";
 
             }
 
         }
 
-    }
 
-}
+        function makeRipple() {
 
+            const x =
+                window.innerWidth / 2;
 
-/* =========================================================
-   MOON GLOW
-========================================================= */
-
-function drawMoonGlow() {
-
-    const x =
-        canvasWidth *
-        WATER.moonX;
-
-
-    const y =
-        canvasHeight *
-        WATER.moonY;
-
-
-    const radius =
-        canvasWidth *
-        0.55;
-
-
-    const glow =
-        ctx.createRadialGradient(
-
-            x,
-            y,
-
-            5,
-
-            x,
-            y,
-
-            radius
-
-        );
-
-
-    glow.addColorStop(
-        0,
-        "rgba(225,242,255,0.15)"
-    );
-
-
-    glow.addColorStop(
-        0.20,
-        "rgba(170,215,245,0.065)"
-    );
-
-
-    glow.addColorStop(
-        0.50,
-        "rgba(90,150,195,0.018)"
-    );
-
-
-    glow.addColorStop(
-        1,
-        "rgba(0,0,0,0)"
-    );
-
-
-    ctx.fillStyle =
-        glow;
-
-
-    ctx.fillRect(
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-    );
-
-}
-
-
-/* =========================================================
-   VIGNETTE
-========================================================= */
-
-function drawVignette() {
-
-    const vignette =
-        ctx.createRadialGradient(
-
-            canvasWidth / 2,
-            canvasHeight * 0.30,
-
-            canvasWidth * 0.10,
-
-            canvasWidth / 2,
-            canvasHeight * 0.35,
-
-            canvasWidth * 0.85
-
-        );
-
-
-    vignette.addColorStop(
-        0,
-        "rgba(0,0,0,0)"
-    );
-
-
-    vignette.addColorStop(
-        0.65,
-        "rgba(0,0,0,0.04)"
-    );
-
-
-    vignette.addColorStop(
-        1,
-        "rgba(0,3,8,0.48)"
-    );
-
-
-    ctx.fillStyle =
-        vignette;
-
-
-    ctx.fillRect(
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-    );
-
-}
-
-
-/* =========================================================
-   MAIN RENDER LOOP
-========================================================= */
-
-function renderWater() {
-
-    const now =
-        performance.now();
-
-
-    const t =
-        now *
-        WATER.speed;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        canvasWidth,
-        canvasHeight
-    );
-
-
-    drawBaseWater();
-
-
-    drawSurface(
-        t
-    );
-
-
-    drawMoonGlow();
-
-
-    drawVignette();
-
-
-    requestAnimationFrame(
-        renderWater
-    );
-
-}
-
-
-renderWater();
-
-
-/* =========================================================
-   RIPPLE DATA
-========================================================= */
-
-const messages = [
-
-    {
-        text:
-        "Today I checked in on someone who seemed like they needed someone to talk to.",
-
-        location:
-        "Kitchener, Ontario"
-    },
-
-    {
-        text:
-        "Asking for help doesn't make you weak.",
-
-        location:
-        "Waterloo, Ontario"
-    },
-
-    {
-        text:
-        "Today I chose kindness.",
-
-        location:
-        "Cambridge, Ontario"
-    },
-
-    {
-        text:
-        "I reminded someone that they aren't alone.",
-
-        location:
-        "Guelph, Ontario"
-    },
-
-    {
-        text:
-        "Today I took a moment to look after myself.",
-
-        location:
-        "Toronto, Ontario"
-    },
-
-    {
-        text:
-        "Sometimes the smallest act of kindness can make the biggest difference.",
-
-        location:
-        "Hamilton, Ontario"
-    },
-
-    {
-        text:
-        "I asked someone how they were really doing.",
-
-        location:
-        "London, Ontario"
-    },
-
-    {
-        text:
-        "Today I decided that reaching out was worth it.",
-
-        location:
-        "Ottawa, Ontario"
-    },
-
-    {
-        text:
-        "You never know what someone is carrying. Be kind.",
-
-        location:
-        "Windsor, Ontario"
-    },
-
-    {
-        text:
-        "I don't have to solve everything. Sometimes listening is enough.",
-
-        location:
-        "Kingston, Ontario"
-    }
-
-];
-
-
-const pond =
-    document.getElementById(
-        "pond"
-    );
-
-let rippleNumber = 0;
-
-
-/* =========================================================
-   CREATE RIPPLE
-========================================================= */
-
-function createRipple() {
-
-    rippleNumber++;
-
-
-    const ripple =
-        document.createElement(
-            "div"
-        );
-
-
-    ripple.className =
-        "ripple";
-
-
-    const dot =
-        document.createElement(
-            "div"
-        );
-
-
-    dot.className =
-        "ripple-dot";
-
-
-    ripple.appendChild(
-        dot
-    );
-
-
-    const data =
-        messages[
-            Math.floor(
-                Math.random()
-                *
-                messages.length
-            )
-        ];
-
-
-    ripple.dataset.text =
-        data.text;
-
-
-    ripple.dataset.location =
-        data.location;
-
-
-    ripple.dataset.number =
-        rippleNumber;
-
-
-    ripple.style.left =
-        (
-            5 +
-            Math.random() * 90
-        )
-        + "%";
-
-
-    ripple.style.top =
-        (
-            150 +
-            Math.random() * 11700
-        )
-        + "px";
-
-
-    ripple.addEventListener(
-        "click",
-        function(event) {
-
-            event.stopPropagation();
-
-
-            showMessage(
-
-                ripple.dataset.number,
-
-                ripple.dataset.text,
-
-                ripple.dataset.location
-
-            );
-
-        }
-    );
-
-
-    pond.appendChild(
-        ripple
-    );
-
-}
-
-
-/* =========================================================
-   INITIAL RIPPLE FIELD
-========================================================= */
-
-for (
-    let i = 0;
-    i < 120;
-    i++
-) {
-
-    createRipple();
-
-}
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(
-    number,
-    text,
-    location
-) {
-
-    document.getElementById(
-        "messageNumber"
-    ).innerText =
-        "RIPPLE #" +
-        number;
-
-
-    document.getElementById(
-        "messageText"
-    ).innerText =
-        '"' +
-        text +
-        '"';
-
-
-    document.getElementById(
-        "messageLocation"
-    ).innerText =
-        "— " +
-        location;
-
-
-    document.getElementById(
-        "messageOverlay"
-    ).classList.add(
-        "active"
-    );
-
-}
-
-
-function closeMessage() {
-
-    document.getElementById(
-        "messageOverlay"
-    ).classList.remove(
-        "active"
-    );
-
-}
-
-
-/* =========================================================
-   CLOSE MESSAGE
-========================================================= */
-
-document
-    .getElementById(
-        "messageOverlay"
-    )
-    .addEventListener(
-        "click",
-        function(event) {
+            const y =
+                window.innerHeight / 2;
 
             if (
-                event.target === this
+                typeof createRipple ===
+                "function"
             ) {
 
-                closeMessage();
+                createRipple(
+                    x,
+                    y
+                );
 
             }
 
         }
-    );
+
+    </script>
 
 
-/* =========================================================
-   MAKE YOUR RIPPLE
-========================================================= */
-
-function makeRipple() {
-
-    alert(
-        "Your Ripple submission form will be connected here next."
-    );
-
-}
-
-
-/* =========================================================
-   HEADER BEHAVIOUR
-========================================================= */
-
-let lastScroll =
-    window.scrollY;
-
-
-window.addEventListener(
-    "scroll",
-    function() {
-
-        const currentScroll =
-            window.scrollY;
-
-
-        const header =
-            document.getElementById(
-                "header"
-            );
-
-
-        if (
-            currentScroll > 500 &&
-            currentScroll > lastScroll
-        ) {
-
-            header.classList.add(
-                "hidden"
-            );
-
-        }
-
-        else {
-
-            header.classList.remove(
-                "hidden"
-            );
-
-        }
-
-
-        lastScroll =
-            currentScroll;
-
-    }
-);
-
-</script>
-
-<script src="water.js"></script>
-      
 </body>
 
 </html>
