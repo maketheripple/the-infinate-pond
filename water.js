@@ -2032,45 +2032,71 @@ if (!canvas) {
                     );
 
 
-                    const uvX =
-
-                        clientX /
-                        window.innerWidth;
+                    const rect =
+    canvas.getBoundingClientRect();
 
 
-                    const uvY =
+/*
+ * Convert the browser click position
+ * into coordinates relative to the canvas.
+ */
 
-                        1.0 -
-
-                        (
-
-                            clientY /
-                            window.innerHeight
-
-                        );
+const localX =
+    clientX -
+    rect.left;
 
 
-                    let rippleX =
-
-                        uvX -
-                        0.5;
-
-
-                    let rippleY =
-
-                        uvY -
-                        0.5;
+const localY =
+    clientY -
+    rect.top;
 
 
-                    rippleX *=
+/*
+ * Convert to normalized coordinates.
+ */
 
-                        window.innerWidth /
-                        window.innerHeight;
+const uvX =
+    localX /
+    rect.width;
 
 
-                    rippleY *=
+const uvY =
+    1.0 -
+    (
+        localY /
+        rect.height
+    );
 
-                        1.55;
+
+/*
+ * Convert to pond coordinates.
+ */
+
+let rippleX =
+    uvX -
+    0.5;
+
+
+let rippleY =
+    uvY -
+    0.5;
+
+
+/*
+ * Match the shader's aspect ratio.
+ */
+
+rippleX *=
+    rect.width /
+    rect.height;
+
+
+/*
+ * Match the pond's vertical scale.
+ */
+
+rippleY *=
+    1.55;
 
 
                     const now =
