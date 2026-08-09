@@ -1328,7 +1328,7 @@ if (!canvas) {
 
 /* =============================================
    RIPPLE STATE
-   ============================================= */
+============================================= */
 
 let rippleX = 0.0;
 
@@ -1341,7 +1341,7 @@ let rippleStrength = 0.0;
 
 /* =============================================
    CREATE RIPPLE
-   ============================================= */
+============================================= */
 
 function createRipple(
     clientX,
@@ -1406,7 +1406,6 @@ function createRipple(
 
     /*
      * Start the ripple.
-
      */
 
     rippleStart =
@@ -1427,7 +1426,7 @@ function createRipple(
 
 /* =============================================
    POINTER RIPPLE
-   ============================================= */
+============================================= */
 
 window.addEventListener(
     "pointerdown",
@@ -1438,61 +1437,14 @@ window.addEventListener(
         );
 
 
-        /*
-         * Ignore right-click.
-         */
-
-        if (
-            event.button !== 0 &&
-            event.pointerType !== "touch"
-        ) {
-
-            return;
-
-        }
+        
 
 
-        createRipple(
-            event.clientX,
-            event.clientY
-        );
+/* =============================================
+   RESIZE
+============================================= */
 
-    },
-    true
-);
-
-                        /*
-                         * Ignore right-click.
-                         */
-
-                        if (
-                            event.button !== 0 &&
-                            event.pointerType !== "touch"
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        createRipple(
-
-                            event.clientX,
-
-                            event.clientY
-
-                        );
-
-                    }
-
-                );
-
-
-                /* =============================================
-                   RESIZE
-                ============================================= */
-
-                function resizeWater() {
+function resizeWater() {
 
                     const ratio =
 
