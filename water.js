@@ -1,7 +1,6 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.7 — RIPPLE ORIENTATION CORRECTION
+   VERSION 8.4.8 — RIPPLE ORIENTATION CORRECTION
    ========================================================= */
 
 
@@ -511,11 +510,11 @@ if (!canvas) {
 
                The ONLY active ripple displacement.
 
-               VERSION 8.4.7 CHANGE:
+               8.4.8 restores the known-good 8.4.6
+               displacement polarity.
 
-               The displacement polarity is inverted so the
-               moonlight catches the ripple from the correct
-               physical orientation.
+               Ripple orientation is corrected through
+               the surface normal instead.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -617,7 +616,7 @@ if (!canvas) {
                                 *
                                 strength
                                 *
-                                -0.075;
+                                0.075;
 
                         }
 
@@ -705,6 +704,14 @@ if (!canvas) {
 
             /* =================================================
                SURFACE NORMAL
+
+               VERSION 8.4.8 ORIENTATION CORRECTION
+
+               The water displacement itself remains unchanged.
+
+               Only the interpretation of the surface slope is
+               reversed so the lighting reads the ripple from
+               the opposite physical orientation.
             ================================================= */
 
             vec3 surfaceNormal(vec2 p) {
@@ -748,9 +755,9 @@ if (!canvas) {
 
                     vec3(
 
-                        center - x,
+                        x - center,
 
-                        center - y,
+                        y - center,
 
                         e
 
@@ -922,10 +929,6 @@ if (!canvas) {
 
             ) {
 
-                /* ---------------------------------------------
-                   Moon position above the visible page.
-                --------------------------------------------- */
-
                 vec2 moonPosition =
 
                     vec2(
@@ -933,10 +936,6 @@ if (!canvas) {
                         1.12
                     );
 
-
-                /* ---------------------------------------------
-                   Distance below the moon.
-                --------------------------------------------- */
 
                 float verticalDistance =
 
@@ -950,10 +949,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Reflection spreads as it travels downward.
-                --------------------------------------------- */
 
                 float spread =
 
@@ -970,10 +965,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Surface bends the reflection slightly.
-                --------------------------------------------- */
 
                 float distortion =
 
@@ -1018,10 +1009,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Reflection fades toward the foreground.
-                --------------------------------------------- */
-
                 float distanceFade =
 
                     mix(
@@ -1037,13 +1024,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Actual water orientation.
-
-                   The reflection responds to the surface
-                   normal, including the click ripple.
-                --------------------------------------------- */
 
                 vec3 moonDirection =
 
@@ -1082,12 +1062,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Cloud cover.
-
-                   Clouds break up the reflected moonlight.
-                --------------------------------------------- */
-
                 float cloudAmount =
 
                     moonClouds(uv);
@@ -1103,12 +1077,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Very subtle natural breakup.
-
-                   Visual only.
-                --------------------------------------------- */
 
                 float breakup =
 
@@ -1229,6 +1197,8 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    BASE WATER
+
+                   Deliberately visible deep blue.
                 --------------------------------------------- */
 
                 vec3 deepWater =
@@ -1464,6 +1434,8 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    AMBIENT MOONLIGHT
+
+                   Broad illumination toward the top center.
                 --------------------------------------------- */
 
                 float upperLight =
@@ -1520,6 +1492,8 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    CINEMATIC VIGNETTE
+
+                   Kept restrained so the pond remains visible.
                 --------------------------------------------- */
 
                 float vignette =
@@ -1943,11 +1917,6 @@ if (!canvas) {
                         rect.width;
 
 
-                    /* -----------------------------------------
-                       8.4.7 keeps browser Y coordinates in the
-                       same orientation as the visual surface.
-                    ----------------------------------------- */
-
                     const uvY =
 
                         localY /
@@ -2365,4 +2334,3 @@ if (!canvas) {
     }
 
 }
-```
