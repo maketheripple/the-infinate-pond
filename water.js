@@ -1046,9 +1046,7 @@ if (!canvas) {
                  * affects the moon reflection.
                  */
 
-                float impactReflection =
-
-                    0.0;
+                float impactReflection = 0.0;
 
 
                 for (
