@@ -1,7 +1,7 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.5 — NATURAL WATER + SINGLE RIPPLE
-========================================================= */
+   VERSION 8.4.5 — CALM MOONLIT POND + SINGLE RIPPLE
+   ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
 
@@ -232,6 +232,11 @@ if (!canvas) {
 
             /* =================================================
                LARGE WATER MOTION
+
+               CALM MOONLIT POND
+
+               Very slow, broad undulation.
+               The water should feel almost still.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -245,15 +250,15 @@ if (!canvas) {
                             normalize(
                                 vec2(
                                     1.0,
-                                    0.22
+                                    0.18
                                 )
                             )
                         )
                         *
-                        1.35
+                        0.72
                         +
                         time *
-                        0.34
+                        0.055
 
                     );
 
@@ -266,38 +271,16 @@ if (!canvas) {
                             p,
                             normalize(
                                 vec2(
-                                    -0.45,
+                                    -0.32,
                                     1.0
                                 )
                             )
                         )
                         *
-                        1.05
+                        0.58
                         -
                         time *
-                        0.27
-
-                    );
-
-
-                float waveC =
-
-                    sin(
-
-                        dot(
-                            p,
-                            normalize(
-                                vec2(
-                                    0.58,
-                                    0.81
-                                )
-                            )
-                        )
-                        *
-                        1.85
-                        +
-                        time *
-                        0.41
+                        0.042
 
                     );
 
@@ -305,23 +288,22 @@ if (!canvas) {
                 return
 
                     waveA *
-                    0.34
+                    0.055
 
                     +
 
                     waveB *
-                    0.28
-
-                    +
-
-                    waveC *
-                    0.16;
+                    0.035;
 
             }
 
 
             /* =================================================
                SMALL SURFACE WAVES
+
+               Extremely subtle.
+               These should mostly be felt in the moonlight,
+               rather than seen as obvious waves.
             ================================================= */
 
             float smallWaves(vec2 p) {
@@ -334,16 +316,16 @@ if (!canvas) {
                             p,
                             normalize(
                                 vec2(
-                                    0.24,
+                                    0.35,
                                     1.0
                                 )
                             )
                         )
                         *
-                        4.5
+                        2.8
                         +
                         time *
-                        0.62
+                        0.18
 
                     );
 
@@ -356,38 +338,16 @@ if (!canvas) {
                             p,
                             normalize(
                                 vec2(
-                                    -0.76,
-                                    0.48
+                                    -0.72,
+                                    0.38
                                 )
                             )
                         )
                         *
-                        5.8
+                        3.6
                         -
                         time *
-                        0.51
-
-                    );
-
-
-                float waveC =
-
-                    sin(
-
-                        dot(
-                            p,
-                            normalize(
-                                vec2(
-                                    0.91,
-                                    0.28
-                                )
-                            )
-                        )
-                        *
-                        7.2
-                        +
-                        time *
-                        0.73
+                        0.14
 
                     );
 
@@ -395,23 +355,21 @@ if (!canvas) {
                 return
 
                     waveA *
-                    0.08
+                    0.012
 
                     +
 
                     waveB *
-                    0.06
-
-                    +
-
-                    waveC *
-                    0.045;
+                    0.008;
 
             }
 
 
             /* =================================================
                ORGANIC MOTION
+
+               Extremely restrained low-frequency movement.
+               No swirling or energetic surface behavior.
             ================================================= */
 
             float organicMotion(vec2 p) {
@@ -421,35 +379,22 @@ if (!canvas) {
                     vec2(
 
                         time *
-                        0.018,
+                        0.004,
 
                         -time *
-                        0.013
+                        0.003
 
                     );
 
 
-                float n1 =
+                float n =
 
                     fbm(
 
                         p *
-                        0.75
+                        0.48
                         +
                         drift
-
-                    );
-
-
-                float n2 =
-
-                    fbm(
-
-                        p *
-                        1.65
-                        -
-                        drift *
-                        1.4
 
                     );
 
@@ -457,26 +402,22 @@ if (!canvas) {
                 return
 
                     (
-                        n1 -
+                        n -
                         0.5
                     )
                     *
-                    0.22
-
-                    +
-
-                    (
-                        n2 -
-                        0.5
-                    )
-                    *
-                    0.10;
+                    0.035;
 
             }
 
 
             /* =================================================
                NATURAL WATER SURFACE
+
+               Calm moonlit pond variation.
+
+               This affects appearance only and remains
+               independent from the ripple displacement.
             ================================================= */
 
             float naturalWaterSurface(vec2 p) {
@@ -486,10 +427,10 @@ if (!canvas) {
                     vec2(
 
                         time *
-                        0.010,
+                        0.003,
 
                         -time *
-                        0.007
+                        0.002
 
                     );
 
@@ -499,7 +440,7 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        0.85
+                        0.42
                         +
                         slowDrift
 
@@ -511,10 +452,10 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        1.45
+                        0.78
                         -
                         slowDrift *
-                        1.7
+                        1.2
 
                     );
 
@@ -522,91 +463,12 @@ if (!canvas) {
                 float broadVariation =
 
                     broadA *
-                    0.62
+                    0.70
 
                     +
 
                     broadB *
-                    0.38;
-
-
-                vec2 windDirection =
-
-                    normalize(
-
-                        vec2(
-                            0.92,
-                            0.24
-                        )
-
-                    );
-
-
-                float windPattern =
-
-                    sin(
-
-                        dot(
-                            p,
-                            windDirection
-                        )
-                        *
-                        13.0
-                        +
-                        time *
-                        0.12
-
-                    );
-
-
-                float windNoise =
-
-                    fbm(
-
-                        p *
-                        2.8
-
-                        +
-
-                        vec2(
-                            time *
-                            0.012,
-
-                            -time *
-                            0.009
-                        )
-
-                    );
-
-
-                float windTexture =
-
-                    windPattern *
-                    (
-                        0.35 +
-                        windNoise *
-                        0.65
-                    );
-
-
-                float fineTexture =
-
-                    fbm(
-
-                        p *
-                        7.5
-
-                        +
-
-                        vec2(
-                            time *
-                            0.020,
-
-                            -time *
-                            0.014
-                        )
-
-                    );
+                    0.30;
 
 
                 float surface =
@@ -616,21 +478,7 @@ if (!canvas) {
                         0.5
                     )
                     *
-                    0.12
-
-                    +
-
-                    windTexture *
-                    0.018
-
-                    +
-
-                    (
-                        fineTexture -
-                        0.5
-                    )
-                    *
-                    0.025;
+                    0.055;
 
 
                 return surface;
@@ -772,6 +620,8 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE MICRO-WAVES
+
+               Disabled to prevent secondary ripple visuals.
             ================================================= */
 
             float rippleMicroWaves(vec2 p) {
@@ -895,15 +745,13 @@ if (!canvas) {
             /* =================================================
                MOON REFLECTION
 
-               IMPORTANT:
-               The previous impactReflection system has been
-               completely removed.
+               Soft, elongated reflection of moonlight across
+               a calm pond.
 
-               The moon reflection now responds ONLY to the
-               actual water surface normal.
+               The reflection responds to the actual surface
+               normal only.
 
-               This prevents the reflection system from creating
-               a second visual ripple.
+               No independent ripple animation is introduced.
             ================================================= */
 
             float moonReflection(
@@ -928,8 +776,8 @@ if (!canvas) {
 
                     mix(
 
-                        0.025,
-                        0.45,
+                        0.018,
+                        0.32,
                         uv.y
 
                     );
@@ -942,7 +790,7 @@ if (!canvas) {
                         normal.y
                     )
                     *
-                    0.045;
+                    0.025;
 
 
                 float distortedDistance =
@@ -1011,75 +859,36 @@ if (!canvas) {
 
                         angle,
 
-                        25.0
+                        32.0
 
                     );
 
 
-                float breakupA =
+                /* ---------------------------------------------
+                   Very gentle breakup.
 
-                    fbm(
-
-                        uv *
-                        10.0
-
-                        +
-
-                        vec2(
-
-                            time *
-                            0.045,
-
-                            -time *
-                            0.030
-
-                        )
-
-                    );
-
-
-                float breakupB =
-
-                    fbm(
-
-                        uv *
-                        19.0
-
-                        +
-
-                        vec2(
-
-                            -time *
-                            0.037,
-
-                            time *
-                            0.021
-
-                        )
-
-                    );
-
+                   The moon reflection should remain coherent,
+                   rather than looking smoky or fragmented.
+                --------------------------------------------- */
 
                 float breakup =
 
-                    breakupA *
-                    0.60
+                    fbm(
 
-                    +
+                        uv *
+                        5.0
 
-                    breakupB *
-                    0.40;
+                        +
 
+                        vec2(
 
-                breakup =
+                            time *
+                            0.008,
 
-                    clamp(
+                            -time *
+                            0.005
 
-                        breakup,
-
-                        0.0,
-
-                        1.0
+                        )
 
                     );
 
@@ -1088,9 +897,9 @@ if (!canvas) {
 
                     smoothstep(
 
-                        0.28,
+                        0.32,
 
-                        0.72,
+                        0.68,
 
                         breakup
 
@@ -1103,7 +912,15 @@ if (!canvas) {
                     *
                     sparkle
                     *
-                    breakup;
+                    mix(
+
+                        0.72,
+
+                        1.0,
+
+                        breakup
+
+                    );
 
             }
 
@@ -1194,57 +1011,60 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    Natural surface variation
+
+                   Appearance only.
+                   Does NOT affect waterHeight() or normals.
                 --------------------------------------------- */
 
                 float naturalSurface =
 
-    naturalWaterSurface(p);
+                    naturalWaterSurface(p);
 
 
-/* ---------------------------------------------
-   Subtle natural background variation
+                /* ---------------------------------------------
+                   Subtle natural background variation
 
-   This affects only the visual brightness.
-   It does NOT affect waterHeight() or normals,
-   preventing it from creating another ripple.
---------------------------------------------- */
+                   This affects only visual brightness.
+                   It does NOT affect waterHeight() or normals,
+                   preventing it from creating another ripple.
+                --------------------------------------------- */
 
-float backgroundVariation =
+                float backgroundVariation =
 
-    fbm(
+                    fbm(
 
-        p * 0.42
+                        p * 0.42
 
-        +
+                        +
 
-        vec2(
+                        vec2(
 
-            time * 0.004,
+                            time * 0.004,
 
-            -time * 0.003
+                            -time * 0.003
 
-        )
+                        )
 
-    );
-
-
-backgroundVariation =
-
-    (
-        backgroundVariation -
-        0.5
-    )
-    *
-    0.035;
+                    );
 
 
-variation +=
+                backgroundVariation =
 
-    naturalSurface
+                    (
+                        backgroundVariation -
+                        0.5
+                    )
+                    *
+                    0.035;
 
-    +
 
-    backgroundVariation;
+                variation +=
+
+                    naturalSurface
+
+                    +
+
+                    backgroundVariation;
 
 
                 variation =
