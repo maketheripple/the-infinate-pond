@@ -1,27 +1,27 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 5 — WEBGL MOONLIT WATER
+   VERSION 6 — NATURAL SURFACE WATER
 ========================================================= */
 
 const canvas =
     document.getElementById("waterCanvas");
 
 const gl =
-    canvas.getContext("webgl", {
-        alpha: false,
-        antialias: false,
-        powerPreference: "high-performance"
-    });
+    canvas.getContext(
+        "webgl",
+        {
+            alpha: false,
+            antialias: false,
+            powerPreference:
+                "high-performance"
+        }
+    );
 
-
-/* =========================================================
-   WEBGL CHECK
-========================================================= */
 
 if (!gl) {
 
     console.error(
-        "WebGL is not available."
+        "WebGL unavailable."
     );
 
 }
@@ -58,7 +58,9 @@ const fragmentShaderSource = `
 precision highp float;
 
 
-/* Screen information */
+/* =========================================================
+   UNIFORMS
+========================================================= */
 
 uniform vec2 resolution;
 
@@ -67,9 +69,16 @@ uniform float time;
 uniform float scroll;
 
 
-/* ---------------------------------------------------------
-   Hash
---------------------------------------------------------- */
+/* =========================================================
+   CONSTANTS
+========================================================= */
+
+#define PI 3.14159265359
+
+
+/* =========================================================
+   HASH
+========================================================= */
 
 float hash(
     vec2 p
@@ -94,9 +103,9 @@ float hash(
 }
 
 
-/* ---------------------------------------------------------
-   Smooth noise
---------------------------------------------------------- */
+/* =========================================================
+   SMOOTH NOISE
+========================================================= */
 
 float noise(
     vec2 p
@@ -105,17 +114,16 @@ float noise(
     vec2 i =
         floor(p);
 
+
     vec2 f =
         fract(p);
 
 
     f =
-        f *
-        f *
+        f * f *
         (
             3.0 -
-            2.0 *
-            f
+            2.0 * f
         );
 
 
@@ -174,9 +182,9 @@ float noise(
 }
 
 
-/* ---------------------------------------------------------
-   Fractal noise
---------------------------------------------------------- */
+/* =========================================================
+   MULTI-OCTAVE NOISE
+========================================================= */
 
 float fbm(
     vec2 p
@@ -191,7 +199,7 @@ float fbm(
 
     for (
         int i = 0;
-        i < 5;
+        i < 4;
         i++
     ) {
 
@@ -200,8 +208,10 @@ float fbm(
             *
             amplitude;
 
+
         p *=
             2.0;
+
 
         amplitude *=
             0.5;
@@ -214,79 +224,183 @@ float fbm(
 }
 
 
-/* ---------------------------------------------------------
-   Water height
---------------------------------------------------------- */
+/* =========================================================
+   DIRECTIONAL WAVE
+========================================================= */
 
-float water(
-    vec2 p
+float directionalWave(
+
+    vec2 p,
+
+    vec2 direction,
+
+    float frequency,
+
+    float speed,
+
+    float amplitude
+
 ) {
 
-    float t =
-        time;
-
-
-    float large =
-        fbm(
-            p * 0.65
-            +
-            vec2(
-                t * 0.035,
-                t * 0.018
-            )
-        );
-
-
-    float medium =
-        fbm(
-            p * 1.8
-            -
-            vec2(
-                t * 0.055,
-                t * 0.025
-            )
-        );
-
-
-    float small =
-        fbm(
-            p * 4.0
-            +
-            vec2(
-                t * 0.09,
-                -t * 0.04
-            )
-        );
-
-
-    return (
-
-        large
+    float phase =
+        dot(
+            p,
+            direction
+        )
         *
-        0.55
-
+        frequency
         +
+        time *
+        speed;
 
-        medium
+
+    return
+        sin(phase)
         *
-        0.30
-
-        +
-
-        small
-        *
-        0.15
-
-    );
+        amplitude;
 
 }
 
 
-/* ---------------------------------------------------------
-   Surface normal
---------------------------------------------------------- */
+/* =========================================================
+   WATER HEIGHT
+========================================================= */
 
-vec3 getNormal(
+float waterHeight(
+    vec2 p
+) {
+
+    float result =
+        0.0;
+
+
+    /*
+     * Large slow swells
+     */
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    1.0,
+                    0.25
+                )
+            ),
+
+            1.3,
+
+            0.45,
+
+            0.34
+
+        );
+
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    -0.35,
+                    1.0
+                )
+            ),
+
+            1.0,
+
+            -0.31,
+
+            0.28
+
+        );
+
+
+    /*
+     * Crossing medium waves
+     */
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    0.7,
+                    0.45
+                )
+            ),
+
+            2.8,
+
+            0.63,
+
+            0.14
+
+        );
+
+
+    result +=
+
+        directionalWave(
+
+            p,
+
+            normalize(
+                vec2(
+                    -0.8,
+                    0.35
+                )
+            ),
+
+            3.5,
+
+            -0.48,
+
+            0.10
+
+        );
+
+
+    /*
+     * Irregular distortion
+     */
+
+    result +=
+
+        (
+            fbm(
+                p *
+                1.6
+                +
+                time *
+                0.03
+            )
+            -
+            0.5
+        )
+        *
+        0.22;
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   SURFACE NORMAL
+========================================================= */
+
+vec3 surfaceNormal(
     vec2 p
 ) {
 
@@ -294,12 +408,12 @@ vec3 getNormal(
         0.004;
 
 
-    float h =
-        water(p);
+    float center =
+        waterHeight(p);
 
 
-    float hx =
-        water(
+    float x =
+        waterHeight(
             p +
             vec2(
                 e,
@@ -308,8 +422,8 @@ vec3 getNormal(
         );
 
 
-    float hy =
-        water(
+    float y =
+        waterHeight(
             p +
             vec2(
                 0.0,
@@ -322,9 +436,9 @@ vec3 getNormal(
 
         vec3(
 
-            h - hx,
+            center - x,
 
-            h - hy,
+            center - y,
 
             e
 
@@ -335,116 +449,54 @@ vec3 getNormal(
 }
 
 
-/* ---------------------------------------------------------
-   Main
---------------------------------------------------------- */
+/* =========================================================
+   MOON REFLECTION
+========================================================= */
 
-void main() {
+float moonReflection(
 
+    vec2 uv,
 
-    vec2 uv =
-        gl_FragCoord.xy
-        /
-        resolution;
+    vec3 normal
 
-
-    /*
-     * Convert the screen into
-     * a water coordinate system.
-     */
-
-    vec2 p =
-        uv;
-
-
-    p.x *=
-        resolution.x /
-        resolution.y;
-
+) {
 
     /*
-     * Slowly move the water
-     * based on page scroll.
+     * Moon reflection is centered
+     * near the middle of the pond.
      */
 
-    p.y +=
-        scroll
-        *
-        0.00035;
+    float distanceFromCenter =
 
-
-    /*
-     * Stretch the water vertically.
-     */
-
-    p.y *=
-        1.8;
-
-
-    /*
-     * Water surface normal.
-     */
-
-    vec3 normal =
-        getNormal(p);
-
-
-    /*
-     * Moon direction.
-     */
-
-    vec3 moonDirection =
-        normalize(
-
-            vec3(
-
-                0.0,
-
-                0.45,
-
-                1.0
-
-            )
-
+        abs(
+            uv.x -
+            0.50
         );
 
 
     /*
-     * Reflection intensity.
+     * Reflection spreads as
+     * it travels toward the viewer.
      */
 
-    float specular =
-        pow(
+    float spread =
 
-            max(
-                dot(
-                    normal,
-                    moonDirection
-                ),
-                0.0
-            ),
-
-            35.0
-
+        mix(
+            0.035,
+            0.42,
+            uv.y
         );
 
 
-    /*
-     * Additional broad
-     * moonlight.
-     */
-
-    float moonGlow =
+    float reflectionShape =
 
         exp(
 
             -pow(
-                (
-                    uv.x -
-                    0.50
-                )
+
+                distanceFromCenter
                 /
-                0.28,
+                spread,
 
                 2.0
 
@@ -454,131 +506,318 @@ void main() {
 
 
     /*
-     * Break the reflection
-     * into natural pieces.
+     * Reflection is strongest
+     * on certain surface angles.
      */
 
-    float breakup =
-        noise(
-            p * 8.0
+    vec3 moonDirection =
+
+        normalize(
+
+            vec3(
+
+                0.0,
+
+                0.35,
+
+                1.0
+
+            )
+
         );
 
 
-    specular *=
+    float angle =
+
+        max(
+
+            dot(
+                normal,
+                moonDirection
+            ),
+
+            0.0
+
+        );
+
+
+    /*
+     * Very sharp highlights.
+     */
+
+    float sparkle =
+
+        pow(
+            angle,
+            24.0
+        );
+
+
+    /*
+     * Irregular breakup.
+     */
+
+    float breakup =
+
+        fbm(
+
+            vec2(
+
+                uv.x * 12.0,
+
+                uv.y * 7.0
+
+            )
+            +
+            time * 0.08
+
+        );
+
+
+    breakup =
+
         smoothstep(
-            0.35,
-            0.75,
+            0.40,
+            0.72,
             breakup
         );
 
 
+    return
+
+        reflectionShape
+        *
+        sparkle
+        *
+        breakup;
+
+}
+
+
+/* =========================================================
+   MAIN IMAGE
+========================================================= */
+
+void main() {
+
+
+    vec2 uv =
+
+        gl_FragCoord.xy
+        /
+        resolution;
+
+
     /*
-     * Deep water colour.
+     * Aspect correction.
      */
 
-    vec3 deepWater =
-        vec3(
-            0.004,
-            0.025,
-            0.045
-        );
+    vec2 p =
+
+        uv -
+        0.5;
 
 
-    vec3 midWater =
-        vec3(
-            0.012,
-            0.070,
-            0.105
+    p.x *=
+
+        resolution.x /
+        resolution.y;
+
+
+    /*
+     * Scroll through the
+     * virtual water surface.
+     */
+
+    p.y +=
+
+        scroll *
+        0.00022;
+
+
+    /*
+     * Give the water a
+     * slightly longer horizon.
+     */
+
+    p.y *=
+        1.55;
+
+
+    /*
+     * Calculate surface.
+     */
+
+    vec3 normal =
+
+        surfaceNormal(
+            p
         );
 
 
     /*
-     * Surface variation.
+     * Water base.
      */
 
     float surface =
-        water(p);
+        waterHeight(p);
 
 
-    vec3 waterColor =
+    vec3 deepWater =
+
+        vec3(
+            0.002,
+            0.014,
+            0.026
+        );
+
+
+    vec3 blueWater =
+
+        vec3(
+            0.006,
+            0.040,
+            0.065
+        );
+
+
+    float variation =
+
+        surface *
+        0.5
+        +
+        0.5;
+
+
+    vec3 color =
+
         mix(
 
             deepWater,
 
-            midWater,
+            blueWater,
 
-            surface
+            variation
 
         );
 
 
     /*
-     * Moonlight reflection.
+     * Moon reflection.
      */
 
-    vec3 moonlight =
-        vec3(
-            0.65,
-            0.82,
-            1.0
-        )
-        *
-        specular
-        *
-        1.4;
+    float reflection =
+
+        moonReflection(
+            uv,
+            normal
+        );
 
 
-    /*
-     * Broad moon glow.
-     */
-
-    moonlight +=
+    vec3 moonColor =
 
         vec3(
-            0.15,
-            0.25,
-            0.35
-        )
+            0.70,
+            0.86,
+            1.00
+        );
+
+
+    color +=
+
+        moonColor
         *
-        moonGlow
+        reflection
         *
-        0.18;
+        1.65;
 
 
     /*
-     * Final water.
+     * Very subtle ambient
+     * moon illumination.
      */
 
-    vec3 color =
-        waterColor
-        +
-        moonlight;
+    float ambientMoon =
+
+        exp(
+
+            -pow(
+
+                (
+                    uv.x -
+                    0.50
+                )
+                /
+                0.48,
+
+                2.0
+
+            )
+
+        );
+
+
+    color +=
+
+        vec3(
+            0.025,
+            0.050,
+            0.075
+        )
+        *
+        ambientMoon;
 
 
     /*
-     * Darken edges.
+     * Dark edges.
      */
 
     float vignette =
 
+        1.0 -
+
         smoothstep(
-            1.15,
-            0.30,
+
+            0.35,
+
+            0.85,
+
             distance(
                 uv,
                 vec2(
                     0.5,
-                    0.45
+                    0.43
                 )
             )
+
         );
 
 
     color *=
-        vignette;
+
+        mix(
+            0.60,
+            1.0,
+            vignette
+        );
+
+
+    /*
+     * Slight cinematic contrast.
+     */
+
+    color =
+
+        pow(
+            color,
+            vec3(
+                0.88
+            )
+        );
 
 
     gl_FragColor =
+
         vec4(
             color,
             1.0
@@ -590,7 +829,7 @@ void main() {
 
 
 /* =========================================================
-   SHADER CREATION
+   SHADER COMPILATION
 ========================================================= */
 
 function createShader(
@@ -621,10 +860,13 @@ function createShader(
     ) {
 
         console.error(
+
             gl.getShaderInfoLog(
                 shader
             )
+
         );
+
 
         return null;
 
@@ -641,16 +883,24 @@ function createShader(
 ========================================================= */
 
 const vertexShader =
+
     createShader(
+
         gl.VERTEX_SHADER,
+
         vertexShaderSource
+
     );
 
 
 const fragmentShader =
+
     createShader(
+
         gl.FRAGMENT_SHADER,
+
         fragmentShaderSource
+
     );
 
 
@@ -683,9 +933,11 @@ if (
 ) {
 
     console.error(
+
         gl.getProgramInfoLog(
             program
         )
+
     );
 
 }
@@ -736,7 +988,7 @@ gl.bufferData(
 
 
 /* =========================================================
-   ATTRIBUTES
+   POSITION ATTRIBUTE
 ========================================================= */
 
 const position =
@@ -773,6 +1025,7 @@ gl.vertexAttribPointer(
 ========================================================= */
 
 const resolutionLocation =
+
     gl.getUniformLocation(
         program,
         "resolution"
@@ -780,6 +1033,7 @@ const resolutionLocation =
 
 
 const timeLocation =
+
     gl.getUniformLocation(
         program,
         "time"
@@ -787,6 +1041,7 @@ const timeLocation =
 
 
 const scrollLocation =
+
     gl.getUniformLocation(
         program,
         "scroll"
@@ -797,31 +1052,39 @@ const scrollLocation =
    RESIZE
 ========================================================= */
 
-function resize() {
+function resizeWater() {
 
     const ratio =
+
         Math.min(
+
             window.devicePixelRatio || 1,
+
             2
+
         );
 
 
     canvas.width =
+
         window.innerWidth *
         ratio;
 
 
     canvas.height =
+
         window.innerHeight *
         ratio;
 
 
     canvas.style.width =
+
         window.innerWidth +
         "px";
 
 
     canvas.style.height =
+
         window.innerHeight +
         "px";
 
@@ -843,22 +1106,23 @@ function resize() {
 
 window.addEventListener(
     "resize",
-    resize
+    resizeWater
 );
 
 
-resize();
+resizeWater();
 
 
 /* =========================================================
-   RENDER
+   RENDER LOOP
 ========================================================= */
 
-function render(
+function renderWater(
     milliseconds
 ) {
 
-    const time =
+    const currentTime =
+
         milliseconds *
         0.001;
 
@@ -872,9 +1136,9 @@ function render(
 
         resolutionLocation,
 
-        window.innerWidth,
+        canvas.width,
 
-        window.innerHeight
+        canvas.height
 
     );
 
@@ -883,7 +1147,7 @@ function render(
 
         timeLocation,
 
-        time
+        currentTime
 
     );
 
@@ -909,12 +1173,12 @@ function render(
 
 
     requestAnimationFrame(
-        render
+        renderWater
     );
 
 }
 
 
 requestAnimationFrame(
-    render
+    renderWater
 );
