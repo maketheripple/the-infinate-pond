@@ -1931,8 +1931,8 @@ if (!canvas) {
 
                     let rippleY =
 
-                        uvY -
-                        0.5;
+                        0.5 -
+                        uvY;
 
 
                     rippleX *=
