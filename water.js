@@ -1,9 +1,13 @@
+```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.5 — CALM MOONLIT POND + SINGLE RIPPLE
+   VERSION 8.4.6 — CALM MOONLIT POND + SINGLE RIPPLE
    ========================================================= */
 
-const canvas = document.getElementById("waterCanvas");
+
+const canvas =
+    document.getElementById("waterCanvas");
+
 
 if (!canvas) {
 
@@ -13,11 +17,16 @@ if (!canvas) {
 
 } else {
 
-    const gl = canvas.getContext("webgl", {
-        alpha: false,
-        antialias: false,
-        powerPreference: "high-performance"
-    });
+
+    const gl =
+        canvas.getContext("webgl", {
+
+            alpha: false,
+            antialias: false,
+            powerPreference: "high-performance"
+
+        });
+
 
     if (!gl) {
 
@@ -26,6 +35,7 @@ if (!canvas) {
         );
 
     } else {
+
 
         /* =================================================
            SETTINGS
@@ -302,6 +312,7 @@ if (!canvas) {
                SMALL SURFACE WAVES
 
                Extremely subtle.
+
                These should mostly be felt in the moonlight,
                rather than seen as obvious waves.
             ================================================= */
@@ -369,6 +380,7 @@ if (!canvas) {
                ORGANIC MOTION
 
                Extremely restrained low-frequency movement.
+
                No swirling or energetic surface behavior.
             ================================================= */
 
@@ -416,8 +428,7 @@ if (!canvas) {
 
                Calm moonlit pond variation.
 
-               This affects appearance only and remains
-               independent from the ripple displacement.
+               This affects appearance AND remains restrained.
             ================================================= */
 
             float naturalWaterSurface(vec2 p) {
@@ -490,8 +501,9 @@ if (!canvas) {
                RIPPLE INTERFERENCE
 
                DISABLED AS A VISUAL RIPPLE.
-               PRESERVED SO THE RIPPLE SYSTEM STRUCTURE
-               REMAINS COMPATIBLE.
+
+               Preserved so the ripple system structure
+               remains compatible.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -503,6 +515,11 @@ if (!canvas) {
 
             /* =================================================
                IMPACT DISPLACEMENT
+
+               The only active ripple displacement.
+
+               This creates the single physical impact when
+               the user clicks/taps the pond.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -621,7 +638,10 @@ if (!canvas) {
             /* =================================================
                RIPPLE MICRO-WAVES
 
-               Disabled to prevent secondary ripple visuals.
+               Disabled.
+
+               Keeping this at zero prevents the ripple
+               system from generating a second visual ripple.
             ================================================= */
 
             float rippleMicroWaves(vec2 p) {
@@ -743,13 +763,98 @@ if (!canvas) {
 
 
             /* =================================================
+               MOONLIGHT CLOUDS
+
+               This affects ONLY the moonlight.
+
+               It does NOT affect waterHeight() or normals.
+
+               Therefore clouds cannot create another ripple.
+            ================================================= */
+
+            float moonClouds(vec2 uv) {
+
+                vec2 cloudUV =
+
+                    uv *
+                    vec2(
+                        2.2,
+                        1.25
+                    );
+
+
+                cloudUV +=
+
+                    vec2(
+
+                        time *
+                        0.006,
+
+                        -time *
+                        0.002
+
+                    );
+
+
+                float cloudA =
+
+                    fbm(
+
+                        cloudUV *
+                        1.15
+
+                    );
+
+
+                float cloudB =
+
+                    fbm(
+
+                        cloudUV *
+                        2.0
+
+                        +
+
+                        vec2(
+                            4.7,
+                            1.8
+                        )
+
+                    );
+
+
+                float clouds =
+
+                    cloudA *
+                    0.72
+
+                    +
+
+                    cloudB *
+                    0.28;
+
+
+                return smoothstep(
+
+                    0.48,
+                    0.70,
+                    clouds
+
+                );
+
+            }
+
+
+            /* =================================================
                MOON REFLECTION
 
-               Soft, elongated reflection of moonlight across
-               a calm pond.
+               The apparent moonlight comes from ABOVE the page.
 
-               The reflection responds to the actual surface
-               normal only.
+               The reflection begins near the top of the pond
+               and stretches downward as a soft, broken path.
+
+               The reflection responds ONLY to the actual
+               water surface normal.
 
                No independent ripple animation is introduced.
             ================================================= */
@@ -762,42 +867,85 @@ if (!canvas) {
 
             ) {
 
-                float baseDistance =
+                /* ---------------------------------------------
+                   Distance from the moonlight source.
 
-                    abs(
+                   The apparent moon is above the water,
+                   slightly left/right of center.
+                --------------------------------------------- */
 
-                        uv.x -
-                        0.50
+                vec2 moonPosition =
+
+                    vec2(
+                        0.50,
+                        1.08
+                    );
+
+
+                float verticalDistance =
+
+                    max(
+
+                        moonPosition.y -
+                        uv.y,
+
+                        0.0
 
                     );
 
+
+                /* ---------------------------------------------
+                   Reflection width.
+
+                   Narrow near the moon.
+                   Wider as it reaches the foreground.
+                --------------------------------------------- */
 
                 float spread =
 
                     mix(
 
-                        0.018,
-                        0.32,
-                        uv.y
+                        0.014,
+                        0.24,
+
+                        smoothstep(
+                            0.0,
+                            1.0,
+                            verticalDistance
+                        )
 
                     );
 
 
+                /* ---------------------------------------------
+                   Surface movement bends the reflection.
+
+                   Kept deliberately small.
+                --------------------------------------------- */
+
                 float surfaceDistortion =
 
                     (
-                        normal.x +
-                        normal.y
+                        normal.x *
+                        0.70
+
+                        +
+
+                        normal.y *
+                        0.30
                     )
                     *
-                    0.025;
+                    0.032;
 
 
-                float distortedDistance =
+                float horizontalDistance =
 
                     abs(
 
-                        baseDistance +
+                        uv.x -
+                        moonPosition.x
+                        +
+
                         surfaceDistortion
 
                     );
@@ -809,7 +957,7 @@ if (!canvas) {
 
                         -pow(
 
-                            distortedDistance /
+                            horizontalDistance /
                             spread,
 
                             2.0
@@ -819,6 +967,13 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   Moon direction.
+
+                   Light is treated as coming from above
+                   and slightly toward the viewer.
+                --------------------------------------------- */
+
                 vec3 moonDirection =
 
                     normalize(
@@ -827,7 +982,7 @@ if (!canvas) {
 
                             0.0,
 
-                            0.38,
+                            0.42,
 
                             1.0
 
@@ -843,7 +998,6 @@ if (!canvas) {
                         dot(
 
                             normal,
-
                             moonDirection
 
                         ),
@@ -859,16 +1013,42 @@ if (!canvas) {
 
                         angle,
 
-                        32.0
+                        28.0
 
                     );
 
 
                 /* ---------------------------------------------
-                   Very gentle breakup.
+                   Soft cloud cover.
 
-                   The moon reflection should remain coherent,
-                   rather than looking smoky or fragmented.
+                   Clouds reduce the reflected moonlight,
+                   rather than changing the water itself.
+                --------------------------------------------- */
+
+                float cloudAmount =
+
+                    moonClouds(uv);
+
+
+                float cloudLight =
+
+                    mix(
+
+                        1.0,
+
+                        0.30,
+
+                        cloudAmount
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Gentle water breakup.
+
+                   Very slow and coherent.
+
+                   This is visual breakup only.
                 --------------------------------------------- */
 
                 float breakup =
@@ -876,17 +1056,17 @@ if (!canvas) {
                     fbm(
 
                         uv *
-                        5.0
+                        4.5
 
                         +
 
                         vec2(
 
                             time *
-                            0.008,
+                            0.006,
 
                             -time *
-                            0.005
+                            0.004
 
                         )
 
@@ -897,9 +1077,19 @@ if (!canvas) {
 
                     smoothstep(
 
-                        0.32,
+                        0.30,
+                        0.70,
+                        breakup
 
-                        0.68,
+                    );
+
+
+                float reflectionStrength =
+
+                    mix(
+
+                        0.72,
+                        1.0,
 
                         breakup
 
@@ -909,18 +1099,18 @@ if (!canvas) {
                 return
 
                     reflectionShape
+
                     *
+
                     sparkle
+
                     *
-                    mix(
 
-                        0.72,
+                    cloudLight
 
-                        1.0,
+                    *
 
-                        breakup
-
-                    );
+                    reflectionStrength;
 
             }
 
@@ -980,9 +1170,7 @@ if (!canvas) {
                     vec3(
 
                         0.0015,
-
                         0.010,
-
                         0.020
 
                     );
@@ -993,9 +1181,7 @@ if (!canvas) {
                     vec3(
 
                         0.004,
-
                         0.032,
-
                         0.055
 
                     );
@@ -1013,7 +1199,6 @@ if (!canvas) {
                    Natural surface variation
 
                    Appearance only.
-                   Does NOT affect waterHeight() or normals.
                 --------------------------------------------- */
 
                 float naturalSurface =
@@ -1021,27 +1206,35 @@ if (!canvas) {
                     naturalWaterSurface(p);
 
 
+                variation +=
+
+                    naturalSurface;
+
+
                 /* ---------------------------------------------
                    Subtle natural background variation
 
                    This affects only visual brightness.
-                   It does NOT affect waterHeight() or normals,
-                   preventing it from creating another ripple.
+
+                   It does NOT affect waterHeight() or normals.
                 --------------------------------------------- */
 
                 float backgroundVariation =
 
                     fbm(
 
-                        p * 0.42
+                        p *
+                        0.42
 
                         +
 
                         vec2(
 
-                            time * 0.004,
+                            time *
+                            0.004,
 
-                            -time * 0.003
+                            -time *
+                            0.003
 
                         )
 
@@ -1059,10 +1252,6 @@ if (!canvas) {
 
 
                 variation +=
-
-                    naturalSurface
-
-                    +
 
                     backgroundVariation;
 
@@ -1119,9 +1308,7 @@ if (!canvas) {
                     vec3(
 
                         0.012,
-
                         0.035,
-
                         0.055
 
                     )
@@ -1146,9 +1333,7 @@ if (!canvas) {
                     vec3(
 
                         0.004,
-
                         0.010,
-
                         0.014
 
                     )
@@ -1159,7 +1344,10 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Moon reflection
+                   MOON REFLECTION
+
+                   Light source is now visually positioned
+                   above the page.
                 --------------------------------------------- */
 
                 float reflection =
@@ -1167,7 +1355,6 @@ if (!canvas) {
                     moonReflection(
 
                         uv,
-
                         normal
 
                     );
@@ -1178,9 +1365,7 @@ if (!canvas) {
                     vec3(
 
                         0.72,
-
                         0.87,
-
                         1.0
 
                     );
@@ -1200,7 +1385,92 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
+                   SOFT MOON GLOW
+
+                   A very subtle glow centered toward the
+                   top of the page.
+
+                   This is visual illumination only.
+                --------------------------------------------- */
+
+                float moonGlow =
+
+                    exp(
+
+                        -pow(
+
+                            (
+                                uv.x -
+                                0.50
+                            )
+                            /
+                            0.30,
+
+                            2.0
+
+                        )
+
+                    )
+
+                    *
+
+                    exp(
+
+                        -pow(
+
+                            (
+                                uv.y -
+                                0.92
+                            )
+                            /
+                            0.42,
+
+                            2.0
+
+                        )
+
+                    );
+
+
+                float cloudAmount =
+
+                    moonClouds(uv);
+
+
+                float cloudGlow =
+
+                    mix(
+
+                        1.0,
+                        0.48,
+                        cloudAmount
+
+                    );
+
+
+                color +=
+
+                    vec3(
+
+                        0.010,
+                        0.022,
+                        0.038
+
+                    )
+
+                    *
+
+                    moonGlow
+
+                    *
+
+                    cloudGlow;
+
+
+                /* ---------------------------------------------
                    Ambient moon illumination
+
+                   Stronger toward the upper center.
                 --------------------------------------------- */
 
                 float ambientMoon =
@@ -1220,6 +1490,16 @@ if (!canvas) {
 
                         )
 
+                    )
+
+                    *
+
+                    mix(
+
+                        0.35,
+                        1.0,
+                        uv.y
+
                     );
 
 
@@ -1227,11 +1507,9 @@ if (!canvas) {
 
                     vec3(
 
-                        0.022,
-
-                        0.045,
-
-                        0.070
+                        0.018,
+                        0.038,
+                        0.060
 
                     )
 
@@ -1251,7 +1529,6 @@ if (!canvas) {
                     smoothstep(
 
                         0.30,
-
                         0.88,
 
                         distance(
@@ -1261,7 +1538,6 @@ if (!canvas) {
                             vec2(
 
                                 0.5,
-
                                 0.43
 
                             )
@@ -1276,9 +1552,7 @@ if (!canvas) {
                     mix(
 
                         0.58,
-
                         1.0,
-
                         vignette
 
                     );
@@ -2111,3 +2385,4 @@ if (!canvas) {
     }
 
 }
+```
