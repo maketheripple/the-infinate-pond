@@ -697,133 +697,153 @@ if (!canvas) {
 
             float rippleInterference(vec2 p) {
 
-                float field =
-                    0.0;
+    float field = 0.0;
+
+    for (
+        int i = 0;
+        i < MAX_RIPPLES;
+        i++
+    ) {
+
+        float strength =
+            rippleStrengths[i];
+
+        if (
+            strength > 0.0
+        ) {
+
+            float elapsed =
+                max(
+                    0.0,
+                    time -
+                    rippleStarts[i]
+                );
+
+            if (
+                elapsed < 12.0
+            ) {
+
+                /* -----------------------------------------
+                   Expanding ripple radius
+                ----------------------------------------- */
+
+                float radius =
+                    (
+                        1.0 -
+                        exp(
+                            -elapsed *
+                            0.55
+                        )
+                    )
+                    *
+                    2.25;
 
 
-                float totalInfluence =
-                    0.0;
+                /* -----------------------------------------
+                   Distance from ripple source
+                ----------------------------------------- */
+
+                float d =
+                    distance(
+                        p,
+                        ripplePositions[i]
+                    );
 
 
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
+                /* -----------------------------------------
+                   Distance from moving wavefront
+                ----------------------------------------- */
 
-                    float strength =
-
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
+                float ringDistance =
+                    abs(
+                        d -
+                        radius
+                    );
 
 
-                        /*
-                         * Ignore inactive ripples.
-                         */
+                /* -----------------------------------------
+                   ONE visible wavefront
+                ----------------------------------------- */
 
-                        if (
-                            elapsed < 12.0
-                        ) {
-
-                            float phase =
-
-                                ripplePhase(
-
-                                    p,
-
-                                    ripplePositions[i],
-
-                                    rippleStarts[i]
-
-                                );
+                float ring =
+                    exp(
+                        -pow(
+                            ringDistance /
+                            0.085,
+                            2.0
+                        )
+                    );
 
 
-                            float envelope =
+                /* -----------------------------------------
+                   Gentle wave variation
+                ----------------------------------------- */
 
-                                rippleEnvelope(
-
-                                    p,
-
-                                    ripplePositions[i],
-
-                                    rippleStarts[i]
-
-                                );
+                float variation =
+                    sin(
+                        d *
+                        7.0
+                    );
 
 
-                            /*
-                             * Each ripple contributes
-                             * to the same wave field.
-                             */
-
-                            float wave =
-
-                                sin(
-
-                                    phase
-
-                                );
+                variation =
+                    0.80 +
+                    variation *
+                    0.20;
 
 
-                            field +=
+                /* -----------------------------------------
+                   Natural decay
+                ----------------------------------------- */
 
-                                wave *
-                                envelope *
-                                strength;
-
-
-                            totalInfluence +=
-
-                                envelope *
-                                strength;
-
-                        }
-
-                    }
-
-                }
+                float decay =
+                    exp(
+                        -elapsed *
+                        0.40
+                    );
 
 
-                /*
-                 * Prevent extreme values when
-                 * many ripples overlap.
-                 */
+                /* -----------------------------------------
+                   Fade out after several seconds
+                ----------------------------------------- */
 
-                if (
-                    totalInfluence > 1.0
-                ) {
+                float lifetime =
+                    1.0 -
 
-                    field *=
-
-                        1.0 /
-                        sqrt(
-                            totalInfluence
-                        );
-
-                }
+                    smoothstep(
+                        8.0,
+                        11.5,
+                        elapsed
+                    );
 
 
-                return
+                /* -----------------------------------------
+                   Add ripple
+                ----------------------------------------- */
 
-                    field *
-                    0.70;
+                field +=
+
+                    ring
+                    *
+                    variation
+                    *
+                    decay
+                    *
+                    lifetime
+                    *
+                    strength
+                    *
+                    0.55;
 
             }
+
+        }
+
+    }
+
+
+    return field;
+}
 
 
             /* =================================================
