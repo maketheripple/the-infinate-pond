@@ -833,7 +833,7 @@ if (!canvas) {
                     *
                     strength
                     *
-                    0.55;
+                    0.0;
 
             }
 
