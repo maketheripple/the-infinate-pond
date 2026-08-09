@@ -1,15 +1,6 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.3 — IMPACT REFLECTION ISOLATION
-   BASED ON VERSION 8.4.2
-
-   CHANGE FROM 8.4.2:
-   - Keeps the small ripple appearance.
-   - Keeps the single pointer trigger.
-   - Keeps impact displacement.
-   - DISABLES ONLY the impactReflection calculation
-     used to disturb the moon reflection.
+   VERSION 8.4.1 — IMPACT DISPLACEMENT
    ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -486,10 +477,6 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE INTERFERENCE
-
-               NOTE:
-               The visible ripple remains the same small
-               ripple behavior from Version 8.4.2.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -679,6 +666,12 @@ if (!canvas) {
                                 );
 
 
+                            /*
+                             * The initial impact starts
+                             * as a small concentrated
+                             * disturbance.
+                             */
+
                             float impactRadius =
 
                                 0.055 +
@@ -701,6 +694,12 @@ if (!canvas) {
 
                                 );
 
+
+                            /*
+                             * The center briefly dips
+                             * into the water before
+                             * relaxing.
+                             */
 
                             float impactWave =
 
@@ -1042,21 +1041,15 @@ if (!canvas) {
                     0.40;
 
 
-                /* =================================================
-                   VERSION 8.4.3 TEST
-
-                   The impactReflection calculation from 8.4.2
-                   has been intentionally removed.
-
-                   This prevents the impact point from directly
-                   disturbing the moon reflection.
-
-                   If the faint opposite ripple disappears,
-                   we have isolated the source.
-                ================================================= */
-
                 /*
-                float impactReflection = 0.0;
+                 * Impact displacement also
+                 * affects the moon reflection.
+                 */
+
+                float impactReflection =
+
+                    0.0;
+
 
                 for (
                     int i = 0;
@@ -1065,7 +1058,9 @@ if (!canvas) {
                 ) {
 
                     float strength =
+
                         rippleStrengths[i];
+
 
                     if (
                         strength > 0.0
@@ -1074,10 +1069,14 @@ if (!canvas) {
                         float elapsed =
 
                             max(
+
                                 0.0,
+
                                 time -
                                 rippleStarts[i]
+
                             );
+
 
                         if (
                             elapsed < 2.5
@@ -1101,14 +1100,17 @@ if (!canvas) {
 
                                 );
 
+
                             float d =
 
                                 distance(
 
                                     rippleP,
+
                                     ripplePositions[i]
 
                                 );
+
 
                             float influence =
 
@@ -1129,6 +1131,7 @@ if (!canvas) {
 
                                 );
 
+
                             float decay =
 
                                 exp(
@@ -1137,6 +1140,7 @@ if (!canvas) {
                                     1.35
 
                                 );
+
 
                             impactReflection +=
 
@@ -1153,6 +1157,11 @@ if (!canvas) {
                 }
 
 
+                /*
+                 * Slightly disturb the breakup
+                 * around the point of impact.
+                 */
+
                 breakup +=
 
                     sin(
@@ -1163,7 +1172,6 @@ if (!canvas) {
                     )
                     *
                     0.08;
-                */
 
 
                 breakup =
@@ -1877,6 +1885,10 @@ if (!canvas) {
                         canvas.getBoundingClientRect();
 
 
+                    /* -----------------------------------------
+                       Convert browser position to canvas position
+                    ----------------------------------------- */
+
                     const localX =
 
                         clientX -
@@ -1888,6 +1900,10 @@ if (!canvas) {
                         clientY -
                         rect.top;
 
+
+                    /* -----------------------------------------
+                       Convert to normalized coordinates
+                    ----------------------------------------- */
 
                     const uvX =
 
@@ -1916,11 +1932,19 @@ if (!canvas) {
                         0.5;
 
 
+                    /* -----------------------------------------
+                       Match shader aspect ratio
+                    ----------------------------------------- */
+
                     rippleX *=
 
                         rect.width /
                         rect.height;
 
+
+                    /* -----------------------------------------
+                       Match pond vertical scale
+                    ----------------------------------------- */
 
                     rippleY *=
 
@@ -1933,6 +1957,10 @@ if (!canvas) {
                         *
                         0.001;
 
+
+                    /* -----------------------------------------
+                       Add new ripple
+                    ----------------------------------------- */
 
                     ripples.push({
 
@@ -1951,6 +1979,10 @@ if (!canvas) {
                     });
 
 
+                    /* -----------------------------------------
+                       Keep maximum number
+                    ----------------------------------------- */
+
                     if (
 
                         ripples.length >
@@ -1967,8 +1999,6 @@ if (!canvas) {
 
                 /* =============================================
                    POINTER RIPPLE
-
-                   Single-trigger handling retained from 8.4.2.
                 ============================================= */
 
                 window.addEventListener(
@@ -2104,6 +2134,10 @@ if (!canvas) {
                     );
 
 
+                    /* -----------------------------------------
+                       Remove expired ripples
+                    ----------------------------------------- */
+
                     while (
 
                         ripples.length > 0 &&
@@ -2118,6 +2152,10 @@ if (!canvas) {
 
                     }
 
+
+                    /* -----------------------------------------
+                       Prepare uniform arrays
+                    ----------------------------------------- */
 
                     const positions =
 
@@ -2217,6 +2255,10 @@ if (!canvas) {
                     }
 
 
+                    /* -----------------------------------------
+                       Send uniforms
+                    ----------------------------------------- */
+
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2273,6 +2315,10 @@ if (!canvas) {
                     );
 
 
+                    /* -----------------------------------------
+                       Draw
+                    ----------------------------------------- */
+
                     gl.drawArrays(
 
                         gl.TRIANGLES,
@@ -2306,4 +2352,3 @@ if (!canvas) {
     }
 
 }
-```
