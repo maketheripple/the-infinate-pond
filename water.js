@@ -68,6 +68,12 @@ uniform float time;
 
 uniform float scroll;
 
+uniform vec2 ripplePosition;
+
+uniform float rippleStart;
+
+uniform float rippleStrength;
+
 
 /* =========================================================
    CONSTANTS
@@ -294,7 +300,121 @@ float directionalWave(
 float waterHeight(
     vec2 p
 ) {
+/* =========================================================
+   INTERACTIVE RIPPLE
+========================================================= */
 
+float interactiveRipple(
+    vec2 p
+) {
+
+    /*
+     * Distance from the ripple origin.
+     */
+
+    float distanceFromRipple =
+
+        distance(
+            p,
+            ripplePosition
+        );
+
+
+    /*
+     * Ripple travels outward
+     * over time.
+     */
+
+    float elapsed =
+
+        max(
+            0.0,
+            time -
+            rippleStart
+        );
+
+
+    float radius =
+
+        elapsed *
+        0.42;
+
+
+    /*
+     * Width of the ripple ring.
+     */
+
+    float width =
+
+        0.035;
+
+
+    /*
+     * Create a travelling wave.
+     */
+
+    float wave =
+
+        sin(
+
+            (
+                distanceFromRipple -
+                radius
+            )
+            *
+            85.0
+
+        );
+
+
+    /*
+     * Keep the ripple concentrated
+     * around the travelling edge.
+     */
+
+    float ring =
+
+        exp(
+
+            -pow(
+
+                (
+                    distanceFromRipple -
+                    radius
+                )
+                /
+                width,
+
+                2.0
+
+            )
+
+        );
+
+
+    /*
+     * Fade as the ripple expands.
+     */
+
+    float fade =
+
+        exp(
+            -elapsed *
+            0.42
+        );
+
+
+    return
+
+        wave
+        *
+        ring
+        *
+        fade
+        *
+        rippleStrength;
+
+}
     float result =
         0.0;
 
@@ -634,27 +754,48 @@ vec3 surfaceNormal(
 
 
     float center =
-        waterHeight(p);
+
+    waterHeight(p)
+    +
+    interactiveRipple(p);
 
 
     float x =
-        waterHeight(
-            p +
-            vec2(
-                e,
-                0.0
-            )
-        );
+
+    waterHeight(
+        p +
+        vec2(
+            e,
+            0.0
+        )
+    )
+    +
+    interactiveRipple(
+        p +
+        vec2(
+            e,
+            0.0
+        )
+    );
 
 
     float y =
-        waterHeight(
-            p +
-            vec2(
-                0.0,
-                e
-            )
-        );
+
+    waterHeight(
+        p +
+        vec2(
+            0.0,
+            e
+        )
+    )
+    +
+    interactiveRipple(
+        p +
+        vec2(
+            0.0,
+            e
+        )
+    );
 
 
     return normalize(
@@ -1291,7 +1432,121 @@ const scrollLocation =
         program,
         "scroll"
     );
+const ripplePositionLocation =
 
+    gl.getUniformLocation(
+        program,
+        "ripplePosition"
+    );
+
+
+const rippleStartLocation =
+
+    gl.getUniformLocation(
+        program,
+        "rippleStart"
+    );
+
+
+const rippleStrengthLocation =
+
+    gl.getUniformLocation(
+        program,
+        "rippleStrength"
+    );/* =========================================================
+   RIPPLE STATE
+========================================================= */
+
+let rippleX =
+    0.5;
+
+let rippleY =
+    0.5;
+
+let rippleStart =
+    -100.0;
+
+let rippleStrength =
+    0.0;/* =========================================================
+   MOUSE RIPPLE
+========================================================= */
+
+canvas.addEventListener(
+    "click",
+    function(event) {
+
+        rippleX =
+
+            event.clientX /
+            window.innerWidth;
+
+
+        rippleY =
+
+            1.0 -
+            (
+                event.clientY /
+                window.innerHeight
+            );
+
+
+        rippleStart =
+
+            performance.now()
+            *
+            0.001;
+
+
+        rippleStrength =
+            1.0;
+
+    }
+);/* =========================================================
+   TOUCH RIPPLE
+========================================================= */
+
+canvas.addEventListener(
+
+    "touchstart",
+
+    function(event) {
+
+        const touch =
+            event.touches[0];
+
+
+        rippleX =
+
+            touch.clientX /
+            window.innerWidth;
+
+
+        rippleY =
+
+            1.0 -
+            (
+                touch.clientY /
+                window.innerHeight
+            );
+
+
+        rippleStart =
+
+            performance.now()
+            *
+            0.001;
+
+
+        rippleStrength =
+            1.0;
+
+    },
+
+    {
+        passive: true
+    }
+
+);
 
 /* =========================================================
    RESIZE
@@ -1404,7 +1659,33 @@ function renderWater(
         window.scrollY
 
     );
+gl.uniform2f(
 
+    ripplePositionLocation,
+
+    rippleX,
+
+    rippleY
+
+);
+
+
+gl.uniform1f(
+
+    rippleStartLocation,
+
+    rippleStart
+
+);
+
+
+gl.uniform1f(
+
+    rippleStrengthLocation,
+
+    rippleStrength
+
+);
 
     gl.drawArrays(
 
