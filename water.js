@@ -1,7 +1,8 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.1 — IMPACT DISPLACEMENT
-   ========================================================= */
+   VERSION 8.4.4 — REMOVE MIRRORED RIPPLE REFLECTION
+   BASED ON VERSION 8.4.1 — IMPACT DISPLACEMENT
+========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
 
@@ -1042,134 +1043,15 @@ if (!canvas) {
 
 
                 /*
-                 * Impact displacement also
-                 * affects the moon reflection.
+                 * VERSION 8.4.4
+                 *
+                 * The separate impactReflection calculation
+                 * has been removed.
+                 *
+                 * This prevents the moon reflection from
+                 * generating a second vertically mirrored
+                 * ripple at the opposite side of the pond.
                  */
-
-                float impactReflection = 0.0;
-
-
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
-
-                    float strength =
-
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
-
-
-                        if (
-                            elapsed < 2.5
-                        ) {
-
-                            vec2 rippleP =
-
-                                vec2(
-
-                                    uv.x -
-                                    0.5,
-
-                                    (
-                                        1.0 -
-                                        uv.y
-                                    )
-                                    *
-                                    1.55
-                                    -
-                                    0.775
-
-                                );
-
-
-                            float d =
-
-                                distance(
-
-                                    rippleP,
-
-                                    ripplePositions[i]
-
-                                );
-
-
-                            float influence =
-
-                                exp(
-
-                                    -pow(
-
-                                        d /
-                                        (
-                                            0.12 +
-                                            elapsed *
-                                            0.06
-                                        ),
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    1.35
-
-                                );
-
-
-                            impactReflection +=
-
-                                influence
-                                *
-                                decay
-                                *
-                                strength;
-
-                        }
-
-                    }
-
-                }
-
-
-                /*
-                 * Slightly disturb the breakup
-                 * around the point of impact.
-                 */
-
-                breakup +=
-
-                    sin(
-
-                        impactReflection *
-                        8.0
-
-                    )
-                    *
-                    0.08;
 
 
                 breakup =
