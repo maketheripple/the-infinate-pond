@@ -1,7 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.5 — NATURAL WATER SURFACE (SAFE LAYER)
-   RIPPLE BASELINE PRESERVED FROM VERSION 8.4.4
+   VERSION 8.4.5 — NATURAL WATER + SINGLE RIPPLE
 ========================================================= */
 
 const canvas = document.getElementById("waterCanvas");
@@ -477,61 +476,32 @@ if (!canvas) {
 
 
             /* =================================================
-               NATURAL WATER COLOUR VARIATION
-
-               IMPORTANT:
-
-               This layer affects ONLY the final colour.
-
-               It does NOT enter waterHeight().
-               It does NOT affect surfaceNormal().
-               It does NOT affect ripple displacement.
-               It does NOT affect moon reflection geometry.
-
-               This is specifically designed to prevent
-               the phantom/faint second ripple from returning.
+               NATURAL WATER SURFACE
             ================================================= */
 
-            float naturalWaterVariation(vec2 p) {
+            float naturalWaterSurface(vec2 p) {
 
-                vec2 driftA =
+                vec2 slowDrift =
 
                     vec2(
 
                         time *
-                        0.0045,
+                        0.010,
 
                         -time *
-                        0.0030
+                        0.007
 
                     );
 
-
-                vec2 driftB =
-
-                    vec2(
-
-                        -time *
-                        0.0030,
-
-                        time *
-                        0.0022
-
-                    );
-
-
-                /*
-                 * Very broad tonal movement.
-                 */
 
                 float broadA =
 
                     fbm(
 
                         p *
-                        0.42
+                        0.85
                         +
-                        driftA
+                        slowDrift
 
                     );
 
@@ -541,25 +511,10 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        0.70
-                        +
-                        driftB
-
-                    );
-
-
-                /*
-                 * Gentle medium-scale variation.
-                 */
-
-                float medium =
-
-                    fbm(
-
-                        p *
-                        1.25
+                        1.45
                         -
-                        driftA
+                        slowDrift *
+                        1.7
 
                     );
 
@@ -567,31 +522,39 @@ if (!canvas) {
                 float broadVariation =
 
                     broadA *
-                    0.50
+                    0.62
 
                     +
 
                     broadB *
-                    0.32
+                    0.38;
 
-                    +
-
-                    medium *
-                    0.18;
-
-
-                /*
-                 * Very subtle directional movement.
-                 */
 
                 vec2 windDirection =
 
                     normalize(
 
                         vec2(
-                            0.94,
-                            0.20
+                            0.92,
+                            0.24
                         )
+
+                    );
+
+
+                float windPattern =
+
+                    sin(
+
+                        dot(
+                            p,
+                            windDirection
+                        )
+                        *
+                        13.0
+                        +
+                        time *
+                        0.12
 
                     );
 
@@ -601,67 +564,76 @@ if (!canvas) {
                     fbm(
 
                         p *
-                        1.35
+                        2.8
 
                         +
 
                         vec2(
-
                             time *
-                            0.006,
+                            0.012,
 
                             -time *
-                            0.004
-
+                            0.009
                         )
 
                     );
 
 
-                float windMovement =
+                float windTexture =
 
-                    sin(
+                    windPattern *
+                    (
+                        0.35 +
+                        windNoise *
+                        0.65
+                    );
 
-                        dot(
-                            p,
-                            windDirection
-                        )
-                        *
-                        3.2
+
+                float fineTexture =
+
+                    fbm(
+
+                        p *
+                        7.5
+
                         +
-                        time *
-                        0.075
+
+                        vec2(
+                            time *
+                            0.020,
+
+                            -time *
+                            0.014
+                        )
 
                     );
 
 
-                windMovement *=
-
-                    0.30
-                    +
-                    windNoise *
-                    0.70;
-
-
-                /*
-                 * Keep this extremely subtle.
-
-                 * This is colour variation only.
-                 */
-
-                return
+                float surface =
 
                     (
                         broadVariation -
                         0.5
                     )
                     *
-                    0.085
+                    0.12
 
                     +
 
-                    windMovement *
-                    0.008;
+                    windTexture *
+                    0.018
+
+                    +
+
+                    (
+                        fineTexture -
+                        0.5
+                    )
+                    *
+                    0.025;
+
+
+                return surface;
 
             }
 
@@ -669,155 +641,20 @@ if (!canvas) {
             /* =================================================
                RIPPLE INTERFERENCE
 
-               PRESERVED EXACTLY FROM 8.4.4
+               DISABLED AS A VISUAL RIPPLE.
+               PRESERVED SO THE RIPPLE SYSTEM STRUCTURE
+               REMAINS COMPATIBLE.
             ================================================= */
 
             float rippleInterference(vec2 p) {
 
-                float field =
-                    0.0;
-
-
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
-
-                    float strength =
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-                                0.0,
-                                time -
-                                rippleStarts[i]
-                            );
-
-
-                        if (
-                            elapsed < 12.0
-                        ) {
-
-                            float radius =
-
-                                (
-                                    1.0 -
-                                    exp(
-                                        -elapsed *
-                                        0.55
-                                    )
-                                )
-                                *
-                                2.25;
-
-
-                            float d =
-
-                                distance(
-                                    p,
-                                    ripplePositions[i]
-                                );
-
-
-                            float ringDistance =
-
-                                abs(
-                                    d -
-                                    radius
-                                );
-
-
-                            float ring =
-
-                                exp(
-
-                                    -pow(
-
-                                        ringDistance /
-                                        0.085,
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float variation =
-
-                                sin(
-                                    d *
-                                    7.0
-                                );
-
-
-                            variation =
-
-                                0.80 +
-                                variation *
-                                0.20;
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    0.40
-
-                                );
-
-
-                            float lifetime =
-
-                                1.0 -
-
-                                smoothstep(
-
-                                    8.0,
-                                    11.5,
-                                    elapsed
-
-                                );
-
-
-                            field +=
-
-                                ring
-                                *
-                                variation
-                                *
-                                decay
-                                *
-                                lifetime
-                                *
-                                strength
-                                *
-                                0.0;
-
-                        }
-
-                    }
-
-                }
-
-
-                return field;
+                return 0.0;
 
             }
 
 
             /* =================================================
                IMPACT DISPLACEMENT
-
-               PRESERVED EXACTLY FROM 8.4.4
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -946,13 +783,6 @@ if (!canvas) {
 
             /* =================================================
                TOTAL WATER HEIGHT
-
-               PRESERVED FROM 8.4.4
-
-               NOTICE:
-
-               naturalWaterVariation() is intentionally
-               NOT included here.
             ================================================= */
 
             float waterHeight(vec2 p) {
@@ -1006,8 +836,6 @@ if (!canvas) {
 
             /* =================================================
                SURFACE NORMAL
-
-               PRESERVED FROM 8.4.4
             ================================================= */
 
             vec3 surfaceNormal(vec2 p) {
@@ -1067,7 +895,15 @@ if (!canvas) {
             /* =================================================
                MOON REFLECTION
 
-               PRESERVED FROM 8.4.4
+               IMPORTANT:
+               The previous impactReflection system has been
+               completely removed.
+
+               The moon reflection now responds ONLY to the
+               actual water surface normal.
+
+               This prevents the reflection system from creating
+               a second visual ripple.
             ================================================= */
 
             float moonReflection(
@@ -1235,134 +1071,6 @@ if (!canvas) {
                     0.40;
 
 
-                /*
-                 * Impact displacement also
-                 * affects the moon reflection.
-                 */
-
-                float impactReflection =
-
-                    0.0;
-
-
-                for (
-                    int i = 0;
-                    i < MAX_RIPPLES;
-                    i++
-                ) {
-
-                    float strength =
-
-                        rippleStrengths[i];
-
-
-                    if (
-                        strength > 0.0
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
-
-
-                        if (
-                            elapsed < 2.5
-                        ) {
-
-                            vec2 rippleP =
-
-                                vec2(
-
-                                    uv.x -
-                                    0.5,
-
-                                    (
-                                        1.0 -
-                                        uv.y
-                                    )
-                                    *
-                                    1.55
-                                    -
-                                    0.775
-
-                                );
-
-
-                            float d =
-
-                                distance(
-
-                                    rippleP,
-
-                                    ripplePositions[i]
-
-                                );
-
-
-                            float influence =
-
-                                exp(
-
-                                    -pow(
-
-                                        d /
-                                        (
-                                            0.12 +
-                                            elapsed *
-                                            0.06
-                                        ),
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float decay =
-
-                                exp(
-
-                                    -elapsed *
-                                    1.35
-
-                                );
-
-
-                            impactReflection +=
-
-                                influence
-                                *
-                                decay
-                                *
-                                strength;
-
-                        }
-
-                    }
-
-                }
-
-
-                breakup +=
-
-                    sin(
-
-                        impactReflection *
-                        8.0
-
-                    )
-                    *
-                    0.08;
-
-
                 breakup =
 
                     clamp(
@@ -1436,12 +1144,6 @@ if (!canvas) {
                     1.55;
 
 
-                /* ---------------------------------------------
-                   WATER HEIGHT
-
-                   Ripple system remains completely unchanged.
-                --------------------------------------------- */
-
                 float surface =
 
                     waterHeight(p);
@@ -1491,26 +1193,17 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   SAFE NATURAL WATER COLOUR LAYER
-
-                   This is intentionally applied ONLY here.
-
-                   It cannot affect:
-                   - ripple position
-                   - ripple geometry
-                   - surface normal
-                   - impact displacement
-                   - moon reflection
+                   Natural surface variation
                 --------------------------------------------- */
 
-                float naturalVariation =
+                float naturalSurface =
 
-                    naturalWaterVariation(p);
+                    naturalWaterSurface(p);
 
 
                 variation +=
 
-                    naturalVariation;
+                    naturalSurface;
 
 
                 variation =
@@ -1541,8 +1234,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    Surface highlights
-
-                   Uses original water normal only.
                 --------------------------------------------- */
 
                 float highlight =
@@ -1580,43 +1271,34 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Very subtle broad water sheen
-
-                   Colour-only effect.
+                   Natural surface sheen
                 --------------------------------------------- */
 
-                float waterSheen =
+                float surfaceSheen =
 
-                    max(
-
-                        naturalVariation,
-
-                        0.0
-
-                    );
+                    naturalSurface *
+                    0.55;
 
 
                 color +=
 
                     vec3(
 
-                        0.0025,
+                        0.004,
 
-                        0.006,
+                        0.010,
 
-                        0.009
+                        0.014
 
                     )
 
                     *
 
-                    waterSheen;
+                    surfaceSheen;
 
 
                 /* ---------------------------------------------
                    Moon reflection
-
-                   Uses the ORIGINAL normal.
                 --------------------------------------------- */
 
                 float reflection =
@@ -2141,10 +1823,6 @@ if (!canvas) {
                         canvas.getBoundingClientRect();
 
 
-                    /* -----------------------------------------
-                       Convert browser position to canvas position
-                    ----------------------------------------- */
-
                     const localX =
 
                         clientX -
@@ -2156,10 +1834,6 @@ if (!canvas) {
                         clientY -
                         rect.top;
 
-
-                    /* -----------------------------------------
-                       Convert to normalized coordinates
-                    ----------------------------------------- */
 
                     const uvX =
 
@@ -2188,19 +1862,11 @@ if (!canvas) {
                         0.5;
 
 
-                    /* -----------------------------------------
-                       Match shader aspect ratio
-                    ----------------------------------------- */
-
                     rippleX *=
 
                         rect.width /
                         rect.height;
 
-
-                    /* -----------------------------------------
-                       Match pond vertical scale
-                    ----------------------------------------- */
 
                     rippleY *=
 
@@ -2213,10 +1879,6 @@ if (!canvas) {
                         *
                         0.001;
 
-
-                    /* -----------------------------------------
-                       Add new ripple
-                    ----------------------------------------- */
 
                     ripples.push({
 
@@ -2234,10 +1896,6 @@ if (!canvas) {
 
                     });
 
-
-                    /* -----------------------------------------
-                       Keep maximum number
-                    ----------------------------------------- */
 
                     if (
 
@@ -2390,10 +2048,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Remove expired ripples
-                    ----------------------------------------- */
-
                     while (
 
                         ripples.length > 0 &&
@@ -2408,10 +2062,6 @@ if (!canvas) {
 
                     }
 
-
-                    /* -----------------------------------------
-                       Prepare uniform arrays
-                    ----------------------------------------- */
 
                     const positions =
 
@@ -2511,10 +2161,6 @@ if (!canvas) {
                     }
 
 
-                    /* -----------------------------------------
-                       Send uniforms
-                    ----------------------------------------- */
-
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2570,10 +2216,6 @@ if (!canvas) {
 
                     );
 
-
-                    /* -----------------------------------------
-                       Draw
-                    ----------------------------------------- */
 
                     gl.drawArrays(
 
