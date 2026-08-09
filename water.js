@@ -1,6 +1,7 @@
+```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.6 — MOONLIGHT FROM ABOVE + SINGLE RIPPLE
+   VERSION 8.4.7 — RIPPLE ORIENTATION CORRECTION
    ========================================================= */
 
 
@@ -509,6 +510,12 @@ if (!canvas) {
                IMPACT DISPLACEMENT
 
                The ONLY active ripple displacement.
+
+               VERSION 8.4.7 CHANGE:
+
+               The displacement polarity is inverted so the
+               moonlight catches the ripple from the correct
+               physical orientation.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -610,7 +617,7 @@ if (!canvas) {
                                 *
                                 strength
                                 *
-                                0.075;
+                                -0.075;
 
                         }
 
@@ -639,8 +646,6 @@ if (!canvas) {
 
             /* =================================================
                TOTAL WATER HEIGHT
-
-               IMPORTANT:
 
                Moonlight, clouds and visual background
                effects are NOT included here.
@@ -931,9 +936,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    Distance below the moon.
-
-                   0.0 near the source.
-                   Larger values farther down the pond.
                 --------------------------------------------- */
 
                 float verticalDistance =
@@ -1227,11 +1229,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    BASE WATER
-
-                   Deliberately visible deep blue.
-
-                   This is the foundation that was lost in
-                   the previous 8.4.6.
                 --------------------------------------------- */
 
                 vec3 deepWater =
@@ -1443,12 +1440,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    SOFT ATMOSPHERIC MOONLIGHT
-
-                   Extremely subtle.
-
-                   This creates the feeling that the moon
-                   is above the page without displaying
-                   a bright white orb.
                 --------------------------------------------- */
 
                 float atmosphere =
@@ -1473,8 +1464,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    AMBIENT MOONLIGHT
-
-                   Broad illumination toward the top center.
                 --------------------------------------------- */
 
                 float upperLight =
@@ -1531,8 +1520,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    CINEMATIC VIGNETTE
-
-                   Kept restrained so the pond remains visible.
                 --------------------------------------------- */
 
                 float vignette =
@@ -1956,14 +1943,15 @@ if (!canvas) {
                         rect.width;
 
 
+                    /* -----------------------------------------
+                       8.4.7 keeps browser Y coordinates in the
+                       same orientation as the visual surface.
+                    ----------------------------------------- */
+
                     const uvY =
 
-                        1.0 -
-
-                        (
-                            localY /
-                            rect.height
-                        );
+                        localY /
+                        rect.height;
 
 
                     let rippleX =
@@ -2377,3 +2365,4 @@ if (!canvas) {
     }
 
 }
+```
