@@ -1,7 +1,6 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.4.6 — CALM MOONLIT POND + SINGLE RIPPLE
+   VERSION 8.4.6 — MOONLIGHT FROM ABOVE + SINGLE RIPPLE
    ========================================================= */
 
 
@@ -312,9 +311,6 @@ if (!canvas) {
                SMALL SURFACE WAVES
 
                Extremely subtle.
-
-               These should mostly be felt in the moonlight,
-               rather than seen as obvious waves.
             ================================================= */
 
             float smallWaves(vec2 p) {
@@ -380,8 +376,6 @@ if (!canvas) {
                ORGANIC MOTION
 
                Extremely restrained low-frequency movement.
-
-               No swirling or energetic surface behavior.
             ================================================= */
 
             float organicMotion(vec2 p) {
@@ -426,9 +420,10 @@ if (!canvas) {
             /* =================================================
                NATURAL WATER SURFACE
 
-               Calm moonlit pond variation.
+               Appearance-only variation.
 
-               This affects appearance AND remains restrained.
+               This is intentionally NOT used for ripple
+               displacement.
             ================================================= */
 
             float naturalWaterSurface(vec2 p) {
@@ -482,7 +477,7 @@ if (!canvas) {
                     0.30;
 
 
-                float surface =
+                return
 
                     (
                         broadVariation -
@@ -491,19 +486,16 @@ if (!canvas) {
                     *
                     0.055;
 
-
-                return surface;
-
             }
 
 
             /* =================================================
                RIPPLE INTERFERENCE
 
-               DISABLED AS A VISUAL RIPPLE.
+               Disabled.
 
-               Preserved so the ripple system structure
-               remains compatible.
+               This prevents the old secondary ripple
+               from returning.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -516,10 +508,7 @@ if (!canvas) {
             /* =================================================
                IMPACT DISPLACEMENT
 
-               The only active ripple displacement.
-
-               This creates the single physical impact when
-               the user clicks/taps the pond.
+               The ONLY active ripple displacement.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -639,9 +628,6 @@ if (!canvas) {
                RIPPLE MICRO-WAVES
 
                Disabled.
-
-               Keeping this at zero prevents the ripple
-               system from generating a second visual ripple.
             ================================================= */
 
             float rippleMicroWaves(vec2 p) {
@@ -653,6 +639,14 @@ if (!canvas) {
 
             /* =================================================
                TOTAL WATER HEIGHT
+
+               IMPORTANT:
+
+               Moonlight, clouds and visual background
+               effects are NOT included here.
+
+               This prevents them from generating
+               additional physical ripples.
             ================================================= */
 
             float waterHeight(vec2 p) {
@@ -763,13 +757,11 @@ if (!canvas) {
 
 
             /* =================================================
-               MOONLIGHT CLOUDS
+               MOON CLOUDS
 
-               This affects ONLY the moonlight.
+               Visual-only cloud field.
 
-               It does NOT affect waterHeight() or normals.
-
-               Therefore clouds cannot create another ripple.
+               Does NOT affect waterHeight().
             ================================================= */
 
             float moonClouds(vec2 uv) {
@@ -778,8 +770,8 @@ if (!canvas) {
 
                     uv *
                     vec2(
-                        2.2,
-                        1.25
+                        2.0,
+                        1.15
                     );
 
 
@@ -788,10 +780,10 @@ if (!canvas) {
                     vec2(
 
                         time *
-                        0.006,
+                        0.004,
 
                         -time *
-                        0.002
+                        0.0015
 
                     );
 
@@ -811,13 +803,13 @@ if (!canvas) {
                     fbm(
 
                         cloudUV *
-                        2.0
+                        2.2
 
                         +
 
                         vec2(
-                            4.7,
-                            1.8
+                            7.3,
+                            2.4
                         )
 
                     );
@@ -837,7 +829,7 @@ if (!canvas) {
                 return smoothstep(
 
                     0.48,
-                    0.70,
+                    0.72,
                     clouds
 
                 );
@@ -846,17 +838,75 @@ if (!canvas) {
 
 
             /* =================================================
+               MOON ATMOSPHERE
+
+               A very soft suggestion of moonlight near the
+               top of the page.
+
+               This is NOT a visible white moon orb.
+            ================================================= */
+
+            float moonAtmosphere(vec2 uv) {
+
+                vec2 moonPosition =
+
+                    vec2(
+                        0.50,
+                        1.12
+                    );
+
+
+                float distanceFromMoon =
+
+                    distance(
+                        uv,
+                        moonPosition
+                    );
+
+
+                float glow =
+
+                    exp(
+
+                        -pow(
+
+                            distanceFromMoon /
+                            0.28,
+
+                            2.0
+
+                        )
+
+                    );
+
+
+                float clouds =
+
+                    moonClouds(uv);
+
+
+                return
+
+                    glow
+                    *
+                    mix(
+                        0.82,
+                        0.38,
+                        clouds
+                    );
+
+            }
+
+
+            /* =================================================
                MOON REFLECTION
 
-               The apparent moonlight comes from ABOVE the page.
+               Reflection begins at the top of the page
+               and stretches downward.
 
-               The reflection begins near the top of the pond
-               and stretches downward as a soft, broken path.
-
-               The reflection responds ONLY to the actual
-               water surface normal.
-
-               No independent ripple animation is introduced.
+               The moon itself is deliberately off-screen,
+               so the viewer sees reflected moonlight rather
+               than a bright white orb.
             ================================================= */
 
             float moonReflection(
@@ -868,45 +918,47 @@ if (!canvas) {
             ) {
 
                 /* ---------------------------------------------
-                   Distance from the moonlight source.
-
-                   The apparent moon is above the water,
-                   slightly left/right of center.
+                   Moon position above the visible page.
                 --------------------------------------------- */
 
                 vec2 moonPosition =
 
                     vec2(
                         0.50,
-                        1.08
+                        1.12
                     );
 
 
+                /* ---------------------------------------------
+                   Distance below the moon.
+
+                   0.0 near the source.
+                   Larger values farther down the pond.
+                --------------------------------------------- */
+
                 float verticalDistance =
 
-                    max(
+                    clamp(
 
                         moonPosition.y -
                         uv.y,
 
-                        0.0
+                        0.0,
+                        1.0
 
                     );
 
 
                 /* ---------------------------------------------
-                   Reflection width.
-
-                   Narrow near the moon.
-                   Wider as it reaches the foreground.
+                   Reflection spreads as it travels downward.
                 --------------------------------------------- */
 
                 float spread =
 
                     mix(
 
-                        0.014,
-                        0.24,
+                        0.018,
+                        0.22,
 
                         smoothstep(
                             0.0,
@@ -918,24 +970,22 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Surface movement bends the reflection.
-
-                   Kept deliberately small.
+                   Surface bends the reflection slightly.
                 --------------------------------------------- */
 
-                float surfaceDistortion =
+                float distortion =
 
                     (
                         normal.x *
-                        0.70
+                        0.65
 
                         +
 
                         normal.y *
-                        0.30
+                        0.35
                     )
                     *
-                    0.032;
+                    0.028;
 
 
                 float horizontalDistance =
@@ -945,8 +995,7 @@ if (!canvas) {
                         uv.x -
                         moonPosition.x
                         +
-
-                        surfaceDistortion
+                        distortion
 
                     );
 
@@ -968,10 +1017,30 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Moon direction.
+                   Reflection fades toward the foreground.
+                --------------------------------------------- */
 
-                   Light is treated as coming from above
-                   and slightly toward the viewer.
+                float distanceFade =
+
+                    mix(
+
+                        1.0,
+                        0.42,
+
+                        smoothstep(
+                            0.0,
+                            1.0,
+                            verticalDistance
+                        )
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Actual water orientation.
+
+                   The reflection responds to the surface
+                   normal, including the click ripple.
                 --------------------------------------------- */
 
                 vec3 moonDirection =
@@ -981,9 +1050,7 @@ if (!canvas) {
                         vec3(
 
                             0.0,
-
                             0.42,
-
                             1.0
 
                         )
@@ -996,10 +1063,8 @@ if (!canvas) {
                     max(
 
                         dot(
-
                             normal,
                             moonDirection
-
                         ),
 
                         0.0
@@ -1010,19 +1075,15 @@ if (!canvas) {
                 float sparkle =
 
                     pow(
-
                         angle,
-
-                        28.0
-
+                        22.0
                     );
 
 
                 /* ---------------------------------------------
-                   Soft cloud cover.
+                   Cloud cover.
 
-                   Clouds reduce the reflected moonlight,
-                   rather than changing the water itself.
+                   Clouds break up the reflected moonlight.
                 --------------------------------------------- */
 
                 float cloudAmount =
@@ -1035,20 +1096,16 @@ if (!canvas) {
                     mix(
 
                         1.0,
-
-                        0.30,
-
+                        0.28,
                         cloudAmount
 
                     );
 
 
                 /* ---------------------------------------------
-                   Gentle water breakup.
+                   Very subtle natural breakup.
 
-                   Very slow and coherent.
-
-                   This is visual breakup only.
+                   Visual only.
                 --------------------------------------------- */
 
                 float breakup =
@@ -1056,17 +1113,17 @@ if (!canvas) {
                     fbm(
 
                         uv *
-                        4.5
+                        5.0
 
                         +
 
                         vec2(
 
                             time *
-                            0.006,
+                            0.005,
 
                             -time *
-                            0.004
+                            0.003
 
                         )
 
@@ -1078,19 +1135,18 @@ if (!canvas) {
                     smoothstep(
 
                         0.30,
-                        0.70,
+                        0.72,
                         breakup
 
                     );
 
 
-                float reflectionStrength =
+                float breakupStrength =
 
                     mix(
 
-                        0.72,
+                        0.62,
                         1.0,
-
                         breakup
 
                     );
@@ -1102,6 +1158,10 @@ if (!canvas) {
 
                     *
 
+                    distanceFade
+
+                    *
+
                     sparkle
 
                     *
@@ -1110,7 +1170,7 @@ if (!canvas) {
 
                     *
 
-                    reflectionStrength;
+                    breakupStrength;
 
             }
 
@@ -1151,6 +1211,10 @@ if (!canvas) {
                     1.55;
 
 
+                /* ---------------------------------------------
+                   Actual water surface
+                --------------------------------------------- */
+
                 float surface =
 
                     waterHeight(p);
@@ -1162,16 +1226,21 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Base water
+                   BASE WATER
+
+                   Deliberately visible deep blue.
+
+                   This is the foundation that was lost in
+                   the previous 8.4.6.
                 --------------------------------------------- */
 
                 vec3 deepWater =
 
                     vec3(
 
-                        0.0015,
-                        0.010,
-                        0.020
+                        0.0035,
+                        0.018,
+                        0.032
 
                     );
 
@@ -1180,9 +1249,9 @@ if (!canvas) {
 
                     vec3(
 
-                        0.004,
-                        0.032,
-                        0.055
+                        0.008,
+                        0.052,
+                        0.082
 
                     );
 
@@ -1196,9 +1265,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Natural surface variation
-
-                   Appearance only.
+                   Natural surface appearance
                 --------------------------------------------- */
 
                 float naturalSurface =
@@ -1212,11 +1279,10 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Subtle natural background variation
+                   Background variation
 
-                   This affects only visual brightness.
-
-                   It does NOT affect waterHeight() or normals.
+                   Appearance only.
+                   Does NOT affect normals.
                 --------------------------------------------- */
 
                 float backgroundVariation =
@@ -1263,7 +1329,6 @@ if (!canvas) {
                         variation,
 
                         0.0,
-
                         1.0
 
                     );
@@ -1274,9 +1339,7 @@ if (!canvas) {
                     mix(
 
                         deepWater,
-
                         blueWater,
-
                         variation
 
                     );
@@ -1291,11 +1354,8 @@ if (!canvas) {
                     pow(
 
                         max(
-
                             normal.z,
-
                             0.0
-
                         ),
 
                         7.0
@@ -1345,9 +1405,6 @@ if (!canvas) {
 
                 /* ---------------------------------------------
                    MOON REFLECTION
-
-                   Light source is now visually positioned
-                   above the page.
                 --------------------------------------------- */
 
                 float reflection =
@@ -1364,9 +1421,9 @@ if (!canvas) {
 
                     vec3(
 
-                        0.72,
-                        0.87,
-                        1.0
+                        0.58,
+                        0.74,
+                        0.88
 
                     );
 
@@ -1381,19 +1438,57 @@ if (!canvas) {
 
                     *
 
-                    1.90;
+                    1.65;
 
 
                 /* ---------------------------------------------
-                   SOFT MOON GLOW
+                   SOFT ATMOSPHERIC MOONLIGHT
 
-                   A very subtle glow centered toward the
-                   top of the page.
+                   Extremely subtle.
 
-                   This is visual illumination only.
+                   This creates the feeling that the moon
+                   is above the page without displaying
+                   a bright white orb.
                 --------------------------------------------- */
 
-                float moonGlow =
+                float atmosphere =
+
+                    moonAtmosphere(uv);
+
+
+                color +=
+
+                    vec3(
+
+                        0.008,
+                        0.018,
+                        0.030
+
+                    )
+
+                    *
+
+                    atmosphere;
+
+
+                /* ---------------------------------------------
+                   AMBIENT MOONLIGHT
+
+                   Broad illumination toward the top center.
+                --------------------------------------------- */
+
+                float upperLight =
+
+                    smoothstep(
+
+                        0.10,
+                        0.95,
+                        uv.y
+
+                    );
+
+
+                float centerLight =
 
                     exp(
 
@@ -1404,26 +1499,7 @@ if (!canvas) {
                                 0.50
                             )
                             /
-                            0.30,
-
-                            2.0
-
-                        )
-
-                    )
-
-                    *
-
-                    exp(
-
-                        -pow(
-
-                            (
-                                uv.y -
-                                0.92
-                            )
-                            /
-                            0.42,
+                            0.52,
 
                             2.0
 
@@ -1432,20 +1508,10 @@ if (!canvas) {
                     );
 
 
-                float cloudAmount =
+                float ambientMoon =
 
-                    moonClouds(uv);
-
-
-                float cloudGlow =
-
-                    mix(
-
-                        1.0,
-                        0.48,
-                        cloudAmount
-
-                    );
+                    upperLight *
+                    centerLight;
 
 
                 color +=
@@ -1453,63 +1519,8 @@ if (!canvas) {
                     vec3(
 
                         0.010,
-                        0.022,
-                        0.038
-
-                    )
-
-                    *
-
-                    moonGlow
-
-                    *
-
-                    cloudGlow;
-
-
-                /* ---------------------------------------------
-                   Ambient moon illumination
-
-                   Stronger toward the upper center.
-                --------------------------------------------- */
-
-                float ambientMoon =
-
-                    exp(
-
-                        -pow(
-
-                            (
-                                uv.x -
-                                0.50
-                            )
-                            /
-                            0.48,
-
-                            2.0
-
-                        )
-
-                    )
-
-                    *
-
-                    mix(
-
-                        0.35,
-                        1.0,
-                        uv.y
-
-                    );
-
-
-                color +=
-
-                    vec3(
-
-                        0.018,
-                        0.038,
-                        0.060
+                        0.024,
+                        0.040
 
                     )
 
@@ -1519,7 +1530,9 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Cinematic vignette
+                   CINEMATIC VIGNETTE
+
+                   Kept restrained so the pond remains visible.
                 --------------------------------------------- */
 
                 float vignette =
@@ -1529,17 +1542,15 @@ if (!canvas) {
                     smoothstep(
 
                         0.30,
-                        0.88,
+                        0.92,
 
                         distance(
 
                             uv,
 
                             vec2(
-
                                 0.5,
                                 0.43
-
                             )
 
                         )
@@ -1551,7 +1562,7 @@ if (!canvas) {
 
                     mix(
 
-                        0.58,
+                        0.68,
                         1.0,
                         vignette
 
@@ -1559,7 +1570,7 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   Final contrast
+                   FINAL CONTRAST
                 --------------------------------------------- */
 
                 color =
@@ -1569,9 +1580,7 @@ if (!canvas) {
                         color,
 
                         vec3(
-
                             0.86
-
                         )
 
                     );
@@ -1582,7 +1591,6 @@ if (!canvas) {
                     vec4(
 
                         color,
-
                         1.0
 
                     );
@@ -1599,7 +1607,6 @@ if (!canvas) {
         function createShader(
 
             type,
-
             source
 
         ) {
@@ -1607,16 +1614,13 @@ if (!canvas) {
             const shader =
 
                 gl.createShader(
-
                     type
-
                 );
 
 
             gl.shaderSource(
 
                 shader,
-
                 source
 
             );
@@ -1634,7 +1638,6 @@ if (!canvas) {
                 !gl.getShaderParameter(
 
                     shader,
-
                     gl.COMPILE_STATUS
 
                 )
@@ -1646,9 +1649,7 @@ if (!canvas) {
                     "The Infinite Pond shader error:",
 
                     gl.getShaderInfoLog(
-
                         shader
-
                     )
 
                 );
@@ -1669,7 +1670,6 @@ if (!canvas) {
             createShader(
 
                 gl.VERTEX_SHADER,
-
                 vertexShaderSource
 
             );
@@ -1680,7 +1680,6 @@ if (!canvas) {
             createShader(
 
                 gl.FRAGMENT_SHADER,
-
                 fragmentShaderSource
 
             );
@@ -1715,7 +1714,6 @@ if (!canvas) {
             gl.attachShader(
 
                 program,
-
                 vertexShader
 
             );
@@ -1724,7 +1722,6 @@ if (!canvas) {
             gl.attachShader(
 
                 program,
-
                 fragmentShader
 
             );
@@ -1742,7 +1739,6 @@ if (!canvas) {
                 !gl.getProgramParameter(
 
                     program,
-
                     gl.LINK_STATUS
 
                 )
@@ -1754,9 +1750,7 @@ if (!canvas) {
                     "The Infinite Pond program error:",
 
                     gl.getProgramInfoLog(
-
                         program
-
                     )
 
                 );
@@ -1783,7 +1777,6 @@ if (!canvas) {
                 gl.bindBuffer(
 
                     gl.ARRAY_BUFFER,
-
                     buffer
 
                 );
@@ -1823,7 +1816,6 @@ if (!canvas) {
                     gl.getAttribLocation(
 
                         program,
-
                         "position"
 
                     );
@@ -1841,13 +1833,9 @@ if (!canvas) {
                     position,
 
                     2,
-
                     gl.FLOAT,
-
                     false,
-
                     0,
-
                     0
 
                 );
@@ -1862,7 +1850,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "resolution"
 
                     );
@@ -1873,7 +1860,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "time"
 
                     );
@@ -1884,7 +1870,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "scroll"
 
                     );
@@ -1895,7 +1880,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "ripplePositions"
 
                     );
@@ -1906,7 +1890,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "rippleStarts"
 
                     );
@@ -1917,7 +1900,6 @@ if (!canvas) {
                     gl.getUniformLocation(
 
                         program,
-
                         "rippleStrengths"
 
                     );
@@ -1937,7 +1919,6 @@ if (!canvas) {
                 function createRipple(
 
                     clientX,
-
                     clientY
 
                 ) {
@@ -1947,7 +1928,6 @@ if (!canvas) {
                         "INFINITE POND RIPPLE:",
 
                         clientX,
-
                         clientY
 
                     );
@@ -1979,6 +1959,7 @@ if (!canvas) {
                     const uvY =
 
                         1.0 -
+
                         (
                             localY /
                             rect.height
@@ -2048,6 +2029,8 @@ if (!canvas) {
 
                 /* =============================================
                    POINTER RIPPLE
+
+                   Preserved from the known-good version.
                 ============================================= */
 
                 window.addEventListener(
@@ -2079,7 +2062,6 @@ if (!canvas) {
                         createRipple(
 
                             event.clientX,
-
                             event.clientY
 
                         );
@@ -2136,11 +2118,8 @@ if (!canvas) {
                     gl.viewport(
 
                         0,
-
                         0,
-
                         canvas.width,
-
                         canvas.height
 
                     );
@@ -2151,7 +2130,6 @@ if (!canvas) {
                 window.addEventListener(
 
                     "resize",
-
                     resizeWater
 
                 );
@@ -2183,6 +2161,10 @@ if (!canvas) {
                     );
 
 
+                    /* -----------------------------------------
+                       Remove expired ripples
+                    ----------------------------------------- */
+
                     while (
 
                         ripples.length > 0 &&
@@ -2197,6 +2179,10 @@ if (!canvas) {
 
                     }
 
+
+                    /* -----------------------------------------
+                       Prepare ripple arrays
+                    ----------------------------------------- */
 
                     const positions =
 
@@ -2296,12 +2282,15 @@ if (!canvas) {
                     }
 
 
+                    /* -----------------------------------------
+                       Upload uniforms
+                    ----------------------------------------- */
+
                     gl.uniform2f(
 
                         resolutionLocation,
 
                         canvas.width,
-
                         canvas.height
 
                     );
@@ -2352,12 +2341,15 @@ if (!canvas) {
                     );
 
 
+                    /* -----------------------------------------
+                       Draw pond
+                    ----------------------------------------- */
+
                     gl.drawArrays(
 
                         gl.TRIANGLES,
 
                         0,
-
                         6
 
                     );
@@ -2385,4 +2377,3 @@ if (!canvas) {
     }
 
 }
-```
