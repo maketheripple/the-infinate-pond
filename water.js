@@ -1,7 +1,7 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.4C — PERSISTENT RIPPLES
-========================================================= */
+   VERSION 10.3 — RIPPLE-ONLY INTERACTION
+   ========================================================= */
 
 const canvas =
     document.getElementById("waterCanvas");
@@ -34,10 +34,6 @@ if (!canvas) {
         ================================================= */
 
         const MAX_RIPPLES = 12;
-
-        const ANIMATED_RIPPLE_DURATION = 2.5;
-
-        const PERSISTENT_RIPPLE_DURATION = 999999.0;
 
 
         /* =================================================
@@ -234,6 +230,8 @@ if (!canvas) {
 
             /* =================================================
                LARGE WATER MOTION
+
+               Calm, broad undulation.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -582,6 +580,9 @@ if (!canvas) {
                RIPPLE INTERFERENCE
 
                Disabled intentionally.
+
+               This prevents the old secondary ripple
+               from returning.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -592,22 +593,9 @@ if (!canvas) {
 
 
             /* =================================================
-               RIPPLE MICRO-WAVES
-
-               Disabled intentionally.
-            ================================================= */
-
-            float rippleMicroWaves(vec2 p) {
-
-                return 0.0;
-
-            }
-
-
-            /* =================================================
                IMPACT DISPLACEMENT
 
-               Temporary animated ripple only.
+               The ONLY click-generated ripple displacement.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -650,8 +638,7 @@ if (!canvas) {
 
                         if (
 
-                            elapsed <
-                            ANIMATED_RIPPLE_DURATION
+                            elapsed < 2.5
 
                         ) {
 
@@ -660,6 +647,7 @@ if (!canvas) {
                                 distance(
 
                                     p,
+
                                     ripplePositions[i]
 
                                 );
@@ -738,226 +726,14 @@ if (!canvas) {
 
 
             /* =================================================
-               PERSISTENT RIPPLES
+               RIPPLE MICRO-WAVES
 
-               These are the settled ripples that remain
-               after the animated ripple has finished.
-
-               They are deliberately subtle and do NOT
-               create another animated ripple.
+               Disabled intentionally.
             ================================================= */
 
-            float persistentRipples(vec2 p) {
+            float rippleMicroWaves(vec2 p) {
 
-                float field =
-                    0.0;
-
-
-                for (
-
-                    int i = 0;
-
-                    i < MAX_RIPPLES;
-
-                    i++
-
-                ) {
-
-                    float strength =
-                        rippleStrengths[i];
-
-
-                    if (
-
-                        strength > 0.0
-
-                    ) {
-
-                        float elapsed =
-
-                            max(
-
-                                0.0,
-
-                                time -
-                                rippleStarts[i]
-
-                            );
-
-
-                        if (
-
-                            elapsed >=
-                            ANIMATED_RIPPLE_DURATION
-
-                        ) {
-
-                            float d =
-
-                                distance(
-
-                                    p,
-                                    ripplePositions[i]
-
-                                );
-
-
-                            /* ---------------------------------
-                               Expanding settled ripple
-                            --------------------------------- */
-
-                            float radius =
-
-                                0.17;
-
-
-                            float ringWidth =
-
-                                0.018;
-
-
-                            float ring =
-
-                                exp(
-
-                                    -pow(
-
-                                        (
-                                            d -
-                                            radius
-                                        )
-                                        /
-                                        ringWidth,
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            /* ---------------------------------
-                               Multiple subtle rings
-                            --------------------------------- */
-
-                            float ring2 =
-
-                                exp(
-
-                                    -pow(
-
-                                        (
-                                            d -
-                                            radius *
-                                            0.72
-                                        )
-                                        /
-                                        (
-                                            ringWidth *
-                                            0.82
-                                        ),
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            float ring3 =
-
-                                exp(
-
-                                    -pow(
-
-                                        (
-                                            d -
-                                            radius *
-                                            0.44
-                                        )
-                                        /
-                                        (
-                                            ringWidth *
-                                            0.70
-                                        ),
-
-                                        2.0
-
-                                    )
-
-                                );
-
-
-                            /* ---------------------------------
-                               Organic breakup
-                            --------------------------------- */
-
-                            float breakup =
-
-                                noise(
-
-                                    vec2(
-
-                                        d *
-                                        35.0,
-
-                                        float(i) *
-                                        8.0
-
-                                    )
-
-                                );
-
-
-                            float visibility =
-
-                                mix(
-
-                                    0.58,
-                                    1.0,
-                                    breakup
-
-                                );
-
-
-                            field +=
-
-                                (
-                                    ring *
-                                    0.42
-
-                                    +
-
-                                    ring2 *
-                                    0.30
-
-                                    +
-
-                                    ring3 *
-                                    0.18
-
-                                )
-
-                                *
-
-                                visibility
-
-                                *
-
-                                strength
-
-                                *
-
-                                0.020;
-
-                        }
-
-                    }
-
-                }
-
-
-                return field;
+                return 0.0;
 
             }
 
@@ -991,10 +767,6 @@ if (!canvas) {
                     +
 
                     impactDisplacement(p)
-
-                    +
-
-                    persistentRipples(p)
 
                     +
 
@@ -1062,6 +834,8 @@ if (!canvas) {
 
             /* =================================================
                MOON CLOUDS
+
+               Visual-only cloud field.
             ================================================= */
 
             float moonClouds(vec2 uv) {
@@ -1156,6 +930,7 @@ if (!canvas) {
                     distance(
 
                         uv,
+
                         moonPosition
 
                     );
@@ -1199,6 +974,10 @@ if (!canvas) {
 
             /* =================================================
                NATURAL MOONLIGHT REFLECTION
+
+               Fragmented moonlight reflection.
+
+               No continuous lightning-bolt beam.
             ================================================= */
 
             float moonReflection(
@@ -1536,6 +1315,7 @@ if (!canvas) {
                     pow(
 
                         facing,
+
                         13.0
 
                     );
@@ -1548,6 +1328,7 @@ if (!canvas) {
                         max(
 
                             normal.z,
+
                             0.0
 
                         ),
@@ -1777,6 +1558,7 @@ if (!canvas) {
                 backgroundVariation =
 
                     (
+
                         backgroundVariation -
                         0.5
 
@@ -1824,6 +1606,7 @@ if (!canvas) {
                         max(
 
                             normal.z,
+
                             0.0
 
                         ),
@@ -2371,12 +2154,16 @@ if (!canvas) {
                 /* =================================================
                    CREATE RIPPLE
 
-                   This creates a ripple only.
+                   IMPORTANT:
 
-                   The ripple begins as an animated impact and
-                   then becomes a subtle persistent ripple.
+                   This function ONLY creates the animated
+                   water ripple.
 
-                   No modal or submission workflow is opened.
+                   It does NOT open a modal, form, or
+                   submission interface.
+
+                   Submission will be handled later by the
+                   dedicated bottom-right button.
                 ================================================= */
 
                 function createRipple(
@@ -2487,7 +2274,10 @@ if (!canvas) {
 
 
                 /* =================================================
-                   POND CLICK / TOUCH
+                   POINTER RIPPLE
+
+                   Clicking/tapping the pond creates ONLY
+                   the temporary animated ripple.
                 ================================================= */
 
                 window.addEventListener(
@@ -2496,37 +2286,18 @@ if (!canvas) {
 
                     function (event) {
 
+                        console.log(
+
+                            "POINTER DETECTED"
+
+                        );
+
+
                         if (
 
                             event.button !== 0 &&
 
                             event.pointerType !== "touch"
-
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        /* -----------------------------------------
-                           Ignore the Make a Ripple button here.
-
-                           The button has its own handler below.
-                        ----------------------------------------- */
-
-                        const target =
-
-                            event.target;
-
-
-                        if (
-
-                            target &&
-                            target.closest &&
-                            target.closest(
-                                "#makeRippleButton"
-                            )
 
                         ) {
 
@@ -2547,89 +2318,6 @@ if (!canvas) {
                     true
 
                 );
-
-
-                /* =================================================
-                   MAKE A RIPPLE BUTTON
-                ================================================= */
-
-                const makeRippleButton =
-
-                    document.getElementById(
-
-                        "makeRippleButton"
-
-                    );
-
-
-                if (
-
-                    makeRippleButton
-
-                ) {
-
-                    makeRippleButton.addEventListener(
-
-                        "click",
-
-                        function () {
-
-                            console.log(
-
-                                "MAKE A RIPPLE BUTTON CLICKED"
-
-                            );
-
-
-                            const rect =
-
-                                canvas.getBoundingClientRect();
-
-
-                            /* -------------------------------------
-                               Create the button ripple in the
-                               visual center of the pond.
-
-                               This gives the button a predictable
-                               location without moving the user's
-                               pointer or opening a form.
-                            ------------------------------------- */
-
-                            const clientX =
-
-                                rect.left +
-                                rect.width *
-                                0.50;
-
-
-                            const clientY =
-
-                                rect.top +
-                                rect.height *
-                                0.56;
-
-
-                            createRipple(
-
-                                clientX,
-                                clientY
-
-                            );
-
-                        }
-
-                    );
-
-                } else {
-
-                    console.warn(
-
-                        "The Infinite Pond: " +
-                        "makeRippleButton not found."
-
-                    );
-
-                }
 
 
                 /* =================================================
@@ -2722,12 +2410,22 @@ if (!canvas) {
 
 
                     /* ---------------------------------------------
-                       Remove old persistent ripples when the
-                       maximum number is exceeded through the
-                       normal array handling.
-
-                       Persistent ripples otherwise remain.
+                       Remove expired ripples
                     --------------------------------------------- */
+
+                    while (
+
+                        ripples.length > 0 &&
+
+                        currentTime -
+                        ripples[0].start >
+                        12.0
+
+                    ) {
+
+                        ripples.shift();
+
+                    }
 
 
                     /* ---------------------------------------------
