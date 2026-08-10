@@ -1,6 +1,6 @@
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.5 — RIPPLE IDENTITY
+     VERSION 9.6 — RIPPLE MESSAGES
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -333,15 +333,6 @@
 
         text-align: center;
 
-        box-shadow:
-            0 4px 20px
-            rgba(
-                0,
-                0,
-                0,
-                0.22
-            );
-
     }
 
 
@@ -524,15 +515,6 @@
         backdrop-filter:
             blur(8px);
 
-        box-shadow:
-            0 8px 30px
-            rgba(
-                0,
-                0,
-                0,
-                0.25
-            );
-
         opacity: 0;
 
         pointer-events: none;
@@ -586,15 +568,6 @@
                 252,
                 255,
                 0.95
-            );
-
-        text-shadow:
-            0 0 12px
-            rgba(
-                150,
-                220,
-                255,
-                0.30
             );
 
     }
@@ -654,15 +627,6 @@
 
         backdrop-filter:
             blur(7px);
-
-        box-shadow:
-            0 6px 25px
-            rgba(
-                0,
-                0,
-                0,
-                0.22
-            );
 
         opacity: 0;
 
@@ -732,136 +696,253 @@
 
         text-transform: uppercase;
 
-        text-shadow:
-            0 0 12px
-            rgba(
-                150,
-                220,
-                255,
-                0.25
-            );
-
     }
 
 
     /* =========================================================
-       RIPPLE MESSAGE
+       MESSAGE PANEL
        ========================================================= */
 
-    .message {
+    .ripple-message-panel {
 
         position: fixed;
 
         left: 50%;
-        bottom: 40px;
+        top: 50%;
 
         transform:
-            translateX(-50%);
+            translate(
+                -50%,
+                -50%
+            )
+            scale(0.96);
 
-        z-index: 10;
+        z-index: 20;
 
         width: min(
             90%,
             500px
         );
 
-        padding: 25px;
+        padding: 30px;
 
         box-sizing: border-box;
 
-        text-align: center;
-
-        border-radius: 16px;
+        border-radius: 20px;
 
         background:
             rgba(
                 0,
                 15,
                 30,
-                0.82
+                0.90
             );
 
         border:
             1px solid
             rgba(
                 180,
-                220,
+                225,
                 255,
-                0.25
+                0.28
             );
 
         backdrop-filter:
-            blur(10px);
-
-        display: none;
+            blur(14px);
 
         box-shadow:
-            0 10px 40px
+            0 20px 60px
             rgba(
                 0,
                 0,
                 0,
-                0.35
+                0.50
             );
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        transition:
+            opacity 0.35s ease,
+            transform 0.35s ease;
 
     }
 
 
-    .message-number {
+    .ripple-message-panel.show {
 
-        font-size: 14px;
+        opacity: 1;
 
-        opacity: 0.6;
+        pointer-events: auto;
 
-        margin-bottom: 10px;
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(1);
+
+    }
+
+
+    .message-panel-kicker {
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+        letter-spacing: 3px;
+
+        text-transform: uppercase;
+
+        opacity: 0.55;
+
+        margin-bottom: 8px;
+
+        text-align: center;
+
+    }
+
+
+    .message-panel-title {
+
+        margin: 0 0 10px;
+
+        text-align: center;
+
+        font-size: 27px;
+
+        font-weight: 300;
 
         letter-spacing: 1px;
 
     }
 
 
-    .message-text {
+    .message-panel-description {
 
-        font-size: 22px;
+        margin: 0 0 22px;
 
-        line-height: 1.4;
-
-        margin-bottom: 10px;
-
-    }
-
-
-    .message-location {
+        text-align: center;
 
         font-size: 14px;
 
-        opacity: 0.65;
+        line-height: 1.6;
 
-        margin-bottom: 20px;
+        opacity: 0.70;
 
     }
 
 
-    .close {
+    .ripple-message-input {
 
-        padding:
-            10px
-            20px;
+        width: 100%;
+
+        min-height: 120px;
+
+        box-sizing: border-box;
+
+        padding: 15px;
+
+        resize: vertical;
+
+        border-radius: 12px;
 
         border:
             1px solid
             rgba(
+                180,
+                225,
                 255,
-                255,
-                255,
-                0.15
+                0.20
             );
 
-        border-radius: 20px;
-
-        cursor: pointer;
+        outline: none;
 
         background:
+            rgba(
+                255,
+                255,
+                255,
+                0.06
+            );
+
+        color: white;
+
+        font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+        font-size: 15px;
+
+        line-height: 1.5;
+
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease;
+
+    }
+
+
+    .ripple-message-input::placeholder {
+
+        color:
+            rgba(
+                255,
+                255,
+                255,
+                0.40
+            );
+
+    }
+
+
+    .ripple-message-input:focus {
+
+        border-color:
+            rgba(
+                190,
+                230,
+                255,
+                0.50
+            );
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.08
+            );
+
+    }
+
+
+    .message-panel-buttons {
+
+        display: flex;
+
+        justify-content: center;
+
+        gap: 10px;
+
+        margin-top: 18px;
+
+    }
+
+
+    .message-panel-button {
+
+        padding:
+            11px
+            20px;
+
+        border-radius: 22px;
+
+        border:
+            1px solid
             rgba(
                 255,
                 255,
@@ -871,6 +952,10 @@
 
         color: white;
 
+        cursor: pointer;
+
+        font-size: 14px;
+
         transition:
             background 0.2s ease,
             transform 0.2s ease;
@@ -878,18 +963,306 @@
     }
 
 
-    .close:hover {
+    .message-cancel {
 
         background:
             rgba(
                 255,
                 255,
                 255,
-                0.25
+                0.07
             );
+
+    }
+
+
+    .message-submit {
+
+        background:
+            rgba(
+                60,
+                130,
+                165,
+                0.55
+            );
+
+        border-color:
+            rgba(
+                180,
+                230,
+                255,
+                0.30
+            );
+
+    }
+
+
+    .message-panel-button:hover {
 
         transform:
             translateY(-1px);
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.16
+            );
+
+    }
+
+
+    .message-submit:hover {
+
+        background:
+            rgba(
+                70,
+                150,
+                190,
+                0.70
+            );
+
+    }
+
+
+    .message-error {
+
+        min-height: 18px;
+
+        margin-top: 10px;
+
+        text-align: center;
+
+        font-size: 12px;
+
+        color:
+            rgba(
+                255,
+                190,
+                190,
+                0.95
+            );
+
+        opacity: 0;
+
+        transition:
+            opacity 0.2s ease;
+
+    }
+
+
+    .message-error.show {
+
+        opacity: 1;
+
+    }
+
+
+    /* =========================================================
+       SUBMISSION CONFIRMATION
+       ========================================================= */
+
+    .submission-confirmation {
+
+        position: fixed;
+
+        left: 50%;
+        top: 50%;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(0.96);
+
+        z-index: 21;
+
+        width: min(
+            90%,
+            430px
+        );
+
+        padding: 30px;
+
+        box-sizing: border-box;
+
+        text-align: center;
+
+        border-radius: 20px;
+
+        background:
+            rgba(
+                0,
+                20,
+                35,
+                0.92
+            );
+
+        border:
+            1px solid
+            rgba(
+                180,
+                230,
+                255,
+                0.28
+            );
+
+        backdrop-filter:
+            blur(14px);
+
+        box-shadow:
+            0 20px 60px
+            rgba(
+                0,
+                0,
+                0,
+                0.50
+            );
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        transition:
+            opacity 0.35s ease,
+            transform 0.35s ease;
+
+    }
+
+
+    .submission-confirmation.show {
+
+        opacity: 1;
+
+        pointer-events: auto;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(1);
+
+    }
+
+
+    .confirmation-icon {
+
+        font-size: 30px;
+
+        margin-bottom: 10px;
+
+    }
+
+
+    .confirmation-title {
+
+        font-size: 24px;
+
+        font-weight: 300;
+
+        margin-bottom: 10px;
+
+    }
+
+
+    .confirmation-text {
+
+        font-size: 14px;
+
+        line-height: 1.6;
+
+        opacity: 0.70;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .confirmation-number {
+
+        font-size: 13px;
+
+        letter-spacing: 2px;
+
+        text-transform: uppercase;
+
+        opacity: 0.65;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .confirmation-close {
+
+        padding:
+            10px
+            22px;
+
+        border-radius: 22px;
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                0.18
+            );
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.10
+            );
+
+        color: white;
+
+        cursor: pointer;
+
+    }
+
+
+    /* =========================================================
+       OVERLAY
+       ========================================================= */
+
+    .modal-overlay {
+
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 15;
+
+        background:
+            rgba(
+                0,
+                5,
+                10,
+                0.45
+            );
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        transition:
+            opacity 0.35s ease;
+
+    }
+
+
+    .modal-overlay.show {
+
+        opacity: 1;
+
+        pointer-events: auto;
 
     }
 
@@ -982,15 +1355,6 @@
         transform:
             translateY(-2px);
 
-        box-shadow:
-            0 6px 25px
-            rgba(
-                0,
-                0,
-                0,
-                0.35
-            );
-
     }
 
 
@@ -1005,10 +1369,6 @@
         .brand {
 
             top: 18px;
-            left: 50%;
-
-            transform:
-                translateX(-50%);
 
         }
 
@@ -1142,16 +1502,35 @@
 
             width: 82%;
 
-            padding:
-                9px
-                14px;
+        }
+
+
+        .ripple-message-panel {
+
+            padding: 23px;
+
+            width: 92%;
 
         }
 
 
-        .ripple-identity-number {
+        .message-panel-title {
 
-            font-size: 14px;
+            font-size: 23px;
+
+        }
+
+
+        .message-panel-buttons {
+
+            flex-direction: column;
+
+        }
+
+
+        .message-panel-button {
+
+            width: 100%;
 
         }
 
@@ -1175,15 +1554,6 @@
             transform:
                 translateX(50%)
                 translateY(-2px);
-
-        }
-
-
-        .message {
-
-            bottom: 85px;
-
-            width: 92%;
 
         }
 
@@ -1312,34 +1682,133 @@
 
 
 <!-- =========================================================
-     RIPPLE MESSAGE
+     MODAL OVERLAY
      ========================================================= -->
 
-<div class="message">
+<div
+    class="modal-overlay"
+    id="modalOverlay"
+    onclick="closeMessagePanel()">
+</div>
+
+
+<!-- =========================================================
+     RIPPLE MESSAGE PANEL
+     ========================================================= -->
+
+<div
+    class="ripple-message-panel"
+    id="rippleMessagePanel">
+
+    <div class="message-panel-kicker">
+        Ripple #<span id="messageRippleNumber">101</span>
+    </div>
+
+
+    <h2 class="message-panel-title">
+        Leave Something Behind
+    </h2>
+
+
+    <p class="message-panel-description">
+
+        Your ripple can carry anything you'd like
+        to share. A thought, a feeling, a story,
+        a message of hope, or simply something
+        that's on your mind.
+
+    </p>
+
+
+    <textarea
+        class="ripple-message-input"
+        id="rippleMessageInput"
+        maxlength="500"
+        placeholder="What would you like to share?"
+        aria-label="Your ripple message">
+    </textarea>
+
 
     <div
-        class="message-number"
-        id="messageNumber">
+        class="message-error"
+        id="messageError">
+
+        Please enter a message before sending
+        your ripple.
+
+    </div>
+
+
+    <div class="message-panel-buttons">
+
+        <button
+            class="message-panel-button message-cancel"
+            onclick="closeMessagePanel()">
+
+            Maybe Later
+
+        </button>
+
+
+        <button
+            class="message-panel-button message-submit"
+            onclick="submitRippleMessage()">
+
+            Send My Ripple
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SUBMISSION CONFIRMATION
+     ========================================================= -->
+
+<div
+    class="submission-confirmation"
+    id="submissionConfirmation">
+
+    <div class="confirmation-icon">
+        🌊
+    </div>
+
+
+    <div class="confirmation-title">
+        Your Ripple Has Been Created
+    </div>
+
+
+    <div class="confirmation-text">
+
+        Thank you for adding your voice to
+        The Infinite Pond.
+
+        <br><br>
+
+        Your message has been submitted for
+        approval before it becomes visible
+        to others.
+
     </div>
 
 
     <div
-        class="message-text"
-        id="messageText">
-    </div>
+        class="confirmation-number"
+        id="confirmationNumber">
 
+        Ripple #101
 
-    <div
-        class="message-location"
-        id="messageLocation">
     </div>
 
 
     <button
-        class="close"
-        onclick="closeMessage()">
+        class="confirmation-close"
+        onclick="closeConfirmation()">
 
-        Close Ripple
+        Return to the Pond
 
     </button>
 
@@ -1380,7 +1849,23 @@
 
     let hasMadeFirstRipple = false;
 
+    let hasOpenedMessagePanel = false;
+
     let rippleNumber = 101;
+
+    let pendingRippleNumber = null;
+
+
+    /*
+       Temporary local message storage.
+
+       These messages are NOT public yet.
+
+       In a future version, this array will be
+       replaced by a real database / approval system.
+    */
+
+    const pendingRippleMessages = [];
 
 
     function closeMessage() {
@@ -1592,10 +2077,267 @@
         );
 
 
-        rippleNumber++;
-
-
         return true;
+
+    }
+
+
+    function openMessagePanel() {
+
+        const panel =
+            document.getElementById(
+                "rippleMessagePanel"
+            );
+
+        const overlay =
+            document.getElementById(
+                "modalOverlay"
+            );
+
+        const number =
+            document.getElementById(
+                "messageRippleNumber"
+            );
+
+        const input =
+            document.getElementById(
+                "rippleMessageInput"
+            );
+
+
+        if (
+            !panel ||
+            !overlay ||
+            !number ||
+            !input
+        ) {
+
+            return;
+
+        }
+
+
+        pendingRippleNumber =
+            rippleNumber;
+
+
+        number.textContent =
+            pendingRippleNumber;
+
+
+        input.value = "";
+
+
+        document
+            .getElementById(
+                "messageError"
+            )
+            .classList.remove(
+                "show"
+            );
+
+
+        overlay.classList.add(
+            "show"
+        );
+
+
+        panel.classList.add(
+            "show"
+        );
+
+
+        hasOpenedMessagePanel =
+            true;
+
+
+        setTimeout(
+            function() {
+
+                input.focus();
+
+            },
+            350
+        );
+
+    }
+
+
+    function closeMessagePanel() {
+
+        const panel =
+            document.getElementById(
+                "rippleMessagePanel"
+            );
+
+        const overlay =
+            document.getElementById(
+                "modalOverlay"
+            );
+
+
+        if (panel) {
+
+            panel.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        if (overlay) {
+
+            overlay.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    function submitRippleMessage() {
+
+        const input =
+            document.getElementById(
+                "rippleMessageInput"
+            );
+
+        const error =
+            document.getElementById(
+                "messageError"
+            );
+
+
+        if (
+            !input ||
+            !error
+        ) {
+
+            return;
+
+        }
+
+
+        const message =
+            input.value.trim();
+
+
+        if (
+            message.length === 0
+        ) {
+
+            error.classList.add(
+                "show"
+            );
+
+            input.focus();
+
+            return;
+
+        }
+
+
+        error.classList.remove(
+            "show"
+        );
+
+
+        const rippleData = {
+
+            rippleNumber:
+                pendingRippleNumber,
+
+            message:
+                message,
+
+            status:
+                "pending",
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        pendingRippleMessages.push(
+            rippleData
+        );
+
+
+        /*
+           The message is intentionally kept
+           hidden from the public experience.
+
+           It is now stored as PENDING.
+
+           A future approval system will allow
+           approved messages to become visible.
+        */
+
+
+        closeMessagePanel();
+
+
+        showSubmissionConfirmation();
+
+    }
+
+
+    function showSubmissionConfirmation() {
+
+        const confirmation =
+            document.getElementById(
+                "submissionConfirmation"
+            );
+
+        const number =
+            document.getElementById(
+                "confirmationNumber"
+            );
+
+
+        if (
+            !confirmation ||
+            !number
+        ) {
+
+            return;
+
+        }
+
+
+        number.textContent =
+            "Ripple #" +
+            pendingRippleNumber;
+
+
+        confirmation.classList.add(
+            "show"
+        );
+
+    }
+
+
+    function closeConfirmation() {
+
+        const confirmation =
+            document.getElementById(
+                "submissionConfirmation"
+            );
+
+
+        if (confirmation) {
+
+            confirmation.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        pendingRippleNumber =
+            null;
 
     }
 
@@ -1622,6 +2364,17 @@
 
             showRippleIdentity();
 
+
+            /*
+               The current ripple receives its
+               number, then the next ripple will
+               receive the next number.
+            */
+
+            openMessagePanel();
+
+            rippleNumber++;
+
         }
 
     }
@@ -1633,7 +2386,7 @@
 
             if (
                 event.target.closest(
-                    ".make-ripple, .message, button"
+                    ".make-ripple, .message, button, textarea, .ripple-message-panel, .submission-confirmation"
                 )
             ) {
 
@@ -1658,6 +2411,36 @@
                 showFirstRippleMessage();
 
                 showRippleIdentity();
+
+
+                /*
+                   Give this ripple its number
+                   before moving to the next one.
+                */
+
+                openMessagePanel();
+
+                rippleNumber++;
+
+            }
+
+        }
+    );
+
+
+    /*
+       Allow Escape to close the message panel.
+    */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeMessagePanel();
 
             }
 
