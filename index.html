@@ -1,5 +1,5 @@
-```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -7,14 +7,14 @@
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
 >
 
 <title>
     The Infinite Pond — Make the Ripple
 </title>
-
 
 <style>
 
@@ -471,35 +471,81 @@ body {
 
 
 /* =====================================================
-   MOON GLOW BEHIND LOGO
+   LOGO MOON CONTAINER
+
+   The glow is attached directly to the logo.
+   This keeps the moon centered behind the logo
+   regardless of screen size.
 ===================================================== */
 
-.logo-moon-glow {
+.logo-moon {
 
-    position: absolute;
+    position:
+        relative;
 
-    top:
-        2.5vh;
+    display:
+        flex;
 
-    left:
-        50%;
+    align-items:
+        center;
+
+    justify-content:
+        center;
 
     width:
         clamp(
-            180px,
-            25vw,
-            300px
+            170px,
+            24vw,
+            270px
         );
 
     height:
         clamp(
-            180px,
-            25vw,
-            300px
+            150px,
+            20vh,
+            210px
         );
 
+    margin-top:
+        0.5vh;
+
+    margin-bottom:
+        -1.5vh;
+
+}
+
+
+/* =====================================================
+   MOON GLOW
+
+   Large soft circular glow directly behind logo.
+===================================================== */
+
+.logo-moon::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    width:
+        155px;
+
+    height:
+        155px;
+
     transform:
-        translateX(-50%);
+        translate(
+            -50%,
+            -50%
+        );
 
     border-radius:
         50%;
@@ -513,41 +559,108 @@ body {
                 235,
                 248,
                 255,
-                0.24
+                0.62
             ) 0%,
 
             rgba(
                 205,
                 235,
                 250,
-                0.16
-            ) 22%,
+                0.42
+            ) 18%,
 
             rgba(
-                155,
+                145,
                 210,
                 235,
-                0.09
-            ) 42%,
+                0.24
+            ) 38%,
 
             rgba(
-                100,
+                90,
                 175,
                 215,
-                0.035
-            ) 62%,
+                0.12
+            ) 58%,
 
             transparent 78%
         );
 
     filter:
-        blur(3px);
+        blur(10px);
 
     opacity:
-        0.9;
+        0.92;
 
-    pointer-events:
-        none;
+    z-index:
+        0;
+
+}
+
+
+/* =====================================================
+   SECONDARY MOON ATMOSPHERE
+
+   Extends the glow outward without making the logo
+   itself disappear.
+===================================================== */
+
+.logo-moon::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    width:
+        240px;
+
+    height:
+        180px;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+    border-radius:
+        50%;
+
+    background:
+
+        radial-gradient(
+            ellipse,
+
+            rgba(
+                135,
+                205,
+                235,
+                0.14
+            ) 0%,
+
+            rgba(
+                95,
+                175,
+                215,
+                0.07
+            ) 38%,
+
+            transparent 72%
+        );
+
+    filter:
+        blur(18px);
+
+    opacity:
+        0.85;
 
     z-index:
         0;
@@ -565,7 +678,7 @@ body {
         relative;
 
     z-index:
-        1;
+        2;
 
     width:
         clamp(
@@ -577,34 +690,38 @@ body {
     height:
         auto;
 
-    margin-top:
-        2.5vh;
-
-    margin-bottom:
-        0.8vh;
-
     opacity:
-        0.96;
+        0.98;
 
     filter:
 
         drop-shadow(
-            0 0 8px
+            0 0 5px
             rgba(
-                120,
-                205,
-                235,
-                0.24
+                230,
+                250,
+                255,
+                0.48
             )
         )
 
         drop-shadow(
-            0 0 24px
+            0 0 16px
             rgba(
-                100,
-                190,
-                225,
-                0.18
+                135,
+                215,
+                240,
+                0.42
+            )
+        )
+
+        drop-shadow(
+            0 0 34px
+            rgba(
+                95,
+                195,
+                230,
+                0.28
             )
         );
 
@@ -708,8 +825,6 @@ body {
 
 /* =====================================================
    SUBTITLE
-
-   ABOVE THE HORIZON
 ===================================================== */
 
 .pond-subtitle {
@@ -1096,13 +1211,49 @@ body {
     max-width: 600px
 ) {
 
+    .logo-moon {
+
+        width:
+            180px;
+
+        height:
+            145px;
+
+        margin-top:
+            1vh;
+
+        margin-bottom:
+            -1vh;
+
+    }
+
+
+    .logo-moon::before {
+
+        width:
+            130px;
+
+        height:
+            130px;
+
+    }
+
+
+    .logo-moon::after {
+
+        width:
+            205px;
+
+        height:
+            155px;
+
+    }
+
+
     .pond-logo {
 
         width:
             105px;
-
-        margin-top:
-            3vh;
 
     }
 
@@ -1168,18 +1319,16 @@ body {
 
 </head>
 
-
 <body>
-
 
 <!-- =====================================================
      WATER
 ====================================================== -->
 
 <canvas
-    id="waterCanvas"
-></canvas>
+id="waterCanvas"
 
+> </canvas>
 
 <!-- =====================================================
      NIGHT SKY
@@ -1188,7 +1337,6 @@ body {
 <div
     class="night-sky"
 ></div>
-
 
 <!-- =====================================================
      STARS
@@ -1199,17 +1347,18 @@ body {
     aria-hidden="true"
 >
 
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
+```
+<span class="star"></span>
+<span class="star"></span>
+<span class="star"></span>
+<span class="star"></span>
+<span class="star"></span>
+<span class="star"></span>
+<span class="star"></span>
+<span class="star"></span>
+```
 
 </div>
-
 
 <!-- =====================================================
      HORIZON
@@ -1220,7 +1369,6 @@ body {
     aria-hidden="true"
 ></div>
 
-
 <!-- =====================================================
      PAGE
 ====================================================== -->
@@ -1229,25 +1377,23 @@ body {
     class="pond-page"
 >
 
+```
+<!-- =================================================
+     HEADER
+================================================== -->
 
-    <!-- =================================================
-         HEADER
-    ================================================== -->
+<header
+    class="pond-header"
+>
 
-    <header
-        class="pond-header"
+
+    <!-- =============================================
+         LOGO + MOON GLOW
+    ============================================== -->
+
+    <div
+        class="logo-moon"
     >
-
-
-        <!-- =============================================
-             MAKE THE RIPPLE LOGO
-        ============================================== -->
-
-        <div
-            class="logo-moon-glow"
-            aria-hidden="true"
-        ></div>
-
 
         <img
             class="pond-logo"
@@ -1255,45 +1401,46 @@ body {
             alt="Make the Ripple"
         >
 
-
-        <!-- =============================================
-             PRESENTS
-        ============================================== -->
-
-        <div
-            class="presented"
-        >
-            Presents
-        </div>
+    </div>
 
 
-        <!-- =============================================
-             TITLE
-        ============================================== -->
+    <!-- =============================================
+         PRESENTS
+    ============================================== -->
 
-        <h1
-            class="pond-title"
-        >
-            The Infinite Pond
-        </h1>
-
-
-        <!-- =============================================
-             SUBTITLE
-        ============================================== -->
-
-        <div
-            class="pond-subtitle"
-        >
-            Every Ripple Begins Somewhere
-        </div>
+    <div
+        class="presented"
+    >
+        Presents
+    </div>
 
 
-    </header>
+    <!-- =============================================
+         TITLE
+    ============================================== -->
 
+    <h1
+        class="pond-title"
+    >
+        The Infinite Pond
+    </h1>
+
+
+    <!-- =============================================
+         SUBTITLE
+    ============================================== -->
+
+    <div
+        class="pond-subtitle"
+    >
+        Every Ripple Begins Somewhere
+    </div>
+
+
+</header>
+```
 
 </main>
-
 
 <!-- =====================================================
      INTERACTION CUE
@@ -1305,29 +1452,30 @@ body {
     Click anywhere on the pond to make a ripple
 </div>
 
-
 <!-- =====================================================
      MAKE A RIPPLE BUTTON
 ====================================================== -->
 
 <button
-    id="makeRippleButton"
-    class="make-ripple-button"
-    type="button"
-    aria-label="Make a Ripple"
+id="makeRippleButton"
+class="make-ripple-button"
+type="button"
+aria-label="Make a Ripple"
+
 >
 
-    <span
-        class="ripple-icon"
-        aria-hidden="true"
-    ></span>
+```
+<span
+    class="ripple-icon"
+    aria-hidden="true"
+></span>
 
-    <span>
-        Make a Ripple
-    </span>
+<span>
+    Make a Ripple
+</span>
+```
 
 </button>
-
 
 <!-- =====================================================
      WATER ENGINE
@@ -1336,7 +1484,6 @@ body {
 <script
     src="water.js"
 ></script>
-
 
 <!-- =====================================================
      MAKE A RIPPLE BUTTON
@@ -1372,8 +1519,6 @@ body {
 
 </script>
 
-
 </body>
 
 </html>
-```
