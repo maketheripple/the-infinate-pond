@@ -1,7 +1,7 @@
 ```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.9 — SOFT ATMOSPHERIC HORIZON
+     VERSION 10.1 — MOONLIGHT ON THE WATER
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -68,7 +68,7 @@
 
 
     /* =========================================================
-       NIGHT SKY — SOFT ATMOSPHERIC TRANSITION
+       NIGHT SKY
        ========================================================= */
 
     .night-sky {
@@ -79,7 +79,7 @@
         left: 0;
 
         width: 100%;
-        height: 68%;
+        height: 58%;
 
         z-index: 1;
 
@@ -88,22 +88,11 @@
         background:
             linear-gradient(
                 to bottom,
-                rgba(1, 5, 18, 0.97) 0%,
-                rgba(3, 12, 32, 0.94) 30%,
-                rgba(5, 20, 42, 0.82) 55%,
-                rgba(8, 28, 52, 0.58) 72%,
-                rgba(10, 35, 58, 0.30) 84%,
-                rgba(10, 35, 58, 0.00) 100%
-            );
-
-        mask-image:
-            linear-gradient(
-                to bottom,
-                black 0%,
-                black 65%,
-                rgba(0, 0, 0, 0.85) 78%,
-                rgba(0, 0, 0, 0.45) 90%,
-                transparent 100%
+                rgba(1, 5, 18, 0.96) 0%,
+                rgba(3, 12, 32, 0.93) 35%,
+                rgba(5, 20, 42, 0.86) 68%,
+                rgba(8, 28, 52, 0.68) 88%,
+                rgba(10, 35, 58, 0.30) 100%
             );
 
     }
@@ -117,32 +106,22 @@
 
         position: fixed;
 
-        left: 0;
+        left: -5%;
 
-        bottom: 36%;
+        bottom: 39%;
 
-        width: 100%;
+        width: 110%;
 
-        height: 150px;
+        height: 115px;
 
         z-index: 2;
 
         pointer-events: none;
 
-        overflow: visible;
-
-        opacity: 0.75;
+        overflow: hidden;
 
     }
 
-
-    /*
-       Soft irregular atmospheric band.
-
-       No sharp polygon.
-       No jagged edge.
-       No lightning-bolt shape.
-    */
 
     .horizon::before {
 
@@ -150,53 +129,105 @@
 
         position: absolute;
 
-        left: -10%;
+        left: 0;
 
         top: 35px;
 
-        width: 120%;
+        width: 100%;
 
-        height: 120px;
+        height: 100px;
 
         background:
+            linear-gradient(
+                to bottom,
+                rgba(4, 18, 34, 0.78) 0%,
+                rgba(5, 22, 40, 0.52) 38%,
+                rgba(7, 28, 48, 0.20) 70%,
+                transparent 100%
+            );
 
-            radial-gradient(
-                ellipse
-                at 12% 55%,
-                rgba(8, 30, 48, 0.40) 0%,
-                transparent 42%
-            ),
+        clip-path:
+            polygon(
+                0% 20%,
+                4% 17%,
+                8% 22%,
+                12% 15%,
+                16% 19%,
+                20% 13%,
+                24% 18%,
+                28% 12%,
+                32% 17%,
+                36% 14%,
+                40% 20%,
+                44% 15%,
+                48% 19%,
+                52% 13%,
+                56% 17%,
+                60% 12%,
+                64% 18%,
+                68% 14%,
+                72% 20%,
+                76% 15%,
+                80% 18%,
+                84% 13%,
+                88% 19%,
+                92% 14%,
+                96% 20%,
+                100% 16%,
+                100% 100%,
+                0% 100%
+            );
 
-            radial-gradient(
-                ellipse
-                at 31% 42%,
-                rgba(8, 32, 52, 0.32) 0%,
-                transparent 40%
-            ),
+    }
 
-            radial-gradient(
-                ellipse
-                at 50% 55%,
-                rgba(8, 34, 55, 0.38) 0%,
-                transparent 45%
-            ),
 
-            radial-gradient(
-                ellipse
-                at 69% 40%,
-                rgba(8, 31, 50, 0.30) 0%,
-                transparent 42%
-            ),
+    .horizon::after {
 
-            radial-gradient(
-                ellipse
-                at 88% 52%,
-                rgba(8, 30, 48, 0.36) 0%,
-                transparent 43%
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+
+        top: 30px;
+
+        width: 100%;
+
+        height: 2px;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(150, 205, 235, 0.08) 8%,
+                rgba(150, 205, 235, 0.18) 25%,
+                rgba(190, 225, 245, 0.12) 42%,
+                rgba(150, 205, 235, 0.20) 58%,
+                rgba(150, 205, 235, 0.10) 76%,
+                rgba(150, 205, 235, 0.16) 90%,
+                transparent 100%
+            );
+
+        clip-path:
+            polygon(
+                0% 55%,
+                8% 35%,
+                16% 65%,
+                24% 40%,
+                32% 58%,
+                40% 30%,
+                48% 62%,
+                56% 38%,
+                64% 55%,
+                72% 34%,
+                80% 60%,
+                88% 42%,
+                96% 57%,
+                100% 45%
             );
 
         filter:
-            blur(18px);
+            blur(0.5px);
 
     }
 
@@ -211,53 +242,43 @@
 
         left: 0;
 
-        bottom: 34%;
+        bottom: 42%;
 
         width: 100%;
 
-        height: 260px;
+        height: 180px;
 
         z-index: 1;
 
         pointer-events: none;
 
         background:
-
             radial-gradient(
                 ellipse
                 at 50% 100%,
                 rgba(
-                    80,
-                    150,
-                    185,
-                    0.14
+                    75,
+                    145,
+                    180,
+                    0.13
                 ) 0%,
-
                 rgba(
-                    55,
-                    120,
-                    160,
-                    0.09
-                ) 28%,
-
-                rgba(
-                    30,
-                    80,
-                    115,
-                    0.045
-                ) 52%,
-
-                transparent 78%
+                    45,
+                    105,
+                    145,
+                    0.07
+                ) 35%,
+                transparent 72%
             );
 
         filter:
-            blur(25px);
+            blur(18px);
 
     }
 
 
     /* =========================================================
-       MOONLIGHT
+       MOONLIGHT SOURCE
        ========================================================= */
 
     .moonGlow {
@@ -265,9 +286,11 @@
         position: fixed;
 
         top: 0;
+
         left: 50%;
 
         width: 300px;
+
         height: 300px;
 
         transform:
@@ -278,15 +301,340 @@
         background:
             radial-gradient(
                 circle,
-                rgba(210, 235, 255, 0.28) 0%,
-                rgba(170, 215, 255, 0.14) 25%,
-                rgba(100, 160, 220, 0.06) 50%,
+                rgba(
+                    210,
+                    235,
+                    255,
+                    0.28
+                ) 0%,
+                rgba(
+                    170,
+                    215,
+                    255,
+                    0.14
+                ) 25%,
+                rgba(
+                    100,
+                    160,
+                    220,
+                    0.06
+                ) 50%,
                 transparent 72%
             );
 
         pointer-events: none;
 
         z-index: 3;
+
+    }
+
+
+    /* =========================================================
+       MOONLIGHT PATH THROUGH ATMOSPHERE
+       ========================================================= */
+
+    .moonlight-path {
+
+        position: fixed;
+
+        left: 50%;
+
+        top: 155px;
+
+        width: 220px;
+
+        height: 43%;
+
+        transform:
+            translateX(-50%)
+            rotate(-3deg);
+
+        transform-origin:
+            center top;
+
+        pointer-events: none;
+
+        z-index: 2;
+
+        opacity: 0.45;
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(
+                    190,
+                    225,
+                    255,
+                    0.00
+                ) 0%,
+
+                rgba(
+                    190,
+                    225,
+                    255,
+                    0.035
+                ) 20%,
+
+                rgba(
+                    190,
+                    225,
+                    255,
+                    0.055
+                ) 55%,
+
+                rgba(
+                    190,
+                    225,
+                    255,
+                    0.025
+                ) 85%,
+
+                rgba(
+                    190,
+                    225,
+                    255,
+                    0.00
+                ) 100%
+            );
+
+        filter:
+            blur(24px);
+
+    }
+
+
+    /* =========================================================
+       MOONLIGHT WATER REFLECTION
+       ========================================================= */
+
+    .moonlight-reflection {
+
+        position: fixed;
+
+        left: 50%;
+
+        bottom: 0;
+
+        width: 330px;
+
+        height: 48%;
+
+        transform:
+            translateX(-50%)
+            rotate(4deg);
+
+        transform-origin:
+            center top;
+
+        pointer-events: none;
+
+        z-index: 1;
+
+        opacity: 0.72;
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(
+                    190,
+                    225,
+                    255,
+                    0.10
+                ) 0%,
+
+                rgba(
+                    175,
+                    220,
+                    255,
+                    0.065
+                ) 15%,
+
+                rgba(
+                    160,
+                    215,
+                    255,
+                    0.045
+                ) 35%,
+
+                rgba(
+                    150,
+                    210,
+                    255,
+                    0.025
+                ) 60%,
+
+                rgba(
+                    150,
+                    210,
+                    255,
+                    0.00
+                ) 100%
+            );
+
+        clip-path:
+            polygon(
+                43% 0%,
+                58% 0%,
+                72% 14%,
+                63% 27%,
+                78% 39%,
+                58% 52%,
+                70% 65%,
+                48% 78%,
+                61% 89%,
+                35% 100%,
+                67% 100%,
+                82% 86%,
+                72% 74%,
+                88% 61%,
+                73% 48%,
+                91% 35%,
+                76% 23%,
+                84% 12%
+            );
+
+        filter:
+            blur(10px);
+
+        animation:
+            moonReflectionDrift
+            9s
+            ease-in-out
+            infinite
+            alternate;
+
+    }
+
+
+    /* =========================================================
+       SECONDARY MOONLIGHT SHIMMER
+       ========================================================= */
+
+    .moonlight-shimmer {
+
+        position: fixed;
+
+        left: 50%;
+
+        bottom: 0;
+
+        width: 240px;
+
+        height: 43%;
+
+        transform:
+            translateX(-50%)
+            rotate(-2deg);
+
+        pointer-events: none;
+
+        z-index: 1;
+
+        opacity: 0.28;
+
+        background:
+            repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 10px,
+                rgba(
+                    210,
+                    235,
+                    255,
+                    0.075
+                ) 11px,
+                transparent 13px,
+                transparent 24px
+            );
+
+        clip-path:
+            polygon(
+                40% 0%,
+                63% 0%,
+                76% 15%,
+                60% 29%,
+                79% 43%,
+                57% 58%,
+                73% 72%,
+                48% 87%,
+                63% 100%,
+                35% 100%,
+                48% 87%,
+                28% 72%,
+                43% 57%,
+                25% 43%,
+                40% 29%,
+                25% 15%
+            );
+
+        filter:
+            blur(4px);
+
+        animation:
+            moonShimmer
+            6s
+            ease-in-out
+            infinite
+            alternate;
+
+    }
+
+
+    @keyframes moonReflectionDrift {
+
+        0% {
+
+            transform:
+                translateX(-50%)
+                rotate(3deg)
+                scaleX(0.94);
+
+        }
+
+        50% {
+
+            transform:
+                translateX(-50%)
+                rotate(5deg)
+                scaleX(1.02);
+
+        }
+
+        100% {
+
+            transform:
+                translateX(-50%)
+                rotate(2deg)
+                scaleX(0.97);
+
+        }
+
+    }
+
+
+    @keyframes moonShimmer {
+
+        0% {
+
+            opacity: 0.18;
+
+            transform:
+                translateX(-50%)
+                rotate(-3deg)
+                scaleX(0.95);
+
+        }
+
+        100% {
+
+            opacity: 0.34;
+
+            transform:
+                translateX(-50%)
+                rotate(-1deg)
+                scaleX(1.04);
+
+        }
 
     }
 
@@ -300,6 +648,7 @@
         position: fixed;
 
         top: 24px;
+
         left: 50%;
 
         transform:
@@ -310,6 +659,7 @@
         display: flex;
 
         align-items: center;
+
         justify-content: center;
 
         pointer-events: none;
@@ -328,11 +678,21 @@
         filter:
             drop-shadow(
                 0 0 8px
-                rgba(180, 230, 255, 0.45)
+                rgba(
+                    180,
+                    230,
+                    255,
+                    0.45
+                )
             )
             drop-shadow(
                 0 0 25px
-                rgba(120, 210, 255, 0.35)
+                rgba(
+                    120,
+                    210,
+                    255,
+                    0.35
+                )
             );
 
     }
@@ -383,7 +743,12 @@
 
         text-shadow:
             0 2px 12px
-            rgba(0, 0, 0, 0.6);
+            rgba(
+                0,
+                0,
+                0,
+                0.6
+            );
 
     }
 
@@ -392,11 +757,12 @@
 
         margin: 0;
 
-        font-size: clamp(
-            38px,
-            7vw,
-            90px
-        );
+        font-size:
+            clamp(
+                38px,
+                7vw,
+                90px
+            );
 
         font-weight: 300;
 
@@ -473,11 +839,12 @@
 
         margin: 0;
 
-        font-size: clamp(
-            15px,
-            2vw,
-            19px
-        );
+        font-size:
+            clamp(
+                15px,
+                2vw,
+                19px
+            );
 
         letter-spacing: 1px;
 
@@ -504,6 +871,7 @@
         position: fixed;
 
         top: 32px;
+
         right: 35px;
 
         z-index: 5;
@@ -631,7 +999,10 @@
             transform 1s ease;
 
         animation:
-            cuePulse 3s ease-in-out infinite;
+            cuePulse
+            3s
+            ease-in-out
+            infinite;
 
     }
 
@@ -907,6 +1278,7 @@
         position: fixed;
 
         width: 30px;
+
         height: 30px;
 
         transform:
@@ -949,7 +1321,8 @@
             );
 
         animation:
-            approvedPulse 4s
+            approvedPulse
+            4s
             ease-in-out
             infinite;
 
@@ -1003,7 +1376,8 @@
         opacity: 0;
 
         animation:
-            rippleRing 4s
+            rippleRing
+            4s
             ease-out
             infinite;
 
@@ -1737,6 +2111,7 @@
         position: fixed;
 
         bottom: 25px;
+
         right: 30px;
 
         z-index: 5;
@@ -1829,6 +2204,7 @@
         .ripple-count {
 
             top: 20px;
+
             right: 20px;
 
             min-width: 125px;
@@ -2009,22 +2385,17 @@
         }
 
 
-        /* =====================================================
-           MOBILE ATMOSPHERIC TRANSITION
-           ===================================================== */
-
         .night-sky {
 
-            height: 64%;
+            height: 54%;
 
             background:
                 linear-gradient(
                     to bottom,
                     rgba(1, 5, 18, 0.97) 0%,
-                    rgba(3, 12, 32, 0.94) 35%,
-                    rgba(5, 20, 42, 0.80) 58%,
-                    rgba(8, 28, 52, 0.48) 76%,
-                    rgba(10, 35, 58, 0.00) 100%
+                    rgba(3, 12, 32, 0.94) 42%,
+                    rgba(5, 20, 42, 0.80) 78%,
+                    rgba(8, 28, 52, 0.34) 100%
                 );
 
         }
@@ -2032,18 +2403,47 @@
 
         .horizon {
 
-            bottom: 39%;
+            bottom: 42%;
 
-            height: 110px;
+            height: 90px;
 
         }
 
 
         .horizon-glow {
 
-            bottom: 37%;
+            bottom: 45%;
 
-            height: 190px;
+            height: 140px;
+
+        }
+
+
+        .moonlight-path {
+
+            width: 150px;
+
+            height: 42%;
+
+            top: 135px;
+
+        }
+
+
+        .moonlight-reflection {
+
+            width: 250px;
+
+            height: 46%;
+
+        }
+
+
+        .moonlight-shimmer {
+
+            width: 190px;
+
+            height: 42%;
 
         }
 
@@ -2059,10 +2459,31 @@
 <div class="night-sky"></div>
 
 
+<!-- =========================================================
+     ATMOSPHERIC HORIZON
+     ========================================================= -->
+
 <div class="horizon-glow"></div>
 
 
 <div class="horizon"></div>
+
+
+<!-- =========================================================
+     MOONLIGHT ATMOSPHERE
+     ========================================================= -->
+
+<div class="moonlight-path"></div>
+
+
+<!-- =========================================================
+     MOONLIGHT REFLECTION
+     ========================================================= -->
+
+<div class="moonlight-reflection"></div>
+
+
+<div class="moonlight-shimmer"></div>
 
 
 <!-- =========================================================
@@ -2116,6 +2537,7 @@
         🌊 100 RIPPLE MAKERS
     </span>
 
+
     <span class="ripple-count-subtext">
         and counting
     </span>
@@ -2145,7 +2567,9 @@
     id="firstRippleMessage">
 
     <div class="first-ripple-text">
+
         Small actions create big ripples.
+
     </div>
 
 </div>
@@ -2160,8 +2584,11 @@
     id="rippleIdentity">
 
     <span class="ripple-identity-label">
+
         Your Ripple
+
     </span>
+
 
     <span
         class="ripple-identity-number"
@@ -2212,6 +2639,10 @@
 <canvas id="waterCanvas"></canvas>
 
 
+<!-- =========================================================
+     MOON GLOW
+     ========================================================= -->
+
 <div class="moonGlow"></div>
 
 
@@ -2246,7 +2677,6 @@
     <div
         class="approved-message-text"
         id="approvedMessageText">
-
     </div>
 
 
@@ -2287,7 +2717,9 @@
 
 
     <h2 class="message-panel-title">
+
         Leave Something Behind
+
     </h2>
 
 
@@ -2353,12 +2785,16 @@
     id="submissionConfirmation">
 
     <div class="confirmation-icon">
+
         🌊
+
     </div>
 
 
     <div class="confirmation-title">
+
         Your Ripple Has Been Created
+
     </div>
 
 
@@ -2498,6 +2934,7 @@
                 "interactionCue"
             );
 
+
         if (cue) {
 
             cue.classList.remove(
@@ -2515,6 +2952,7 @@
             document.getElementById(
                 "interactionCue"
             );
+
 
         if (cue) {
 
@@ -2550,6 +2988,7 @@
                 "firstRippleMessage"
             );
 
+
         if (!message) {
 
             return;
@@ -2580,6 +3019,7 @@
                         "show"
                     );
 
+
                     message.classList.add(
                         "hide"
                     );
@@ -2603,6 +3043,7 @@
             document.getElementById(
                 "rippleIdentity"
             );
+
 
         const identityNumber =
             document.getElementById(
@@ -2647,6 +3088,7 @@
                     identity.classList.remove(
                         "show"
                     );
+
 
                     identity.classList.add(
                         "hide"
@@ -2700,15 +3142,18 @@
                 "rippleMessagePanel"
             );
 
+
         const overlay =
             document.getElementById(
                 "modalOverlay"
             );
 
+
         const number =
             document.getElementById(
                 "messageRippleNumber"
             );
+
 
         const input =
             document.getElementById(
@@ -2770,12 +3215,9 @@
     }
 
 
-    /*
-       ========================================================
-       FIX:
-       Close BOTH the message panel and the dark overlay.
-       ========================================================
-    */
+    /* =========================================================
+       CLOSE MESSAGE PANEL
+       ========================================================= */
 
     function closeMessagePanel() {
 
@@ -2783,6 +3225,7 @@
             document.getElementById(
                 "rippleMessagePanel"
             );
+
 
         const overlay =
             document.getElementById(
@@ -2821,6 +3264,7 @@
                 "rippleMessageInput"
             );
 
+
         const error =
             document.getElementById(
                 "messageError"
@@ -2849,7 +3293,9 @@
                 "show"
             );
 
+
             input.focus();
+
 
             return;
 
@@ -2895,6 +3341,7 @@
             document.getElementById(
                 "submissionConfirmation"
             );
+
 
         const number =
             document.getElementById(
@@ -2984,15 +3431,18 @@
                 "approvedMessagePanel"
             );
 
+
         const overlay =
             document.getElementById(
                 "modalOverlay"
             );
 
+
         const number =
             document.getElementById(
                 "approvedMessageNumber"
             );
+
 
         const text =
             document.getElementById(
@@ -3041,6 +3491,7 @@
             document.getElementById(
                 "approvedMessagePanel"
             );
+
 
         const overlay =
             document.getElementById(
@@ -3106,6 +3557,7 @@
 
         const x =
             window.innerWidth / 2;
+
 
         const y =
             window.innerHeight / 2;
