@@ -1,4 +1,3 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
    VERSION 10.2.1 — PHOTOREALISTIC MOONLIGHT REFLECTION
@@ -22,7 +21,6 @@ if (!canvas) {
             powerPreference: "high-performance"
         });
 
-
     if (!gl) {
 
         console.error(
@@ -30,7 +28,6 @@ if (!canvas) {
         );
 
     } else {
-
 
         /* =================================================
            SETTINGS
@@ -77,15 +74,11 @@ if (!canvas) {
             ================================================= */
 
             uniform vec2 resolution;
-
             uniform float time;
-
             uniform float scroll;
 
             uniform vec2 ripplePositions[MAX_RIPPLES];
-
             uniform float rippleStarts[MAX_RIPPLES];
-
             uniform float rippleStrengths[MAX_RIPPLES];
 
 
@@ -113,7 +106,7 @@ if (!canvas) {
 
 
             /* =================================================
-               NOISE
+               SMOOTH NOISE
             ================================================= */
 
             float noise(vec2 p) {
@@ -908,18 +901,11 @@ if (!canvas) {
 
             /* =================================================
                PHOTOREALISTIC MOONLIGHT REFLECTION
-
-               Conservative Version 10.2.1 implementation.
-
-               Broken horizontal reflections rather than
-               a single geometric beam.
             ================================================= */
 
             float moonReflection(
-
                 vec2 uv,
                 vec3 normal
-
             ) {
 
                 float waterMask =
@@ -929,6 +915,19 @@ if (!canvas) {
                         0.40,
                         uv.y
                     );
+
+
+                float bottomFade =
+
+                    smoothstep(
+                        0.015,
+                        0.12,
+                        uv.y
+                    );
+
+
+                waterMask *=
+                    bottomFade;
 
 
                 float depth =
@@ -948,7 +947,7 @@ if (!canvas) {
                     );
 
 
-                float drift =
+                float broadDrift =
 
                     sin(
 
@@ -963,26 +962,61 @@ if (!canvas) {
                     0.018;
 
 
-                float center =
+                float organicDrift =
 
-                    0.50 +
-                    drift;
+                    (
+                        fbm(
+
+                            vec2(
+
+                                uv.y *
+                                2.8,
+
+                                time *
+                                0.008
+
+                            )
+
+                        )
+                        -
+                        0.5
+                    )
+                    *
+                    0.045;
 
 
-                float width =
+                float reflectionCenter =
+
+                    0.50
+                    +
+                    broadDrift
+                    +
+                    organicDrift;
+
+
+                float reflectionWidth =
 
                     mix(
+
                         0.035,
                         0.20,
-                        depth
+
+                        smoothstep(
+                            0.0,
+                            1.0,
+                            depth
+                        )
+
                     );
 
 
                 float horizontalDistance =
 
                     abs(
+
                         uv.x -
-                        center
+                        reflectionCenter
+
                     );
 
 
@@ -993,7 +1027,7 @@ if (!canvas) {
                         -pow(
 
                             horizontalDistance /
-                            width,
+                            reflectionWidth,
 
                             2.0
 
@@ -1002,94 +1036,245 @@ if (!canvas) {
                     );
 
 
-                float fragments =
+                float fragmentA =
+
+                    noise(
+
+                        vec2(
+
+                            uv.x *
+                            7.0,
+
+                            uv.y *
+                            15.0
+
+                        )
+
+                    );
+
+
+                float fragmentB =
+
+                    noise(
+
+                        vec2(
+
+                            uv.x *
+                            13.0
+                            +
+                            4.0,
+
+                            uv.y *
+                            29.0
+                            -
+                            time *
+                            0.012
+
+                        )
+
+                    );
+
+
+                float fragmentC =
 
                     fbm(
 
                         vec2(
 
                             uv.x *
-                            6.0,
+                            5.5,
 
                             uv.y *
-                            14.0
+                            11.0
 
                         )
 
                         +
 
                         vec2(
+
                             time *
-                            0.004,
+                            0.006,
+
                             -time *
-                            0.002
+                            0.004
+
                         )
 
                     );
 
 
+                float fragments =
+
+                    fragmentA *
+                    0.34
+
+                    +
+
+                    fragmentB *
+                    0.26
+
+                    +
+
+                    fragmentC *
+                    0.40;
+
+
                 float brokenLight =
 
                     smoothstep(
-                        0.50,
-                        0.68,
+
+                        0.48,
+                        0.67,
                         fragments
+
                     );
 
 
-                float horizontalWave =
+                float horizontalPattern =
 
                     sin(
 
                         uv.y *
-                        145.0
+                        170.0
                         +
                         time *
-                        0.04
+                        0.055
 
                     );
 
 
-                horizontalWave =
+                horizontalPattern =
 
                     smoothstep(
-                        0.10,
-                        0.80,
-                        horizontalWave
+
+                        0.15,
+                        0.78,
+                        horizontalPattern
+
                     );
 
 
-                float surfaceFacing =
+                float streakNoise =
+
+                    noise(
+
+                        vec2(
+
+                            uv.y *
+                            24.0,
+
+                            uv.x *
+                            3.0
+
+                        )
+
+                    );
+
+
+                float streaks =
+
+                    mix(
+
+                        horizontalPattern,
+
+                        horizontalPattern *
+                        streakNoise,
+
+                        0.55
+
+                    );
+
+
+                float facing =
 
                     max(
-                        normal.z,
+
+                        dot(
+
+                            normal,
+
+                            normalize(
+
+                                vec3(
+                                    0.0,
+                                    0.45,
+                                    1.0
+                                )
+
+                            )
+
+                        ),
+
                         0.0
+
                     );
 
 
                 float shimmer =
 
                     pow(
-                        surfaceFacing,
-                        7.0
+                        facing,
+                        13.0
                     );
 
 
-                float clouds =
+                float softShimmer =
+
+                    pow(
+
+                        max(
+                            normal.z,
+                            0.0
+                        ),
+
+                        5.0
+
+                    );
+
+
+                float surfaceLight =
+
+                    shimmer *
+                    0.78
+
+                    +
+
+                    softShimmer *
+                    0.22;
+
+
+                float cloudAmount =
 
                     moonClouds(uv);
 
 
-                float cloudFade =
+                float cloudLight =
 
                     mix(
                         1.0,
-                        0.35,
-                        clouds
+                        0.30,
+                        cloudAmount
                     );
 
 
-                float reflection =
+                float distanceFade =
+
+                    mix(
+
+                        1.0,
+                        0.58,
+
+                        smoothstep(
+                            0.0,
+                            1.0,
+                            depth
+                        )
+
+                    );
+
+
+                float fragmentedReflection =
 
                     envelope *
 
@@ -1101,33 +1286,44 @@ if (!canvas) {
                         +
 
                         brokenLight *
-                        horizontalWave *
+                        streaks *
                         0.28
 
+                    );
+
+
+                float softReflection =
+
+                    envelope *
+                    0.045;
+
+
+                float finalReflection =
+
+                    (
+                        fragmentedReflection
+                        +
+                        softReflection
                     )
 
                     *
 
-                    shimmer
+                    surfaceLight
 
                     *
 
-                    cloudFade
+                    cloudLight
 
                     *
 
-                    mix(
-                        1.0,
-                        0.58,
-                        depth
-                    )
+                    distanceFade
 
                     *
 
                     waterMask;
 
 
-                return reflection;
+                return finalReflection;
 
             }
 
@@ -1201,7 +1397,8 @@ if (!canvas) {
                 float variation =
 
                     surface *
-                    0.55 +
+                    0.55
+                    +
                     0.5;
 
 
@@ -1255,9 +1452,12 @@ if (!canvas) {
                 variation =
 
                     clamp(
+
                         variation,
+
                         0.0,
                         1.0
+
                     );
 
 
@@ -1293,11 +1493,15 @@ if (!canvas) {
                 color +=
 
                     vec3(
+
                         0.012,
                         0.035,
                         0.055
+
                     )
+
                     *
+
                     highlight;
 
 
@@ -1314,44 +1518,54 @@ if (!canvas) {
                 color +=
 
                     vec3(
+
                         0.004,
                         0.010,
                         0.014
+
                     )
+
                     *
+
                     surfaceSheen;
 
 
                 /* =============================================
-                   MOONLIGHT REFLECTION
+                   MOON REFLECTION
                 ============================================= */
 
                 float reflection =
 
                     moonReflection(
+
                         uv,
                         normal
+
                     );
 
 
                 vec3 moonColor =
 
                     vec3(
+
                         0.58,
                         0.74,
                         0.88
+
                     );
 
 
                 color +=
 
-                    moonColor *
-                    reflection *
+                    moonColor
+                    *
+                    reflection
+                    *
                     1.65;
 
 
                 /* =============================================
-                   MOON ATMOSPHERE
+                   SOFT MOON ATMOSPHERE
                 ============================================= */
 
                 float atmosphere =
@@ -1362,11 +1576,15 @@ if (!canvas) {
                 color +=
 
                     vec3(
+
                         0.008,
                         0.018,
                         0.030
+
                     )
+
                     *
+
                     atmosphere;
 
 
@@ -1377,9 +1595,11 @@ if (!canvas) {
                 float upperLight =
 
                     smoothstep(
+
                         0.10,
                         0.95,
                         uv.y
+
                     );
 
 
@@ -1412,11 +1632,15 @@ if (!canvas) {
                 color +=
 
                     vec3(
+
                         0.010,
                         0.024,
                         0.040
+
                     )
+
                     *
+
                     ambientMoon;
 
 
@@ -1436,6 +1660,7 @@ if (!canvas) {
                         distance(
 
                             uv,
+
                             vec2(
                                 0.5,
                                 0.43
@@ -1449,9 +1674,11 @@ if (!canvas) {
                 color *=
 
                     mix(
+
                         0.68,
                         1.0,
                         vignette
+
                     );
 
 
@@ -1462,18 +1689,23 @@ if (!canvas) {
                 color =
 
                     pow(
+
                         color,
+
                         vec3(
                             0.86
                         )
+
                     );
 
 
                 gl_FragColor =
 
                     vec4(
+
                         color,
                         1.0
+
                     );
 
             }
@@ -1541,26 +1773,35 @@ if (!canvas) {
         const vertexShader =
 
             createShader(
+
                 gl.VERTEX_SHADER,
                 vertexShaderSource
+
             );
 
 
         const fragmentShader =
 
             createShader(
+
                 gl.FRAGMENT_SHADER,
                 fragmentShaderSource
+
             );
 
 
         if (
+
             !vertexShader ||
+
             !fragmentShader
+
         ) {
 
             console.error(
+
                 "The Infinite Pond: Shader creation failed."
+
             );
 
         } else {
@@ -1576,27 +1817,35 @@ if (!canvas) {
 
 
             gl.attachShader(
+
                 program,
                 vertexShader
+
             );
 
 
             gl.attachShader(
+
                 program,
                 fragmentShader
+
             );
 
 
             gl.linkProgram(
+
                 program
+
             );
 
 
             if (
 
                 !gl.getProgramParameter(
+
                     program,
                     gl.LINK_STATUS
+
                 )
 
             ) {
@@ -1615,7 +1864,9 @@ if (!canvas) {
 
 
                 gl.useProgram(
+
                     program
+
                 );
 
 
@@ -1629,8 +1880,10 @@ if (!canvas) {
 
 
                 gl.bindBuffer(
+
                     gl.ARRAY_BUFFER,
                     buffer
+
                 );
 
 
@@ -1662,19 +1915,24 @@ if (!canvas) {
                 const position =
 
                     gl.getAttribLocation(
+
                         program,
                         "position"
+
                     );
 
 
                 gl.enableVertexAttribArray(
+
                     position
+
                 );
 
 
                 gl.vertexAttribPointer(
 
                     position,
+
                     2,
                     gl.FLOAT,
                     false,
@@ -1691,48 +1949,60 @@ if (!canvas) {
                 const resolutionLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "resolution"
+
                     );
 
 
                 const timeLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "time"
+
                     );
 
 
                 const scrollLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "scroll"
+
                     );
 
 
                 const ripplePositionsLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "ripplePositions"
+
                     );
 
 
                 const rippleStartsLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "rippleStarts"
+
                     );
 
 
                 const rippleStrengthsLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "rippleStrengths"
+
                     );
 
 
@@ -1748,14 +2018,19 @@ if (!canvas) {
                 ============================================= */
 
                 function createRipple(
+
                     clientX,
                     clientY
+
                 ) {
 
                     console.log(
+
                         "INFINITE POND RIPPLE:",
+
                         clientX,
                         clientY
+
                     );
 
 
@@ -1813,7 +2088,8 @@ if (!canvas) {
 
                     const now =
 
-                        performance.now() *
+                        performance.now()
+                        *
                         0.001;
 
 
@@ -1859,13 +2135,16 @@ if (!canvas) {
                     function (event) {
 
                         console.log(
+
                             "POINTER DETECTED"
+
                         );
 
 
                         if (
 
                             event.button !== 0 &&
+
                             event.pointerType !== "touch"
 
                         ) {
@@ -1944,8 +2223,10 @@ if (!canvas) {
 
 
                 window.addEventListener(
+
                     "resize",
                     resizeWater
+
                 );
 
 
@@ -1957,7 +2238,9 @@ if (!canvas) {
                 ============================================= */
 
                 function renderWater(
+
                     milliseconds
+
                 ) {
 
                     const currentTime =
@@ -1967,13 +2250,11 @@ if (!canvas) {
 
 
                     gl.useProgram(
+
                         program
+
                     );
 
-
-                    /* -----------------------------------------
-                       Remove expired ripples
-                    ----------------------------------------- */
 
                     while (
 
@@ -1990,28 +2271,31 @@ if (!canvas) {
                     }
 
 
-                    /* -----------------------------------------
-                       Prepare ripple arrays
-                    ----------------------------------------- */
-
                     const positions =
 
                         new Float32Array(
-                            MAX_RIPPLES * 2
+
+                            MAX_RIPPLES *
+                            2
+
                         );
 
 
                     const starts =
 
                         new Float32Array(
+
                             MAX_RIPPLES
+
                         );
 
 
                     const strengths =
 
                         new Float32Array(
+
                             MAX_RIPPLES
+
                         );
 
 
@@ -2085,10 +2369,6 @@ if (!canvas) {
                     }
 
 
-                    /* -----------------------------------------
-                       Upload uniforms
-                    ----------------------------------------- */
-
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2144,10 +2424,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Draw pond
-                    ----------------------------------------- */
-
                     gl.drawArrays(
 
                         gl.TRIANGLES,
@@ -2159,14 +2435,18 @@ if (!canvas) {
 
 
                     requestAnimationFrame(
+
                         renderWater
+
                     );
 
                 }
 
 
                 requestAnimationFrame(
+
                     renderWater
+
                 );
 
             }
@@ -2176,33 +2456,3 @@ if (!canvas) {
     }
 
 }
-```
-```javascript
-/* =================================================
-   SETTINGS
-================================================= */
-
-const MAX_RIPPLES = 12;
-
-
-/* =================================================
-   VERTEX SHADER
-================================================= */
-
-const vertexShaderSource = `
-
-    attribute vec2 position;
-
-    void main() {
-
-        gl_Position =
-            vec4(
-                position,
-                0.0,
-                1.0
-            );
-
-    }
-
-`;
-```
