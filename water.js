@@ -1,7 +1,7 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.3 — RIPPLE-ONLY INTERACTION
-   ========================================================= */
+   VERSION 10.4C — RIPPLE BUTTON BRIDGE
+========================================================= */
 
 const canvas =
     document.getElementById("waterCanvas");
@@ -230,8 +230,6 @@ if (!canvas) {
 
             /* =================================================
                LARGE WATER MOTION
-
-               Calm, broad undulation.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -578,11 +576,7 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE INTERFERENCE
-
                Disabled intentionally.
-
-               This prevents the old secondary ripple
-               from returning.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -594,8 +588,6 @@ if (!canvas) {
 
             /* =================================================
                IMPACT DISPLACEMENT
-
-               The ONLY click-generated ripple displacement.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -647,7 +639,6 @@ if (!canvas) {
                                 distance(
 
                                     p,
-
                                     ripplePositions[i]
 
                                 );
@@ -727,7 +718,6 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE MICRO-WAVES
-
                Disabled intentionally.
             ================================================= */
 
@@ -834,8 +824,6 @@ if (!canvas) {
 
             /* =================================================
                MOON CLOUDS
-
-               Visual-only cloud field.
             ================================================= */
 
             float moonClouds(vec2 uv) {
@@ -930,7 +918,6 @@ if (!canvas) {
                     distance(
 
                         uv,
-
                         moonPosition
 
                     );
@@ -974,16 +961,11 @@ if (!canvas) {
 
             /* =================================================
                NATURAL MOONLIGHT REFLECTION
-
-               Fragmented moonlight reflection.
-
-               No continuous lightning-bolt beam.
             ================================================= */
 
             float moonReflection(
 
                 vec2 uv,
-
                 vec3 normal
 
             ) {
@@ -1315,7 +1297,6 @@ if (!canvas) {
                     pow(
 
                         facing,
-
                         13.0
 
                     );
@@ -1328,11 +1309,9 @@ if (!canvas) {
                         max(
 
                             normal.z,
-
                             0.0
 
                         ),
-
                         5.0
 
                     );
@@ -1475,10 +1454,6 @@ if (!canvas) {
                     1.55;
 
 
-                /* ---------------------------------------------
-                   WATER SURFACE
-                --------------------------------------------- */
-
                 float surface =
 
                     waterHeight(p);
@@ -1488,10 +1463,6 @@ if (!canvas) {
 
                     surfaceNormal(p);
 
-
-                /* ---------------------------------------------
-                   BASE WATER
-                --------------------------------------------- */
 
                 vec3 deepWater =
 
@@ -1558,7 +1529,6 @@ if (!canvas) {
                 backgroundVariation =
 
                     (
-
                         backgroundVariation -
                         0.5
 
@@ -1577,7 +1547,6 @@ if (!canvas) {
                     clamp(
 
                         variation,
-
                         0.0,
                         1.0
 
@@ -1595,10 +1564,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   SURFACE HIGHLIGHTS
-                --------------------------------------------- */
-
                 float highlight =
 
                     pow(
@@ -1606,11 +1571,9 @@ if (!canvas) {
                         max(
 
                             normal.z,
-
                             0.0
 
                         ),
-
                         7.0
 
                     );
@@ -1630,10 +1593,6 @@ if (!canvas) {
 
                     highlight;
 
-
-                /* ---------------------------------------------
-                   NATURAL SURFACE SHEEN
-                --------------------------------------------- */
 
                 float surfaceSheen =
 
@@ -1655,10 +1614,6 @@ if (!canvas) {
 
                     surfaceSheen;
 
-
-                /* ---------------------------------------------
-                   NATURAL MOON REFLECTION
-                --------------------------------------------- */
 
                 float reflection =
 
@@ -1690,10 +1645,6 @@ if (!canvas) {
                     1.65;
 
 
-                /* ---------------------------------------------
-                   SOFT ATMOSPHERIC MOONLIGHT
-                --------------------------------------------- */
-
                 float atmosphere =
 
                     moonAtmosphere(uv);
@@ -1714,10 +1665,6 @@ if (!canvas) {
                     atmosphere;
 
 
-                /* ---------------------------------------------
-                   AMBIENT MOONLIGHT
-                --------------------------------------------- */
-
                 float upperLight =
 
                     smoothstep(
@@ -1736,10 +1683,8 @@ if (!canvas) {
                         -pow(
 
                             (
-
                                 uv.x -
                                 0.50
-
                             )
                             /
                             0.52,
@@ -1772,10 +1717,6 @@ if (!canvas) {
                     ambientMoon;
 
 
-                /* ---------------------------------------------
-                   CINEMATIC VIGNETTE
-                --------------------------------------------- */
-
                 float vignette =
 
                     1.0 -
@@ -1788,12 +1729,9 @@ if (!canvas) {
                         distance(
 
                             uv,
-
                             vec2(
-
                                 0.5,
                                 0.43
-
                             )
 
                         )
@@ -1812,16 +1750,11 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   FINAL CONTRAST
-                --------------------------------------------- */
-
                 color =
 
                     pow(
 
                         color,
-
                         vec3(
                             0.86
                         )
@@ -1848,53 +1781,35 @@ if (!canvas) {
         ===================================================== */
 
         function createShader(
-
             type,
             source
-
         ) {
 
             const shader =
-
-                gl.createShader(
-                    type
-                );
+                gl.createShader(type);
 
 
             gl.shaderSource(
-
                 shader,
                 source
-
             );
 
 
             gl.compileShader(
-
                 shader
-
             );
 
 
             if (
-
                 !gl.getShaderParameter(
-
                     shader,
                     gl.COMPILE_STATUS
-
                 )
-
             ) {
 
                 console.error(
-
                     "The Infinite Pond shader error:",
-
-                    gl.getShaderInfoLog(
-                        shader
-                    )
-
+                    gl.getShaderInfoLog(shader)
                 );
 
 
@@ -1909,103 +1824,66 @@ if (!canvas) {
 
 
         const vertexShader =
-
             createShader(
-
                 gl.VERTEX_SHADER,
                 vertexShaderSource
-
             );
 
 
         const fragmentShader =
-
             createShader(
-
                 gl.FRAGMENT_SHADER,
                 fragmentShaderSource
-
             );
 
 
         if (
-
             !vertexShader ||
-
             !fragmentShader
-
         ) {
 
             console.error(
-
                 "The Infinite Pond: Shader creation failed."
-
             );
 
         } else {
 
-
-            /* =================================================
-               PROGRAM
-            ================================================= */
-
             const program =
-
                 gl.createProgram();
 
 
             gl.attachShader(
-
                 program,
                 vertexShader
-
             );
 
 
             gl.attachShader(
-
                 program,
                 fragmentShader
-
             );
 
 
             gl.linkProgram(
-
                 program
-
             );
 
 
             if (
-
                 !gl.getProgramParameter(
-
                     program,
                     gl.LINK_STATUS
-
                 )
-
             ) {
 
                 console.error(
-
                     "The Infinite Pond program error:",
-
-                    gl.getProgramInfoLog(
-                        program
-                    )
-
+                    gl.getProgramInfoLog(program)
                 );
 
             } else {
 
-
-                gl.useProgram(
-
-                    program
-
-                );
+                gl.useProgram(program);
 
 
                 /* =================================================
@@ -2013,20 +1891,16 @@ if (!canvas) {
                 ================================================= */
 
                 const buffer =
-
                     gl.createBuffer();
 
 
                 gl.bindBuffer(
-
                     gl.ARRAY_BUFFER,
                     buffer
-
                 );
 
 
                 gl.bufferData(
-
                     gl.ARRAY_BUFFER,
 
                     new Float32Array([
@@ -2046,37 +1920,25 @@ if (!canvas) {
                 );
 
 
-                /* =================================================
-                   POSITION ATTRIBUTE
-                ================================================= */
-
                 const position =
-
                     gl.getAttribLocation(
-
                         program,
                         "position"
-
                     );
 
 
                 gl.enableVertexAttribArray(
-
                     position
-
                 );
 
 
                 gl.vertexAttribPointer(
-
                     position,
-
                     2,
                     gl.FLOAT,
                     false,
                     0,
                     0
-
                 );
 
 
@@ -2085,62 +1947,44 @@ if (!canvas) {
                 ================================================= */
 
                 const resolutionLocation =
-
                     gl.getUniformLocation(
-
                         program,
                         "resolution"
-
                     );
 
 
                 const timeLocation =
-
                     gl.getUniformLocation(
-
                         program,
                         "time"
-
                     );
 
 
                 const scrollLocation =
-
                     gl.getUniformLocation(
-
                         program,
                         "scroll"
-
                     );
 
 
                 const ripplePositionsLocation =
-
                     gl.getUniformLocation(
-
                         program,
                         "ripplePositions"
-
                     );
 
 
                 const rippleStartsLocation =
-
                     gl.getUniformLocation(
-
                         program,
                         "rippleStarts"
-
                     );
 
 
                 const rippleStrengthsLocation =
-
                     gl.getUniformLocation(
-
                         program,
                         "rippleStrengths"
-
                     );
 
 
@@ -2153,92 +1997,65 @@ if (!canvas) {
 
                 /* =================================================
                    CREATE RIPPLE
-
-                   IMPORTANT:
-
-                   This function ONLY creates the animated
-                   water ripple.
-
-                   It does NOT open a modal, form, or
-                   submission interface.
-
-                   Submission will be handled later by the
-                   dedicated bottom-right button.
                 ================================================= */
 
                 function createRipple(
-
                     clientX,
                     clientY
-
                 ) {
 
                     console.log(
-
                         "INFINITE POND RIPPLE:",
-
                         clientX,
                         clientY
-
                     );
 
 
                     const rect =
-
                         canvas.getBoundingClientRect();
 
 
                     const localX =
-
                         clientX -
                         rect.left;
 
 
                     const localY =
-
                         clientY -
                         rect.top;
 
 
                     const uvX =
-
                         localX /
                         rect.width;
 
 
                     const uvY =
-
                         localY /
                         rect.height;
 
 
                     let rippleX =
-
                         uvX -
                         0.5;
 
 
                     let rippleY =
-
                         0.5 -
                         uvY;
 
 
                     rippleX *=
-
                         rect.width /
                         rect.height;
 
 
                     rippleY *=
-
                         1.55;
 
 
                     const now =
-
-                        performance.now()
-                        *
+                        performance.now() *
                         0.001;
 
 
@@ -2260,10 +2077,8 @@ if (!canvas) {
 
 
                     if (
-
                         ripples.length >
                         MAX_RIPPLES
-
                     ) {
 
                         ripples.shift();
@@ -2274,10 +2089,27 @@ if (!canvas) {
 
 
                 /* =================================================
-                   POINTER RIPPLE
+                   PUBLIC RIPPLE BUTTON BRIDGE
 
-                   Clicking/tapping the pond creates ONLY
-                   the temporary animated ripple.
+                   This exposes the existing ripple engine
+                   without changing the pond click behavior.
+                ================================================= */
+
+                window.makePondRipple =
+                    function () {
+
+                        createRipple(
+
+                            window.innerWidth * 0.5,
+                            window.innerHeight * 0.55
+
+                        );
+
+                    };
+
+
+                /* =================================================
+                   POINTER RIPPLE
                 ================================================= */
 
                 window.addEventListener(
@@ -2287,18 +2119,13 @@ if (!canvas) {
                     function (event) {
 
                         console.log(
-
                             "POINTER DETECTED"
-
                         );
 
 
                         if (
-
                             event.button !== 0 &&
-
                             event.pointerType !== "touch"
-
                         ) {
 
                             return;
@@ -2307,10 +2134,8 @@ if (!canvas) {
 
 
                         createRipple(
-
                             event.clientX,
                             event.clientY
-
                         );
 
                     },
@@ -2327,59 +2152,45 @@ if (!canvas) {
                 function resizeWater() {
 
                     const ratio =
-
                         Math.min(
-
-                            window.devicePixelRatio ||
-                            1,
-
+                            window.devicePixelRatio || 1,
                             2
-
                         );
 
 
                     canvas.width =
-
                         window.innerWidth *
                         ratio;
 
 
                     canvas.height =
-
                         window.innerHeight *
                         ratio;
 
 
                     canvas.style.width =
-
                         window.innerWidth +
                         "px";
 
 
                     canvas.style.height =
-
                         window.innerHeight +
                         "px";
 
 
                     gl.viewport(
-
                         0,
                         0,
                         canvas.width,
                         canvas.height
-
                     );
 
                 }
 
 
                 window.addEventListener(
-
                     "resize",
-
                     resizeWater
-
                 );
 
 
@@ -2391,27 +2202,18 @@ if (!canvas) {
                 ================================================= */
 
                 function renderWater(
-
                     milliseconds
-
                 ) {
 
                     const currentTime =
-
                         milliseconds *
                         0.001;
 
 
                     gl.useProgram(
-
                         program
-
                     );
 
-
-                    /* ---------------------------------------------
-                       Remove expired ripples
-                    --------------------------------------------- */
 
                     while (
 
@@ -2428,101 +2230,64 @@ if (!canvas) {
                     }
 
 
-                    /* ---------------------------------------------
-                       Prepare ripple arrays
-                    --------------------------------------------- */
-
                     const positions =
-
                         new Float32Array(
-
-                            MAX_RIPPLES *
-                            2
-
+                            MAX_RIPPLES * 2
                         );
 
 
                     const starts =
-
                         new Float32Array(
-
                             MAX_RIPPLES
-
                         );
 
 
                     const strengths =
-
                         new Float32Array(
-
                             MAX_RIPPLES
-
                         );
 
 
                     for (
-
                         let i = 0;
-
                         i < MAX_RIPPLES;
-
                         i++
-
                     ) {
 
                         if (
-
-                            i <
-                            ripples.length
-
+                            i < ripples.length
                         ) {
 
-                            positions[
-                                i * 2
-                            ] =
-
+                            positions[i * 2] =
                                 ripples[i].x;
 
 
-                            positions[
-                                i * 2 + 1
-                            ] =
-
+                            positions[i * 2 + 1] =
                                 ripples[i].y;
 
 
                             starts[i] =
-
                                 ripples[i].start;
 
 
                             strengths[i] =
-
                                 ripples[i].strength;
 
                         } else {
 
-                            positions[
-                                i * 2
-                            ] =
-
+                            positions[i * 2] =
                                 0.0;
 
 
-                            positions[
-                                i * 2 + 1
-                            ] =
-
+                            positions[i * 2 + 1] =
                                 0.0;
 
 
                             starts[i] =
-
                                 -100.0;
 
 
                             strengths[i] =
-
                                 0.0;
 
                         }
@@ -2530,92 +2295,59 @@ if (!canvas) {
                     }
 
 
-                    /* ---------------------------------------------
-                       Upload uniforms
-                    --------------------------------------------- */
-
                     gl.uniform2f(
-
                         resolutionLocation,
-
                         canvas.width,
                         canvas.height
-
                     );
 
 
                     gl.uniform1f(
-
                         timeLocation,
-
                         currentTime
-
                     );
 
 
                     gl.uniform1f(
-
                         scrollLocation,
-
                         window.scrollY
-
                     );
 
 
                     gl.uniform2fv(
-
                         ripplePositionsLocation,
-
                         positions
-
                     );
 
 
                     gl.uniform1fv(
-
                         rippleStartsLocation,
-
                         starts
-
                     );
 
 
                     gl.uniform1fv(
-
                         rippleStrengthsLocation,
-
                         strengths
-
                     );
 
-
-                    /* ---------------------------------------------
-                       Draw pond
-                    --------------------------------------------- */
 
                     gl.drawArrays(
-
                         gl.TRIANGLES,
-
                         0,
                         6
-
                     );
 
 
                     requestAnimationFrame(
-
                         renderWater
-
                     );
 
                 }
 
 
                 requestAnimationFrame(
-
                     renderWater
-
                 );
 
             }
