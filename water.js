@@ -1,10 +1,11 @@
+```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.2 — NATURAL MOONLIGHT REFLECTION
+   VERSION 10.2 — PHOTOREALISTIC MOONLIGHT REFLECTION
    ========================================================= */
 
 const canvas =
-    document.getElementById("waterCanvas");
+document.getElementById("waterCanvas");
 
 if (!canvas) {
 
@@ -242,11 +243,6 @@ if (!canvas) {
                CALM MOONLIT POND
 
                Very slow, broad undulation.
-
-               VERSION 8.5.1:
-
-               Slightly more organic movement is introduced
-               while keeping the pond extremely calm.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -421,8 +417,6 @@ if (!canvas) {
             /* =================================================
                NATURAL WATER SURFACE
 
-               VERSION 8.5.0
-
                Layered organic surface variation.
 
                The fine layers remain appearance-only.
@@ -516,8 +510,6 @@ if (!canvas) {
 
             /* =================================================
                NATURAL WATER MOVEMENT
-
-               VERSION 8.5.1
 
                This is the physical movement layer.
 
@@ -744,8 +736,6 @@ if (!canvas) {
 
             /* =================================================
                TOTAL WATER HEIGHT
-
-               VERSION 8.5.1
             ================================================= */
 
             float waterHeight(vec2 p) {
@@ -1011,23 +1001,8 @@ if (!canvas) {
 
                VERSION 10.2
 
-               The previous reflection behaved like a single
-               widening beam. That created the artificial
-               "lightning bolt" appearance.
-
-               This version treats moonlight as a collection
-               of broken reflections across the water.
-
-               The reflection is:
-
-               • fragmented
-               • horizontal
-               • softly wandering
-               • wider farther from the moon
-               • affected by surface normals
-               • affected by clouds
-               • gently animated
-               • never a continuous geometric beam
+               Fragmented, horizontal, softly wandering
+               moonlight across the water.
             ================================================= */
 
             float moonReflection(
@@ -1037,11 +1012,6 @@ if (!canvas) {
                 vec3 normal
 
             ) {
-
-                /* ---------------------------------------------
-                   The reflection begins around the horizon
-                   and exists primarily across the water.
-                --------------------------------------------- */
 
                 float waterMask =
 
@@ -1074,13 +1044,6 @@ if (!canvas) {
                 }
 
 
-                /* ---------------------------------------------
-                   Depth through the reflection.
-
-                   0 = near horizon
-                   1 = foreground
-                --------------------------------------------- */
-
                 float depth =
 
                     clamp(
@@ -1097,15 +1060,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Slowly wandering reflection center.
-
-                   This is deliberately very small.
-
-                   The moonlight should drift rather than
-                   form a zig-zag or lightning shape.
-                --------------------------------------------- */
 
                 float broadDrift =
 
@@ -1154,10 +1108,6 @@ if (!canvas) {
                     organicDrift;
 
 
-                /* ---------------------------------------------
-                   The reflection becomes wider with distance.
-                --------------------------------------------- */
-
                 float reflectionWidth =
 
                     mix(
@@ -1184,13 +1134,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Broad soft envelope.
-
-                   This establishes the general area of
-                   moonlight without creating a hard beam.
-                --------------------------------------------- */
-
                 float envelope =
 
                     exp(
@@ -1206,14 +1149,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Break the reflection into natural fragments.
-
-                   Several scales are used so the light looks
-                   like many pieces of reflected moonlight
-                   rather than one continuous shape.
-                --------------------------------------------- */
 
                 float fragmentA =
 
@@ -1299,11 +1234,6 @@ if (!canvas) {
                     0.40;
 
 
-                /* ---------------------------------------------
-                   Turn the continuous field into soft,
-                   separated patches.
-                --------------------------------------------- */
-
                 float brokenLight =
 
                     smoothstep(
@@ -1314,12 +1244,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Add long horizontal streaks.
-
-                   These are subtle and intentionally uneven.
-                --------------------------------------------- */
 
                 float horizontalPattern =
 
@@ -1355,11 +1279,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Prevent the streaks from becoming a regular
-                   striped pattern.
-                --------------------------------------------- */
-
                 float streakNoise =
 
                     noise(
@@ -1388,13 +1307,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Surface angle controls shimmer.
-
-                   This is where the water physically breaks
-                   the reflected moonlight apart.
-                --------------------------------------------- */
 
                 float facing =
 
@@ -1433,12 +1345,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   A second, softer shimmer component prevents
-                   the highlights from looking like identical
-                   points.
-                --------------------------------------------- */
-
                 float softShimmer =
 
                     pow(
@@ -1464,10 +1370,6 @@ if (!canvas) {
                     0.22;
 
 
-                /* ---------------------------------------------
-                   Clouds break the reflected light naturally.
-                --------------------------------------------- */
-
                 float cloudAmount =
 
                     moonClouds(uv);
@@ -1484,11 +1386,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Reflection is strongest near the horizon
-                   and gently fades toward the foreground.
-                --------------------------------------------- */
-
                 float distanceFade =
 
                     mix(
@@ -1503,16 +1400,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Combine the broken light.
-
-                   The envelope establishes the overall
-                   reflection area.
-
-                   The fragments and streaks determine where
-                   actual visible moonlight appears.
-                --------------------------------------------- */
 
                 float fragmentedReflection =
 
@@ -1531,11 +1418,6 @@ if (!canvas) {
                         0.28
                     );
 
-
-                /* ---------------------------------------------
-                   Add a tiny amount of broad ambient reflection
-                   so the gaps don't look digitally cut out.
-                --------------------------------------------- */
 
                 float softReflection =
 
@@ -1611,10 +1493,6 @@ if (!canvas) {
                     1.55;
 
 
-                /* ---------------------------------------------
-                   Actual water surface
-                --------------------------------------------- */
-
                 float surface =
 
                     waterHeight(p);
@@ -1624,10 +1502,6 @@ if (!canvas) {
 
                     surfaceNormal(p);
 
-
-                /* ---------------------------------------------
-                   BASE WATER
-                --------------------------------------------- */
 
                 vec3 deepWater =
 
@@ -1659,12 +1533,6 @@ if (!canvas) {
                     0.5;
 
 
-                /* ---------------------------------------------
-                   Natural surface appearance
-
-                   This remains separate from physical movement.
-                --------------------------------------------- */
-
                 float naturalSurface =
 
                     naturalWaterSurface(p);
@@ -1674,12 +1542,6 @@ if (!canvas) {
 
                     naturalSurface;
 
-
-                /* ---------------------------------------------
-                   Background variation
-
-                   Appearance only.
-                --------------------------------------------- */
 
                 float backgroundVariation =
 
@@ -1741,10 +1603,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Surface highlights
-                --------------------------------------------- */
-
                 float highlight =
 
                     pow(
@@ -1774,10 +1632,6 @@ if (!canvas) {
                     highlight;
 
 
-                /* ---------------------------------------------
-                   Natural surface sheen
-                --------------------------------------------- */
-
                 float surfaceSheen =
 
                     naturalSurface *
@@ -1798,12 +1652,6 @@ if (!canvas) {
 
                     surfaceSheen;
 
-
-                /* ---------------------------------------------
-                   NATURAL MOON REFLECTION
-
-                   VERSION 10.2
-                --------------------------------------------- */
 
                 float reflection =
 
@@ -1839,10 +1687,6 @@ if (!canvas) {
                     1.65;
 
 
-                /* ---------------------------------------------
-                   SOFT ATMOSPHERIC MOONLIGHT
-                --------------------------------------------- */
-
                 float atmosphere =
 
                     moonAtmosphere(uv);
@@ -1862,10 +1706,6 @@ if (!canvas) {
 
                     atmosphere;
 
-
-                /* ---------------------------------------------
-                   AMBIENT MOONLIGHT
-                --------------------------------------------- */
 
                 float upperLight =
 
@@ -1919,10 +1759,6 @@ if (!canvas) {
                     ambientMoon;
 
 
-                /* ---------------------------------------------
-                   CINEMATIC VIGNETTE
-                --------------------------------------------- */
-
                 float vignette =
 
                     1.0 -
@@ -1956,10 +1792,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   FINAL CONTRAST
-                --------------------------------------------- */
 
                 color =
 
@@ -2344,11 +2176,6 @@ if (!canvas) {
                         rect.width;
 
 
-                    /* -----------------------------------------
-                       Browser Y coordinates are inverted for
-                       WebGL fragment coordinates.
-                    ----------------------------------------- */
-
                     const uvY =
 
                         localY /
@@ -2548,10 +2375,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Remove expired ripples
-                    ----------------------------------------- */
-
                     while (
 
                         ripples.length > 0 &&
@@ -2566,10 +2389,6 @@ if (!canvas) {
 
                     }
 
-
-                    /* -----------------------------------------
-                       Prepare ripple arrays
-                    ----------------------------------------- */
 
                     const positions =
 
@@ -2669,10 +2488,6 @@ if (!canvas) {
                     }
 
 
-                    /* -----------------------------------------
-                       Upload uniforms
-                    ----------------------------------------- */
-
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2728,10 +2543,6 @@ if (!canvas) {
                     );
 
 
-                    /* -----------------------------------------
-                       Draw pond
-                    ----------------------------------------- */
-
                     gl.drawArrays(
 
                         gl.TRIANGLES,
@@ -2764,3 +2575,4 @@ if (!canvas) {
     }
 
 }
+```
