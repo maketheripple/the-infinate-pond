@@ -1,7 +1,7 @@
 ```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.7.1 — FIX MODAL OVERLAY ON CANCEL
+     VERSION 9.8 — NIGHT SKY & ORGANIC HORIZON
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -68,6 +68,216 @@
 
 
     /* =========================================================
+       NIGHT SKY
+       ========================================================= */
+
+    .night-sky {
+
+        position: fixed;
+
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 58%;
+
+        z-index: 1;
+
+        pointer-events: none;
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(1, 5, 18, 0.96) 0%,
+                rgba(3, 12, 32, 0.93) 35%,
+                rgba(5, 20, 42, 0.86) 68%,
+                rgba(8, 28, 52, 0.68) 88%,
+                rgba(10, 35, 58, 0.30) 100%
+            );
+
+    }
+
+
+    /* =========================================================
+       ORGANIC HORIZON
+       ========================================================= */
+
+    .horizon {
+
+        position: fixed;
+
+        left: -5%;
+
+        bottom: 39%;
+
+        width: 110%;
+
+        height: 115px;
+
+        z-index: 2;
+
+        pointer-events: none;
+
+        overflow: hidden;
+
+    }
+
+
+    .horizon::before {
+
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+
+        top: 35px;
+
+        width: 100%;
+
+        height: 100px;
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(4, 18, 34, 0.78) 0%,
+                rgba(5, 22, 40, 0.52) 38%,
+                rgba(7, 28, 48, 0.20) 70%,
+                transparent 100%
+            );
+
+        clip-path:
+            polygon(
+                0% 20%,
+                4% 17%,
+                8% 22%,
+                12% 15%,
+                16% 19%,
+                20% 13%,
+                24% 18%,
+                28% 12%,
+                32% 17%,
+                36% 14%,
+                40% 20%,
+                44% 15%,
+                48% 19%,
+                52% 13%,
+                56% 17%,
+                60% 12%,
+                64% 18%,
+                68% 14%,
+                72% 20%,
+                76% 15%,
+                80% 18%,
+                84% 13%,
+                88% 19%,
+                92% 14%,
+                96% 20%,
+                100% 16%,
+                100% 100%,
+                0% 100%
+            );
+
+    }
+
+
+    .horizon::after {
+
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+
+        top: 30px;
+
+        width: 100%;
+
+        height: 2px;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(150, 205, 235, 0.08) 8%,
+                rgba(150, 205, 235, 0.18) 25%,
+                rgba(190, 225, 245, 0.12) 42%,
+                rgba(150, 205, 235, 0.20) 58%,
+                rgba(150, 205, 235, 0.10) 76%,
+                rgba(150, 205, 235, 0.16) 90%,
+                transparent 100%
+            );
+
+        clip-path:
+            polygon(
+                0% 55%,
+                8% 35%,
+                16% 65%,
+                24% 40%,
+                32% 58%,
+                40% 30%,
+                48% 62%,
+                56% 38%,
+                64% 55%,
+                72% 34%,
+                80% 60%,
+                88% 42%,
+                96% 57%,
+                100% 45%
+            );
+
+        filter:
+            blur(0.5px);
+
+    }
+
+
+    /* =========================================================
+       ATMOSPHERIC HORIZON GLOW
+       ========================================================= */
+
+    .horizon-glow {
+
+        position: fixed;
+
+        left: 0;
+
+        bottom: 42%;
+
+        width: 100%;
+
+        height: 180px;
+
+        z-index: 1;
+
+        pointer-events: none;
+
+        background:
+            radial-gradient(
+                ellipse
+                at 50% 100%,
+                rgba(
+                    75,
+                    145,
+                    180,
+                    0.13
+                ) 0%,
+                rgba(
+                    45,
+                    105,
+                    145,
+                    0.07
+                ) 35%,
+                transparent 72%
+            );
+
+        filter:
+            blur(18px);
+
+    }
+
+
+    /* =========================================================
        MOONLIGHT
        ========================================================= */
 
@@ -97,7 +307,7 @@
 
         pointer-events: none;
 
-        z-index: 1;
+        z-index: 3;
 
     }
 
@@ -1819,9 +2029,56 @@
 
         }
 
+
+        .night-sky {
+
+            height: 54%;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(1, 5, 18, 0.97) 0%,
+                    rgba(3, 12, 32, 0.94) 42%,
+                    rgba(5, 20, 42, 0.80) 78%,
+                    rgba(8, 28, 52, 0.34) 100%
+                );
+
+        }
+
+
+        .horizon {
+
+            bottom: 42%;
+
+            height: 90px;
+
+        }
+
+
+        .horizon-glow {
+
+            bottom: 45%;
+
+            height: 140px;
+
+        }
+
     }
 
 </style>
+
+
+<!-- =========================================================
+     NIGHT SKY
+     ========================================================= -->
+
+<div class="night-sky"></div>
+
+
+<div class="horizon-glow"></div>
+
+
+<div class="horizon"></div>
 
 
 <!-- =========================================================
