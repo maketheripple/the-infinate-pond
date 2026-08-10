@@ -18,1254 +18,930 @@
 
 <style>
 
-    /* =====================================================
-       GLOBAL
-    ===================================================== */
+/* =====================================================
+   GLOBAL
+===================================================== */
 
-    html,
-    body {
+html,
+body {
 
-        margin: 0;
-        padding: 0;
+    margin: 0;
+    padding: 0;
 
-        width: 100%;
-        min-height: 100%;
+    width: 100%;
+    min-height: 100%;
 
-        background:
-            #02070d;
+    background:
+        #02070d;
 
-        color: white;
+    color: white;
 
-        font-family:
-            Arial,
-            Helvetica,
-            sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    }
-
-
-    body {
-
-        overflow-x: hidden;
-
-    }
+}
 
 
-    /* =====================================================
-       WATER CANVAS
-    ===================================================== */
+body {
 
-    #waterCanvas {
+    overflow-x: hidden;
 
-        position: fixed;
-
-        inset: 0;
-
-        width: 100vw;
-        height: 100vh;
-
-        z-index: 0;
-
-        display: block;
-
-        pointer-events: none;
-
-    }
+}
 
 
-    /* =====================================================
-       PAGE CONTENT
-    ===================================================== */
+/* =====================================================
+   WATER CANVAS
+===================================================== */
 
-    .pond-page {
+#waterCanvas {
 
-        position: relative;
+    position: fixed;
 
-        z-index: 2;
+    inset: 0;
 
-        min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
 
-        pointer-events: none;
+    z-index: 0;
 
-    }
+    display: block;
 
+    pointer-events: none;
 
-    /* =====================================================
-       TOP NIGHT SKY
-    ===================================================== */
-
-    .night-sky {
-
-        position: absolute;
-
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: 34vh;
-
-        background:
-
-            radial-gradient(
-                circle at 50% 20%,
-                rgba(170, 205, 225, 0.08),
-                transparent 28%
-            ),
-
-            linear-gradient(
-                to bottom,
-                rgba(1, 7, 14, 0.96),
-                rgba(2, 10, 18, 0.72),
-                rgba(2, 12, 20, 0)
-            );
-
-        pointer-events: none;
-
-    }
+}
 
 
-    /* =====================================================
-       STARS
-    ===================================================== */
+/* =====================================================
+   PAGE CONTENT
+===================================================== */
 
-    .stars {
+.pond-page {
 
-        position: absolute;
+    position: relative;
 
-        inset: 0;
+    z-index: 2;
 
-        width: 100%;
-        height: 42vh;
+    min-height: 100vh;
 
-        pointer-events: none;
+    pointer-events: none;
 
-    }
+}
 
 
-    .star {
+/* =====================================================
+   TOP NIGHT SKY
+===================================================== */
 
-        position: absolute;
+.night-sky {
 
-        width: 2px;
-        height: 2px;
+    position: absolute;
 
-        border-radius: 50%;
+    top: 0;
+    left: 0;
 
-        background: rgba(
+    width: 100%;
+    height: 34vh;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(170, 205, 225, 0.08),
+            transparent 28%
+        ),
+
+        linear-gradient(
+            to bottom,
+            rgba(1, 7, 14, 0.96),
+            rgba(2, 10, 18, 0.72),
+            rgba(2, 12, 20, 0)
+        );
+
+    pointer-events: none;
+
+}
+
+
+/* =====================================================
+   HORIZON / WATERLINE
+===================================================== */
+
+.horizon-line {
+
+    position: absolute;
+
+    top: 33.5vh;
+
+    left: -5%;
+
+    width: 110%;
+
+    height: 3px;
+
+    pointer-events: none;
+
+    opacity: 0.72;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(130, 190, 215, 0.08) 12%,
+            rgba(170, 220, 235, 0.22) 28%,
+            rgba(205, 235, 245, 0.30) 50%,
+            rgba(170, 220, 235, 0.20) 72%,
+            rgba(130, 190, 215, 0.07) 88%,
+            transparent 100%
+        );
+
+    filter:
+        blur(0.7px);
+
+    box-shadow:
+
+        0 0 10px
+        rgba(
+            120,
+            190,
+            220,
+            0.12
+        ),
+
+        0 2px 14px
+        rgba(
+            70,
+            150,
+            190,
+            0.08
+        );
+
+}
+
+
+/* =====================================================
+   SUBTLE HORIZON ATMOSPHERE
+===================================================== */
+
+.horizon-glow {
+
+    position: absolute;
+
+    top: 32.5vh;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 7vh;
+
+    pointer-events: none;
+
+    background:
+
+        linear-gradient(
+            to bottom,
+            rgba(100, 175, 205, 0.035),
+            rgba(70, 150, 185, 0.018),
+            transparent
+        );
+
+    filter:
+        blur(2px);
+
+}
+
+
+/* =====================================================
+   STARS
+===================================================== */
+
+.stars {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 42vh;
+
+    pointer-events: none;
+
+}
+
+
+.star {
+
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
             220,
             240,
             255,
             0.8
         );
 
-        box-shadow:
-            0 0 5px rgba(
-                180,
-                220,
-                255,
-                0.55
-            );
-
-        animation:
-            starPulse
-            4s
-            ease-in-out
-            infinite;
-
-    }
-
-
-    .star:nth-child(1) {
-        left: 8%;
-        top: 12%;
-    }
-
-    .star:nth-child(2) {
-        left: 17%;
-        top: 23%;
-        animation-delay: 1s;
-    }
-
-    .star:nth-child(3) {
-        left: 28%;
-        top: 9%;
-        animation-delay: 2s;
-    }
-
-    .star:nth-child(4) {
-        left: 39%;
-        top: 17%;
-        animation-delay: 0.5s;
-    }
-
-    .star:nth-child(5) {
-        left: 62%;
-        top: 11%;
-        animation-delay: 1.7s;
-    }
-
-    .star:nth-child(6) {
-        left: 73%;
-        top: 25%;
-        animation-delay: 2.5s;
-    }
-
-    .star:nth-child(7) {
-        left: 84%;
-        top: 13%;
-        animation-delay: 0.8s;
-    }
-
-    .star:nth-child(8) {
-        left: 92%;
-        top: 30%;
-        animation-delay: 1.4s;
-    }
-
-
-    @keyframes starPulse {
-
-        0%,
-        100% {
-
-            opacity: 0.35;
-
-            transform:
-                scale(0.8);
-
-        }
-
-        50% {
-
-            opacity: 1;
-
-            transform:
-                scale(1.35);
-
-        }
-
-    }
-
-
-    /* =====================================================
-       MAIN HEADER
-    ===================================================== */
-
-    .pond-header {
-
-        position: relative;
-
-        width: min(
-            900px,
-            90vw
+    box-shadow:
+        0 0 5px
+        rgba(
+            180,
+            220,
+            255,
+            0.55
         );
 
-        margin: 0 auto;
+    animation:
+        starPulse
+        4s
+        ease-in-out
+        infinite;
 
-        padding-top: 5vh;
-
-        text-align: center;
-
-        pointer-events: none;
-
-    }
+}
 
 
-    /* =====================================================
-       MAKE THE RIPPLE LOGO
-    ===================================================== */
+.star:nth-child(1) {
 
-    .make-the-ripple-logo {
+    left: 8%;
+    top: 12%;
 
-        display: block;
-
-        width:
-            clamp(
-                150px,
-                28vw,
-                270px
-            );
-
-        max-width: 75vw;
-
-        height: auto;
-
-        margin:
-            0 auto
-            18px;
-
-        object-fit: contain;
-
-        filter:
-
-            drop-shadow(
-                0 0 10px
-                rgba(
-                    100,
-                    205,
-                    235,
-                    0.18
-                )
-            )
-
-            drop-shadow(
-                0 0 28px
-                rgba(
-                    70,
-                    170,
-                    220,
-                    0.10
-                )
-            );
-
-    }
+}
 
 
-    .presented {
+.star:nth-child(2) {
 
-        margin-bottom: 8px;
+    left: 17%;
+    top: 23%;
 
-        font-size:
-            clamp(
-                0.75rem,
-                1.5vw,
-                1rem
-            );
+    animation-delay: 1s;
 
-        letter-spacing:
-            0.28em;
-
-        text-transform:
-            uppercase;
-
-        color:
-            rgba(
-                220,
-                240,
-                250,
-                0.65
-            );
-
-    }
+}
 
 
-    .pond-title {
+.star:nth-child(3) {
 
-        margin: 0;
+    left: 28%;
+    top: 9%;
 
-        font-size:
-            clamp(
-                2rem,
-                6vw,
-                4.5rem
-            );
+    animation-delay: 2s;
 
-        font-weight:
-            300;
-
-        letter-spacing:
-            0.12em;
-
-        text-transform:
-            uppercase;
-
-        color:
-            rgba(
-                235,
-                248,
-                255,
-                0.94
-            );
-
-        text-shadow:
-
-            0 0 12px
-            rgba(
-                130,
-                205,
-                255,
-                0.22
-            ),
-
-            0 0 35px
-            rgba(
-                80,
-                170,
-                220,
-                0.16
-            );
-
-    }
+}
 
 
-    .pond-subtitle {
+.star:nth-child(4) {
 
-        margin-top: 12px;
+    left: 39%;
+    top: 17%;
 
-        font-size:
-            clamp(
-                0.75rem,
-                1.5vw,
-                1rem
-            );
+    animation-delay: 0.5s;
 
-        letter-spacing:
-            0.18em;
-
-        text-transform:
-            uppercase;
-
-        color:
-            rgba(
-                210,
-                235,
-                245,
-                0.58
-            );
-
-    }
+}
 
 
-    /* =====================================================
-       INTERACTION PROMPT
-    ===================================================== */
+.star:nth-child(5) {
 
-    .interaction-cue {
+    left: 62%;
+    top: 11%;
 
-        position: fixed;
+    animation-delay: 1.7s;
 
-        left: 50%;
+}
 
-        bottom: 42px;
+
+.star:nth-child(6) {
+
+    left: 73%;
+    top: 25%;
+
+    animation-delay: 2.5s;
+
+}
+
+
+.star:nth-child(7) {
+
+    left: 84%;
+    top: 13%;
+
+    animation-delay: 0.8s;
+
+}
+
+
+.star:nth-child(8) {
+
+    left: 92%;
+    top: 30%;
+
+    animation-delay: 1.4s;
+
+}
+
+
+@keyframes starPulse {
+
+    0%,
+    100% {
+
+        opacity: 0.35;
 
         transform:
-            translateX(-50%);
-
-        z-index: 5;
-
-        padding:
-            9px
-            18px;
-
-        border-radius:
-            999px;
-
-        background:
-            rgba(
-                2,
-                12,
-                20,
-                0.48
-            );
-
-        border:
-            1px solid
-            rgba(
-                180,
-                225,
-                245,
-                0.12
-            );
-
-        color:
-            rgba(
-                220,
-                240,
-                250,
-                0.58
-            );
-
-        font-size:
-            0.75rem;
-
-        letter-spacing:
-            0.08em;
-
-        backdrop-filter:
-            blur(8px);
-
-        -webkit-backdrop-filter:
-            blur(8px);
-
-        pointer-events: none;
+            scale(0.8);
 
     }
 
-
-    /* =====================================================
-       MAKE A RIPPLE BUTTON
-    ===================================================== */
-
-    .make-ripple-button {
-
-        position: fixed;
-
-        right: 24px;
-
-        bottom: 24px;
-
-        z-index: 20;
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 9px;
-
-        padding:
-            12px
-            17px;
-
-        border-radius:
-            999px;
-
-        border:
-            1px solid
-            rgba(
-                175,
-                225,
-                245,
-                0.28
-            );
-
-        background:
-            rgba(
-                3,
-                18,
-                29,
-                0.72
-            );
-
-        color:
-            rgba(
-                235,
-                249,
-                255,
-                0.92
-            );
-
-        font-family:
-            inherit;
-
-        font-size:
-            0.78rem;
-
-        font-weight:
-            600;
-
-        letter-spacing:
-            0.09em;
-
-        text-transform:
-            uppercase;
-
-        cursor:
-            pointer;
-
-        box-shadow:
-
-            0 5px 24px
-            rgba(
-                0,
-                0,
-                0,
-                0.35
-            ),
-
-            0 0 18px
-            rgba(
-                70,
-                170,
-                220,
-                0.08
-            );
-
-        backdrop-filter:
-            blur(10px);
-
-        -webkit-backdrop-filter:
-            blur(10px);
-
-        transition:
-
-            transform
-            0.25s
-            ease,
-
-            background
-            0.25s
-            ease,
-
-            border-color
-            0.25s
-            ease,
-
-            box-shadow
-            0.25s
-            ease;
-
-        pointer-events:
-            auto;
-
-        touch-action:
-            manipulation;
-
-    }
-
-
-    .make-ripple-button:hover {
-
-        transform:
-            translateY(-2px);
-
-        background:
-            rgba(
-                8,
-                34,
-                49,
-                0.86
-            );
-
-        border-color:
-            rgba(
-                185,
-                235,
-                255,
-                0.52
-            );
-
-        box-shadow:
-
-            0 8px 30px
-            rgba(
-                0,
-                0,
-                0,
-                0.42
-            ),
-
-            0 0 24px
-            rgba(
-                90,
-                190,
-                235,
-                0.18
-            );
-
-    }
-
-
-    .make-ripple-button:active {
-
-        transform:
-            translateY(0)
-            scale(0.97);
-
-    }
-
-
-    /* =====================================================
-       BUTTON RIPPLE ICON
-    ===================================================== */
-
-    .ripple-icon {
-
-        position: relative;
-
-        width: 17px;
-        height: 17px;
-
-        display: inline-block;
-
-    }
-
-
-    .ripple-icon::before,
-    .ripple-icon::after {
-
-        content: "";
-
-        position: absolute;
-
-        left: 50%;
-        top: 50%;
-
-        border:
-            1px solid
-            rgba(
-                210,
-                240,
-                255,
-                0.78
-            );
-
-        border-radius:
-            50%;
-
-        transform:
-            translate(
-                -50%,
-                -50%
-            );
-
-    }
-
-
-    .ripple-icon::before {
-
-        width: 6px;
-        height: 6px;
-
-    }
-
-
-    .ripple-icon::after {
-
-        width: 15px;
-        height: 9px;
-
-        border-left-color:
-            transparent;
-
-        border-right-color:
-            transparent;
-
-        border-bottom-color:
-            rgba(
-                210,
-                240,
-                255,
-                0.42
-            );
-
-    }
-
-
-    /* =====================================================
-       RIPPLE MODAL
-    ===================================================== */
-
-    .ripple-modal {
-
-        position: fixed;
-
-        inset: 0;
-
-        z-index: 100;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        padding: 24px;
-
-        background:
-            rgba(
-                0,
-                5,
-                10,
-                0.72
-            );
-
-        backdrop-filter:
-            blur(8px);
-
-        -webkit-backdrop-filter:
-            blur(8px);
-
-        opacity: 0;
-
-        visibility: hidden;
-
-        pointer-events: none;
-
-        transition:
-
-            opacity
-            0.25s
-            ease,
-
-            visibility
-            0.25s
-            ease;
-
-    }
-
-
-    .ripple-modal.active {
+    50% {
 
         opacity: 1;
 
-        visibility: visible;
-
-        pointer-events: auto;
-
-    }
-
-
-    .ripple-modal-panel {
-
-        position: relative;
-
-        width:
-            min(
-                520px,
-                92vw
-            );
-
-        padding:
-            34px
-            30px
-            30px;
-
-        border-radius:
-            22px;
-
-        border:
-            1px solid
-            rgba(
-                180,
-                225,
-                245,
-                0.20
-            );
-
-        background:
-
-            linear-gradient(
-                145deg,
-                rgba(
-                    7,
-                    28,
-                    43,
-                    0.96
-                ),
-                rgba(
-                    2,
-                    12,
-                    21,
-                    0.97
-                )
-            );
-
-        box-shadow:
-
-            0 24px 80px
-            rgba(
-                0,
-                0,
-                0,
-                0.55
-            ),
-
-            0 0 45px
-            rgba(
-                70,
-                170,
-                220,
-                0.10
-            );
-
-        text-align: center;
-
         transform:
-            translateY(12px)
-            scale(0.98);
-
-        transition:
-            transform
-            0.25s
-            ease;
+            scale(1.35);
 
     }
 
-
-    .ripple-modal.active
-    .ripple-modal-panel {
-
-        transform:
-            translateY(0)
-            scale(1);
-
-    }
+}
 
 
-    .ripple-modal-logo {
+/* =====================================================
+   MAIN HEADER
+===================================================== */
 
-        width:
-            clamp(
-                110px,
-                25vw,
-                180px
-            );
+.pond-header {
 
-        height: auto;
+    position: relative;
 
-        margin:
-            0 auto
-            16px;
+    width: min(
+        900px,
+        90vw
+    );
 
-        display: block;
+    margin: 0 auto;
 
-    }
+    padding-top: 5vh;
+
+    text-align: center;
+
+    pointer-events: none;
+
+}
 
 
-    .ripple-modal-title {
+/* =====================================================
+   MAKE THE RIPPLE LOGO
+===================================================== */
 
-        margin:
-            0 0 10px;
+.make-ripple-logo {
 
-        font-size:
-            clamp(
-                1.35rem,
-                4vw,
-                2rem
-            );
+    display: block;
 
-        font-weight:
-            400;
+    width:
+        clamp(
+            170px,
+            22vw,
+            245px
+        );
 
-        letter-spacing:
-            0.05em;
+    height: auto;
 
-        color:
+    margin:
+        0 auto 18px
+        auto;
+
+    opacity: 0.96;
+
+    filter:
+
+        drop-shadow(
+            0 0 10px
             rgba(
-                240,
-                250,
-                255,
-                0.96
-            );
-
-    }
-
-
-    .ripple-modal-text {
-
-        margin:
-            0 auto 24px;
-
-        max-width:
-            420px;
-
-        line-height:
-            1.7;
-
-        font-size:
-            0.92rem;
-
-        color:
-            rgba(
-                215,
-                238,
-                248,
-                0.68
-            );
-
-    }
-
-
-    .ripple-message {
-
-        width:
-            100%;
-
-        min-height:
-            120px;
-
-        box-sizing:
-            border-box;
-
-        resize:
-            vertical;
-
-        padding:
-            14px
-            16px;
-
-        border-radius:
-            12px;
-
-        border:
-            1px solid
-            rgba(
-                175,
+                90,
+                190,
                 225,
-                245,
-                0.18
-            );
+                0.14
+            )
+        )
 
-        outline:
-            none;
-
-        background:
+        drop-shadow(
+            0 0 28px
             rgba(
-                0,
-                8,
-                15,
-                0.55
-            );
-
-        color:
-            rgba(
-                240,
-                250,
-                255,
-                0.92
-            );
-
-        font-family:
-            inherit;
-
-        font-size:
-            0.95rem;
-
-        line-height:
-            1.5;
-
-        box-sizing:
-            border-box;
-
-        transition:
-            border-color
-            0.2s
-            ease,
-
-            box-shadow
-            0.2s
-            ease;
-
-    }
-
-
-    .ripple-message:focus {
-
-        border-color:
-            rgba(
-                180,
-                230,
-                250,
-                0.42
-            );
-
-        box-shadow:
-            0 0 20px
-            rgba(
-                80,
-                180,
-                225,
+                50,
+                150,
+                200,
                 0.08
-            );
+            )
+        );
+
+}
+
+
+/* =====================================================
+   PRESENTED
+===================================================== */
+
+.presented {
+
+    margin-bottom: 8px;
+
+    font-size:
+        clamp(
+            0.75rem,
+            1.5vw,
+            1rem
+        );
+
+    letter-spacing:
+        0.28em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        rgba(
+            220,
+            240,
+            250,
+            0.65
+        );
+
+}
+
+
+/* =====================================================
+   POND TITLE
+===================================================== */
+
+.pond-title {
+
+    margin: 0;
+
+    font-size:
+        clamp(
+            2rem,
+            6vw,
+            4.5rem
+        );
+
+    font-weight:
+        300;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        rgba(
+            235,
+            248,
+            255,
+            0.94
+        );
+
+    text-shadow:
+
+        0 0 12px
+        rgba(
+            130,
+            205,
+            255,
+            0.22
+        ),
+
+        0 0 35px
+        rgba(
+            80,
+            170,
+            220,
+            0.16
+        );
+
+}
+
+
+/* =====================================================
+   POND SUBTITLE
+===================================================== */
+
+.pond-subtitle {
+
+    margin-top: 12px;
+
+    font-size:
+        clamp(
+            0.75rem,
+            1.5vw,
+            1rem
+        );
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        rgba(
+            210,
+            235,
+            245,
+            0.58
+        );
+
+}
+
+
+/* =====================================================
+   INTERACTION PROMPT
+===================================================== */
+
+.interaction-cue {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 42px;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 5;
+
+    padding:
+        9px
+        18px;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(
+            2,
+            12,
+            20,
+            0.48
+        );
+
+    border:
+        1px solid
+        rgba(
+            180,
+            225,
+            245,
+            0.12
+        );
+
+    color:
+        rgba(
+            220,
+            240,
+            250,
+            0.58
+        );
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.08em;
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    pointer-events: none;
+
+}
+
+
+/* =====================================================
+   MAKE A RIPPLE BUTTON
+===================================================== */
+
+.make-ripple-button {
+
+    position: fixed;
+
+    right: 24px;
+
+    bottom: 24px;
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        12px
+        17px;
+
+    border-radius:
+        999px;
+
+    border:
+        1px solid
+        rgba(
+            175,
+            225,
+            245,
+            0.28
+        );
+
+    background:
+        rgba(
+            3,
+            18,
+            29,
+            0.72
+        );
+
+    color:
+        rgba(
+            235,
+            249,
+            255,
+            0.92
+        );
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.78rem;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        0.09em;
+
+    text-transform:
+        uppercase;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+
+        0 5px 24px
+        rgba(
+            0,
+            0,
+            0,
+            0.35
+        ),
+
+        0 0 18px
+        rgba(
+            70,
+            170,
+            220,
+            0.08
+        );
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
+
+    transition:
+
+        transform
+        0.25s
+        ease,
+
+        background
+        0.25s
+        ease,
+
+        border-color
+        0.25s
+        ease,
+
+        box-shadow
+        0.25s
+        ease;
+
+    pointer-events:
+        auto;
+
+}
+
+
+.make-ripple-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        rgba(
+            8,
+            34,
+            49,
+            0.86
+        );
+
+    border-color:
+        rgba(
+            185,
+            235,
+            255,
+            0.52
+        );
+
+    box-shadow:
+
+        0 8px 30px
+        rgba(
+            0,
+            0,
+            0,
+            0.42
+        ),
+
+        0 0 24px
+        rgba(
+            90,
+            190,
+            235,
+            0.18
+        );
+
+}
+
+
+.make-ripple-button:active {
+
+    transform:
+        translateY(0)
+        scale(0.97);
+
+}
+
+
+/* =====================================================
+   BUTTON RIPPLE ICON
+===================================================== */
+
+.ripple-icon {
+
+    position: relative;
+
+    width: 17px;
+    height: 17px;
+
+    display: inline-block;
+
+}
+
+
+.ripple-icon::before,
+.ripple-icon::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border:
+        1px solid
+        rgba(
+            210,
+            240,
+            255,
+            0.78
+        );
+
+    border-radius:
+        50%;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+}
+
+
+.ripple-icon::before {
+
+    width: 6px;
+    height: 6px;
+
+}
+
+
+.ripple-icon::after {
+
+    width: 15px;
+    height: 9px;
+
+    border-left-color:
+        transparent;
+
+    border-right-color:
+        transparent;
+
+    border-bottom-color:
+        rgba(
+            210,
+            240,
+            255,
+            0.42
+        );
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (
+    max-width: 600px
+) {
+
+    .pond-header {
+
+        padding-top:
+            7vh;
 
     }
 
 
-    .ripple-modal-actions {
+    .make-ripple-logo {
 
-        display:
-            flex;
+        width:
+            clamp(
+                145px,
+                42vw,
+                190px
+            );
 
-        justify-content:
-            center;
+        margin-bottom:
+            14px;
 
-        gap:
-            12px;
+    }
 
-        margin-top:
+
+    .horizon-line {
+
+        top:
+            33.5vh;
+
+    }
+
+
+    .interaction-cue {
+
+        bottom:
+            88px;
+
+        font-size:
+            0.68rem;
+
+        padding:
+            8px
+            14px;
+
+    }
+
+
+    .make-ripple-button {
+
+        right:
+            16px;
+
+        bottom:
             18px;
-
-        flex-wrap:
-            wrap;
-
-    }
-
-
-    .modal-button {
-
-        border:
-            1px solid
-            rgba(
-                175,
-                225,
-                245,
-                0.22
-            );
-
-        border-radius:
-            999px;
 
         padding:
             11px
-            18px;
-
-        font-family:
-            inherit;
+            14px;
 
         font-size:
-            0.78rem;
-
-        font-weight:
-            600;
-
-        letter-spacing:
-            0.08em;
-
-        text-transform:
-            uppercase;
-
-        cursor:
-            pointer;
-
-        transition:
-            all
-            0.2s
-            ease;
+            0.7rem;
 
     }
 
-
-    .modal-cancel {
-
-        background:
-            rgba(
-                5,
-                18,
-                28,
-                0.70
-            );
-
-        color:
-            rgba(
-                220,
-                240,
-                248,
-                0.70
-            );
-
-    }
-
-
-    .modal-cancel:hover {
-
-        background:
-            rgba(
-                12,
-                35,
-                48,
-                0.85
-            );
-
-    }
-
-
-    .modal-submit {
-
-        background:
-            rgba(
-                70,
-                145,
-                180,
-                0.30
-            );
-
-        color:
-            rgba(
-                235,
-                249,
-                255,
-                0.94
-            );
-
-    }
-
-
-    .modal-submit:hover {
-
-        background:
-            rgba(
-                80,
-                165,
-                205,
-                0.44
-            );
-
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-    ===================================================== */
-
-    @media (
-        max-width: 600px
-    ) {
-
-        .pond-header {
-
-            padding-top:
-                5vh;
-
-        }
-
-
-        .make-the-ripple-logo {
-
-            width:
-                min(
-                    190px,
-                    55vw
-                );
-
-            margin-bottom:
-                14px;
-
-        }
-
-
-        .interaction-cue {
-
-            bottom:
-                88px;
-
-            font-size:
-                0.68rem;
-
-            padding:
-                8px
-                14px;
-
-        }
-
-
-        .make-ripple-button {
-
-            right:
-                16px;
-
-            bottom:
-                18px;
-
-            padding:
-                11px
-                14px;
-
-            font-size:
-                0.7rem;
-
-        }
-
-
-        .ripple-modal-panel {
-
-            padding:
-                28px
-                20px
-                22px;
-
-        }
-
-    }
+}
 
 </style>
 
@@ -1297,6 +973,26 @@
     ></div>
 
 
+    <!-- =================================================
+         HORIZON
+    ================================================== -->
+
+    <div
+        class="horizon-glow"
+        aria-hidden="true"
+    ></div>
+
+
+    <div
+        class="horizon-line"
+        aria-hidden="true"
+    ></div>
+
+
+    <!-- =================================================
+         STARS
+    ================================================== -->
+
     <div
         class="stars"
         aria-hidden="true"
@@ -1322,15 +1018,10 @@
         class="pond-header"
     >
 
-        <!--
-            Make the Ripple logo.
-
-            The image is expected to be in the same
-            repository folder as index.html.
-        -->
+        <!-- Make the Ripple Logo -->
 
         <img
-            class="make-the-ripple-logo"
+            class="make-ripple-logo"
             src="Make%20the%20Ripple%20Large%20Logo.png"
             alt="Make the Ripple"
         >
@@ -1396,98 +1087,6 @@
 
 
 <!-- =====================================================
-     MAKE A RIPPLE MODAL
-====================================================== -->
-
-<div
-    id="rippleModal"
-    class="ripple-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="rippleModalTitle"
->
-
-    <div
-        class="ripple-modal-panel"
-    >
-
-        <button
-            id="closeRippleModal"
-            class="modal-button modal-cancel"
-            type="button"
-            style="
-                position:absolute;
-                top:14px;
-                right:14px;
-                padding:7px 11px;
-                font-size:0.65rem;
-            "
-        >
-            Close
-        </button>
-
-
-        <img
-            class="ripple-modal-logo"
-            src="Make%20the%20Ripple%20Large%20Logo.png"
-            alt="Make the Ripple"
-        >
-
-
-        <h2
-            id="rippleModalTitle"
-            class="ripple-modal-title"
-        >
-            Leave Something Behind
-        </h2>
-
-
-        <p
-            class="ripple-modal-text"
-        >
-            Every ripple has a story. Leave a thought,
-            message, question, encouragement, or piece
-            of yourself for someone else to discover.
-        </p>
-
-
-        <textarea
-            id="rippleMessage"
-            class="ripple-message"
-            placeholder="What would you like to leave behind?"
-            aria-label="Your ripple message"
-        ></textarea>
-
-
-        <div
-            class="ripple-modal-actions"
-        >
-
-            <button
-                id="cancelRipple"
-                class="modal-button modal-cancel"
-                type="button"
-            >
-                Maybe Later
-            </button>
-
-
-            <button
-                id="submitRipple"
-                class="modal-button modal-submit"
-                type="button"
-            >
-                Leave My Ripple
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
      WATER ENGINE
 ====================================================== -->
 
@@ -1497,7 +1096,10 @@
 
 
 <!-- =====================================================
-     MAKE A RIPPLE UI
+     MAKE A RIPPLE BUTTON
+     
+     Submission workflow will be connected here
+     in a later 10.4B step.
 ====================================================== -->
 
 <script>
@@ -1508,280 +1110,25 @@
         );
 
 
-    const rippleModal =
-        document.getElementById(
-            "rippleModal"
-        );
-
-
-    const closeRippleModal =
-        document.getElementById(
-            "closeRippleModal"
-        );
-
-
-    const cancelRipple =
-        document.getElementById(
-            "cancelRipple"
-        );
-
-
-    const submitRipple =
-        document.getElementById(
-            "submitRipple"
-        );
-
-
-    const rippleMessage =
-        document.getElementById(
-            "rippleMessage"
-        );
-
-
-    /* =================================================
-       OPEN MODAL
-    ================================================= */
-
-    function openRippleModal() {
-
-        rippleModal.classList.add(
-            "active"
-        );
-
-        setTimeout(
-            function () {
-
-                rippleMessage.focus();
-
-            },
-            250
-        );
-
-    }
-
-
-    /* =================================================
-       CLOSE MODAL
-    ================================================= */
-
-    function closeRippleModalWindow() {
-
-        rippleModal.classList.remove(
-            "active"
-        );
-
-    }
-
-
-    /* =================================================
-       BUTTON CLICK
-
-       IMPORTANT:
-
-       This button belongs to the UI layer.
-
-       It must NOT create a water ripple.
-    ================================================= */
-
     if (
         makeRippleButton
     ) {
 
         makeRippleButton.addEventListener(
-
-            "pointerdown",
-
-            function (event) {
-
-                event.stopPropagation();
-
-            }
-
-        );
-
-
-        makeRippleButton.addEventListener(
-
             "click",
-
-            function (event) {
-
-                event.preventDefault();
-
-                event.stopPropagation();
-
-                openRippleModal();
-
-            }
-
-        );
-
-    }
-
-
-    /* =================================================
-       CLOSE BUTTONS
-    ================================================= */
-
-    if (
-        closeRippleModal
-    ) {
-
-        closeRippleModal.addEventListener(
-
-            "click",
-
-            function (event) {
-
-                event.preventDefault();
-
-                closeRippleModalWindow();
-
-            }
-
-        );
-
-    }
-
-
-    if (
-        cancelRipple
-    ) {
-
-        cancelRipple.addEventListener(
-
-            "click",
-
             function () {
-
-                closeRippleModalWindow();
-
-            }
-
-        );
-
-    }
-
-
-    /* =================================================
-       CLICK OUTSIDE MODAL
-    ================================================= */
-
-    if (
-        rippleModal
-    ) {
-
-        rippleModal.addEventListener(
-
-            "click",
-
-            function (event) {
-
-                if (
-                    event.target ===
-                    rippleModal
-                ) {
-
-                    closeRippleModalWindow();
-
-                }
-
-            }
-
-        );
-
-    }
-
-
-    /* =================================================
-       ESCAPE KEY
-    ================================================= */
-
-    document.addEventListener(
-
-        "keydown",
-
-        function (event) {
-
-            if (
-                event.key === "Escape"
-            ) {
-
-                if (
-                    rippleModal.classList.contains(
-                        "active"
-                    )
-                ) {
-
-                    closeRippleModalWindow();
-
-                }
-
-            }
-
-        }
-
-    );
-
-
-    /* =================================================
-       TEMPORARY SUBMISSION HANDLER
-
-       This does NOT send/store anything yet.
-
-       It simply confirms the UI workflow is ready.
-       The actual backend/storage system will be added
-       in a later version.
-    ================================================= */
-
-    if (
-        submitRipple
-    ) {
-
-        submitRipple.addEventListener(
-
-            "click",
-
-            function () {
-
-                const message =
-                    rippleMessage.value.trim();
-
-
-                if (
-                    message.length === 0
-                ) {
-
-                    rippleMessage.focus();
-
-                    return;
-
-                }
-
 
                 console.log(
-                    "RIPPLE SUBMISSION READY:",
-                    message
-                );
-
-
-                rippleMessage.value = "";
-
-
-                closeRippleModalWindow();
-
-
-                alert(
-                    "Your ripple has been created. The submission system will be connected in a later version."
+                    "Make a Ripple button clicked."
                 );
 
             }
-
         );
 
     }
 
 </script>
+
 
 </body>
 
