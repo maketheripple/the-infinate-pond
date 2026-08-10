@@ -1,7 +1,7 @@
 ```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.7 — APPROVED RIPPLE DISPLAY
+     VERSION 9.7.1 — FIX MODAL OVERLAY ON CANCEL
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -1382,8 +1382,7 @@
             );
 
         backdrop-filter:
-            blur(14px
-        );
+            blur(14px);
 
         box-shadow:
             0 20px 60px
@@ -1587,8 +1586,7 @@
         cursor: pointer;
 
         backdrop-filter:
-            blur(8px
-        );
+            blur(8px);
 
     }
 
@@ -2194,21 +2192,9 @@
     let pendingRippleNumber = null;
 
 
-    /*
-       ========================================================
+    /* =========================================================
        APPROVED RIPPLE DATA
-
-       These are temporary test messages.
-
-       Only messages with status:
-       "approved"
-
-       are displayed publicly.
-
-       Later this array will be replaced by
-       the real approved messages from a database.
-       ========================================================
-    */
+       ========================================================= */
 
     const approvedRipples = [
 
@@ -2253,16 +2239,9 @@
     ];
 
 
-    /*
-       ========================================================
+    /* =========================================================
        PENDING RIPPLE MESSAGES
-
-       These remain private until approved.
-
-       A future moderation system will move approved
-       messages into the approvedRipples collection.
-       ========================================================
-    */
+       ========================================================= */
 
     const pendingRippleMessages = [];
 
@@ -2550,6 +2529,13 @@
     }
 
 
+    /*
+       ========================================================
+       FIX:
+       Close BOTH the message panel and the dark overlay.
+       ========================================================
+    */
+
     function closeMessagePanel() {
 
         const panel =
@@ -2557,10 +2543,24 @@
                 "rippleMessagePanel"
             );
 
+        const overlay =
+            document.getElementById(
+                "modalOverlay"
+            );
+
 
         if (panel) {
 
             panel.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        if (overlay) {
+
+            overlay.classList.remove(
                 "show"
             );
 
@@ -2801,6 +2801,11 @@
                 "approvedMessagePanel"
             );
 
+        const overlay =
+            document.getElementById(
+                "modalOverlay"
+            );
+
 
         if (panel) {
 
@@ -2811,13 +2816,13 @@
         }
 
 
-        document
-            .getElementById(
-                "modalOverlay"
-            )
-            .classList.remove(
+        if (overlay) {
+
+            overlay.classList.remove(
                 "show"
             );
+
+        }
 
     }
 
