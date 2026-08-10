@@ -1,7 +1,6 @@
-```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 10.3 — RIPPLE-ONLY INTERACTION
+     VERSION 10.4A — PERMANENT RIPPLE POSITION INTEGRATION
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -2803,10 +2802,182 @@
 
 
 <!-- =========================================================
+     PERMANENT RIPPLE POSITION BRIDGE
+     
+     Version 10.4A:
+     Exposes the approved ripple positions to water.js.
+
+     Coordinates are provided in:
+       - pixel coordinates
+       - normalized 0.0–1.0 coordinates
+
+     No visual water behavior is changed in this version.
+     ========================================================= -->
+
+<script>
+
+    window.getPermanentRipplePositions =
+        function() {
+
+            const markers =
+                document.querySelectorAll(
+                    ".approved-ripple"
+                );
+
+
+            const width =
+                window.innerWidth;
+
+
+            const height =
+                window.innerHeight;
+
+
+            const positions =
+                [];
+
+
+            markers.forEach(
+                function(marker) {
+
+                    const rect =
+                        marker.getBoundingClientRect();
+
+
+                    const x =
+                        rect.left +
+                        (
+                            rect.width / 2
+                        );
+
+
+                    const y =
+                        rect.top +
+                        (
+                            rect.height / 2
+                        );
+
+
+                    const rippleNumber =
+                        Number(
+                            marker.dataset.rippleNumber
+                        );
+
+
+                    positions.push({
+
+                        rippleNumber:
+                            rippleNumber,
+
+                        x:
+                            x,
+
+                        y:
+                            y,
+
+                        normalizedX:
+                            x / width,
+
+                        normalizedY:
+                            y / height
+
+                    });
+
+                }
+            );
+
+
+            return positions;
+
+        };
+
+
+    /*
+     * Maintain a current copy of the positions.
+     */
+
+    window.permanentRipplePositions =
+        window.getPermanentRipplePositions();
+
+
+    /*
+     * Update the positions whenever the viewport
+     * changes size or orientation.
+     */
+
+    function updatePermanentRipplePositions() {
+
+        window.permanentRipplePositions =
+            window.getPermanentRipplePositions();
+
+
+        /*
+         * If a future version of water.js exposes
+         * setPermanentRipplePositions(), pass the
+         * updated coordinates directly into it.
+         */
+
+        if (
+            typeof window.setPermanentRipplePositions ===
+            "function"
+        ) {
+
+            window.setPermanentRipplePositions(
+                window.permanentRipplePositions
+            );
+
+        }
+
+    }
+
+
+    window.addEventListener(
+        "resize",
+        updatePermanentRipplePositions
+    );
+
+
+    window.addEventListener(
+        "orientationchange",
+        updatePermanentRipplePositions
+    );
+
+</script>
+
+
+<!-- =========================================================
      WATER ENGINE
      ========================================================= -->
 
 <script src="water.js"></script>
+
+
+<!-- =========================================================
+     INITIALIZE WATER ENGINE POSITION BRIDGE
+     ========================================================= */
+
+<script>
+
+    /*
+     * water.js may expose setPermanentRipplePositions()
+     * in the 10.4A/10.4B integration.
+     *
+     * If it does, provide the current coordinates
+     * immediately after water.js loads.
+     */
+
+    if (
+        typeof window.setPermanentRipplePositions ===
+        "function"
+    ) {
+
+        window.setPermanentRipplePositions(
+            window.permanentRipplePositions
+        );
+
+    }
+
+</script>
 
 
 <!-- =========================================================
@@ -3600,4 +3771,3 @@
     );
 
 </script>
-```
