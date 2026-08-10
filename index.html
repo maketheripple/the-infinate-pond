@@ -18,1315 +18,1059 @@
 
 <style>
 
-    /* =====================================================
-       GLOBAL
-    ===================================================== */
+/* =====================================================
+   GLOBAL
+===================================================== */
 
-    html,
-    body {
+html,
+body {
 
-        margin: 0;
-        padding: 0;
+    margin: 0;
+    padding: 0;
 
-        width: 100%;
-        min-height: 100%;
+    width: 100%;
+    min-height: 100%;
 
-        background:
-            #02070d;
+    background:
+        #02070d;
 
-        color: white;
+    color: white;
 
-        font-family:
-            Arial,
-            Helvetica,
-            sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    }
-
-
-    body {
-
-        overflow-x: hidden;
-
-    }
+}
 
 
-    /* =====================================================
-       WATER CANVAS
-    ===================================================== */
+body {
 
-    #waterCanvas {
+    overflow-x: hidden;
 
-        position: fixed;
-
-        inset: 0;
-
-        width: 100vw;
-        height: 100vh;
-
-        z-index: 0;
-
-        display: block;
-
-        pointer-events: none;
-
-    }
+}
 
 
-    /* =====================================================
-       PAGE CONTENT
-    ===================================================== */
+/* =====================================================
+   WATER CANVAS
+===================================================== */
 
-    .pond-page {
+#waterCanvas {
 
-        position: relative;
+    position: fixed;
 
-        z-index: 2;
+    inset: 0;
 
-        min-height: 150vh;
+    width: 100vw;
+    height: 100vh;
 
-        pointer-events: none;
+    z-index: 0;
 
-    }
+    display: block;
 
+    pointer-events: none;
 
-    /* =====================================================
-       TOP NIGHT SKY
-    ===================================================== */
-
-    .night-sky {
-
-        position: fixed;
-
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: 43vh;
-
-        background:
-
-            radial-gradient(
-                circle at 50% 23%,
-                rgba(
-                    180,
-                    215,
-                    235,
-                    0.12
-                ),
-                transparent 31%
-            ),
-
-            linear-gradient(
-                to bottom,
-                rgba(
-                    1,
-                    7,
-                    14,
-                    0.97
-                ),
-                rgba(
-                    2,
-                    10,
-                    18,
-                    0.78
-                ),
-                rgba(
-                    2,
-                    12,
-                    20,
-                    0
-                )
-            );
-
-        pointer-events: none;
-
-    }
+}
 
 
-    /* =====================================================
-       HORIZON / FOG GLOW
+/* =====================================================
+   PAGE CONTENT
+===================================================== */
 
-       Fixed to the viewport so the horizon remains
-       visible while the page scrolls.
-    ===================================================== */
+.pond-page {
 
-    .horizon-glow {
+    position: relative;
 
-        position: fixed;
+    z-index: 2;
 
-        top: 38vh;
+    min-height: 160vh;
 
-        left: 0;
+    pointer-events: none;
 
-        width: 100%;
+}
 
-        height: 9vh;
 
-        background:
+/* =====================================================
+   TOP NIGHT SKY
+===================================================== */
 
-            radial-gradient(
-                ellipse at 50% 50%,
-                rgba(
-                    185,
-                    225,
-                    240,
-                    0.14
-                ),
-                rgba(
-                    110,
-                    180,
-                    205,
-                    0.06
-                ) 34%,
-                transparent 74%
-            );
+.night-sky {
 
-        filter:
-            blur(8px);
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 42vh;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(170, 205, 225, 0.08),
+            transparent 28%
+        ),
+
+        linear-gradient(
+            to bottom,
+            rgba(1, 7, 14, 0.96),
+            rgba(2, 10, 18, 0.72),
+            rgba(2, 12, 20, 0)
+        );
+
+    pointer-events: none;
+
+    z-index: 1;
+
+}
+
+
+/* =====================================================
+   STARS
+===================================================== */
+
+.stars {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 42vh;
+
+    pointer-events: none;
+
+    z-index: 3;
+
+}
+
+
+.star {
+
+    position: absolute;
+
+    width: 2px;
+    height: 2px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            220,
+            240,
+            255,
+            0.8
+        );
+
+    box-shadow:
+
+        0 0 5px
+        rgba(
+            180,
+            220,
+            255,
+            0.55
+        );
+
+    animation:
+        starPulse
+        4s
+        ease-in-out
+        infinite;
+
+}
+
+
+.star:nth-child(1) {
+
+    left: 8%;
+    top: 12%;
+
+}
+
+
+.star:nth-child(2) {
+
+    left: 17%;
+    top: 23%;
+
+    animation-delay:
+        1s;
+
+}
+
+
+.star:nth-child(3) {
+
+    left: 28%;
+    top: 9%;
+
+    animation-delay:
+        2s;
+
+}
+
+
+.star:nth-child(4) {
+
+    left: 39%;
+    top: 17%;
+
+    animation-delay:
+        0.5s;
+
+}
+
+
+.star:nth-child(5) {
+
+    left: 62%;
+    top: 11%;
+
+    animation-delay:
+        1.7s;
+
+}
+
+
+.star:nth-child(6) {
+
+    left: 73%;
+    top: 25%;
+
+    animation-delay:
+        2.5s;
+
+}
+
+
+.star:nth-child(7) {
+
+    left: 84%;
+    top: 13%;
+
+    animation-delay:
+        0.8s;
+
+}
+
+
+.star:nth-child(8) {
+
+    left: 92%;
+    top: 30%;
+
+    animation-delay:
+        1.4s;
+
+}
+
+
+@keyframes starPulse {
+
+    0%,
+    100% {
 
         opacity:
-            0.95;
-
-        pointer-events: none;
-
-    }
-
-
-    .horizon-line {
-
-        position: fixed;
-
-        top: 41vh;
-
-        left: 0;
-
-        width: 100%;
-
-        height: 1px;
-
-        background:
-
-            linear-gradient(
-                to right,
-                transparent 0%,
-                rgba(
-                    150,
-                    205,
-                    225,
-                    0.025
-                ) 10%,
-                rgba(
-                    175,
-                    225,
-                    240,
-                    0.12
-                ) 28%,
-                rgba(
-                    205,
-                    238,
-                    248,
-                    0.20
-                ) 50%,
-                rgba(
-                    175,
-                    225,
-                    240,
-                    0.11
-                ) 72%,
-                rgba(
-                    150,
-                    205,
-                    225,
-                    0.025
-                ) 90%,
-                transparent 100%
-            );
-
-        box-shadow:
-
-            0 0 8px
-            rgba(
-                160,
-                215,
-                235,
-                0.12
-            ),
-
-            0 0 25px
-            rgba(
-                110,
-                180,
-                210,
-                0.09
-            );
-
-        pointer-events: none;
-
-    }
-
-
-    /* =====================================================
-       STARS
-    ===================================================== */
-
-    .stars {
-
-        position: fixed;
-
-        inset: 0;
-
-        width: 100%;
-        height: 42vh;
-
-        pointer-events: none;
-
-    }
-
-
-    .star {
-
-        position: absolute;
-
-        width: 2px;
-        height: 2px;
-
-        border-radius: 50%;
-
-        background:
-            rgba(
-                220,
-                240,
-                255,
-                0.8
-            );
-
-        box-shadow:
-
-            0 0 5px
-            rgba(
-                180,
-                220,
-                255,
-                0.55
-            );
-
-        animation:
-            starPulse
-            4s
-            ease-in-out
-            infinite;
-
-    }
-
-
-    .star:nth-child(1) {
-
-        left: 8%;
-        top: 12%;
-
-    }
-
-    .star:nth-child(2) {
-
-        left: 17%;
-        top: 23%;
-
-        animation-delay: 1s;
-
-    }
-
-    .star:nth-child(3) {
-
-        left: 28%;
-        top: 9%;
-
-        animation-delay: 2s;
-
-    }
-
-    .star:nth-child(4) {
-
-        left: 39%;
-        top: 17%;
-
-        animation-delay: 0.5s;
-
-    }
-
-    .star:nth-child(5) {
-
-        left: 62%;
-        top: 11%;
-
-        animation-delay: 1.7s;
-
-    }
-
-    .star:nth-child(6) {
-
-        left: 73%;
-        top: 25%;
-
-        animation-delay: 2.5s;
-
-    }
-
-    .star:nth-child(7) {
-
-        left: 84%;
-        top: 13%;
-
-        animation-delay: 0.8s;
-
-    }
-
-    .star:nth-child(8) {
-
-        left: 92%;
-        top: 30%;
-
-        animation-delay: 1.4s;
-
-    }
-
-
-    @keyframes starPulse {
-
-        0%,
-        100% {
-
-            opacity: 0.35;
-
-            transform:
-                scale(0.8);
-
-        }
-
-        50% {
-
-            opacity: 1;
-
-            transform:
-                scale(1.35);
-
-        }
-
-    }
-
-
-    /* =====================================================
-       RIPPLE MOON ATMOSPHERE
-
-       Large, soft glow behind the logo.
-    ===================================================== */
-
-    .ripple-moon-atmosphere {
-
-        position: fixed;
-
-        left: 50%;
-
-        top: 25vh;
+            0.35;
 
         transform:
-            translate(
-                -50%,
-                -50%
-            );
+            scale(0.8);
 
-        width:
-            clamp(
-                190px,
-                24vw,
-                330px
-            );
+    }
 
-        height:
-            clamp(
-                190px,
-                24vw,
-                330px
-            );
-
-        border-radius:
-            50%;
-
-        background:
-
-            radial-gradient(
-                circle,
-                rgba(
-                    225,
-                    243,
-                    250,
-                    0.20
-                ) 0%,
-                rgba(
-                    200,
-                    230,
-                    242,
-                    0.14
-                ) 20%,
-                rgba(
-                    160,
-                    210,
-                    230,
-                    0.08
-                ) 40%,
-                rgba(
-                    115,
-                    180,
-                    210,
-                    0.035
-                ) 58%,
-                transparent 76%
-            );
-
-        filter:
-            blur(15px);
+    50% {
 
         opacity:
-            0.95;
-
-        z-index:
             1;
 
-        pointer-events: none;
-
-    }
-
-
-    /* =====================================================
-       SECONDARY MOON BLOOM
-
-       Gives the logo a stronger luminous core.
-    ===================================================== */
-
-    .ripple-moon-bloom {
-
-        position: fixed;
-
-        left: 50%;
-
-        top: 25vh;
-
         transform:
-            translate(
-                -50%,
-                -50%
-            );
-
-        width:
-            clamp(
-                120px,
-                15vw,
-                205px
-            );
-
-        height:
-            clamp(
-                120px,
-                15vw,
-                205px
-            );
-
-        border-radius:
-            50%;
-
-        background:
-
-            radial-gradient(
-                circle,
-                rgba(
-                    235,
-                    248,
-                    255,
-                    0.22
-                ) 0%,
-                rgba(
-                    210,
-                    238,
-                    248,
-                    0.13
-                ) 28%,
-                rgba(
-                    175,
-                    215,
-                    232,
-                    0.05
-                ) 55%,
-                transparent 74%
-            );
-
-        filter:
-            blur(9px);
-
-        opacity:
-            0.95;
-
-        z-index:
-            2;
-
-        pointer-events: none;
+            scale(1.35);
 
     }
 
-
-    /* =====================================================
-       RIPPLE MOON HAZE
-
-       Spreads the moonlight toward the horizon.
-    ===================================================== */
-
-    .ripple-moon-haze {
-
-        position: fixed;
-
-        left: 50%;
-
-        top: 31vh;
-
-        transform:
-            translateX(-50%);
-
-        width:
-            clamp(
-                280px,
-                42vw,
-                600px
-            );
-
-        height:
-            120px;
-
-        background:
-
-            radial-gradient(
-                ellipse at center,
-                rgba(
-                    190,
-                    225,
-                    238,
-                    0.10
-                ),
-                rgba(
-                    150,
-                    205,
-                    225,
-                    0.035
-                ) 42%,
-                transparent 72%
-            );
-
-        filter:
-            blur(20px);
-
-        opacity:
-            0.9;
-
-        z-index:
-            1;
-
-        pointer-events: none;
-
-    }
+}
 
 
-    /* =====================================================
-       RIPPLE MOON
+/* =====================================================
+   HORIZON LINE
+===================================================== */
 
-       IMPORTANT:
-       This uses the existing Make the Ripple logo
-       asset as the distant moon.
-    ===================================================== */
+.horizon {
 
-    .ripple-moon {
+    position: fixed;
 
-        position: fixed;
+    left: 0;
 
-        left: 50%;
+    top: 41vh;
 
-        top: 25vh;
+    width: 100%;
 
-        transform:
-            translate(
-                -50%,
-                -50%
-            );
+    height: 2px;
 
-        width:
-            clamp(
-                95px,
-                11vw,
-                145px
-            );
+    z-index: 6;
 
-        height:
-            auto;
+    pointer-events: none;
 
-        z-index:
-            4;
+    background:
 
-        opacity:
-            0.94;
+        linear-gradient(
+            to right,
 
-        object-fit:
-            contain;
+            transparent 0%,
 
-        filter:
-
-            brightness(1.32)
-
-            contrast(1.05)
-
-            drop-shadow(
-                0 0 5px
-                rgba(
-                    240,
-                    250,
-                    255,
-                    0.90
-                )
-            )
-
-            drop-shadow(
-                0 0 14px
-                rgba(
-                    205,
-                    235,
-                    248,
-                    0.72
-                )
-            )
-
-            drop-shadow(
-                0 0 32px
-                rgba(
-                    165,
-                    215,
-                    235,
-                    0.48
-                )
-            )
-
-            drop-shadow(
-                0 0 60px
-                rgba(
-                    120,
-                    190,
-                    220,
-                    0.25
-                )
-            );
-
-        pointer-events:
-            none;
-
-    }
-
-
-    /* =====================================================
-       MAIN HEADER
-
-       Positioned ABOVE the horizon.
-    ===================================================== */
-
-    .pond-header {
-
-        position: fixed;
-
-        top: 30vh;
-
-        left: 50%;
-
-        transform:
-            translateX(-50%);
-
-        width:
-            min(
-                900px,
-                90vw
-            );
-
-        text-align:
-            center;
-
-        z-index:
-            6;
-
-        pointer-events:
-            none;
-
-    }
-
-
-    /* =====================================================
-       PRESENTS
-    ===================================================== */
-
-    .presented {
-
-        margin-bottom:
-            8px;
-
-        font-size:
-            clamp(
-                0.75rem,
-                1.5vw,
-                1rem
-            );
-
-        letter-spacing:
-            0.28em;
-
-        text-transform:
-            uppercase;
-
-        color:
-            rgba(
-                225,
-                242,
-                250,
-                0.70
-            );
-
-        text-shadow:
-
-            0 0 10px
             rgba(
                 170,
                 220,
                 240,
-                0.25
+                0.04
+            ) 8%,
+
+            rgba(
+                180,
+                225,
+                245,
+                0.28
+            ) 25%,
+
+            rgba(
+                210,
+                240,
+                255,
+                0.38
+            ) 50%,
+
+            rgba(
+                180,
+                225,
+                245,
+                0.28
+            ) 75%,
+
+            rgba(
+                170,
+                220,
+                240,
+                0.04
+            ) 92%,
+
+            transparent 100%
+        );
+
+    box-shadow:
+
+        0 0 7px
+        rgba(
+            160,
+            215,
+            240,
+            0.18
+        ),
+
+        0 0 25px
+        rgba(
+            120,
+            195,
+            225,
+            0.12
+        );
+
+}
+
+
+/* =====================================================
+   HORIZON FOG
+===================================================== */
+
+.horizon::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: -32px;
+
+    width: 100%;
+
+    height: 65px;
+
+    background:
+
+        radial-gradient(
+            ellipse at center,
+
+            rgba(
+                155,
+                210,
+                235,
+                0.075
             ),
 
-            0 0 24px
+            rgba(
+                90,
+                160,
+                195,
+                0.025
+            ) 38%,
+
+            transparent 72%
+        );
+
+    filter:
+        blur(8px);
+
+}
+
+
+/* =====================================================
+   MAIN HEADER
+===================================================== */
+
+.pond-header {
+
+    position: fixed;
+
+    top: 0;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: min(
+        900px,
+        90vw
+    );
+
+    height: 41vh;
+
+    display: flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-start;
+
+    text-align:
+        center;
+
+    pointer-events:
+        none;
+
+    z-index: 7;
+
+}
+
+
+/* =====================================================
+   MAKE THE RIPPLE LOGO
+===================================================== */
+
+.pond-logo {
+
+    width:
+        clamp(
+            105px,
+            15vw,
+            170px
+        );
+
+    height:
+        auto;
+
+    margin-top:
+        2.5vh;
+
+    margin-bottom:
+        0.8vh;
+
+    opacity:
+        0.96;
+
+    filter:
+
+        drop-shadow(
+            0 0 8px
             rgba(
                 120,
-                195,
+                205,
+                235,
+                0.24
+            )
+        )
+
+        drop-shadow(
+            0 0 24px
+            rgba(
+                100,
+                190,
                 225,
-                0.12
-            );
+                0.18
+            )
+        );
+
+}
+
+
+/* =====================================================
+   PRESENTED
+===================================================== */
+
+.presented {
+
+    margin-bottom:
+        5px;
+
+    font-size:
+        clamp(
+            0.7rem,
+            1.35vw,
+            0.95rem
+        );
+
+    letter-spacing:
+        0.28em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        rgba(
+            220,
+            240,
+            250,
+            0.68
+        );
+
+}
+
+
+/* =====================================================
+   MAIN TITLE
+===================================================== */
+
+.pond-title {
+
+    margin:
+        0;
+
+    font-size:
+        clamp(
+            1.9rem,
+            5.5vw,
+            4.2rem
+        );
+
+    font-weight:
+        300;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        rgba(
+            235,
+            248,
+            255,
+            0.95
+        );
+
+    text-shadow:
+
+        0 0 12px
+        rgba(
+            130,
+            205,
+            255,
+            0.28
+        ),
+
+        0 0 35px
+        rgba(
+            80,
+            170,
+            220,
+            0.22
+        ),
+
+        0 0 70px
+        rgba(
+            80,
+            170,
+            220,
+            0.12
+        );
+
+}
+
+
+/* =====================================================
+   SUBTITLE
+
+   Kept ABOVE the horizon.
+===================================================== */
+
+.pond-subtitle {
+
+    margin-top:
+        10px;
+
+    font-size:
+        clamp(
+            0.7rem,
+            1.35vw,
+            0.95rem
+        );
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        rgba(
+            210,
+            235,
+            245,
+            0.62
+        );
+
+    text-shadow:
+
+        0 0 12px
+        rgba(
+            110,
+            195,
+            225,
+            0.15
+        );
+
+}
+
+
+/* =====================================================
+   INTERACTION PROMPT
+===================================================== */
+
+.interaction-cue {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom:
+        42px;
+
+    transform:
+        translateX(-50%);
+
+    z-index:
+        10;
+
+    padding:
+        9px
+        18px;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(
+            2,
+            12,
+            20,
+            0.48
+        );
+
+    border:
+        1px solid
+        rgba(
+            180,
+            225,
+            245,
+            0.12
+        );
+
+    color:
+        rgba(
+            220,
+            240,
+            250,
+            0.58
+        );
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.08em;
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    pointer-events:
+        none;
+
+}
+
+
+/* =====================================================
+   MAKE A RIPPLE BUTTON
+===================================================== */
+
+.make-ripple-button {
+
+    position: fixed;
+
+    right:
+        24px;
+
+    bottom:
+        24px;
+
+    z-index:
+        20;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        9px;
+
+    padding:
+        12px
+        17px;
+
+    border-radius:
+        999px;
+
+    border:
+        1px solid
+        rgba(
+            175,
+            225,
+            245,
+            0.28
+        );
+
+    background:
+        rgba(
+            3,
+            18,
+            29,
+            0.72
+        );
+
+    color:
+        rgba(
+            235,
+            249,
+            255,
+            0.92
+        );
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.78rem;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        0.09em;
+
+    text-transform:
+        uppercase;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+
+        0 5px 24px
+        rgba(
+            0,
+            0,
+            0,
+            0.35
+        ),
+
+        0 0 18px
+        rgba(
+            70,
+            170,
+            220,
+            0.08
+        );
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
+
+    transition:
+
+        transform
+        0.25s
+        ease,
+
+        background
+        0.25s
+        ease,
+
+        border-color
+        0.25s
+        ease,
+
+        box-shadow
+        0.25s
+        ease;
+
+    pointer-events:
+        auto;
+
+}
+
+
+.make-ripple-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        rgba(
+            8,
+            34,
+            49,
+            0.86
+        );
+
+    border-color:
+        rgba(
+            185,
+            235,
+            255,
+            0.52
+        );
+
+    box-shadow:
+
+        0 8px 30px
+        rgba(
+            0,
+            0,
+            0,
+            0.42
+        ),
+
+        0 0 24px
+        rgba(
+            90,
+            190,
+            235,
+            0.18
+        );
+
+}
+
+
+.make-ripple-button:active {
+
+    transform:
+        translateY(0)
+        scale(0.97);
+
+}
+
+
+/* =====================================================
+   BUTTON RIPPLE ICON
+===================================================== */
+
+.ripple-icon {
+
+    position:
+        relative;
+
+    width:
+        17px;
+
+    height:
+        17px;
+
+    display:
+        inline-block;
+
+}
+
+
+.ripple-icon::before,
+.ripple-icon::after {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    border:
+        1px solid
+        rgba(
+            210,
+            240,
+            255,
+            0.78
+        );
+
+    border-radius:
+        50%;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+}
+
+
+.ripple-icon::before {
+
+    width:
+        6px;
+
+    height:
+        6px;
+
+}
+
+
+.ripple-icon::after {
+
+    width:
+        15px;
+
+    height:
+        9px;
+
+    border-left-color:
+        transparent;
+
+    border-right-color:
+        transparent;
+
+    border-bottom-color:
+        rgba(
+            210,
+            240,
+            255,
+            0.42
+        );
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (
+    max-width: 600px
+) {
+
+    .pond-logo {
+
+        width:
+            105px;
+
+        margin-top:
+            3vh;
 
     }
 
-
-    /* =====================================================
-       TITLE
-    ===================================================== */
 
     .pond-title {
 
-        margin:
-            0;
-
         font-size:
             clamp(
-                2rem,
-                6vw,
-                4.5rem
-            );
-
-        font-weight:
-            300;
-
-        letter-spacing:
-            0.12em;
-
-        text-transform:
-            uppercase;
-
-        color:
-            rgba(
-                238,
-                249,
-                255,
-                0.96
-            );
-
-        text-shadow:
-
-            0 0 12px
-            rgba(
-                145,
-                215,
-                245,
-                0.28
-            ),
-
-            0 0 35px
-            rgba(
-                90,
-                180,
-                225,
-                0.20
-            ),
-
-            0 0 70px
-            rgba(
-                75,
-                160,
-                205,
-                0.10
+                1.55rem,
+                8vw,
+                2.7rem
             );
 
     }
 
-
-    /* =====================================================
-       SUBTITLE
-    ===================================================== */
 
     .pond-subtitle {
 
-        margin-top:
-            12px;
-
         font-size:
-            clamp(
-                0.75rem,
-                1.5vw,
-                1rem
-            );
+            0.66rem;
 
         letter-spacing:
-            0.18em;
-
-        text-transform:
-            uppercase;
-
-        color:
-            rgba(
-                215,
-                238,
-                247,
-                0.62
-            );
-
-        text-shadow:
-
-            0 0 12px
-            rgba(
-                135,
-                200,
-                230,
-                0.16
-            );
+            0.14em;
 
     }
 
-
-    /* =====================================================
-       INTERACTION PROMPT
-    ===================================================== */
 
     .interaction-cue {
 
-        position: fixed;
-
-        left: 50%;
-
         bottom:
-            42px;
-
-        transform:
-            translateX(-50%);
-
-        z-index:
-            5;
-
-        padding:
-            9px 18px;
-
-        border-radius:
-            999px;
-
-        background:
-            rgba(
-                2,
-                12,
-                20,
-                0.48
-            );
-
-        border:
-            1px solid
-            rgba(
-                180,
-                225,
-                245,
-                0.12
-            );
-
-        color:
-            rgba(
-                220,
-                240,
-                250,
-                0.58
-            );
+            88px;
 
         font-size:
-            0.75rem;
+            0.68rem;
 
-        letter-spacing:
-            0.08em;
-
-        backdrop-filter:
-            blur(8px);
-
-        -webkit-backdrop-filter:
-            blur(8px);
-
-        pointer-events:
-            none;
+        padding:
+            8px
+            14px;
 
     }
 
-
-    /* =====================================================
-       MAKE A RIPPLE BUTTON
-    ===================================================== */
 
     .make-ripple-button {
 
-        position: fixed;
-
         right:
-            24px;
+            16px;
 
         bottom:
-            24px;
-
-        z-index:
-            20;
-
-        display:
-            flex;
-
-        align-items:
-            center;
-
-        gap:
-            9px;
+            18px;
 
         padding:
-            12px 17px;
-
-        border-radius:
-            999px;
-
-        border:
-            1px solid
-            rgba(
-                175,
-                225,
-                245,
-                0.28
-            );
-
-        background:
-            rgba(
-                3,
-                18,
-                29,
-                0.72
-            );
-
-        color:
-            rgba(
-                235,
-                249,
-                255,
-                0.92
-            );
-
-        font-family:
-            inherit;
+            11px
+            14px;
 
         font-size:
-            0.78rem;
-
-        font-weight:
-            600;
-
-        letter-spacing:
-            0.09em;
-
-        text-transform:
-            uppercase;
-
-        cursor:
-            pointer;
-
-        box-shadow:
-
-            0 5px 24px
-            rgba(
-                0,
-                0,
-                0,
-                0.35
-            ),
-
-            0 0 18px
-            rgba(
-                70,
-                170,
-                220,
-                0.08
-            );
-
-        backdrop-filter:
-            blur(10px);
-
-        -webkit-backdrop-filter:
-            blur(10px);
-
-        transition:
-
-            transform
-            0.25s
-            ease,
-
-            background
-            0.25s
-            ease,
-
-            border-color
-            0.25s
-            ease,
-
-            box-shadow
-            0.25s
-            ease;
-
-        pointer-events:
-            auto;
+            0.7rem;
 
     }
 
-
-    .make-ripple-button:hover {
-
-        transform:
-            translateY(-2px);
-
-        background:
-            rgba(
-                8,
-                34,
-                49,
-                0.86
-            );
-
-        border-color:
-            rgba(
-                185,
-                235,
-                255,
-                0.52
-            );
-
-        box-shadow:
-
-            0 8px 30px
-            rgba(
-                0,
-                0,
-                0,
-                0.42
-            ),
-
-            0 0 24px
-            rgba(
-                90,
-                190,
-                235,
-                0.18
-            );
-
-    }
-
-
-    .make-ripple-button:active {
-
-        transform:
-            translateY(0)
-            scale(0.97);
-
-    }
-
-
-    /* =====================================================
-       BUTTON RIPPLE ICON
-    ===================================================== */
-
-    .ripple-icon {
-
-        position:
-            relative;
-
-        width:
-            17px;
-
-        height:
-            17px;
-
-        display:
-            inline-block;
-
-    }
-
-
-    .ripple-icon::before,
-    .ripple-icon::after {
-
-        content:
-            "";
-
-        position:
-            absolute;
-
-        left:
-            50%;
-
-        top:
-            50%;
-
-        border:
-            1px solid
-            rgba(
-                210,
-                240,
-                255,
-                0.78
-            );
-
-        border-radius:
-            50%;
-
-        transform:
-            translate(
-                -50%,
-                -50%
-            );
-
-    }
-
-
-    .ripple-icon::before {
-
-        width:
-            6px;
-
-        height:
-            6px;
-
-    }
-
-
-    .ripple-icon::after {
-
-        width:
-            15px;
-
-        height:
-            9px;
-
-        border-left-color:
-            transparent;
-
-        border-right-color:
-            transparent;
-
-        border-bottom-color:
-            rgba(
-                210,
-                240,
-                255,
-                0.42
-            );
-
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-    ===================================================== */
-
-    @media (
-        max-width: 600px
-    ) {
-
-        .ripple-moon-atmosphere,
-        .ripple-moon-bloom {
-
-            top:
-                24vh;
-
-        }
-
-
-        .ripple-moon {
-
-            top:
-                24vh;
-
-            width:
-                86px;
-
-        }
-
-
-        .ripple-moon-haze {
-
-            top:
-                29vh;
-
-        }
-
-
-        .pond-header {
-
-            top:
-                30vh;
-
-        }
-
-
-        .interaction-cue {
-
-            bottom:
-                88px;
-
-            font-size:
-                0.68rem;
-
-            padding:
-                8px 14px;
-
-        }
-
-
-        .make-ripple-button {
-
-            right:
-                16px;
-
-            bottom:
-                18px;
-
-            padding:
-                11px 14px;
-
-            font-size:
-                0.7rem;
-
-        }
-
-    }
+}
 
 </style>
 
@@ -1346,6 +1090,46 @@
 
 
 <!-- =====================================================
+     NIGHT SKY
+====================================================== -->
+
+<div
+    class="night-sky"
+></div>
+
+
+<!-- =====================================================
+     STARS
+====================================================== -->
+
+<div
+    class="stars"
+    aria-hidden="true"
+>
+
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+
+</div>
+
+
+<!-- =====================================================
+     HORIZON
+====================================================== -->
+
+<div
+    class="horizon"
+    aria-hidden="true"
+></div>
+
+
+<!-- =====================================================
      PAGE
 ====================================================== -->
 
@@ -1355,96 +1139,28 @@
 
 
     <!-- =================================================
-         NIGHT SKY
-    ================================================== -->
-
-    <div
-        class="night-sky"
-    ></div>
-
-
-    <!-- =================================================
-         STARS
-    ================================================== -->
-
-    <div
-        class="stars"
-        aria-hidden="true"
-    >
-
-        <span class="star"></span>
-        <span class="star"></span>
-        <span class="star"></span>
-        <span class="star"></span>
-        <span class="star"></span>
-        <span class="star"></span>
-        <span class="star"></span>
-        <span class="star"></span>
-
-    </div>
-
-
-    <!-- =================================================
-         RIPPLE MOON ATMOSPHERE
-    ================================================== -->
-
-    <div
-        class="ripple-moon-atmosphere"
-        aria-hidden="true"
-    ></div>
-
-
-    <div
-        class="ripple-moon-bloom"
-        aria-hidden="true"
-    ></div>
-
-
-    <div
-        class="ripple-moon-haze"
-        aria-hidden="true"
-    ></div>
-
-
-    <!-- =================================================
-         RIPPLE MOON
-
-         Existing Make the Ripple logo.
-    ================================================== -->
-
-    <img
-        class="ripple-moon"
-        src="Make the Ripple Large Logo.png"
-        alt=""
-        aria-hidden="true"
-    >
-
-
-    <!-- =================================================
-         HORIZON
-    ================================================== -->
-
-    <div
-        class="horizon-glow"
-        aria-hidden="true"
-    ></div>
-
-
-    <div
-        class="horizon-line"
-        aria-hidden="true"
-    ></div>
-
-
-    <!-- =================================================
          HEADER
-
-         Positioned above the horizon.
     ================================================== -->
 
     <header
         class="pond-header"
     >
+
+
+        <!-- =============================================
+             MAKE THE RIPPLE LOGO
+        ============================================== -->
+
+        <img
+            class="pond-logo"
+            src="Make the Ripple Large Logo.png"
+            alt="Make the Ripple"
+        >
+
+
+        <!-- =============================================
+             PRESENTS
+        ============================================== -->
 
         <div
             class="presented"
@@ -1453,6 +1169,10 @@
         </div>
 
 
+        <!-- =============================================
+             TITLE
+        ============================================== -->
+
         <h1
             class="pond-title"
         >
@@ -1460,13 +1180,19 @@
         </h1>
 
 
+        <!-- =============================================
+             SUBTITLE
+        ============================================== -->
+
         <div
             class="pond-subtitle"
         >
-            Every ripple begins somewhere
+            Every Ripple Begins Somewhere
         </div>
 
+
     </header>
+
 
 </main>
 
@@ -1516,8 +1242,9 @@
 
 <!-- =====================================================
      MAKE A RIPPLE BUTTON
-
-     Submission workflow will be connected later.
+     
+     Submission workflow will be connected here
+     in a later version.
 ====================================================== -->
 
 <script>
