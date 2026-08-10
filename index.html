@@ -1,7 +1,7 @@
 ```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 10.1 — MOONLIGHT ON THE WATER
+     VERSION 10.3 — RIPPLE-ONLY INTERACTION
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -2559,49 +2559,6 @@
 
 
 <!-- =========================================================
-     FIRST RIPPLE MESSAGE
-     ========================================================= -->
-
-<div
-    class="first-ripple-message"
-    id="firstRippleMessage">
-
-    <div class="first-ripple-text">
-
-        Small actions create big ripples.
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     RIPPLE IDENTITY
-     ========================================================= -->
-
-<div
-    class="ripple-identity"
-    id="rippleIdentity">
-
-    <span class="ripple-identity-label">
-
-        Your Ripple
-
-    </span>
-
-
-    <span
-        class="ripple-identity-number"
-        id="rippleIdentityNumber">
-
-        Ripple #101
-
-    </span>
-
-</div>
-
-
-<!-- =========================================================
      APPROVED RIPPLE MARKERS
      ========================================================= -->
 
@@ -3551,6 +3508,10 @@
 
     /* =========================================================
        MAKE YOUR RIPPLE
+
+       Version 10.3: creates a temporary ripple only.
+       The dedicated submission workflow will be redesigned
+       for this button in a later version.
        ========================================================= */
 
     function makeRipple() {
@@ -3572,19 +3533,6 @@
 
             hideInteractionCue();
 
-            showFirstRippleMessage();
-
-
-            showRippleIdentity(
-                rippleNumber
-            );
-
-
-            openMessagePanel();
-
-
-            rippleNumber++;
-
         }
 
     }
@@ -3592,6 +3540,10 @@
 
     /* =========================================================
        CLICK ANYWHERE ON POND
+
+       Pond clicks create an animated ripple only.
+       No notification, identity message, or submission
+       panel is opened from a pond click.
        ========================================================= */
 
     document.addEventListener(
@@ -3621,19 +3573,6 @@
             ) {
 
                 hideInteractionCue();
-
-                showFirstRippleMessage();
-
-
-                showRippleIdentity(
-                    rippleNumber
-                );
-
-
-                openMessagePanel();
-
-
-                rippleNumber++;
 
             }
 
