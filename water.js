@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.4C — BUTTON-TRIGGERED RIPPLE
+   VERSION 10.4C — PERSISTENT RIPPLES
 ========================================================= */
 
 const canvas =
@@ -34,6 +34,10 @@ if (!canvas) {
         ================================================= */
 
         const MAX_RIPPLES = 12;
+
+        const ANIMATED_RIPPLE_DURATION = 2.5;
+
+        const PERSISTENT_RIPPLE_DURATION = 999999.0;
 
 
         /* =================================================
@@ -576,7 +580,8 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE INTERFERENCE
-               DISABLED
+
+               Disabled intentionally.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -587,7 +592,22 @@ if (!canvas) {
 
 
             /* =================================================
+               RIPPLE MICRO-WAVES
+
+               Disabled intentionally.
+            ================================================= */
+
+            float rippleMicroWaves(vec2 p) {
+
+                return 0.0;
+
+            }
+
+
+            /* =================================================
                IMPACT DISPLACEMENT
+
+               Temporary animated ripple only.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -630,7 +650,8 @@ if (!canvas) {
 
                         if (
 
-                            elapsed < 2.5
+                            elapsed <
+                            ANIMATED_RIPPLE_DURATION
 
                         ) {
 
@@ -673,7 +694,9 @@ if (!canvas) {
 
                                     d *
                                     42.0
+
                                     -
+
                                     elapsed *
                                     7.0
 
@@ -715,13 +738,226 @@ if (!canvas) {
 
 
             /* =================================================
-               RIPPLE MICRO-WAVES
-               DISABLED
+               PERSISTENT RIPPLES
+
+               These are the settled ripples that remain
+               after the animated ripple has finished.
+
+               They are deliberately subtle and do NOT
+               create another animated ripple.
             ================================================= */
 
-            float rippleMicroWaves(vec2 p) {
+            float persistentRipples(vec2 p) {
 
-                return 0.0;
+                float field =
+                    0.0;
+
+
+                for (
+
+                    int i = 0;
+
+                    i < MAX_RIPPLES;
+
+                    i++
+
+                ) {
+
+                    float strength =
+                        rippleStrengths[i];
+
+
+                    if (
+
+                        strength > 0.0
+
+                    ) {
+
+                        float elapsed =
+
+                            max(
+
+                                0.0,
+
+                                time -
+                                rippleStarts[i]
+
+                            );
+
+
+                        if (
+
+                            elapsed >=
+                            ANIMATED_RIPPLE_DURATION
+
+                        ) {
+
+                            float d =
+
+                                distance(
+
+                                    p,
+                                    ripplePositions[i]
+
+                                );
+
+
+                            /* ---------------------------------
+                               Expanding settled ripple
+                            --------------------------------- */
+
+                            float radius =
+
+                                0.17;
+
+
+                            float ringWidth =
+
+                                0.018;
+
+
+                            float ring =
+
+                                exp(
+
+                                    -pow(
+
+                                        (
+                                            d -
+                                            radius
+                                        )
+                                        /
+                                        ringWidth,
+
+                                        2.0
+
+                                    )
+
+                                );
+
+
+                            /* ---------------------------------
+                               Multiple subtle rings
+                            --------------------------------- */
+
+                            float ring2 =
+
+                                exp(
+
+                                    -pow(
+
+                                        (
+                                            d -
+                                            radius *
+                                            0.72
+                                        )
+                                        /
+                                        (
+                                            ringWidth *
+                                            0.82
+                                        ),
+
+                                        2.0
+
+                                    )
+
+                                );
+
+
+                            float ring3 =
+
+                                exp(
+
+                                    -pow(
+
+                                        (
+                                            d -
+                                            radius *
+                                            0.44
+                                        )
+                                        /
+                                        (
+                                            ringWidth *
+                                            0.70
+                                        ),
+
+                                        2.0
+
+                                    )
+
+                                );
+
+
+                            /* ---------------------------------
+                               Organic breakup
+                            --------------------------------- */
+
+                            float breakup =
+
+                                noise(
+
+                                    vec2(
+
+                                        d *
+                                        35.0,
+
+                                        float(i) *
+                                        8.0
+
+                                    )
+
+                                );
+
+
+                            float visibility =
+
+                                mix(
+
+                                    0.58,
+                                    1.0,
+                                    breakup
+
+                                );
+
+
+                            field +=
+
+                                (
+                                    ring *
+                                    0.42
+
+                                    +
+
+                                    ring2 *
+                                    0.30
+
+                                    +
+
+                                    ring3 *
+                                    0.18
+
+                                )
+
+                                *
+
+                                visibility
+
+                                *
+
+                                strength
+
+                                *
+
+                                0.020;
+
+                        }
+
+                    }
+
+                }
+
+
+                return field;
 
             }
 
@@ -755,6 +991,10 @@ if (!canvas) {
                     +
 
                     impactDisplacement(p)
+
+                    +
+
+                    persistentRipples(p)
 
                     +
 
@@ -1450,16 +1690,27 @@ if (!canvas) {
 
 
                 p.y *=
+
                     1.55;
 
 
+                /* ---------------------------------------------
+                   WATER SURFACE
+                --------------------------------------------- */
+
                 float surface =
+
                     waterHeight(p);
 
 
                 vec3 normal =
+
                     surfaceNormal(p);
 
+
+                /* ---------------------------------------------
+                   BASE WATER
+                --------------------------------------------- */
 
                 vec3 deepWater =
 
@@ -1497,6 +1748,7 @@ if (!canvas) {
 
 
                 variation +=
+
                     naturalSurface;
 
 
@@ -1527,12 +1779,14 @@ if (!canvas) {
                     (
                         backgroundVariation -
                         0.5
+
                     )
                     *
                     0.035;
 
 
                 variation +=
+
                     backgroundVariation;
 
 
@@ -1541,6 +1795,7 @@ if (!canvas) {
                     clamp(
 
                         variation,
+
                         0.0,
                         1.0
 
@@ -1558,14 +1813,21 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   SURFACE HIGHLIGHTS
+                --------------------------------------------- */
+
                 float highlight =
 
                     pow(
 
                         max(
+
                             normal.z,
                             0.0
+
                         ),
+
                         7.0
 
                     );
@@ -1585,6 +1847,10 @@ if (!canvas) {
 
                     highlight;
 
+
+                /* ---------------------------------------------
+                   NATURAL SURFACE SHEEN
+                --------------------------------------------- */
 
                 float surfaceSheen =
 
@@ -1607,11 +1873,17 @@ if (!canvas) {
                     surfaceSheen;
 
 
+                /* ---------------------------------------------
+                   NATURAL MOON REFLECTION
+                --------------------------------------------- */
+
                 float reflection =
 
                     moonReflection(
+
                         uv,
                         normal
+
                     );
 
 
@@ -1635,6 +1907,10 @@ if (!canvas) {
                     1.65;
 
 
+                /* ---------------------------------------------
+                   SOFT ATMOSPHERIC MOONLIGHT
+                --------------------------------------------- */
+
                 float atmosphere =
 
                     moonAtmosphere(uv);
@@ -1655,6 +1931,10 @@ if (!canvas) {
                     atmosphere;
 
 
+                /* ---------------------------------------------
+                   AMBIENT MOONLIGHT
+                --------------------------------------------- */
+
                 float upperLight =
 
                     smoothstep(
@@ -1673,8 +1953,10 @@ if (!canvas) {
                         -pow(
 
                             (
+
                                 uv.x -
                                 0.50
+
                             )
                             /
                             0.52,
@@ -1707,6 +1989,10 @@ if (!canvas) {
                     ambientMoon;
 
 
+                /* ---------------------------------------------
+                   CINEMATIC VIGNETTE
+                --------------------------------------------- */
+
                 float vignette =
 
                     1.0 -
@@ -1719,9 +2005,12 @@ if (!canvas) {
                         distance(
 
                             uv,
+
                             vec2(
+
                                 0.5,
                                 0.43
+
                             )
 
                         )
@@ -1732,18 +2021,27 @@ if (!canvas) {
                 color *=
 
                     mix(
+
                         0.68,
                         1.0,
                         vignette
+
                     );
 
+
+                /* ---------------------------------------------
+                   FINAL CONTRAST
+                --------------------------------------------- */
 
                 color =
 
                     pow(
 
                         color,
-                        vec3(0.86)
+
+                        vec3(
+                            0.86
+                        )
 
                     );
 
@@ -1751,8 +2049,10 @@ if (!canvas) {
                 gl_FragColor =
 
                     vec4(
+
                         color,
                         1.0
+
                     );
 
             }
@@ -1765,37 +2065,52 @@ if (!canvas) {
         ===================================================== */
 
         function createShader(
+
             type,
             source
+
         ) {
 
             const shader =
-                gl.createShader(type);
+
+                gl.createShader(
+                    type
+                );
 
 
             gl.shaderSource(
+
                 shader,
                 source
+
             );
 
 
             gl.compileShader(
+
                 shader
+
             );
 
 
             if (
+
                 !gl.getShaderParameter(
+
                     shader,
                     gl.COMPILE_STATUS
+
                 )
+
             ) {
 
                 console.error(
 
                     "The Infinite Pond shader error:",
 
-                    gl.getShaderInfoLog(shader)
+                    gl.getShaderInfoLog(
+                        shader
+                    )
 
                 );
 
@@ -1813,73 +2128,101 @@ if (!canvas) {
         const vertexShader =
 
             createShader(
+
                 gl.VERTEX_SHADER,
                 vertexShaderSource
+
             );
 
 
         const fragmentShader =
 
             createShader(
+
                 gl.FRAGMENT_SHADER,
                 fragmentShaderSource
+
             );
 
 
         if (
+
             !vertexShader ||
+
             !fragmentShader
+
         ) {
 
             console.error(
+
                 "The Infinite Pond: Shader creation failed."
+
             );
 
         } else {
+
 
             /* =================================================
                PROGRAM
             ================================================= */
 
             const program =
+
                 gl.createProgram();
 
 
             gl.attachShader(
+
                 program,
                 vertexShader
+
             );
 
 
             gl.attachShader(
+
                 program,
                 fragmentShader
+
             );
 
 
             gl.linkProgram(
+
                 program
+
             );
 
 
             if (
+
                 !gl.getProgramParameter(
+
                     program,
                     gl.LINK_STATUS
+
                 )
+
             ) {
 
                 console.error(
 
                     "The Infinite Pond program error:",
 
-                    gl.getProgramInfoLog(program)
+                    gl.getProgramInfoLog(
+                        program
+                    )
 
                 );
 
             } else {
 
-                gl.useProgram(program);
+
+                gl.useProgram(
+
+                    program
+
+                );
 
 
                 /* =================================================
@@ -1887,12 +2230,15 @@ if (!canvas) {
                 ================================================= */
 
                 const buffer =
+
                     gl.createBuffer();
 
 
                 gl.bindBuffer(
+
                     gl.ARRAY_BUFFER,
                     buffer
+
                 );
 
 
@@ -1917,16 +2263,24 @@ if (!canvas) {
                 );
 
 
+                /* =================================================
+                   POSITION ATTRIBUTE
+                ================================================= */
+
                 const position =
 
                     gl.getAttribLocation(
+
                         program,
                         "position"
+
                     );
 
 
                 gl.enableVertexAttribArray(
+
                     position
+
                 );
 
 
@@ -1950,48 +2304,60 @@ if (!canvas) {
                 const resolutionLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "resolution"
+
                     );
 
 
                 const timeLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "time"
+
                     );
 
 
                 const scrollLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "scroll"
+
                     );
 
 
                 const ripplePositionsLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "ripplePositions"
+
                     );
 
 
                 const rippleStartsLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "rippleStarts"
+
                     );
 
 
                 const rippleStrengthsLocation =
 
                     gl.getUniformLocation(
+
                         program,
                         "rippleStrengths"
+
                     );
 
 
@@ -2004,26 +2370,26 @@ if (!canvas) {
 
                 /* =================================================
                    CREATE RIPPLE
-                   
-                   This function is now exposed through
-                   window.makeInfinitePondRipple so that
-                   the Make a Ripple button can trigger
-                   the same ripple engine.
 
-                   It still ONLY creates the animated
-                   ripple.
+                   This creates a ripple only.
 
-                   It does NOT open a submission form.
+                   The ripple begins as an animated impact and
+                   then becomes a subtle persistent ripple.
+
+                   No modal or submission workflow is opened.
                 ================================================= */
 
                 function createRipple(
+
                     clientX,
                     clientY
+
                 ) {
 
                     console.log(
 
                         "INFINITE POND RIPPLE:",
+
                         clientX,
                         clientY
 
@@ -2031,44 +2397,61 @@ if (!canvas) {
 
 
                     const rect =
+
                         canvas.getBoundingClientRect();
 
 
                     const localX =
-                        clientX - rect.left;
+
+                        clientX -
+                        rect.left;
 
 
                     const localY =
-                        clientY - rect.top;
+
+                        clientY -
+                        rect.top;
 
 
                     const uvX =
-                        localX / rect.width;
+
+                        localX /
+                        rect.width;
 
 
                     const uvY =
-                        localY / rect.height;
+
+                        localY /
+                        rect.height;
 
 
                     let rippleX =
-                        uvX - 0.5;
+
+                        uvX -
+                        0.5;
 
 
                     let rippleY =
-                        0.5 - uvY;
+
+                        0.5 -
+                        uvY;
 
 
                     rippleX *=
+
                         rect.width /
                         rect.height;
 
 
                     rippleY *=
+
                         1.55;
 
 
                     const now =
-                        performance.now() *
+
+                        performance.now()
+                        *
                         0.001;
 
 
@@ -2090,8 +2473,10 @@ if (!canvas) {
 
 
                     if (
+
                         ripples.length >
                         MAX_RIPPLES
+
                     ) {
 
                         ripples.shift();
@@ -2102,37 +2487,7 @@ if (!canvas) {
 
 
                 /* =================================================
-                   PUBLIC BUTTON INTERFACE
-                   
-                   The index.html button will call this
-                   function.
-
-                   The default position is near the
-                   visual center of the pond.
-                ================================================= */
-
-                window.makeInfinitePondRipple =
-
-                    function () {
-
-                        createRipple(
-
-                            window.innerWidth *
-                            0.50,
-
-                            window.innerHeight *
-                            0.56
-
-                        );
-
-                    };
-
-
-                /* =================================================
-                   POINTER RIPPLE
-                   
-                   Clicking/tapping the pond still creates
-                   ONLY the temporary animated ripple.
+                   POND CLICK / TOUCH
                 ================================================= */
 
                 window.addEventListener(
@@ -2140,11 +2495,6 @@ if (!canvas) {
                     "pointerdown",
 
                     function (event) {
-
-                        console.log(
-                            "POINTER DETECTED"
-                        );
-
 
                         if (
 
@@ -2160,15 +2510,21 @@ if (!canvas) {
 
 
                         /* -----------------------------------------
-                           Do not treat the Make a Ripple button
-                           as a pond click.
+                           Ignore the Make a Ripple button here.
+
+                           The button has its own handler below.
                         ----------------------------------------- */
+
+                        const target =
+
+                            event.target;
+
 
                         if (
 
-                            event.target &&
-                            event.target.closest &&
-                            event.target.closest(
+                            target &&
+                            target.closest &&
+                            target.closest(
                                 "#makeRippleButton"
                             )
 
@@ -2194,6 +2550,89 @@ if (!canvas) {
 
 
                 /* =================================================
+                   MAKE A RIPPLE BUTTON
+                ================================================= */
+
+                const makeRippleButton =
+
+                    document.getElementById(
+
+                        "makeRippleButton"
+
+                    );
+
+
+                if (
+
+                    makeRippleButton
+
+                ) {
+
+                    makeRippleButton.addEventListener(
+
+                        "click",
+
+                        function () {
+
+                            console.log(
+
+                                "MAKE A RIPPLE BUTTON CLICKED"
+
+                            );
+
+
+                            const rect =
+
+                                canvas.getBoundingClientRect();
+
+
+                            /* -------------------------------------
+                               Create the button ripple in the
+                               visual center of the pond.
+
+                               This gives the button a predictable
+                               location without moving the user's
+                               pointer or opening a form.
+                            ------------------------------------- */
+
+                            const clientX =
+
+                                rect.left +
+                                rect.width *
+                                0.50;
+
+
+                            const clientY =
+
+                                rect.top +
+                                rect.height *
+                                0.56;
+
+
+                            createRipple(
+
+                                clientX,
+                                clientY
+
+                            );
+
+                        }
+
+                    );
+
+                } else {
+
+                    console.warn(
+
+                        "The Infinite Pond: " +
+                        "makeRippleButton not found."
+
+                    );
+
+                }
+
+
+                /* =================================================
                    RESIZE
                 ================================================= */
 
@@ -2205,6 +2644,7 @@ if (!canvas) {
 
                             window.devicePixelRatio ||
                             1,
+
                             2
 
                         );
@@ -2247,8 +2687,11 @@ if (!canvas) {
 
 
                 window.addEventListener(
+
                     "resize",
+
                     resizeWater
+
                 );
 
 
@@ -2260,7 +2703,9 @@ if (!canvas) {
                 ================================================= */
 
                 function renderWater(
+
                     milliseconds
+
                 ) {
 
                     const currentTime =
@@ -2269,26 +2714,20 @@ if (!canvas) {
                         0.001;
 
 
-                    gl.useProgram(program);
+                    gl.useProgram(
+
+                        program
+
+                    );
 
 
                     /* ---------------------------------------------
-                       Remove expired ripples
+                       Remove old persistent ripples when the
+                       maximum number is exceeded through the
+                       normal array handling.
+
+                       Persistent ripples otherwise remain.
                     --------------------------------------------- */
-
-                    while (
-
-                        ripples.length > 0 &&
-
-                        currentTime -
-                        ripples[0].start >
-                        12.0
-
-                    ) {
-
-                        ripples.shift();
-
-                    }
 
 
                     /* ---------------------------------------------
@@ -2298,21 +2737,28 @@ if (!canvas) {
                     const positions =
 
                         new Float32Array(
-                            MAX_RIPPLES * 2
+
+                            MAX_RIPPLES *
+                            2
+
                         );
 
 
                     const starts =
 
                         new Float32Array(
+
                             MAX_RIPPLES
+
                         );
 
 
                     const strengths =
 
                         new Float32Array(
+
                             MAX_RIPPLES
+
                         );
 
 
@@ -2327,39 +2773,58 @@ if (!canvas) {
                     ) {
 
                         if (
-                            i < ripples.length
+
+                            i <
+                            ripples.length
+
                         ) {
 
-                            positions[i * 2] =
+                            positions[
+                                i * 2
+                            ] =
+
                                 ripples[i].x;
 
 
-                            positions[i * 2 + 1] =
+                            positions[
+                                i * 2 + 1
+                            ] =
+
                                 ripples[i].y;
 
 
                             starts[i] =
+
                                 ripples[i].start;
 
 
                             strengths[i] =
+
                                 ripples[i].strength;
 
                         } else {
 
-                            positions[i * 2] =
+                            positions[
+                                i * 2
+                            ] =
+
                                 0.0;
 
 
-                            positions[i * 2 + 1] =
+                            positions[
+                                i * 2 + 1
+                            ] =
+
                                 0.0;
 
 
                             starts[i] =
+
                                 -100.0;
 
 
                             strengths[i] =
+
                                 0.0;
 
                         }
@@ -2384,6 +2849,7 @@ if (!canvas) {
                     gl.uniform1f(
 
                         timeLocation,
+
                         currentTime
 
                     );
@@ -2392,6 +2858,7 @@ if (!canvas) {
                     gl.uniform1f(
 
                         scrollLocation,
+
                         window.scrollY
 
                     );
@@ -2400,6 +2867,7 @@ if (!canvas) {
                     gl.uniform2fv(
 
                         ripplePositionsLocation,
+
                         positions
 
                     );
@@ -2408,6 +2876,7 @@ if (!canvas) {
                     gl.uniform1fv(
 
                         rippleStartsLocation,
+
                         starts
 
                     );
@@ -2416,6 +2885,7 @@ if (!canvas) {
                     gl.uniform1fv(
 
                         rippleStrengthsLocation,
+
                         strengths
 
                     );
@@ -2428,6 +2898,7 @@ if (!canvas) {
                     gl.drawArrays(
 
                         gl.TRIANGLES,
+
                         0,
                         6
 
@@ -2435,14 +2906,18 @@ if (!canvas) {
 
 
                     requestAnimationFrame(
+
                         renderWater
+
                     );
 
                 }
 
 
                 requestAnimationFrame(
+
                     renderWater
+
                 );
 
             }
