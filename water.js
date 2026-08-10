@@ -1,12 +1,10 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 8.5.1 — NATURAL WATER MOVEMENT
+   VERSION 10.2 — NATURAL MOONLIGHT REFLECTION
    ========================================================= */
-
 
 const canvas =
     document.getElementById("waterCanvas");
-
 
 if (!canvas) {
 
@@ -15,7 +13,6 @@ if (!canvas) {
     );
 
 } else {
-
 
     const gl =
         canvas.getContext("webgl", {
@@ -522,20 +519,10 @@ if (!canvas) {
 
                VERSION 8.5.1
 
-               This is the new physical movement layer.
+               This is the physical movement layer.
 
-               It is intentionally separate from the
+               It remains separate from the
                appearance-only naturalWaterSurface() layer.
-
-               The movement is:
-
-               • broad
-               • slow
-               • non-repeating
-               • extremely low amplitude
-
-               It should make the pond feel alive without
-               looking like a wave simulator.
             ================================================= */
 
             float naturalWaterMovement(vec2 p) {
@@ -553,10 +540,6 @@ if (!canvas) {
                     );
 
 
-                /* ---------------------------------------------
-                   Very broad organic movement.
-                --------------------------------------------- */
-
                 float broadA =
 
                     fbm(
@@ -568,11 +551,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Second movement layer travelling in a
-                   slightly different direction.
-                --------------------------------------------- */
 
                 float broadB =
 
@@ -586,13 +564,6 @@ if (!canvas) {
 
                     );
 
-
-                /* ---------------------------------------------
-                   Blend the two broad fields.
-
-                   Keeping this weighted heavily toward the
-                   broadest layer prevents visible texture.
-                --------------------------------------------- */
 
                 float movement =
 
@@ -775,13 +746,6 @@ if (!canvas) {
                TOTAL WATER HEIGHT
 
                VERSION 8.5.1
-
-               Natural movement is now part of the physical
-               surface height.
-
-               Natural appearance remains separate.
-
-               Click ripples remain independent.
             ================================================= */
 
             float waterHeight(vec2 p) {
@@ -1043,14 +1007,27 @@ if (!canvas) {
 
 
             /* =================================================
-               MOON REFLECTION
+               NATURAL MOONLIGHT REFLECTION
 
-               Reflection begins at the top of the page
-               and stretches downward.
+               VERSION 10.2
 
-               The moon itself is deliberately off-screen,
-               so the viewer sees reflected moonlight rather
-               than a bright white orb.
+               The previous reflection behaved like a single
+               widening beam. That created the artificial
+               "lightning bolt" appearance.
+
+               This version treats moonlight as a collection
+               of broken reflections across the water.
+
+               The reflection is:
+
+               • fragmented
+               • horizontal
+               • softly wandering
+               • wider farther from the moon
+               • affected by surface normals
+               • affected by clouds
+               • gently animated
+               • never a continuous geometric beam
             ================================================= */
 
             float moonReflection(
@@ -1061,20 +1038,59 @@ if (!canvas) {
 
             ) {
 
-                vec2 moonPosition =
+                /* ---------------------------------------------
+                   The reflection begins around the horizon
+                   and exists primarily across the water.
+                --------------------------------------------- */
 
-                    vec2(
-                        0.50,
-                        1.12
+                float waterMask =
+
+                    smoothstep(
+                        0.48,
+                        0.40,
+                        uv.y
                     );
 
 
-                float verticalDistance =
+                float bottomFade =
+
+                    smoothstep(
+                        0.015,
+                        0.12,
+                        uv.y
+                    );
+
+
+                waterMask *=
+                    bottomFade;
+
+
+                if (
+                    waterMask <= 0.0
+                ) {
+
+                    return 0.0;
+
+                }
+
+
+                /* ---------------------------------------------
+                   Depth through the reflection.
+
+                   0 = near horizon
+                   1 = foreground
+                --------------------------------------------- */
+
+                float depth =
 
                     clamp(
 
-                        moonPosition.y -
-                        uv.y,
+                        (
+                            0.46 -
+                            uv.y
+                        )
+                        /
+                        0.42,
 
                         0.0,
                         1.0
@@ -1082,35 +1098,80 @@ if (!canvas) {
                     );
 
 
-                float spread =
+                /* ---------------------------------------------
+                   Slowly wandering reflection center.
+
+                   This is deliberately very small.
+
+                   The moonlight should drift rather than
+                   form a zig-zag or lightning shape.
+                --------------------------------------------- */
+
+                float broadDrift =
+
+                    sin(
+
+                        uv.y *
+                        11.0
+                        +
+                        time *
+                        0.018
+
+                    )
+                    *
+                    0.018;
+
+
+                float organicDrift =
+
+                    (
+                        fbm(
+
+                            vec2(
+
+                                uv.y *
+                                2.8,
+
+                                time *
+                                0.008
+
+                            )
+
+                        )
+                        -
+                        0.5
+                    )
+                    *
+                    0.045;
+
+
+                float reflectionCenter =
+
+                    0.50
+                    +
+                    broadDrift
+                    +
+                    organicDrift;
+
+
+                /* ---------------------------------------------
+                   The reflection becomes wider with distance.
+                --------------------------------------------- */
+
+                float reflectionWidth =
 
                     mix(
 
-                        0.018,
-                        0.22,
+                        0.035,
+                        0.20,
 
                         smoothstep(
                             0.0,
                             1.0,
-                            verticalDistance
+                            depth
                         )
 
                     );
-
-
-                float distortion =
-
-                    (
-                        normal.x *
-                        0.65
-
-                        +
-
-                        normal.y *
-                        0.35
-                    )
-                    *
-                    0.028;
 
 
                 float horizontalDistance =
@@ -1118,21 +1179,26 @@ if (!canvas) {
                     abs(
 
                         uv.x -
-                        moonPosition.x
-                        +
-                        distortion
+                        reflectionCenter
 
                     );
 
 
-                float reflectionShape =
+                /* ---------------------------------------------
+                   Broad soft envelope.
+
+                   This establishes the general area of
+                   moonlight without creating a hard beam.
+                --------------------------------------------- */
+
+                float envelope =
 
                     exp(
 
                         -pow(
 
                             horizontalDistance /
-                            spread,
+                            reflectionWidth,
 
                             2.0
 
@@ -1141,44 +1207,215 @@ if (!canvas) {
                     );
 
 
-                float distanceFade =
+                /* ---------------------------------------------
+                   Break the reflection into natural fragments.
+
+                   Several scales are used so the light looks
+                   like many pieces of reflected moonlight
+                   rather than one continuous shape.
+                --------------------------------------------- */
+
+                float fragmentA =
+
+                    noise(
+
+                        vec2(
+
+                            uv.x *
+                            7.0,
+
+                            uv.y *
+                            15.0
+
+                        )
+
+                    );
+
+
+                float fragmentB =
+
+                    noise(
+
+                        vec2(
+
+                            uv.x *
+                            13.0
+                            +
+                            4.0,
+
+                            uv.y *
+                            29.0
+                            -
+                            time *
+                            0.012
+
+                        )
+
+                    );
+
+
+                float fragmentC =
+
+                    fbm(
+
+                        vec2(
+
+                            uv.x *
+                            5.5,
+
+                            uv.y *
+                            11.0
+
+                        )
+
+                        +
+
+                        vec2(
+
+                            time *
+                            0.006,
+
+                            -time *
+                            0.004
+
+                        )
+
+                    );
+
+
+                float fragments =
+
+                    fragmentA *
+                    0.34
+
+                    +
+
+                    fragmentB *
+                    0.26
+
+                    +
+
+                    fragmentC *
+                    0.40;
+
+
+                /* ---------------------------------------------
+                   Turn the continuous field into soft,
+                   separated patches.
+                --------------------------------------------- */
+
+                float brokenLight =
+
+                    smoothstep(
+
+                        0.48,
+                        0.67,
+                        fragments
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Add long horizontal streaks.
+
+                   These are subtle and intentionally uneven.
+                --------------------------------------------- */
+
+                float horizontalPattern =
+
+                    sin(
+
+                        uv.y *
+                        170.0
+                        +
+                        time *
+                        0.055
+                        +
+                        noise(
+                            vec2(
+                                uv.y *
+                                8.0,
+                                2.0
+                            )
+                        )
+                        *
+                        4.0
+
+                    );
+
+
+                horizontalPattern =
+
+                    smoothstep(
+
+                        0.15,
+                        0.78,
+                        horizontalPattern
+
+                    );
+
+
+                /* ---------------------------------------------
+                   Prevent the streaks from becoming a regular
+                   striped pattern.
+                --------------------------------------------- */
+
+                float streakNoise =
+
+                    noise(
+
+                        vec2(
+
+                            uv.y *
+                            24.0,
+
+                            uv.x *
+                            3.0
+
+                        )
+
+                    );
+
+
+                float streaks =
 
                     mix(
 
-                        1.0,
-                        0.42,
-
-                        smoothstep(
-                            0.0,
-                            1.0,
-                            verticalDistance
-                        )
+                        horizontalPattern,
+                        horizontalPattern *
+                        streakNoise,
+                        0.55
 
                     );
 
 
-                vec3 moonDirection =
+                /* ---------------------------------------------
+                   Surface angle controls shimmer.
 
-                    normalize(
+                   This is where the water physically breaks
+                   the reflected moonlight apart.
+                --------------------------------------------- */
 
-                        vec3(
-
-                            0.0,
-                            0.42,
-                            1.0
-
-                        )
-
-                    );
-
-
-                float angle =
+                float facing =
 
                     max(
 
                         dot(
+
                             normal,
-                            moonDirection
+
+                            normalize(
+
+                                vec3(
+
+                                    0.0,
+                                    0.45,
+                                    1.0
+
+                                )
+
+                            )
+
                         ),
 
                         0.0
@@ -1186,13 +1423,50 @@ if (!canvas) {
                     );
 
 
-                float sparkle =
+                float shimmer =
 
                     pow(
-                        angle,
-                        22.0
+
+                        facing,
+                        13.0
+
                     );
 
+
+                /* ---------------------------------------------
+                   A second, softer shimmer component prevents
+                   the highlights from looking like identical
+                   points.
+                --------------------------------------------- */
+
+                float softShimmer =
+
+                    pow(
+
+                        max(
+                            normal.z,
+                            0.0
+                        ),
+
+                        5.0
+
+                    );
+
+
+                float surfaceLight =
+
+                    shimmer *
+                    0.78
+
+                    +
+
+                    softShimmer *
+                    0.22;
+
+
+                /* ---------------------------------------------
+                   Clouds break the reflected light naturally.
+                --------------------------------------------- */
 
                 float cloudAmount =
 
@@ -1204,67 +1478,82 @@ if (!canvas) {
                     mix(
 
                         1.0,
-                        0.28,
+                        0.30,
                         cloudAmount
 
                     );
 
 
-                float breakup =
+                /* ---------------------------------------------
+                   Reflection is strongest near the horizon
+                   and gently fades toward the foreground.
+                --------------------------------------------- */
 
-                    fbm(
+                float distanceFade =
 
-                        uv *
-                        5.0
+                    mix(
 
-                        +
-
-                        vec2(
-
-                            time *
-                            0.005,
-
-                            -time *
-                            0.003
-
+                        1.0,
+                        0.58,
+                        smoothstep(
+                            0.0,
+                            1.0,
+                            depth
                         )
 
                     );
 
 
-                breakup =
+                /* ---------------------------------------------
+                   Combine the broken light.
 
-                    smoothstep(
+                   The envelope establishes the overall
+                   reflection area.
 
-                        0.30,
-                        0.72,
-                        breakup
+                   The fragments and streaks determine where
+                   actual visible moonlight appears.
+                --------------------------------------------- */
 
-                    );
+                float fragmentedReflection =
 
-
-                float breakupStrength =
-
-                    mix(
-
-                        0.62,
-                        1.0,
-                        breakup
-
-                    );
-
-
-                return
-
-                    reflectionShape
+                    envelope
 
                     *
 
-                    distanceFade
+                    (
+                        brokenLight *
+                        0.72
+
+                        +
+
+                        brokenLight *
+                        streaks *
+                        0.28
+                    );
+
+
+                /* ---------------------------------------------
+                   Add a tiny amount of broad ambient reflection
+                   so the gaps don't look digitally cut out.
+                --------------------------------------------- */
+
+                float softReflection =
+
+                    envelope *
+                    0.045;
+
+
+                float finalReflection =
+
+                    (
+                        fragmentedReflection
+                        +
+                        softReflection
+                    )
 
                     *
 
-                    sparkle
+                    surfaceLight
 
                     *
 
@@ -1272,7 +1561,16 @@ if (!canvas) {
 
                     *
 
-                    breakupStrength;
+                    distanceFade
+
+                    *
+
+                    waterMask;
+
+
+                return
+
+                    finalReflection;
 
             }
 
@@ -1364,8 +1662,7 @@ if (!canvas) {
                 /* ---------------------------------------------
                    Natural surface appearance
 
-                   This remains separate from the physical
-                   movement so we can tune the two independently.
+                   This remains separate from physical movement.
                 --------------------------------------------- */
 
                 float naturalSurface =
@@ -1382,7 +1679,6 @@ if (!canvas) {
                    Background variation
 
                    Appearance only.
-                   Does NOT affect normals.
                 --------------------------------------------- */
 
                 float backgroundVariation =
@@ -1504,7 +1800,9 @@ if (!canvas) {
 
 
                 /* ---------------------------------------------
-                   MOON REFLECTION
+                   NATURAL MOON REFLECTION
+
+                   VERSION 10.2
                 --------------------------------------------- */
 
                 float reflection =
