@@ -1,6 +1,7 @@
+```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 9.6 — RIPPLE MESSAGES
+     VERSION 9.7 — APPROVED RIPPLE DISPLAY
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -149,7 +150,7 @@
 
 
     /* =========================================================
-       TITLE BRANDING
+       TITLE
        ========================================================= */
 
     .title-block {
@@ -216,22 +217,38 @@
 
         text-transform: uppercase;
 
-        color: rgba(
-            245,
-            252,
-            255,
-            0.96
-        );
+        color:
+            rgba(
+                245,
+                252,
+                255,
+                0.96
+            );
 
         text-shadow:
             0 0 8px
-            rgba(190, 230, 255, 0.35),
+            rgba(
+                190,
+                230,
+                255,
+                0.35
+            ),
 
             0 0 28px
-            rgba(100, 190, 255, 0.18),
+            rgba(
+                100,
+                190,
+                255,
+                0.18
+            ),
 
             0 3px 20px
-            rgba(0, 0, 0, 0.55);
+            rgba(
+                0,
+                0,
+                0,
+                0.55
+            );
 
     }
 
@@ -263,10 +280,6 @@
     }
 
 
-    /* =========================================================
-       SUBTITLE
-       ========================================================= */
-
     .subtitle {
 
         margin: 0;
@@ -283,13 +296,18 @@
 
         text-shadow:
             0 2px 10px
-            rgba(0, 0, 0, 0.6);
+            rgba(
+                0,
+                0,
+                0,
+                0.6
+            );
 
     }
 
 
     /* =========================================================
-       RIPPLE MAKERS
+       RIPPLE COUNT
        ========================================================= */
 
     .ripple-count {
@@ -562,14 +580,6 @@
 
         text-transform: uppercase;
 
-        color:
-            rgba(
-                245,
-                252,
-                255,
-                0.95
-            );
-
     }
 
 
@@ -700,6 +710,323 @@
 
 
     /* =========================================================
+       APPROVED RIPPLE MARKERS
+       ========================================================= */
+
+    .approved-ripple {
+
+        position: fixed;
+
+        width: 30px;
+        height: 30px;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            );
+
+        z-index: 4;
+
+        border-radius: 50%;
+
+        cursor: pointer;
+
+        background:
+            radial-gradient(
+                circle,
+                rgba(
+                    220,
+                    245,
+                    255,
+                    0.35
+                ) 0%,
+                rgba(
+                    150,
+                    220,
+                    255,
+                    0.12
+                ) 35%,
+                transparent 70%
+            );
+
+        box-shadow:
+            0 0 15px
+            rgba(
+                150,
+                220,
+                255,
+                0.25
+            );
+
+        animation:
+            approvedPulse 4s
+            ease-in-out
+            infinite;
+
+    }
+
+
+    .approved-ripple::before {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 6px;
+
+        border:
+            1px solid
+            rgba(
+                200,
+                240,
+                255,
+                0.50
+            );
+
+        border-radius: 50%;
+
+    }
+
+
+    .approved-ripple::after {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        border:
+            1px solid
+            rgba(
+                180,
+                230,
+                255,
+                0.18
+            );
+
+        border-radius: 50%;
+
+        transform:
+            scale(1.4);
+
+        opacity: 0;
+
+        animation:
+            rippleRing 4s
+            ease-out
+            infinite;
+
+    }
+
+
+    @keyframes approvedPulse {
+
+        0%,
+        100% {
+
+            opacity: 0.35;
+
+        }
+
+        50% {
+
+            opacity: 0.75;
+
+        }
+
+    }
+
+
+    @keyframes rippleRing {
+
+        0% {
+
+            transform:
+                scale(0.8);
+
+            opacity: 0.5;
+
+        }
+
+        100% {
+
+            transform:
+                scale(2.5);
+
+            opacity: 0;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       PUBLIC RIPPLE MESSAGE
+       ========================================================= */
+
+    .approved-message-panel {
+
+        position: fixed;
+
+        left: 50%;
+        top: 50%;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(0.96);
+
+        z-index: 30;
+
+        width: min(
+            90%,
+            470px
+        );
+
+        padding: 30px;
+
+        box-sizing: border-box;
+
+        border-radius: 20px;
+
+        background:
+            rgba(
+                0,
+                15,
+                30,
+                0.92
+            );
+
+        border:
+            1px solid
+            rgba(
+                180,
+                225,
+                255,
+                0.28
+            );
+
+        backdrop-filter:
+            blur(14px);
+
+        box-shadow:
+            0 20px 60px
+            rgba(
+                0,
+                0,
+                0,
+                0.50
+            );
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        transition:
+            opacity 0.35s ease,
+            transform 0.35s ease;
+
+        text-align: center;
+
+    }
+
+
+    .approved-message-panel.show {
+
+        opacity: 1;
+
+        pointer-events: auto;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(1);
+
+    }
+
+
+    .approved-message-number {
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+        letter-spacing: 3px;
+
+        text-transform: uppercase;
+
+        opacity: 0.50;
+
+        margin-bottom: 15px;
+
+    }
+
+
+    .approved-message-text {
+
+        font-size: 22px;
+
+        line-height: 1.5;
+
+        font-weight: 300;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .approved-message-footer {
+
+        font-size: 12px;
+
+        letter-spacing: 1px;
+
+        opacity: 0.45;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .approved-message-close {
+
+        padding:
+            10px
+            22px;
+
+        border-radius: 22px;
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                0.18
+            );
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                0.10
+            );
+
+        color: white;
+
+        cursor: pointer;
+
+    }
+
+
+    /* =========================================================
        MESSAGE PANEL
        ========================================================= */
 
@@ -807,7 +1134,10 @@
 
     .message-panel-title {
 
-        margin: 0 0 10px;
+        margin:
+            0
+            0
+            10px;
 
         text-align: center;
 
@@ -822,7 +1152,10 @@
 
     .message-panel-description {
 
-        margin: 0 0 22px;
+        margin:
+            0
+            0
+            22px;
 
         text-align: center;
 
@@ -879,10 +1212,6 @@
 
         line-height: 1.5;
 
-        transition:
-            border-color 0.2s ease,
-            background 0.2s ease;
-
     }
 
 
@@ -894,27 +1223,6 @@
                 255,
                 255,
                 0.40
-            );
-
-    }
-
-
-    .ripple-message-input:focus {
-
-        border-color:
-            rgba(
-                190,
-                230,
-                255,
-                0.50
-            );
-
-        background:
-            rgba(
-                255,
-                255,
-                255,
-                0.08
             );
 
     }
@@ -956,10 +1264,6 @@
 
         font-size: 14px;
 
-        transition:
-            background 0.2s ease,
-            transform 0.2s ease;
-
     }
 
 
@@ -997,35 +1301,6 @@
     }
 
 
-    .message-panel-button:hover {
-
-        transform:
-            translateY(-1px);
-
-        background:
-            rgba(
-                255,
-                255,
-                255,
-                0.16
-            );
-
-    }
-
-
-    .message-submit:hover {
-
-        background:
-            rgba(
-                70,
-                150,
-                190,
-                0.70
-            );
-
-    }
-
-
     .message-error {
 
         min-height: 18px;
@@ -1045,9 +1320,6 @@
             );
 
         opacity: 0;
-
-        transition:
-            opacity 0.2s ease;
 
     }
 
@@ -1110,7 +1382,8 @@
             );
 
         backdrop-filter:
-            blur(14px);
+            blur(14px
+        );
 
         box-shadow:
             0 20px 60px
@@ -1314,22 +1587,8 @@
         cursor: pointer;
 
         backdrop-filter:
-            blur(8px);
-
-        box-shadow:
-            0 4px 20px
-            rgba(
-                0,
-                0,
-                0,
-                0.25
-            );
-
-        transition:
-            background 0.25s ease,
-            border-color 0.25s ease,
-            transform 0.25s ease,
-            box-shadow 0.25s ease;
+            blur(8px
+        );
 
     }
 
@@ -1480,10 +1739,6 @@
 
             width: 88%;
 
-            padding:
-                12px
-                16px;
-
         }
 
 
@@ -1505,18 +1760,27 @@
         }
 
 
+        .approved-message-panel {
+
+            width: 92%;
+
+            padding: 24px;
+
+        }
+
+
+        .approved-message-text {
+
+            font-size: 19px;
+
+        }
+
+
         .ripple-message-panel {
 
             padding: 23px;
 
             width: 92%;
-
-        }
-
-
-        .message-panel-title {
-
-            font-size: 23px;
 
         }
 
@@ -1604,7 +1868,7 @@
 
 
 <!-- =========================================================
-     RIPPLE MAKER COUNT
+     RIPPLE COUNT
      ========================================================= -->
 
 <div class="ripple-count">
@@ -1672,6 +1936,37 @@
 
 
 <!-- =========================================================
+     APPROVED RIPPLE MARKERS
+     ========================================================= -->
+
+<div
+    class="approved-ripple"
+    data-ripple-number="1"
+    style="left: 18%; top: 35%;"
+    onclick="openApprovedRipple(1)"
+    title="View Ripple #1">
+</div>
+
+
+<div
+    class="approved-ripple"
+    data-ripple-number="2"
+    style="left: 74%; top: 43%;"
+    onclick="openApprovedRipple(2)"
+    title="View Ripple #2">
+</div>
+
+
+<div
+    class="approved-ripple"
+    data-ripple-number="3"
+    style="left: 61%; top: 70%;"
+    onclick="openApprovedRipple(3)"
+    title="View Ripple #3">
+</div>
+
+
+<!-- =========================================================
      WATER
      ========================================================= -->
 
@@ -1688,12 +1983,54 @@
 <div
     class="modal-overlay"
     id="modalOverlay"
-    onclick="closeMessagePanel()">
+    onclick="closeAllPanels()">
 </div>
 
 
 <!-- =========================================================
-     RIPPLE MESSAGE PANEL
+     APPROVED MESSAGE PANEL
+     ========================================================= -->
+
+<div
+    class="approved-message-panel"
+    id="approvedMessagePanel">
+
+    <div
+        class="approved-message-number"
+        id="approvedMessageNumber">
+
+        Ripple #1
+
+    </div>
+
+
+    <div
+        class="approved-message-text"
+        id="approvedMessageText">
+
+    </div>
+
+
+    <div class="approved-message-footer">
+
+        A ripple left in The Infinite Pond
+
+    </div>
+
+
+    <button
+        class="approved-message-close"
+        onclick="closeApprovedRipple()">
+
+        Return to the Pond
+
+    </button>
+
+</div>
+
+
+<!-- =========================================================
+     NEW RIPPLE MESSAGE PANEL
      ========================================================= -->
 
 <div
@@ -1701,7 +2038,12 @@
     id="rippleMessagePanel">
 
     <div class="message-panel-kicker">
-        Ripple #<span id="messageRippleNumber">101</span>
+
+        Ripple #<span
+            id="messageRippleNumber">
+            101
+        </span>
+
     </div>
 
 
@@ -1847,43 +2189,87 @@
 
     let rippleIdentityTimer;
 
-    let hasMadeFirstRipple = false;
-
-    let hasOpenedMessagePanel = false;
-
     let rippleNumber = 101;
 
     let pendingRippleNumber = null;
 
 
     /*
-       Temporary local message storage.
+       ========================================================
+       APPROVED RIPPLE DATA
 
-       These messages are NOT public yet.
+       These are temporary test messages.
 
-       In a future version, this array will be
-       replaced by a real database / approval system.
+       Only messages with status:
+       "approved"
+
+       are displayed publicly.
+
+       Later this array will be replaced by
+       the real approved messages from a database.
+       ========================================================
+    */
+
+    const approvedRipples = [
+
+        {
+
+            rippleNumber: 1,
+
+            message:
+                "You never know how much one small act can mean to someone.",
+
+            status:
+                "approved"
+
+        },
+
+
+        {
+
+            rippleNumber: 2,
+
+            message:
+                "It's okay to ask for help. You don't have to carry everything alone.",
+
+            status:
+                "approved"
+
+        },
+
+
+        {
+
+            rippleNumber: 3,
+
+            message:
+                "One kind word can change someone's entire day.",
+
+            status:
+                "approved"
+
+        }
+
+    ];
+
+
+    /*
+       ========================================================
+       PENDING RIPPLE MESSAGES
+
+       These remain private until approved.
+
+       A future moderation system will move approved
+       messages into the approvedRipples collection.
+       ========================================================
     */
 
     const pendingRippleMessages = [];
 
 
-    function closeMessage() {
-
-        const message =
-            document.querySelector(
-                ".message"
-            );
-
-        if (message) {
-
-            message.style.display =
-                "none";
-
-        }
-
-    }
-
+    /* =========================================================
+       INTERACTION CUE
+       ========================================================= */
 
     function showInteractionCue() {
 
@@ -1933,20 +2319,11 @@
     }
 
 
+    /* =========================================================
+       FIRST RIPPLE MESSAGE
+       ========================================================= */
+
     function showFirstRippleMessage() {
-
-        if (
-            hasMadeFirstRipple
-        ) {
-
-            return;
-
-        }
-
-
-        hasMadeFirstRipple =
-            true;
-
 
         const message =
             document.getElementById(
@@ -1994,14 +2371,20 @@
     }
 
 
-    function showRippleIdentity() {
+    /* =========================================================
+       RIPPLE IDENTITY
+       ========================================================= */
+
+    function showRippleIdentity(
+        number
+    ) {
 
         const identity =
             document.getElementById(
                 "rippleIdentity"
             );
 
-        const number =
+        const identityNumber =
             document.getElementById(
                 "rippleIdentityNumber"
             );
@@ -2009,7 +2392,7 @@
 
         if (
             !identity ||
-            !number
+            !identityNumber
         ) {
 
             return;
@@ -2017,9 +2400,9 @@
         }
 
 
-        number.textContent =
+        identityNumber.textContent =
             "Ripple #" +
-            rippleNumber;
+            number;
 
 
         clearTimeout(
@@ -2056,6 +2439,10 @@
     }
 
 
+    /* =========================================================
+       CREATE VISITOR RIPPLE
+       ========================================================= */
+
     function createVisitorRipple(
         x,
         y
@@ -2081,6 +2468,10 @@
 
     }
 
+
+    /* =========================================================
+       NEW RIPPLE MESSAGE PANEL
+       ========================================================= */
 
     function openMessagePanel() {
 
@@ -2147,10 +2538,6 @@
         );
 
 
-        hasOpenedMessagePanel =
-            true;
-
-
         setTimeout(
             function() {
 
@@ -2170,11 +2557,6 @@
                 "rippleMessagePanel"
             );
 
-        const overlay =
-            document.getElementById(
-                "modalOverlay"
-            );
-
 
         if (panel) {
 
@@ -2184,17 +2566,12 @@
 
         }
 
-
-        if (overlay) {
-
-            overlay.classList.remove(
-                "show"
-            );
-
-        }
-
     }
 
+
+    /* =========================================================
+       SUBMIT RIPPLE MESSAGE
+       ========================================================= */
 
     function submitRippleMessage() {
 
@@ -2243,7 +2620,7 @@
         );
 
 
-        const rippleData = {
+        pendingRippleMessages.push({
 
             rippleNumber:
                 pendingRippleNumber,
@@ -2257,32 +2634,19 @@
             createdAt:
                 new Date().toISOString()
 
-        };
+        });
 
 
-        pendingRippleMessages.push(
-            rippleData
-        );
-
-
-        /*
-           The message is intentionally kept
-           hidden from the public experience.
-
-           It is now stored as PENDING.
-
-           A future approval system will allow
-           approved messages to become visible.
-        */
-
-
-        closeMessagePanel();
-
+        closeAllPanels();
 
         showSubmissionConfirmation();
 
     }
 
+
+    /* =========================================================
+       SUBMISSION CONFIRMATION
+       ========================================================= */
 
     function showSubmissionConfirmation() {
 
@@ -2342,6 +2706,156 @@
     }
 
 
+    /* =========================================================
+       APPROVED RIPPLE DISPLAY
+       ========================================================= */
+
+    function openApprovedRipple(
+        rippleId
+    ) {
+
+        const ripple =
+            approvedRipples.find(
+                function(item) {
+
+                    return (
+                        item.rippleNumber ===
+                        rippleId
+                    );
+
+                }
+            );
+
+
+        if (
+            !ripple ||
+            ripple.status !==
+            "approved"
+        ) {
+
+            return;
+
+        }
+
+
+        const panel =
+            document.getElementById(
+                "approvedMessagePanel"
+            );
+
+        const overlay =
+            document.getElementById(
+                "modalOverlay"
+            );
+
+        const number =
+            document.getElementById(
+                "approvedMessageNumber"
+            );
+
+        const text =
+            document.getElementById(
+                "approvedMessageText"
+            );
+
+
+        if (
+            !panel ||
+            !overlay ||
+            !number ||
+            !text
+        ) {
+
+            return;
+
+        }
+
+
+        number.textContent =
+            "Ripple #" +
+            ripple.rippleNumber;
+
+
+        text.textContent =
+            "“" +
+            ripple.message +
+            "”";
+
+
+        overlay.classList.add(
+            "show"
+        );
+
+
+        panel.classList.add(
+            "show"
+        );
+
+    }
+
+
+    function closeApprovedRipple() {
+
+        const panel =
+            document.getElementById(
+                "approvedMessagePanel"
+            );
+
+
+        if (panel) {
+
+            panel.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        document
+            .getElementById(
+                "modalOverlay"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+    /* =========================================================
+       CLOSE ALL PANELS
+       ========================================================= */
+
+    function closeAllPanels() {
+
+        closeMessagePanel();
+
+        closeApprovedRipple();
+
+        closeConfirmation();
+
+
+        const overlay =
+            document.getElementById(
+                "modalOverlay"
+            );
+
+
+        if (overlay) {
+
+            overlay.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       MAKE YOUR RIPPLE
+       ========================================================= */
+
     function makeRipple() {
 
         const x =
@@ -2362,16 +2876,14 @@
 
             showFirstRippleMessage();
 
-            showRippleIdentity();
 
+            showRippleIdentity(
+                rippleNumber
+            );
 
-            /*
-               The current ripple receives its
-               number, then the next ripple will
-               receive the next number.
-            */
 
             openMessagePanel();
+
 
             rippleNumber++;
 
@@ -2380,13 +2892,17 @@
     }
 
 
+    /* =========================================================
+       CLICK ANYWHERE ON POND
+       ========================================================= */
+
     document.addEventListener(
         "pointerdown",
         function(event) {
 
             if (
                 event.target.closest(
-                    ".make-ripple, .message, button, textarea, .ripple-message-panel, .submission-confirmation"
+                    ".make-ripple, .approved-ripple, .message, button, textarea, .ripple-message-panel, .submission-confirmation, .approved-message-panel"
                 )
             ) {
 
@@ -2410,15 +2926,14 @@
 
                 showFirstRippleMessage();
 
-                showRippleIdentity();
 
+                showRippleIdentity(
+                    rippleNumber
+                );
 
-                /*
-                   Give this ripple its number
-                   before moving to the next one.
-                */
 
                 openMessagePanel();
+
 
                 rippleNumber++;
 
@@ -2428,9 +2943,9 @@
     );
 
 
-    /*
-       Allow Escape to close the message panel.
-    */
+    /* =========================================================
+       ESCAPE KEY
+       ========================================================= */
 
     document.addEventListener(
         "keydown",
@@ -2440,7 +2955,7 @@
                 event.key === "Escape"
             ) {
 
-                closeMessagePanel();
+                closeAllPanels();
 
             }
 
@@ -2448,3 +2963,4 @@
     );
 
 </script>
+```
