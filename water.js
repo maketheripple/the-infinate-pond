@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.2.1 — PHOTOREALISTIC MOONLIGHT REFLECTION
+   VERSION 10.3 — RIPPLE-ONLY INTERACTION
    ========================================================= */
 
 const canvas =
@@ -89,17 +89,24 @@ if (!canvas) {
             float hash(vec2 p) {
 
                 return fract(
+
                     sin(
+
                         dot(
+
                             p,
+
                             vec2(
                                 127.1,
                                 311.7
                             )
+
                         )
+
                     )
                     *
                     43758.5453123
+
                 );
 
             }
@@ -130,29 +137,35 @@ if (!canvas) {
 
                 float b =
                     hash(
+
                         i +
                         vec2(
                             1.0,
                             0.0
                         )
+
                     );
 
                 float c =
                     hash(
+
                         i +
                         vec2(
                             0.0,
                             1.0
                         )
+
                     );
 
                 float d =
                     hash(
+
                         i +
                         vec2(
                             1.0,
                             1.0
                         )
+
                     );
 
                 return mix(
@@ -189,9 +202,13 @@ if (!canvas) {
                     0.5;
 
                 for (
+
                     int i = 0;
+
                     i < 5;
+
                     i++
+
                 ) {
 
                     value +=
@@ -213,6 +230,8 @@ if (!canvas) {
 
             /* =================================================
                LARGE WATER MOTION
+
+               Calm, broad undulation.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -222,13 +241,18 @@ if (!canvas) {
                     sin(
 
                         dot(
+
                             p,
+
                             normalize(
+
                                 vec2(
                                     1.0,
                                     0.18
                                 )
+
                             )
+
                         )
                         *
                         0.72
@@ -244,13 +268,18 @@ if (!canvas) {
                     sin(
 
                         dot(
+
                             p,
+
                             normalize(
+
                                 vec2(
                                     -0.32,
                                     1.0
                                 )
+
                             )
+
                         )
                         *
                         0.58
@@ -285,13 +314,18 @@ if (!canvas) {
                     sin(
 
                         dot(
+
                             p,
+
                             normalize(
+
                                 vec2(
                                     0.35,
                                     1.0
                                 )
+
                             )
+
                         )
                         *
                         2.8
@@ -307,13 +341,18 @@ if (!canvas) {
                     sin(
 
                         dot(
+
                             p,
+
                             normalize(
+
                                 vec2(
                                     -0.72,
                                     0.38
                                 )
+
                             )
+
                         )
                         *
                         3.6
@@ -541,6 +580,9 @@ if (!canvas) {
                RIPPLE INTERFERENCE
 
                Disabled intentionally.
+
+               This prevents the old secondary ripple
+               from returning.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -553,7 +595,7 @@ if (!canvas) {
             /* =================================================
                IMPACT DISPLACEMENT
 
-               The ONLY click-generated ripple.
+               The ONLY click-generated ripple displacement.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -563,9 +605,13 @@ if (!canvas) {
 
 
                 for (
+
                     int i = 0;
+
                     i < MAX_RIPPLES;
+
                     i++
+
                 ) {
 
                     float strength =
@@ -573,27 +619,37 @@ if (!canvas) {
 
 
                     if (
+
                         strength > 0.0
+
                     ) {
 
                         float elapsed =
 
                             max(
+
                                 0.0,
+
                                 time -
                                 rippleStarts[i]
+
                             );
 
 
                         if (
+
                             elapsed < 2.5
+
                         ) {
 
                             float d =
 
                                 distance(
+
                                     p,
+
                                     ripplePositions[i]
+
                                 );
 
 
@@ -734,22 +790,28 @@ if (!canvas) {
 
 
                 float x =
+
                     waterHeight(
+
                         p +
                         vec2(
                             e,
                             0.0
                         )
+
                     );
 
 
                 float y =
+
                     waterHeight(
+
                         p +
                         vec2(
                             0.0,
                             e
                         )
+
                     );
 
 
@@ -772,6 +834,8 @@ if (!canvas) {
 
             /* =================================================
                MOON CLOUDS
+
+               Visual-only cloud field.
             ================================================= */
 
             float moonClouds(vec2 uv) {
@@ -801,8 +865,10 @@ if (!canvas) {
                 float cloudA =
 
                     fbm(
+
                         cloudUV *
                         1.15
+
                     );
 
 
@@ -862,8 +928,11 @@ if (!canvas) {
                 float distanceFromMoon =
 
                     distance(
+
                         uv,
+
                         moonPosition
+
                     );
 
 
@@ -884,50 +953,76 @@ if (!canvas) {
 
 
                 float clouds =
+
                     moonClouds(uv);
 
 
                 return
 
                     glow *
+
                     mix(
+
                         0.82,
                         0.38,
                         clouds
+
                     );
 
             }
 
 
             /* =================================================
-               PHOTOREALISTIC MOONLIGHT REFLECTION
+               NATURAL MOONLIGHT REFLECTION
+
+               Fragmented moonlight reflection.
+
+               No continuous lightning-bolt beam.
             ================================================= */
 
             float moonReflection(
+
                 vec2 uv,
+
                 vec3 normal
+
             ) {
 
                 float waterMask =
 
                     smoothstep(
+
                         0.48,
                         0.40,
                         uv.y
+
                     );
 
 
                 float bottomFade =
 
                     smoothstep(
+
                         0.015,
                         0.12,
                         uv.y
+
                     );
 
 
                 waterMask *=
                     bottomFade;
+
+
+                if (
+
+                    waterMask <= 0.0
+
+                ) {
+
+                    return 0.0;
+
+                }
 
 
                 float depth =
@@ -1002,9 +1097,11 @@ if (!canvas) {
                         0.20,
 
                         smoothstep(
+
                             0.0,
                             1.0,
                             depth
+
                         )
 
                     );
@@ -1197,9 +1294,11 @@ if (!canvas) {
                             normalize(
 
                                 vec3(
+
                                     0.0,
                                     0.45,
                                     1.0
+
                                 )
 
                             )
@@ -1214,8 +1313,11 @@ if (!canvas) {
                 float shimmer =
 
                     pow(
+
                         facing,
+
                         13.0
+
                     );
 
 
@@ -1224,8 +1326,11 @@ if (!canvas) {
                     pow(
 
                         max(
+
                             normal.z,
+
                             0.0
+
                         ),
 
                         5.0
@@ -1252,9 +1357,11 @@ if (!canvas) {
                 float cloudLight =
 
                     mix(
+
                         1.0,
                         0.30,
                         cloudAmount
+
                     );
 
 
@@ -1266,9 +1373,11 @@ if (!canvas) {
                         0.58,
 
                         smoothstep(
+
                             0.0,
                             1.0,
                             depth
+
                         )
 
                     );
@@ -1301,9 +1410,11 @@ if (!canvas) {
                 float finalReflection =
 
                     (
+
                         fragmentedReflection
                         +
                         softReflection
+
                     )
 
                     *
@@ -1336,7 +1447,8 @@ if (!canvas) {
 
                 vec2 uv =
 
-                    gl_FragCoord.xy /
+                    gl_FragCoord.xy
+                    /
                     resolution;
 
 
@@ -1359,8 +1471,13 @@ if (!canvas) {
 
 
                 p.y *=
+
                     1.55;
 
+
+                /* ---------------------------------------------
+                   WATER SURFACE
+                --------------------------------------------- */
 
                 float surface =
 
@@ -1372,25 +1489,29 @@ if (!canvas) {
                     surfaceNormal(p);
 
 
-                /* =============================================
+                /* ---------------------------------------------
                    BASE WATER
-                ============================================= */
+                --------------------------------------------- */
 
                 vec3 deepWater =
 
                     vec3(
+
                         0.0035,
                         0.018,
                         0.032
+
                     );
 
 
                 vec3 blueWater =
 
                     vec3(
+
                         0.008,
                         0.052,
                         0.082
+
                     );
 
 
@@ -1437,8 +1558,10 @@ if (!canvas) {
                 backgroundVariation =
 
                     (
+
                         backgroundVariation -
                         0.5
+
                     )
                     *
                     0.035;
@@ -1472,17 +1595,20 @@ if (!canvas) {
                     );
 
 
-                /* =============================================
+                /* ---------------------------------------------
                    SURFACE HIGHLIGHTS
-                ============================================= */
+                --------------------------------------------- */
 
                 float highlight =
 
                     pow(
 
                         max(
+
                             normal.z,
+
                             0.0
+
                         ),
 
                         7.0
@@ -1505,9 +1631,9 @@ if (!canvas) {
                     highlight;
 
 
-                /* =============================================
+                /* ---------------------------------------------
                    NATURAL SURFACE SHEEN
-                ============================================= */
+                --------------------------------------------- */
 
                 float surfaceSheen =
 
@@ -1530,9 +1656,9 @@ if (!canvas) {
                     surfaceSheen;
 
 
-                /* =============================================
-                   MOON REFLECTION
-                ============================================= */
+                /* ---------------------------------------------
+                   NATURAL MOON REFLECTION
+                --------------------------------------------- */
 
                 float reflection =
 
@@ -1564,9 +1690,9 @@ if (!canvas) {
                     1.65;
 
 
-                /* =============================================
-                   SOFT MOON ATMOSPHERE
-                ============================================= */
+                /* ---------------------------------------------
+                   SOFT ATMOSPHERIC MOONLIGHT
+                --------------------------------------------- */
 
                 float atmosphere =
 
@@ -1588,9 +1714,9 @@ if (!canvas) {
                     atmosphere;
 
 
-                /* =============================================
+                /* ---------------------------------------------
                    AMBIENT MOONLIGHT
-                ============================================= */
+                --------------------------------------------- */
 
                 float upperLight =
 
@@ -1610,8 +1736,10 @@ if (!canvas) {
                         -pow(
 
                             (
+
                                 uv.x -
                                 0.50
+
                             )
                             /
                             0.52,
@@ -1644,9 +1772,9 @@ if (!canvas) {
                     ambientMoon;
 
 
-                /* =============================================
+                /* ---------------------------------------------
                    CINEMATIC VIGNETTE
-                ============================================= */
+                --------------------------------------------- */
 
                 float vignette =
 
@@ -1662,8 +1790,10 @@ if (!canvas) {
                             uv,
 
                             vec2(
+
                                 0.5,
                                 0.43
+
                             )
 
                         )
@@ -1682,9 +1812,9 @@ if (!canvas) {
                     );
 
 
-                /* =============================================
+                /* ---------------------------------------------
                    FINAL CONTRAST
-                ============================================= */
+                --------------------------------------------- */
 
                 color =
 
@@ -1718,8 +1848,10 @@ if (!canvas) {
         ===================================================== */
 
         function createShader(
+
             type,
             source
+
         ) {
 
             const shader =
@@ -1730,21 +1862,27 @@ if (!canvas) {
 
 
             gl.shaderSource(
+
                 shader,
                 source
+
             );
 
 
             gl.compileShader(
+
                 shader
+
             );
 
 
             if (
 
                 !gl.getShaderParameter(
+
                     shader,
                     gl.COMPILE_STATUS
+
                 )
 
             ) {
@@ -1870,9 +2008,9 @@ if (!canvas) {
                 );
 
 
-                /* =============================================
+                /* =================================================
                    FULL SCREEN QUAD
-                ============================================= */
+                ================================================= */
 
                 const buffer =
 
@@ -1908,9 +2046,9 @@ if (!canvas) {
                 );
 
 
-                /* =============================================
+                /* =================================================
                    POSITION ATTRIBUTE
-                ============================================= */
+                ================================================= */
 
                 const position =
 
@@ -1942,9 +2080,9 @@ if (!canvas) {
                 );
 
 
-                /* =============================================
+                /* =================================================
                    UNIFORMS
-                ============================================= */
+                ================================================= */
 
                 const resolutionLocation =
 
@@ -2006,16 +2144,27 @@ if (!canvas) {
                     );
 
 
-                /* =============================================
+                /* =================================================
                    RIPPLE STORAGE
-                ============================================= */
+                ================================================= */
 
                 const ripples = [];
 
 
-                /* =============================================
+                /* =================================================
                    CREATE RIPPLE
-                ============================================= */
+
+                   IMPORTANT:
+
+                   This function ONLY creates the animated
+                   water ripple.
+
+                   It does NOT open a modal, form, or
+                   submission interface.
+
+                   Submission will be handled later by the
+                   dedicated bottom-right button.
+                ================================================= */
 
                 function createRipple(
 
@@ -2124,9 +2273,12 @@ if (!canvas) {
                 }
 
 
-                /* =============================================
+                /* =================================================
                    POINTER RIPPLE
-                ============================================= */
+
+                   Clicking/tapping the pond creates ONLY
+                   the temporary animated ripple.
+                ================================================= */
 
                 window.addEventListener(
 
@@ -2168,9 +2320,9 @@ if (!canvas) {
                 );
 
 
-                /* =============================================
+                /* =================================================
                    RESIZE
-                ============================================= */
+                ================================================= */
 
                 function resizeWater() {
 
@@ -2225,6 +2377,7 @@ if (!canvas) {
                 window.addEventListener(
 
                     "resize",
+
                     resizeWater
 
                 );
@@ -2233,9 +2386,9 @@ if (!canvas) {
                 resizeWater();
 
 
-                /* =============================================
+                /* =================================================
                    RENDER LOOP
-                ============================================= */
+                ================================================= */
 
                 function renderWater(
 
@@ -2256,6 +2409,10 @@ if (!canvas) {
                     );
 
 
+                    /* ---------------------------------------------
+                       Remove expired ripples
+                    --------------------------------------------- */
+
                     while (
 
                         ripples.length > 0 &&
@@ -2270,6 +2427,10 @@ if (!canvas) {
 
                     }
 
+
+                    /* ---------------------------------------------
+                       Prepare ripple arrays
+                    --------------------------------------------- */
 
                     const positions =
 
@@ -2369,6 +2530,10 @@ if (!canvas) {
                     }
 
 
+                    /* ---------------------------------------------
+                       Upload uniforms
+                    --------------------------------------------- */
+
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2423,6 +2588,10 @@ if (!canvas) {
 
                     );
 
+
+                    /* ---------------------------------------------
+                       Draw pond
+                    --------------------------------------------- */
 
                     gl.drawArrays(
 
