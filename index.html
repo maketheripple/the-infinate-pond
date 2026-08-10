@@ -446,8 +446,16 @@ body {
 
     height: 41vh;
 
-    display:
-        block;
+    display: flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-start;
 
     text-align:
         center;
@@ -463,21 +471,11 @@ body {
 
 /* =====================================================
    MAKE THE RIPPLE LOGO
+
+   LOCKED IN CURRENT POSITION
 ===================================================== */
 
 .pond-logo {
-
-    position:
-        absolute;
-
-    left:
-        50%;
-
-    top:
-        2.5vh;
-
-    transform:
-        translateX(-50%);
 
     width:
         clamp(
@@ -489,38 +487,44 @@ body {
     height:
         auto;
 
+    margin-top:
+        2.5vh;
+
+    margin-bottom:
+        0.8vh;
+
     opacity:
         0.96;
 
     filter:
 
         drop-shadow(
-            0 0 12px
+            0 0 16px
             rgba(
                 120,
                 205,
                 235,
+                0.42
+            )
+        )
+
+        drop-shadow(
+            0 0 48px
+            rgba(
+                100,
+                190,
+                225,
                 0.34
             )
         )
 
         drop-shadow(
-            0 0 36px
+            0 0 90px
             rgba(
                 100,
                 190,
                 225,
-                0.28
-            )
-        )
-
-        drop-shadow(
-            0 0 70px
-            rgba(
-                100,
-                190,
-                225,
-                0.16
+                0.22
             )
         );
 
@@ -528,32 +532,30 @@ body {
 
 
 /* =====================================================
-   WORDING GROUP
+   HEADER WORDING GROUP
 
-   Positioned independently from the logo so the
-   larger logo does not push the wording below
-   the horizon.
+   MOVES INDEPENDENTLY FROM THE LOGO
+
+   This allows the logo to remain locked in place
+   while all wording below it moves together.
 ===================================================== */
 
-.pond-wording {
+.pond-header-text {
 
-    position:
-        absolute;
+    display:
+        flex;
 
-    left:
-        50%;
+    flex-direction:
+        column;
 
-    top:
-        25.5vh;
-
-    transform:
-        translateX(-50%);
+    align-items:
+        center;
 
     width:
         100%;
 
-    text-align:
-        center;
+    margin-top:
+        2.8vh;
 
 }
 
@@ -564,8 +566,8 @@ body {
 
 .presented {
 
-    margin:
-        0 0 5px 0;
+    margin-bottom:
+        5px;
 
     font-size:
         clamp(
@@ -586,16 +588,6 @@ body {
             240,
             250,
             0.68
-        );
-
-    text-shadow:
-
-        0 0 12px
-        rgba(
-            110,
-            195,
-            225,
-            0.20
         );
 
 }
@@ -1056,16 +1048,16 @@ body {
         width:
             210px;
 
-        top:
+        margin-top:
             3vh;
 
     }
 
 
-    .pond-wording {
+    .pond-header-text {
 
-        top:
-            26vh;
+        margin-top:
+            2.4vh;
 
     }
 
@@ -1204,6 +1196,8 @@ body {
 
         <!-- =============================================
              MAKE THE RIPPLE LOGO
+
+             LOCKED POSITION
         ============================================== -->
 
         <img
@@ -1214,11 +1208,13 @@ body {
 
 
         <!-- =============================================
-             WORDING GROUP
+             HEADER WORDING GROUP
+
+             MOVES TOGETHER INDEPENDENTLY FROM LOGO
         ============================================== -->
 
         <div
-            class="pond-wording"
+            class="pond-header-text"
         >
 
 
