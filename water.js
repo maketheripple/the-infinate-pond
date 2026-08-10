@@ -1,10 +1,10 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.3 — RIPPLE-ONLY INTERACTION
-   ========================================================= */
+   VERSION 10.4B — RAISED MOONLIGHT REFLECTION
+========================================================= */
 
 const canvas =
-    document.getElementById("waterCanvas");
+document.getElementById("waterCanvas");
 
 if (!canvas) {
 
@@ -230,8 +230,6 @@ if (!canvas) {
 
             /* =================================================
                LARGE WATER MOTION
-
-               Calm, broad undulation.
             ================================================= */
 
             float largeWave(vec2 p) {
@@ -578,11 +576,6 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE INTERFERENCE
-
-               Disabled intentionally.
-
-               This prevents the old secondary ripple
-               from returning.
             ================================================= */
 
             float rippleInterference(vec2 p) {
@@ -594,8 +587,6 @@ if (!canvas) {
 
             /* =================================================
                IMPACT DISPLACEMENT
-
-               The ONLY click-generated ripple displacement.
             ================================================= */
 
             float impactDisplacement(vec2 p) {
@@ -647,7 +638,6 @@ if (!canvas) {
                                 distance(
 
                                     p,
-
                                     ripplePositions[i]
 
                                 );
@@ -727,8 +717,6 @@ if (!canvas) {
 
             /* =================================================
                RIPPLE MICRO-WAVES
-
-               Disabled intentionally.
             ================================================= */
 
             float rippleMicroWaves(vec2 p) {
@@ -834,8 +822,6 @@ if (!canvas) {
 
             /* =================================================
                MOON CLOUDS
-
-               Visual-only cloud field.
             ================================================= */
 
             float moonClouds(vec2 uv) {
@@ -930,7 +916,6 @@ if (!canvas) {
                     distance(
 
                         uv,
-
                         moonPosition
 
                     );
@@ -975,9 +960,10 @@ if (!canvas) {
             /* =================================================
                NATURAL MOONLIGHT REFLECTION
 
-               Fragmented moonlight reflection.
+               VERSION 10.4B
 
-               No continuous lightning-bolt beam.
+               Reflection depth begins higher so the visible
+               moonlight is pulled closer toward the horizon.
             ================================================= */
 
             float moonReflection(
@@ -1030,7 +1016,7 @@ if (!canvas) {
                     clamp(
 
                         (
-                            0.46 -
+                            0.54 -
                             uv.y
                         )
                         /
@@ -1315,7 +1301,6 @@ if (!canvas) {
                     pow(
 
                         facing,
-
                         13.0
 
                     );
@@ -1328,7 +1313,6 @@ if (!canvas) {
                         max(
 
                             normal.z,
-
                             0.0
 
                         ),
@@ -1471,7 +1455,6 @@ if (!canvas) {
 
 
                 p.y *=
-
                     1.55;
 
 
@@ -1606,11 +1589,9 @@ if (!canvas) {
                         max(
 
                             normal.z,
-
                             0.0
 
                         ),
-
                         7.0
 
                     );
@@ -2153,17 +2134,6 @@ if (!canvas) {
 
                 /* =================================================
                    CREATE RIPPLE
-
-                   IMPORTANT:
-
-                   This function ONLY creates the animated
-                   water ripple.
-
-                   It does NOT open a modal, form, or
-                   submission interface.
-
-                   Submission will be handled later by the
-                   dedicated bottom-right button.
                 ================================================= */
 
                 function createRipple(
@@ -2275,9 +2245,6 @@ if (!canvas) {
 
                 /* =================================================
                    POINTER RIPPLE
-
-                   Clicking/tapping the pond creates ONLY
-                   the temporary animated ripple.
                 ================================================= */
 
                 window.addEventListener(
@@ -2409,10 +2376,6 @@ if (!canvas) {
                     );
 
 
-                    /* ---------------------------------------------
-                       Remove expired ripples
-                    --------------------------------------------- */
-
                     while (
 
                         ripples.length > 0 &&
@@ -2427,10 +2390,6 @@ if (!canvas) {
 
                     }
 
-
-                    /* ---------------------------------------------
-                       Prepare ripple arrays
-                    --------------------------------------------- */
 
                     const positions =
 
@@ -2530,10 +2489,6 @@ if (!canvas) {
                     }
 
 
-                    /* ---------------------------------------------
-                       Upload uniforms
-                    --------------------------------------------- */
-
                     gl.uniform2f(
 
                         resolutionLocation,
@@ -2547,7 +2502,6 @@ if (!canvas) {
                     gl.uniform1f(
 
                         timeLocation,
-
                         currentTime
 
                     );
@@ -2556,7 +2510,6 @@ if (!canvas) {
                     gl.uniform1f(
 
                         scrollLocation,
-
                         window.scrollY
 
                     );
@@ -2565,7 +2518,6 @@ if (!canvas) {
                     gl.uniform2fv(
 
                         ripplePositionsLocation,
-
                         positions
 
                     );
@@ -2574,7 +2526,6 @@ if (!canvas) {
                     gl.uniform1fv(
 
                         rippleStartsLocation,
-
                         starts
 
                     );
@@ -2583,15 +2534,10 @@ if (!canvas) {
                     gl.uniform1fv(
 
                         rippleStrengthsLocation,
-
                         strengths
 
                     );
 
-
-                    /* ---------------------------------------------
-                       Draw pond
-                    --------------------------------------------- */
 
                     gl.drawArrays(
 
