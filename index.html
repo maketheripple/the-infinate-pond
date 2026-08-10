@@ -464,7 +464,93 @@ body {
     pointer-events:
         none;
 
-    z-index: 7;
+    z-index:
+        7;
+
+}
+
+
+/* =====================================================
+   MOON GLOW BEHIND LOGO
+===================================================== */
+
+.logo-moon-glow {
+
+    position: absolute;
+
+    top:
+        2.5vh;
+
+    left:
+        50%;
+
+    width:
+        clamp(
+            180px,
+            25vw,
+            300px
+        );
+
+    height:
+        clamp(
+            180px,
+            25vw,
+            300px
+        );
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        50%;
+
+    background:
+
+        radial-gradient(
+            circle,
+
+            rgba(
+                235,
+                248,
+                255,
+                0.24
+            ) 0%,
+
+            rgba(
+                205,
+                235,
+                250,
+                0.16
+            ) 22%,
+
+            rgba(
+                155,
+                210,
+                235,
+                0.09
+            ) 42%,
+
+            rgba(
+                100,
+                175,
+                215,
+                0.035
+            ) 62%,
+
+            transparent 78%
+        );
+
+    filter:
+        blur(3px);
+
+    opacity:
+        0.9;
+
+    pointer-events:
+        none;
+
+    z-index:
+        0;
 
 }
 
@@ -474,6 +560,12 @@ body {
 ===================================================== */
 
 .pond-logo {
+
+    position:
+        relative;
+
+    z-index:
+        1;
 
     width:
         clamp(
@@ -617,7 +709,7 @@ body {
 /* =====================================================
    SUBTITLE
 
-   Kept ABOVE the horizon.
+   ABOVE THE HORIZON
 ===================================================== */
 
 .pond-subtitle {
@@ -1150,6 +1242,12 @@ body {
         <!-- =============================================
              MAKE THE RIPPLE LOGO
         ============================================== -->
+
+        <div
+            class="logo-moon-glow"
+            aria-hidden="true"
+        ></div>
+
 
         <img
             class="pond-logo"
