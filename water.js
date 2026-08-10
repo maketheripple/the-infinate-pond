@@ -974,8 +974,8 @@ if (!canvas) {
 
                     smoothstep(
 
-                        0.58,
-                        0.49,
+                        0.68,
+                        0.57,
                         uv.y
 
                     );
@@ -1028,7 +1028,7 @@ if (!canvas) {
 
                     sin(
 
-                        uv.y *
+                        uv.y + 0.08) *
                         11.0
                         +
                         time *
@@ -1046,7 +1046,7 @@ if (!canvas) {
 
                             vec2(
 
-                                uv.y *
+                                uv.y + 0.08) *
                                 2.8,
 
                                 time *
