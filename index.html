@@ -1,6 +1,7 @@
+```html
 <!-- =========================================================
      THE INFINITE POND
-     VERSION 10.4A — PERMANENT RIPPLE POSITION INTEGRATION
+     VERSION 10.4B — PERMANENT RIPPLE COORDINATE HANDOFF
      ========================================================= -->
 
 <meta charset="UTF-8">
@@ -2802,182 +2803,10 @@
 
 
 <!-- =========================================================
-     PERMANENT RIPPLE POSITION BRIDGE
-     
-     Version 10.4A:
-     Exposes the approved ripple positions to water.js.
-
-     Coordinates are provided in:
-       - pixel coordinates
-       - normalized 0.0–1.0 coordinates
-
-     No visual water behavior is changed in this version.
-     ========================================================= -->
-
-<script>
-
-    window.getPermanentRipplePositions =
-        function() {
-
-            const markers =
-                document.querySelectorAll(
-                    ".approved-ripple"
-                );
-
-
-            const width =
-                window.innerWidth;
-
-
-            const height =
-                window.innerHeight;
-
-
-            const positions =
-                [];
-
-
-            markers.forEach(
-                function(marker) {
-
-                    const rect =
-                        marker.getBoundingClientRect();
-
-
-                    const x =
-                        rect.left +
-                        (
-                            rect.width / 2
-                        );
-
-
-                    const y =
-                        rect.top +
-                        (
-                            rect.height / 2
-                        );
-
-
-                    const rippleNumber =
-                        Number(
-                            marker.dataset.rippleNumber
-                        );
-
-
-                    positions.push({
-
-                        rippleNumber:
-                            rippleNumber,
-
-                        x:
-                            x,
-
-                        y:
-                            y,
-
-                        normalizedX:
-                            x / width,
-
-                        normalizedY:
-                            y / height
-
-                    });
-
-                }
-            );
-
-
-            return positions;
-
-        };
-
-
-    /*
-     * Maintain a current copy of the positions.
-     */
-
-    window.permanentRipplePositions =
-        window.getPermanentRipplePositions();
-
-
-    /*
-     * Update the positions whenever the viewport
-     * changes size or orientation.
-     */
-
-    function updatePermanentRipplePositions() {
-
-        window.permanentRipplePositions =
-            window.getPermanentRipplePositions();
-
-
-        /*
-         * If a future version of water.js exposes
-         * setPermanentRipplePositions(), pass the
-         * updated coordinates directly into it.
-         */
-
-        if (
-            typeof window.setPermanentRipplePositions ===
-            "function"
-        ) {
-
-            window.setPermanentRipplePositions(
-                window.permanentRipplePositions
-            );
-
-        }
-
-    }
-
-
-    window.addEventListener(
-        "resize",
-        updatePermanentRipplePositions
-    );
-
-
-    window.addEventListener(
-        "orientationchange",
-        updatePermanentRipplePositions
-    );
-
-</script>
-
-
-<!-- =========================================================
      WATER ENGINE
      ========================================================= -->
 
 <script src="water.js"></script>
-
-
-<!-- =========================================================
-     INITIALIZE WATER ENGINE POSITION BRIDGE
-     ========================================================= */
-
-<script>
-
-    /*
-     * water.js may expose setPermanentRipplePositions()
-     * in the 10.4A/10.4B integration.
-     *
-     * If it does, provide the current coordinates
-     * immediately after water.js loads.
-     */
-
-    if (
-        typeof window.setPermanentRipplePositions ===
-        "function"
-    ) {
-
-        window.setPermanentRipplePositions(
-            window.permanentRipplePositions
-        );
-
-    }
-
-</script>
 
 
 <!-- =========================================================
@@ -2995,6 +2824,81 @@
     let rippleNumber = 101;
 
     let pendingRippleNumber = null;
+
+
+    /* =========================================================
+       PERMANENT RIPPLE POSITIONS
+
+       Version 10.4B:
+       These normalized coordinates are shared with
+       water.js so the WebGL engine can use the exact
+       positions of approved permanent ripples.
+
+       Coordinates:
+       0.0 = left / top
+       0.5 = center
+       1.0 = right / bottom
+       ========================================================= */
+
+    const permanentRipplePositions = [
+
+        {
+
+            rippleNumber: 1,
+
+            x: 0.18,
+
+            y: 0.64
+
+        },
+
+
+        {
+
+            rippleNumber: 2,
+
+            x: 0.74,
+
+            y: 0.62
+
+        },
+
+
+        {
+
+            rippleNumber: 3,
+
+            x: 0.61,
+
+            y: 0.78
+
+        }
+
+    ];
+
+
+    /* =========================================================
+       SHARE PERMANENT RIPPLE POSITIONS WITH WATER.JS
+       ========================================================= */
+
+    window.permanentRipplePositions =
+        permanentRipplePositions;
+
+
+    /* =========================================================
+       10.4B COORDINATE HANDOFF TEST
+
+       This confirms that the permanent ripple position
+       data has been created and exposed globally for
+       water.js.
+
+       No visual rendering is performed in Version 10.4B.
+       ========================================================= */
+
+    console.log(
+        "Permanent ripple positions:",
+        window.permanentRipplePositions
+    );
 
 
     /* =========================================================
@@ -3680,9 +3584,10 @@
     /* =========================================================
        MAKE YOUR RIPPLE
 
-       Version 10.3: creates a temporary ripple only.
-       The dedicated submission workflow will be redesigned
-       for this button in a later version.
+       Version 10.4B:
+       Still creates a temporary ripple only.
+       The permanent ripple submission workflow remains
+       separate and will be redesigned in a later version.
        ========================================================= */
 
     function makeRipple() {
@@ -3771,3 +3676,4 @@
     );
 
 </script>
+```
