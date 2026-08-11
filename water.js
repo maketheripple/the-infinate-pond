@@ -264,24 +264,28 @@ if (!canvas) {
 
             if (!text) {
 
-                return;
+    return;
 
-            }
-
-
-            context.save();
+}
 
 
-            context.font =
-                `${fontWeight} ${fontSize * scaleY}px ${fontFamily}`;
+context.save();
 
 
-            context.fillStyle =
-                style.color;
+context.font =
+    fontWeight +
+    " " +
+    (fontSize * scaleY) +
+    "px " +
+    fontFamily;
 
 
-            context.textAlign =
-                "left";
+context.fillStyle =
+    style.color;
+
+
+context.textAlign =
+    "left";
 
 
             context.textBaseline =
