@@ -1,7 +1,7 @@
 ```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.6.1 — TRUE MIRRORED BANNER MOONLIGHT REFLECTION
+   VERSION 10.6.1 — RESTORED WATER + MIRRORED REFLECTION
 ========================================================= */
 
 const canvas =
@@ -25,7 +25,6 @@ if (!canvas) {
             }
         );
 
-
     if (!gl) {
 
         console.error(
@@ -33,7 +32,6 @@ if (!canvas) {
         );
 
     } else {
-
 
         /* =================================================
            SETTINGS
@@ -47,27 +45,16 @@ if (!canvas) {
         ================================================= */
 
         const logoElement =
-            document.getElementById(
-                "pondLogo"
-            );
-
+            document.getElementById("pondLogo");
 
         const presentedElement =
-            document.getElementById(
-                "presented"
-            );
-
+            document.getElementById("presented");
 
         const titleElement =
-            document.getElementById(
-                "pondTitle"
-            );
-
+            document.getElementById("pondTitle");
 
         const subtitleElement =
-            document.getElementById(
-                "pondSubtitle"
-            );
+            document.getElementById("pondSubtitle");
 
 
         /* =================================================
@@ -75,23 +62,15 @@ if (!canvas) {
         ================================================= */
 
         const reflectionCanvas =
-            document.createElement(
-                "canvas"
-            );
-
+            document.createElement("canvas");
 
         reflectionCanvas.width = 1024;
         reflectionCanvas.height = 768;
 
-
         const reflectionContext =
-            reflectionCanvas.getContext(
-                "2d"
-            );
-
+            reflectionCanvas.getContext("2d");
 
         let reflectionTexture = null;
-
         let reflectionDirty = true;
 
 
@@ -113,7 +92,6 @@ if (!canvas) {
 
             }
 
-
             if (
                 !letterSpacing ||
                 !isFinite(letterSpacing)
@@ -129,9 +107,7 @@ if (!canvas) {
 
             }
 
-
             let totalWidth = 0;
-
 
             for (
                 let i = 0;
@@ -144,10 +120,8 @@ if (!canvas) {
                         text[i]
                     ).width;
 
-
                 if (
-                    i <
-                    text.length - 1
+                    i < text.length - 1
                 ) {
 
                     totalWidth +=
@@ -157,11 +131,9 @@ if (!canvas) {
 
             }
 
-
             let drawX =
                 x -
                 totalWidth * 0.5;
-
 
             for (
                 let i = 0;
@@ -172,19 +144,16 @@ if (!canvas) {
                 const character =
                     text[i];
 
-
                 context.fillText(
                     character,
                     drawX,
                     y
                 );
 
-
                 drawX +=
                     context.measureText(
                         character
-                    ).width
-                    +
+                    ).width +
                     letterSpacing;
 
             }
@@ -209,10 +178,8 @@ if (!canvas) {
 
             }
 
-
             const rect =
                 element.getBoundingClientRect();
-
 
             if (
                 rect.width <= 0 ||
@@ -223,18 +190,15 @@ if (!canvas) {
 
             }
 
-
             const style =
                 window.getComputedStyle(
                     element
                 );
 
-
             const fontSize =
                 parseFloat(
                     style.fontSize
                 );
-
 
             if (!fontSize) {
 
@@ -242,103 +206,82 @@ if (!canvas) {
 
             }
 
-
             const fontWeight =
                 style.fontWeight;
 
-
             const fontFamily =
                 style.fontFamily;
-
 
             const letterSpacing =
                 parseFloat(
                     style.letterSpacing
                 );
 
-
             const text =
-                element.textContent
-                    .trim();
-
+                element.textContent.trim();
 
             if (!text) {
 
-    return;
+                return;
 
-}
+            }
 
+            context.save();
 
-context.save();
+            /*
+               Parser-safe font construction.
+               Deliberately avoids template literals.
+            */
 
+            context.font =
+                fontWeight +
+                " " +
+                (fontSize * scaleY) +
+                "px " +
+                fontFamily;
 
-context.font =
-    fontWeight +
-    " " +
-    (fontSize * scaleY) +
-    "px " +
-    fontFamily;
+            context.fillStyle =
+                style.color;
 
-
-context.fillStyle =
-    style.color;
-
-
-context.textAlign =
-    "left";
-
+            context.textAlign =
+                "left";
 
             context.textBaseline =
                 "alphabetic";
 
-
             context.shadowColor =
                 "rgba(120,210,240,0.35)";
 
-
             context.shadowBlur =
                 12;
-
 
             const centerX =
                 (
                     rect.left +
                     rect.width * 0.5
-                )
-                *
+                ) *
                 scaleX;
-
 
             const baselineY =
                 (
                     rect.top +
                     rect.height -
                     fontSize * 0.12
-                )
-                *
+                ) *
                 scaleY;
 
-
             drawTrackedText(
-
                 context,
-
                 text,
-
                 centerX,
-
                 baselineY,
-
                 (
                     isFinite(letterSpacing)
                         ? letterSpacing
                         : 0
-                )
-                *
+                ) *
                 scaleX
-
             );
-
 
             context.restore();
 
@@ -357,14 +300,11 @@ context.textAlign =
 
             }
 
-
             const viewportWidth =
                 window.innerWidth;
 
-
             const viewportHeight =
                 window.innerHeight;
-
 
             if (
                 viewportWidth <= 0 ||
@@ -375,24 +315,19 @@ context.textAlign =
 
             }
 
-
             const scaleX =
                 reflectionCanvas.width /
                 viewportWidth;
-
 
             const scaleY =
                 reflectionCanvas.height /
                 viewportHeight;
 
-
             reflectionContext.clearRect(
-
                 0,
                 0,
                 reflectionCanvas.width,
                 reflectionCanvas.height
-
             );
 
 
@@ -409,34 +344,24 @@ context.textAlign =
                 const rect =
                     logoElement.getBoundingClientRect();
 
-
                 reflectionContext.save();
-
 
                 reflectionContext.globalAlpha =
                     0.98;
 
-
                 reflectionContext.shadowColor =
                     "rgba(120,210,240,0.38)";
-
 
                 reflectionContext.shadowBlur =
                     20;
 
-
                 reflectionContext.drawImage(
-
                     logoElement,
-
                     rect.left * scaleX,
                     rect.top * scaleY,
-
                     rect.width * scaleX,
                     rect.height * scaleY
-
                 );
-
 
                 reflectionContext.restore();
 
@@ -448,75 +373,48 @@ context.textAlign =
             --------------------------------------------- */
 
             drawTextElement(
-
                 reflectionContext,
                 presentedElement,
                 scaleX,
                 scaleY
-
             );
 
-
             drawTextElement(
-
                 reflectionContext,
                 titleElement,
                 scaleX,
                 scaleY
-
             );
 
-
             drawTextElement(
-
                 reflectionContext,
                 subtitleElement,
                 scaleX,
                 scaleY
-
             );
-
 
             reflectionDirty =
                 false;
 
-
-            if (
-                reflectionTexture
-            ) {
+            if (reflectionTexture) {
 
                 gl.bindTexture(
-
                     gl.TEXTURE_2D,
                     reflectionTexture
-
                 );
-
-
-                /*
-                   Keep WebGL's normal texture orientation.
-
-                   The shader performs the actual vertical
-                   reflection conversion.
-                */
 
                 gl.pixelStorei(
-
                     gl.UNPACK_FLIP_Y_WEBGL,
                     false
-
                 );
 
-
                 gl.texImage2D(
-
                     gl.TEXTURE_2D,
                     0,
                     gl.RGBA,
                     gl.RGBA,
                     gl.UNSIGNED_BYTE,
                     reflectionCanvas
-
                 );
 
             }
@@ -556,20 +454,13 @@ context.textAlign =
 
             const int MAX_RIPPLES = 12;
 
-
             uniform vec2 resolution;
-
             uniform float time;
-
             uniform float scroll;
-
             uniform sampler2D bannerTexture;
 
-
             uniform vec2 ripplePositions[MAX_RIPPLES];
-
             uniform float rippleStarts[MAX_RIPPLES];
-
             uniform float rippleStrengths[MAX_RIPPLES];
 
 
@@ -580,9 +471,7 @@ context.textAlign =
             float hash(vec2 p) {
 
                 return fract(
-
                     sin(
-
                         dot(
                             p,
                             vec2(
@@ -590,11 +479,9 @@ context.textAlign =
                                 311.7
                             )
                         )
-
                     )
                     *
                     43758.5453123
-
                 );
 
             }
@@ -612,7 +499,6 @@ context.textAlign =
                 vec2 f =
                     fract(p);
 
-
                 f =
                     f *
                     f *
@@ -621,10 +507,8 @@ context.textAlign =
                         2.0 * f
                     );
 
-
                 float a =
                     hash(i);
-
 
                 float b =
                     hash(
@@ -635,7 +519,6 @@ context.textAlign =
                         )
                     );
 
-
                 float c =
                     hash(
                         i +
@@ -644,7 +527,6 @@ context.textAlign =
                             1.0
                         )
                     );
-
 
                 float d =
                     hash(
@@ -655,23 +537,18 @@ context.textAlign =
                         )
                     );
 
-
                 return mix(
-
                     mix(
                         a,
                         b,
                         f.x
                     ),
-
                     mix(
                         c,
                         d,
                         f.x
                     ),
-
                     f.y
-
                 );
 
             }
@@ -689,7 +566,6 @@ context.textAlign =
                 float amplitude =
                     0.5;
 
-
                 for (
                     int i = 0;
                     i < 5;
@@ -697,20 +573,16 @@ context.textAlign =
                 ) {
 
                     value +=
-                        noise(p)
-                        *
+                        noise(p) *
                         amplitude;
-
 
                     p *=
                         2.0;
-
 
                     amplitude *=
                         0.5;
 
                 }
-
 
                 return value;
 
@@ -724,9 +596,7 @@ context.textAlign =
             float largeWave(vec2 p) {
 
                 float waveA =
-
                     sin(
-
                         dot(
                             p,
                             normalize(
@@ -741,14 +611,10 @@ context.textAlign =
                         +
                         time *
                         0.055
-
                     );
 
-
                 float waveB =
-
                     sin(
-
                         dot(
                             p,
                             normalize(
@@ -763,19 +629,12 @@ context.textAlign =
                         -
                         time *
                         0.042
-
                     );
 
-
                 return
-
-                    waveA *
-                    0.055
-
+                    waveA * 0.055
                     +
-
-                    waveB *
-                    0.035;
+                    waveB * 0.035;
 
             }
 
@@ -787,9 +646,7 @@ context.textAlign =
             float smallWaves(vec2 p) {
 
                 float waveA =
-
                     sin(
-
                         dot(
                             p,
                             normalize(
@@ -804,14 +661,10 @@ context.textAlign =
                         +
                         time *
                         0.18
-
                     );
 
-
                 float waveB =
-
                     sin(
-
                         dot(
                             p,
                             normalize(
@@ -826,19 +679,12 @@ context.textAlign =
                         -
                         time *
                         0.14
-
                     );
 
-
                 return
-
-                    waveA *
-                    0.012
-
+                    waveA * 0.012
                     +
-
-                    waveB *
-                    0.008;
+                    waveB * 0.008;
 
             }
 
@@ -850,32 +696,18 @@ context.textAlign =
             float organicMotion(vec2 p) {
 
                 vec2 drift =
-
                     vec2(
-
-                        time *
-                        0.004,
-
-                        -time *
-                        0.003
-
+                        time * 0.004,
+                        -time * 0.003
                     );
-
 
                 float n =
-
                     fbm(
-
-                        p *
-                        0.48
-                        +
+                        p * 0.48 +
                         drift
-
                     );
 
-
                 return
-
                     (
                         n -
                         0.5
@@ -893,79 +725,39 @@ context.textAlign =
             float naturalWaterSurface(vec2 p) {
 
                 vec2 slowDrift =
-
                     vec2(
-
-                        time *
-                        0.0025,
-
-                        -time *
-                        0.0018
-
+                        time * 0.0025,
+                        -time * 0.0018
                     );
-
 
                 float broadA =
-
                     fbm(
-
-                        p *
-                        0.36
-                        +
+                        p * 0.36 +
                         slowDrift
-
                     );
-
 
                 float broadB =
-
                     fbm(
-
-                        p *
-                        0.68
-                        -
-                        slowDrift *
-                        1.35
-
+                        p * 0.68 -
+                        slowDrift * 1.35
                     );
 
-
                 float fine =
-
                     fbm(
-
-                        p *
-                        1.35
-                        +
-                        slowDrift *
-                        0.65
-                        +
+                        p * 1.35 +
+                        slowDrift * 0.65 +
                         vec2(
                             4.7,
                             8.2
                         )
-
                     );
 
-
                 float surfaceVariation =
-
-                    broadA *
-                    0.58
-
-                    +
-
-                    broadB *
-                    0.30
-
-                    +
-
-                    fine *
-                    0.12;
-
+                    broadA * 0.58 +
+                    broadB * 0.30 +
+                    fine * 0.12;
 
                 return
-
                     (
                         surfaceVariation -
                         0.5
@@ -983,56 +775,28 @@ context.textAlign =
             float naturalWaterMovement(vec2 p) {
 
                 vec2 movementDrift =
-
                     vec2(
-
-                        time *
-                        0.006,
-
-                        -time *
-                        0.004
-
+                        time * 0.006,
+                        -time * 0.004
                     );
-
 
                 float broadA =
-
                     fbm(
-
-                        p *
-                        0.30
-                        +
+                        p * 0.30 +
                         movementDrift
-
                     );
-
 
                 float broadB =
-
                     fbm(
-
-                        p *
-                        0.52
-                        -
-                        movementDrift *
-                        1.15
-
+                        p * 0.52 -
+                        movementDrift * 1.15
                     );
 
-
                 float movement =
-
-                    broadA *
-                    0.68
-
-                    +
-
-                    broadB *
-                    0.32;
-
+                    broadA * 0.68 +
+                    broadB * 0.32;
 
                 return
-
                     (
                         movement -
                         0.5
@@ -1052,7 +816,6 @@ context.textAlign =
                 float field =
                     0.0;
 
-
                 for (
                     int i = 0;
                     i < MAX_RIPPLES;
@@ -1062,90 +825,61 @@ context.textAlign =
                     float strength =
                         rippleStrengths[i];
 
-
                     if (
                         strength > 0.0
                     ) {
 
                         float elapsed =
-
                             max(
                                 0.0,
                                 time -
                                 rippleStarts[i]
                             );
 
-
                         if (
                             elapsed < 2.5
                         ) {
 
                             float d =
-
                                 distance(
                                     p,
                                     ripplePositions[i]
                                 );
 
-
                             float impactRadius =
-
                                 0.055 +
                                 elapsed *
                                 0.045;
 
-
                             float impactShape =
-
                                 exp(
-
                                     -pow(
-
                                         d /
                                         impactRadius,
-
                                         2.0
-
                                     )
-
                                 );
-
 
                             float impactWave =
-
                                 cos(
-
                                     d *
                                     42.0
-
                                     -
-
                                     elapsed *
                                     7.0
-
                                 );
-
 
                             float decay =
-
                                 exp(
-
                                     -elapsed *
                                     1.35
-
                                 );
 
-
                             field +=
-
-                                impactShape
-                                *
-                                impactWave
-                                *
-                                decay
-                                *
-                                strength
-                                *
+                                impactShape *
+                                impactWave *
+                                decay *
+                                strength *
                                 -0.075;
 
                         }
@@ -1153,7 +887,6 @@ context.textAlign =
                     }
 
                 }
-
 
                 return field;
 
@@ -1167,23 +900,14 @@ context.textAlign =
             float waterHeight(vec2 p) {
 
                 return
-
                     largeWave(p)
-
                     +
-
                     smallWaves(p)
-
                     +
-
                     organicMotion(p)
-
                     +
-
                     naturalWaterMovement(p)
-
                     +
-
                     impactDisplacement(p);
 
             }
@@ -1198,49 +922,33 @@ context.textAlign =
                 float e =
                     0.0025;
 
-
                 float center =
                     waterHeight(p);
 
-
                 float x =
-
                     waterHeight(
-
                         p +
                         vec2(
                             e,
                             0.0
                         )
-
                     );
 
-
                 float y =
-
                     waterHeight(
-
                         p +
                         vec2(
                             0.0,
                             e
                         )
-
                     );
 
-
                 return normalize(
-
                     vec3(
-
                         center - x,
-
                         center - y,
-
                         e
-
                     )
-
                 );
 
             }
@@ -1248,48 +956,31 @@ context.textAlign =
 
             /* =============================================
                MIRRORED BANNER MOONLIGHT REFLECTION
-
-               VERSION 10.6.1
-
-               TRUE VERTICAL MIRROR:
-
-               - Left/right orientation remains unchanged.
-               - Top/bottom orientation is inverted.
-               - Reflection begins at the lower banner area.
-               - Logo appears upside-down in the water.
-               - Wording is also upside-down.
             ============================================== */
 
             vec3 getBannerReflection(
-
                 vec2 uv,
-
                 vec3 normal
-
             ) {
-
-                /*
-                   Reflection begins lower on the page.
-                */
 
                 float screenY =
                     1.0 -
                     uv.y;
 
+                /*
+                   Reflection pushed lower on page.
+                */
 
                 float horizon =
                     0.70;
 
-
                 float depth =
-
                     (
                         screenY -
                         horizon
                     )
                     /
                     (1.0 - horizon);
-
 
                 if (
                     depth <= 0.0 ||
@@ -1300,13 +991,7 @@ context.textAlign =
 
                 }
 
-
-                /* -----------------------------------------
-                   PERSPECTIVE
-                ----------------------------------------- */
-
                 float perspective =
-
                     smoothstep(
                         0.0,
                         1.0,
@@ -1314,22 +999,14 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   SOURCE VERTICAL POSITION
+                /*
+                   Vertical mirror.
 
-                   Top-origin coordinate system:
-
-                   0.025 = top of banner
-                   0.63  = lower banner
-
-                   The reflection travels from the
-                   bottom of the banner toward the top.
-
-                   This is the actual vertical inversion.
-                ----------------------------------------- */
+                   Sampling travels through the source
+                   image in reverse vertical order.
+                */
 
                 float sourceCanvasY =
-
                     mix(
                         0.63,
                         0.025,
@@ -1337,12 +1014,11 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   REFLECTION WIDTH
-                ----------------------------------------- */
+                /*
+                   Reflection expands toward viewer.
+                */
 
                 float widthScale =
-
                     mix(
                         0.32,
                         1.05,
@@ -1353,22 +1029,18 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   HORIZONTAL DISTORTION
-                ----------------------------------------- */
+                /*
+                   Horizontal distortion.
+                */
 
                 float distortionX =
-
                     (
                         fbm(
-
                             vec2(
                                 uv.x * 7.0,
-                                depth * 10.0
-                                +
+                                depth * 10.0 +
                                 time * 0.018
                             )
-
                         )
                         -
                         0.5
@@ -1381,22 +1053,18 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   VERTICAL DISTORTION
-                ----------------------------------------- */
+                /*
+                   Vertical distortion.
+                */
 
                 float distortionY =
-
                     (
                         fbm(
-
                             vec2(
                                 uv.x * 5.0 + 4.2,
-                                depth * 14.0
-                                -
+                                depth * 14.0 -
                                 time * 0.014
                             )
-
                         )
                         -
                         0.5
@@ -1405,38 +1073,22 @@ context.textAlign =
                     0.028;
 
 
-                /* -----------------------------------------
-                   SOURCE HORIZONTAL POSITION
-
-                   IMPORTANT:
-
-                   Do NOT reverse X.
-
-                   The water reflection should remain
-                   left/right correct.
-                ----------------------------------------- */
+                /*
+                   Preserve left/right orientation.
+                */
 
                 float sourceX =
-
                     0.5
-
                     +
-
                     (
                         uv.x -
                         0.5
                     )
                     /
                     widthScale
-
                     +
-
                     distortionX;
 
-
-                /* -----------------------------------------
-                   WATER NORMAL DISTORTION
-                ----------------------------------------- */
 
                 sourceX +=
                     normal.x *
@@ -1444,17 +1096,13 @@ context.textAlign =
 
 
                 sourceCanvasY +=
-
                     normal.y *
                     0.045
-
                     +
-
                     distortionY;
 
 
                 sourceX =
-
                     clamp(
                         sourceX,
                         0.001,
@@ -1463,7 +1111,6 @@ context.textAlign =
 
 
                 sourceCanvasY =
-
                     clamp(
                         sourceCanvasY,
                         0.001,
@@ -1471,51 +1118,26 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   CRITICAL MIRROR CONVERSION
-
+                /*
                    The reflection canvas is top-origin.
 
-                   WebGL texture coordinates are
-                   bottom-origin.
-
-                   Therefore:
-
-                       canvas Y
-                       ↓
-
-                       1.0 - canvas Y
-                       ↓
-
-                       WebGL texture Y
-
-                   This preserves the intended vertical
-                   mirror rather than cancelling it.
-                ----------------------------------------- */
+                   Sampling the opposite vertical coordinate
+                   creates the upside-down mirror.
+                */
 
                 vec2 reflectionUV =
-
                     vec2(
-
                         sourceX,
-
-                        1.0 -
                         sourceCanvasY
-
                     );
 
 
                 vec4 reflected =
-
                     texture2D(
                         bannerTexture,
                         reflectionUV
                     );
 
-
-                /* -----------------------------------------
-                   EMPTY PIXEL CHECK
-                ----------------------------------------- */
 
                 if (
                     reflected.a <= 0.001
@@ -1527,48 +1149,33 @@ context.textAlign =
 
 
                 /* -----------------------------------------
-                   HORIZONTAL MOONLIGHT FRAGMENTATION
+                   HORIZONTAL FRAGMENTATION
                 ----------------------------------------- */
 
                 float fragmentNoise =
-
                     fbm(
-
                         vec2(
-
                             uv.x * 11.0,
-
-                            depth * 22.0
-                            +
+                            depth * 22.0 +
                             time * 0.012
-
                         )
-
                     );
 
 
                 float wave =
-
                     sin(
-
                         depth *
                         185.0
-
                         +
-
                         time *
                         0.06
-
                         +
-
                         uv.x *
                         3.0
-
                     );
 
 
                 float horizontalBreakup =
-
                     smoothstep(
                         0.20,
                         0.76,
@@ -1577,7 +1184,6 @@ context.textAlign =
 
 
                 float waveBreakup =
-
                     smoothstep(
                         -0.20,
                         0.72,
@@ -1586,7 +1192,6 @@ context.textAlign =
 
 
                 float fragmentation =
-
                     mix(
                         horizontalBreakup,
                         horizontalBreakup *
@@ -1596,36 +1201,26 @@ context.textAlign =
 
 
                 /* -----------------------------------------
-                   SURFACE ANGLE
+                   SURFACE RESPONSE
                 ----------------------------------------- */
 
                 float facing =
-
                     max(
-
                         dot(
-
                             normal,
-
                             normalize(
-
                                 vec3(
                                     0.0,
                                     0.42,
                                     1.0
                                 )
-
                             )
-
                         ),
-
                         0.0
-
                     );
 
 
                 float shimmer =
-
                     pow(
                         facing,
                         7.0
@@ -1633,12 +1228,9 @@ context.textAlign =
 
 
                 float surfaceLight =
-
                     shimmer *
                     0.78
-
                     +
-
                     pow(
                         max(
                             normal.z,
@@ -1655,7 +1247,6 @@ context.textAlign =
                 ----------------------------------------- */
 
                 float distanceFade =
-
                     mix(
                         1.0,
                         0.34,
@@ -1664,7 +1255,6 @@ context.textAlign =
 
 
                 float foregroundBreakup =
-
                     mix(
                         1.0,
                         fragmentation,
@@ -1677,11 +1267,10 @@ context.textAlign =
 
 
                 /* -----------------------------------------
-                   VERTICAL FADE
+                   EDGE FADES
                 ----------------------------------------- */
 
                 float verticalFade =
-
                     smoothstep(
                         0.0,
                         0.045,
@@ -1698,12 +1287,7 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   HORIZONTAL FADE
-                ----------------------------------------- */
-
                 float horizontalFade =
-
                     smoothstep(
                         0.0,
                         0.08,
@@ -1720,45 +1304,27 @@ context.textAlign =
                     );
 
 
-                /* -----------------------------------------
-                   FINAL REFLECTION ALPHA
-                ----------------------------------------- */
-
                 float alpha =
-
                     reflected.a
-
                     *
-
                     distanceFade
-
                     *
-
                     foregroundBreakup
-
                     *
-
                     surfaceLight
-
                     *
-
                     verticalFade
-
                     *
-
                     horizontalFade;
 
 
                 /* -----------------------------------------
-                   COOL MOONLIT COLOR
+                   MOONLIT COLOR
                 ----------------------------------------- */
 
                 vec3 moonlightColor =
-
                     reflected.rgb
-
                     *
-
                     vec3(
                         0.70,
                         0.88,
@@ -1767,7 +1333,6 @@ context.textAlign =
 
 
                 return
-
                     moonlightColor
                     *
                     alpha
@@ -1784,33 +1349,20 @@ context.textAlign =
             void main() {
 
                 vec2 uv =
-
-                    gl_FragCoord.xy
-                    /
+                    gl_FragCoord.xy /
                     resolution;
 
-
                 vec2 p =
-
                     uv -
                     0.5;
 
-
                 p.x *=
-
                     resolution.x /
                     resolution.y;
 
-
-                /* -----------------------------------------
-                   SCROLL INTEGRATION
-                ----------------------------------------- */
-
                 p.y +=
-
                     scroll *
                     0.00022;
-
 
                 p.y *=
                     1.55;
@@ -1821,12 +1373,9 @@ context.textAlign =
                 ----------------------------------------- */
 
                 float surface =
-
                     waterHeight(p);
 
-
                 vec3 normal =
-
                     surfaceNormal(p);
 
 
@@ -1835,16 +1384,13 @@ context.textAlign =
                 ----------------------------------------- */
 
                 vec3 deepWater =
-
                     vec3(
                         0.0035,
                         0.018,
                         0.032
                     );
 
-
                 vec3 blueWater =
-
                     vec3(
                         0.008,
                         0.052,
@@ -1853,7 +1399,6 @@ context.textAlign =
 
 
                 float variation =
-
                     surface *
                     0.55
                     +
@@ -1861,7 +1406,6 @@ context.textAlign =
 
 
                 float naturalSurface =
-
                     naturalWaterSurface(p);
 
 
@@ -1870,29 +1414,17 @@ context.textAlign =
 
 
                 float backgroundVariation =
-
                     fbm(
-
-                        p *
-                        0.42
-
+                        p * 0.42
                         +
-
                         vec2(
-
-                            time *
-                            0.004,
-
-                            -time *
-                            0.003
-
+                            time * 0.004,
+                            -time * 0.003
                         )
-
                     );
 
 
                 backgroundVariation =
-
                     (
                         backgroundVariation -
                         0.5
@@ -1906,7 +1438,6 @@ context.textAlign =
 
 
                 variation =
-
                     clamp(
                         variation,
                         0.0,
@@ -1915,7 +1446,6 @@ context.textAlign =
 
 
                 vec3 color =
-
                     mix(
                         deepWater,
                         blueWater,
@@ -1928,29 +1458,22 @@ context.textAlign =
                 ----------------------------------------- */
 
                 float highlight =
-
                     pow(
-
                         max(
                             normal.z,
                             0.0
                         ),
-
                         7.0
-
                     );
 
 
                 color +=
-
                     vec3(
                         0.012,
                         0.035,
                         0.055
                     )
-
                     *
-
                     highlight;
 
 
@@ -1959,21 +1482,17 @@ context.textAlign =
                 ----------------------------------------- */
 
                 float surfaceSheen =
-
                     naturalSurface *
                     0.55;
 
 
                 color +=
-
                     vec3(
                         0.004,
                         0.010,
                         0.014
                     )
-
                     *
-
                     surfaceSheen;
 
 
@@ -1982,7 +1501,6 @@ context.textAlign =
                 ----------------------------------------- */
 
                 vec3 reflection =
-
                     getBannerReflection(
                         uv,
                         normal
@@ -1998,7 +1516,6 @@ context.textAlign =
                 ----------------------------------------- */
 
                 float upperLight =
-
                     smoothstep(
                         0.10,
                         0.95,
@@ -2007,41 +1524,31 @@ context.textAlign =
 
 
                 float centerLight =
-
                     exp(
-
                         -pow(
-
                             (
                                 uv.x -
                                 0.50
                             )
                             /
                             0.52,
-
                             2.0
-
                         )
-
                     );
 
 
                 float ambientMoon =
-
                     upperLight *
                     centerLight;
 
 
                 color +=
-
                     vec3(
                         0.010,
                         0.024,
                         0.040
                     )
-
                     *
-
                     ambientMoon;
 
 
@@ -2050,30 +1557,21 @@ context.textAlign =
                 ----------------------------------------- */
 
                 float vignette =
-
                     1.0 -
-
                     smoothstep(
-
                         0.30,
                         0.92,
-
                         distance(
-
                             uv,
-
                             vec2(
                                 0.5,
                                 0.43
                             )
-
                         )
-
                     );
 
 
                 color *=
-
                     mix(
                         0.68,
                         1.0,
@@ -2086,7 +1584,6 @@ context.textAlign =
                 ----------------------------------------- */
 
                 color =
-
                     pow(
                         color,
                         vec3(0.86)
@@ -2094,7 +1591,6 @@ context.textAlign =
 
 
                 gl_FragColor =
-
                     vec4(
                         color,
                         1.0
@@ -2117,17 +1613,14 @@ context.textAlign =
             const shader =
                 gl.createShader(type);
 
-
             gl.shaderSource(
                 shader,
                 source
             );
 
-
             gl.compileShader(
                 shader
             );
-
 
             if (
                 !gl.getShaderParameter(
@@ -2137,25 +1630,17 @@ context.textAlign =
             ) {
 
                 console.error(
-
                     "The Infinite Pond shader error:",
-
-                    gl.getShaderInfoLog(
-                        shader
-                    )
-
+                    gl.getShaderInfoLog(shader)
                 );
-
 
                 gl.deleteShader(
                     shader
                 );
 
-
                 return null;
 
             }
-
 
             return shader;
 
@@ -2163,7 +1648,6 @@ context.textAlign =
 
 
         const vertexShader =
-
             createShader(
                 gl.VERTEX_SHADER,
                 vertexShaderSource
@@ -2171,7 +1655,6 @@ context.textAlign =
 
 
         const fragmentShader =
-
             createShader(
                 gl.FRAGMENT_SHADER,
                 fragmentShaderSource
@@ -2197,18 +1680,15 @@ context.textAlign =
             const program =
                 gl.createProgram();
 
-
             gl.attachShader(
                 program,
                 vertexShader
             );
 
-
             gl.attachShader(
                 program,
                 fragmentShader
             );
-
 
             gl.linkProgram(
                 program
@@ -2223,17 +1703,11 @@ context.textAlign =
             ) {
 
                 console.error(
-
                     "The Infinite Pond program error:",
-
-                    gl.getProgramInfoLog(
-                        program
-                    )
-
+                    gl.getProgramInfoLog(program)
                 );
 
             } else {
-
 
                 gl.useProgram(
                     program
@@ -2247,17 +1721,13 @@ context.textAlign =
                 const buffer =
                     gl.createBuffer();
 
-
                 gl.bindBuffer(
                     gl.ARRAY_BUFFER,
                     buffer
                 );
 
-
                 gl.bufferData(
-
                     gl.ARRAY_BUFFER,
-
                     new Float32Array([
 
                         -1, -1,
@@ -2269,9 +1739,7 @@ context.textAlign =
                          1,  1
 
                     ]),
-
                     gl.STATIC_DRAW
-
                 );
 
 
@@ -2288,15 +1756,12 @@ context.textAlign =
 
 
                 gl.vertexAttribPointer(
-
                     position,
-
                     2,
                     gl.FLOAT,
                     false,
                     0,
                     0
-
                 );
 
 
@@ -2310,13 +1775,11 @@ context.textAlign =
                         "resolution"
                     );
 
-
                 const timeLocation =
                     gl.getUniformLocation(
                         program,
                         "time"
                     );
-
 
                 const scrollLocation =
                     gl.getUniformLocation(
@@ -2324,13 +1787,11 @@ context.textAlign =
                         "scroll"
                     );
 
-
                 const bannerTextureLocation =
                     gl.getUniformLocation(
                         program,
                         "bannerTexture"
                     );
-
 
                 const ripplePositionsLocation =
                     gl.getUniformLocation(
@@ -2338,13 +1799,11 @@ context.textAlign =
                         "ripplePositions"
                     );
 
-
                 const rippleStartsLocation =
                     gl.getUniformLocation(
                         program,
                         "rippleStarts"
                     );
-
 
                 const rippleStrengthsLocation =
                     gl.getUniformLocation(
@@ -2360,58 +1819,40 @@ context.textAlign =
                 reflectionTexture =
                     gl.createTexture();
 
-
                 gl.activeTexture(
                     gl.TEXTURE0
                 );
 
-
                 gl.bindTexture(
-
                     gl.TEXTURE_2D,
                     reflectionTexture
-
                 );
 
-
                 gl.texParameteri(
-
                     gl.TEXTURE_2D,
                     gl.TEXTURE_MIN_FILTER,
                     gl.LINEAR
-
                 );
 
-
                 gl.texParameteri(
-
                     gl.TEXTURE_2D,
                     gl.TEXTURE_MAG_FILTER,
                     gl.LINEAR
-
                 );
 
-
                 gl.texParameteri(
-
                     gl.TEXTURE_2D,
                     gl.TEXTURE_WRAP_S,
                     gl.CLAMP_TO_EDGE
-
                 );
 
-
                 gl.texParameteri(
-
                     gl.TEXTURE_2D,
                     gl.TEXTURE_WRAP_T,
                     gl.CLAMP_TO_EDGE
-
                 );
 
-
                 gl.texImage2D(
-
                     gl.TEXTURE_2D,
                     0,
                     gl.RGBA,
@@ -2426,15 +1867,11 @@ context.textAlign =
                         0,
                         0
                     ])
-
                 );
 
-
                 gl.uniform1i(
-
                     bannerTextureLocation,
                     0
-
                 );
 
 
@@ -2455,12 +1892,9 @@ context.textAlign =
                 ) {
 
                     console.log(
-
                         "INFINITE POND RIPPLE:",
-
                         clientX,
                         clientY
-
                     );
 
 
@@ -2499,7 +1933,6 @@ context.textAlign =
 
 
                     rippleX *=
-
                         rect.width /
                         rect.height;
 
@@ -2509,9 +1942,7 @@ context.textAlign =
 
 
                     const now =
-
-                        performance.now()
-                        *
+                        performance.now() *
                         0.001;
 
 
@@ -2549,17 +1980,12 @@ context.textAlign =
                 ================================================= */
 
                 window.addEventListener(
-
                     "pointerdown",
-
                     function(event) {
 
                         if (
-
                             event.button !== 0 &&
-
                             event.pointerType !== "touch"
-
                         ) {
 
                             return;
@@ -2568,16 +1994,12 @@ context.textAlign =
 
 
                         createRipple(
-
                             event.clientX,
                             event.clientY
-
                         );
 
                     },
-
                     true
-
                 );
 
 
@@ -2588,48 +2010,38 @@ context.textAlign =
                 function resizeWater() {
 
                     const ratio =
-
                         Math.min(
-
                             window.devicePixelRatio ||
                             1,
-
                             2
-
                         );
 
 
                     canvas.width =
-
                         window.innerWidth *
                         ratio;
 
 
                     canvas.height =
-
                         window.innerHeight *
                         ratio;
 
 
                     canvas.style.width =
-
                         window.innerWidth +
                         "px";
 
 
                     canvas.style.height =
-
                         window.innerHeight +
                         "px";
 
 
                     gl.viewport(
-
                         0,
                         0,
                         canvas.width,
                         canvas.height
-
                     );
 
 
@@ -2640,10 +2052,8 @@ context.textAlign =
 
 
                 window.addEventListener(
-
                     "resize",
                     resizeWater
-
                 );
 
 
@@ -2655,22 +2065,17 @@ context.textAlign =
                 ================================================= */
 
                 window.addEventListener(
-
                     "resize",
-
                     function() {
 
                         reflectionDirty =
                             true;
 
                     }
-
                 );
 
 
-                if (
-                    logoElement
-                ) {
+                if (logoElement) {
 
                     if (
                         logoElement.complete
@@ -2682,16 +2087,13 @@ context.textAlign =
                     } else {
 
                         logoElement.addEventListener(
-
                             "load",
-
                             function() {
 
                                 reflectionDirty =
                                     true;
 
                             }
-
                         );
 
                     }
@@ -2705,14 +2107,12 @@ context.textAlign =
 
                     const bannerObserver =
                         new ResizeObserver(
-
                             function() {
 
                                 reflectionDirty =
                                     true;
 
                             }
-
                         );
 
 
@@ -2744,7 +2144,6 @@ context.textAlign =
                 ) {
 
                     const currentTime =
-
                         milliseconds *
                         0.001;
 
@@ -2764,13 +2163,10 @@ context.textAlign =
 
 
                     while (
-
                         ripples.length > 0 &&
-
                         currentTime -
                         ripples[0].start >
                         12.0
-
                     ) {
 
                         ripples.shift();
@@ -2779,34 +2175,27 @@ context.textAlign =
 
 
                     const positions =
-
                         new Float32Array(
                             MAX_RIPPLES * 2
                         );
 
 
                     const starts =
-
                         new Float32Array(
                             MAX_RIPPLES
                         );
 
 
                     const strengths =
-
                         new Float32Array(
                             MAX_RIPPLES
                         );
 
 
                     for (
-
                         let i = 0;
-
                         i < MAX_RIPPLES;
-
                         i++
-
                     ) {
 
                         if (
@@ -2816,24 +2205,20 @@ context.textAlign =
                             positions[
                                 i * 2
                             ] =
-
                                 ripples[i].x;
 
 
                             positions[
                                 i * 2 + 1
                             ] =
-
                                 ripples[i].y;
 
 
                             starts[i] =
-
                                 ripples[i].start;
 
 
                             strengths[i] =
-
                                 ripples[i].strength;
 
                         } else {
@@ -2868,69 +2253,52 @@ context.textAlign =
 
 
                     gl.bindTexture(
-
                         gl.TEXTURE_2D,
                         reflectionTexture
-
                     );
 
 
                     gl.uniform2f(
-
                         resolutionLocation,
-
                         canvas.width,
                         canvas.height
-
                     );
 
 
                     gl.uniform1f(
-
                         timeLocation,
                         currentTime
-
                     );
 
 
                     gl.uniform1f(
-
                         scrollLocation,
                         window.scrollY
-
                     );
 
 
                     gl.uniform2fv(
-
                         ripplePositionsLocation,
                         positions
-
                     );
 
 
                     gl.uniform1fv(
-
                         rippleStartsLocation,
                         starts
-
                     );
 
 
                     gl.uniform1fv(
-
                         rippleStrengthsLocation,
                         strengths
-
                     );
 
 
                     gl.drawArrays(
-
                         gl.TRIANGLES,
                         0,
                         6
-
                     );
 
 
