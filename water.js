@@ -1,10 +1,13 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.4 — REAL BANNER REFLECTION
+   VERSION 10.4.2
+   BANNER-ONLY PERSPECTIVE REFLECTION
 ========================================================= */
 
 const canvas =
-    document.getElementById("waterCanvas");
+    document.getElementById(
+        "waterCanvas"
+    );
 
 
 if (!canvas) {
@@ -44,14 +47,64 @@ if (!canvas) {
 
 
         /* =================================================
-           REFLECTION SOURCE
+           BANNER ELEMENTS
+        ================================================= */
+
+        const logoElement =
+            document.getElementById(
+                "pondLogo"
+            );
+
+        const presentedElement =
+            document.getElementById(
+                "presented"
+            );
+
+        const titleElement =
+            document.getElementById(
+                "pondTitle"
+            );
+
+        const subtitleElement =
+            document.getElementById(
+                "pondSubtitle"
+            );
+
+
+        console.log(
+            "The Infinite Pond banner reflection:",
+            {
+                logo:
+                    !!logoElement,
+
+                presented:
+                    !!presentedElement,
+
+                title:
+                    !!titleElement,
+
+                subtitle:
+                    !!subtitleElement
+            }
+        );
+
+
+        /* =================================================
+           REFLECTION CANVAS
         ================================================= */
 
         const reflectionCanvas =
-            document.createElement("canvas");
+            document.createElement(
+                "canvas"
+            );
 
-        reflectionCanvas.width = 1024;
-        reflectionCanvas.height = 768;
+
+        reflectionCanvas.width =
+            1600;
+
+        reflectionCanvas.height =
+            1000;
+
 
         const reflectionContext =
             reflectionCanvas.getContext(
@@ -59,44 +112,16 @@ if (!canvas) {
             );
 
 
-        const logoElement =
-    document.querySelector(
-        ".pond-logo"
-    );
-
-const presentedElement =
-    document.querySelector(
-        ".presented"
-    );
-
-const titleElement =
-    document.querySelector(
-        ".pond-title"
-    );
-
-const subtitleElement =
-    document.querySelector(
-        ".pond-subtitle"
-    );
-
-console.log(
-    "REFLECTION ELEMENTS:",
-    {
-        logo: !!logoElement,
-        presented: !!presentedElement,
-        title: !!titleElement,
-        subtitle: !!subtitleElement
-    }
-);
+        let reflectionTexture =
+            null;
 
 
-        let reflectionTexture = null;
-
-        let reflectionDirty = true;
+        let reflectionDirty =
+            true;
 
 
         /* =================================================
-           TEXT DRAWING
+           DRAW TRACKED TEXT
         ================================================= */
 
         function drawTrackedText(
@@ -107,31 +132,15 @@ console.log(
             letterSpacing
         ) {
 
-            if (
-                !text
-            ) {
+            if (!text) {
 
                 return;
 
             }
 
 
-            if (
-                !letterSpacing
-            ) {
-
-                context.fillText(
-                    text,
-                    x,
-                    y
-                );
-
-                return;
-
-            }
-
-
-            let totalWidth = 0;
+            let totalWidth =
+                0;
 
 
             for (
@@ -144,6 +153,7 @@ console.log(
                     context.measureText(
                         text[i]
                     ).width;
+
 
                 if (
                     i <
@@ -160,8 +170,7 @@ console.log(
 
             let drawX =
                 x -
-                totalWidth *
-                0.5;
+                totalWidth * 0.5;
 
 
             for (
@@ -194,19 +203,15 @@ console.log(
 
 
         /* =================================================
-           GET CSS TEXT INFORMATION
+           DRAW TEXT ELEMENT
         ================================================= */
 
         function drawTextElement(
             context,
-            element,
-            scaleX,
-            scaleY
+            element
         ) {
 
-            if (
-                !element
-            ) {
+            if (!element) {
 
                 return;
 
@@ -223,6 +228,28 @@ console.log(
                 );
 
 
+            const text =
+                element.textContent
+                    .trim();
+
+
+            if (!text) {
+
+                return;
+
+            }
+
+
+            const scaleX =
+                reflectionCanvas.width /
+                window.innerWidth;
+
+
+            const scaleY =
+                reflectionCanvas.height /
+                window.innerHeight;
+
+
             const fontSize =
                 parseFloat(
                     style.fontSize
@@ -237,22 +264,19 @@ console.log(
                 style.fontFamily;
 
 
-            const letterSpacingValue =
+            let letterSpacing =
                 parseFloat(
                     style.letterSpacing
                 );
 
 
-            const text =
-                element.textContent
-                    .trim();
-
-
             if (
-                !text
+                !Number.isFinite(
+                    letterSpacing
+                )
             ) {
 
-                return;
+                letterSpacing = 0;
 
             }
 
@@ -277,11 +301,12 @@ console.log(
 
 
             context.shadowColor =
-                "rgba(100,190,225,0.28)";
+                "rgba(120,210,240,0.35)";
 
 
             context.shadowBlur =
-                10;
+                12 *
+                scaleY;
 
 
             const centerX =
@@ -313,7 +338,7 @@ console.log(
 
                 baselineY,
 
-                letterSpacingValue *
+                letterSpacing *
                 scaleX
 
             );
@@ -325,7 +350,7 @@ console.log(
 
 
         /* =================================================
-           BUILD REAL BANNER REFLECTION SOURCE
+           BUILD BANNER SOURCE
         ================================================= */
 
         function updateReflectionSource() {
@@ -339,22 +364,14 @@ console.log(
             }
 
 
-            const width =
-                window.innerWidth;
-
-
-            const height =
-                window.innerHeight;
-
-
             const scaleX =
                 reflectionCanvas.width /
-                width;
+                window.innerWidth;
 
 
             const scaleY =
                 reflectionCanvas.height /
-                height;
+                window.innerHeight;
 
 
             reflectionContext.clearRect(
@@ -367,9 +384,17 @@ console.log(
             );
 
 
-            /* ---------------------------------------------
-               ACTUAL LOGO
-            --------------------------------------------- */
+            /*
+               The reflection source is deliberately
+               transparent.
+
+               Only the actual banner is drawn.
+
+               No moon.
+               No sky.
+               No background.
+            */
+
 
             if (
                 logoElement &&
@@ -385,26 +410,33 @@ console.log(
 
 
                 reflectionContext.globalAlpha =
-                    0.96;
+                    1.0;
 
 
                 reflectionContext.shadowColor =
-                    "rgba(100,190,225,0.32)";
+                    "rgba(130,215,245,0.38)";
 
 
                 reflectionContext.shadowBlur =
-                    18;
+                    18 *
+                    scaleY;
 
 
                 reflectionContext.drawImage(
 
                     logoElement,
 
-                    rect.left * scaleX,
-                    rect.top * scaleY,
+                    rect.left *
+                    scaleX,
 
-                    rect.width * scaleX,
-                    rect.height * scaleY
+                    rect.top *
+                    scaleY,
+
+                    rect.width *
+                    scaleX,
+
+                    rect.height *
+                    scaleY
 
                 );
 
@@ -414,37 +446,21 @@ console.log(
             }
 
 
-            /* ---------------------------------------------
-               ACTUAL BANNER WORDING
-            --------------------------------------------- */
-
             drawTextElement(
-
                 reflectionContext,
-                presentedElement,
-                scaleX,
-                scaleY
-
+                presentedElement
             );
 
 
             drawTextElement(
-
                 reflectionContext,
-                titleElement,
-                scaleX,
-                scaleY
-
+                titleElement
             );
 
 
             drawTextElement(
-
                 reflectionContext,
-                subtitleElement,
-                scaleX,
-                scaleY
-
+                subtitleElement
             );
 
 
@@ -467,7 +483,7 @@ console.log(
                 gl.pixelStorei(
 
                     gl.UNPACK_FLIP_Y_WEBGL,
-                    true
+                    false
 
                 );
 
@@ -480,42 +496,6 @@ console.log(
                     gl.RGBA,
                     gl.UNSIGNED_BYTE,
                     reflectionCanvas
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-                    gl.TEXTURE_MIN_FILTER,
-                    gl.LINEAR
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-                    gl.TEXTURE_MAG_FILTER,
-                    gl.LINEAR
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-                    gl.TEXTURE_WRAP_S,
-                    gl.CLAMP_TO_EDGE
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-                    gl.TEXTURE_WRAP_T,
-                    gl.CLAMP_TO_EDGE
 
                 );
 
@@ -558,19 +538,23 @@ console.log(
 
 
             uniform vec2 resolution;
+
             uniform float time;
+
             uniform float scroll;
 
             uniform sampler2D bannerReflection;
 
             uniform vec2 ripplePositions[MAX_RIPPLES];
+
             uniform float rippleStarts[MAX_RIPPLES];
+
             uniform float rippleStrengths[MAX_RIPPLES];
 
 
             /* =============================================
                HASH
-            ============================================= */
+            ============================================== */
 
             float hash(vec2 p) {
 
@@ -597,7 +581,7 @@ console.log(
 
             /* =============================================
                NOISE
-            ============================================= */
+            ============================================== */
 
             float noise(vec2 p) {
 
@@ -607,6 +591,7 @@ console.log(
                 vec2 f =
                     fract(p);
 
+
                 f =
                     f *
                     f *
@@ -615,8 +600,10 @@ console.log(
                         2.0 * f
                     );
 
+
                 float a =
                     hash(i);
+
 
                 float b =
                     hash(
@@ -627,6 +614,7 @@ console.log(
                         )
                     );
 
+
                 float c =
                     hash(
                         i +
@@ -636,6 +624,7 @@ console.log(
                         )
                     );
 
+
                 float d =
                     hash(
                         i +
@@ -644,6 +633,7 @@ console.log(
                             1.0
                         )
                     );
+
 
                 return mix(
 
@@ -668,15 +658,17 @@ console.log(
 
             /* =============================================
                FBM
-            ============================================= */
+            ============================================== */
 
             float fbm(vec2 p) {
 
                 float value =
                     0.0;
 
+
                 float amplitude =
                     0.5;
+
 
                 for (
                     int i = 0;
@@ -688,13 +680,16 @@ console.log(
                         noise(p) *
                         amplitude;
 
+
                     p *=
                         2.0;
+
 
                     amplitude *=
                         0.5;
 
                 }
+
 
                 return value;
 
@@ -703,7 +698,7 @@ console.log(
 
             /* =============================================
                LARGE WATER MOTION
-            ============================================= */
+            ============================================== */
 
             float largeWave(vec2 p) {
 
@@ -766,7 +761,7 @@ console.log(
 
             /* =============================================
                SMALL WAVES
-            ============================================= */
+            ============================================== */
 
             float smallWaves(vec2 p) {
 
@@ -829,7 +824,7 @@ console.log(
 
             /* =============================================
                ORGANIC MOTION
-            ============================================= */
+            ============================================== */
 
             float organicMotion(vec2 p) {
 
@@ -872,7 +867,7 @@ console.log(
 
             /* =============================================
                NATURAL WATER SURFACE
-            ============================================= */
+            ============================================== */
 
             float naturalWaterSurface(vec2 p) {
 
@@ -962,7 +957,7 @@ console.log(
 
             /* =============================================
                NATURAL WATER MOVEMENT
-            ============================================= */
+            ============================================== */
 
             float naturalWaterMovement(vec2 p) {
 
@@ -1029,7 +1024,7 @@ console.log(
 
             /* =============================================
                IMPACT DISPLACEMENT
-            ============================================= */
+            ============================================== */
 
             float impactDisplacement(vec2 p) {
 
@@ -1146,7 +1141,7 @@ console.log(
 
             /* =============================================
                TOTAL WATER HEIGHT
-            ============================================= */
+            ============================================== */
 
             float waterHeight(vec2 p) {
 
@@ -1175,7 +1170,7 @@ console.log(
 
             /* =============================================
                SURFACE NORMAL
-            ============================================= */
+            ============================================== */
 
             vec3 surfaceNormal(vec2 p) {
 
@@ -1231,11 +1226,8 @@ console.log(
 
 
             /* =============================================
-               REAL BANNER REFLECTION
-
-               The actual banner image and wording are
-               projected into the pond with perspective.
-            ============================================= */
+               BANNER-ONLY REFLECTION
+            ============================================== */
 
             vec3 bannerReflection(
 
@@ -1246,37 +1238,34 @@ console.log(
             ) {
 
                 /*
-                   Screen coordinates are top-origin for
-                   this calculation.
-                */
-
-                float screenY =
-                    1.0 -
-                    uv.y;
-
-
-                /*
-                   Horizon is approximately 65% down
-                   the viewport.
+                   The horizon is the bottom of the
+                   stationary banner.
                 */
 
                 float horizon =
                     0.65;
 
 
-                float waterDistance =
+                /*
+                   Water begins below the horizon.
+                */
+
+                float waterDepth =
 
                     (
-                        screenY -
+                        uv.y -
                         horizon
                     )
                     /
-                    (1.0 - horizon);
+                    (
+                        1.0 -
+                        horizon
+                    );
 
 
                 if (
-                    waterDistance <= 0.0 ||
-                    waterDistance > 1.0
+                    waterDepth <= 0.0 ||
+                    waterDepth > 1.0
                 ) {
 
                     return vec3(0.0);
@@ -1285,82 +1274,39 @@ console.log(
 
 
                 /*
-                   Perspective:
+                   Perspective compression.
 
-                   The logo begins near the horizon.
+                   Near the horizon we sample the lower
+                   part of the banner.
 
-                   The wording travels farther toward
-                   the viewer.
+                   Farther into the water we progressively
+                   reach toward the TOP of the banner.
 
-                   The reflection becomes wider as it
-                   approaches the foreground.
+                   This places the logo farther away and
+                   the wording progressively closer.
                 */
 
-                float perspectiveDepth =
+                float perspective =
 
-                    smoothstep(
-                        0.0,
-                        1.0,
-                        waterDistance
+                    pow(
+                        waterDepth,
+                        0.82
                     );
 
 
                 float sourceY =
 
-                    pow(
-                        perspectiveDepth,
-                        0.82
-                    );
+                    horizon -
+
+                    perspective *
+                    0.67;
 
 
                 /*
-                   Water movement shifts the reflection.
-                */
+                   Perspective widening.
 
-                float distortionX =
-
-                    (
-                        fbm(
-
-                            vec2(
-                                uv.x * 7.0,
-                                waterDistance * 8.0
-                                +
-                                time * 0.018
-                            )
-
-                        )
-                        -
-                        0.5
-                    )
-                    *
-                    0.035;
-
-
-                float distortionY =
-
-                    (
-                        fbm(
-
-                            vec2(
-                                uv.x * 5.0
-                                +
-                                3.7,
-                                waterDistance * 12.0
-                                -
-                                time * 0.012
-                            )
-
-                        )
-                        -
-                        0.5
-                    )
-                    *
-                    0.018;
-
-
-                /*
-                   Horizontal perspective widening.
+                   The reflected image begins narrow at
+                   the horizon and expands toward us.
                 */
 
                 float widthScale =
@@ -1369,10 +1315,80 @@ console.log(
                         0.34,
                         1.0,
                         pow(
-                            perspectiveDepth,
+                            waterDepth,
                             0.72
                         )
                     );
+
+
+                /*
+                   Water distortion.
+                */
+
+                float distortionX =
+
+                    (
+                        fbm(
+
+                            vec2(
+
+                                uv.x * 8.0,
+
+                                waterDepth *
+                                10.0
+                                +
+                                time *
+                                0.018
+
+                            )
+
+                        )
+                        -
+                        0.5
+                    )
+                    *
+                    0.055;
+
+
+                float distortionY =
+
+                    (
+                        fbm(
+
+                            vec2(
+
+                                uv.x * 6.0
+                                +
+                                4.7,
+
+                                waterDepth *
+                                15.0
+                                -
+                                time *
+                                0.012
+
+                            )
+
+                        )
+                        -
+                        0.5
+                    )
+                    *
+                    0.028;
+
+
+                /*
+                   Surface-normal distortion.
+                */
+
+                float normalX =
+                    normal.x *
+                    0.075;
+
+
+                float normalY =
+                    normal.y *
+                    0.045;
 
 
                 float sourceX =
@@ -1390,21 +1406,19 @@ console.log(
 
                     +
 
-                    distortionX;
+                    distortionX
+
+                    +
+
+                    normalX;
 
 
-                float finalSourceY =
+                sourceY +=
+                    distortionY +
+                    normalY;
 
-                    sourceY +
-                    distortionY;
-
-
-                /*
-                   Keep sampling inside texture.
-                */
 
                 sourceX =
-
                     clamp(
                         sourceX,
                         0.001,
@@ -1412,66 +1426,50 @@ console.log(
                     );
 
 
-                finalSourceY =
-
+                sourceY =
                     clamp(
-                        finalSourceY,
+                        sourceY,
                         0.001,
-                        0.999
+                        0.649
                     );
 
 
                 /*
-                   Surface normals distort the
-                   reflected image.
+                   The reflection texture uses normal
+                   top-origin coordinates.
+
+                   WebGL texture coordinates are therefore
+                   converted here.
                 */
-
-                float normalDistortionX =
-
-                    (
-                        normal.x
-                    )
-                    *
-                    0.055;
-
-
-                float normalDistortionY =
-
-                    (
-                        normal.y
-                    )
-                    *
-                    0.040;
-
-
-                sourceX +=
-                    normalDistortionX;
-
-
-                finalSourceY +=
-                    normalDistortionY;
-
 
                 vec2 reflectionUV =
 
                     vec2(
+
                         sourceX,
-                        finalSourceY
+
+                        1.0 -
+                        sourceY
+
                     );
 
 
                 vec4 reflected =
 
                     texture2D(
+
                         bannerReflection,
+
                         reflectionUV
+
                     );
 
 
                 /*
-                   Fragment the reflection so it behaves
-                   like light on moving water rather than
-                   a solid mirrored image.
+                   Fragment the reflected image.
+
+                   This prevents it from looking like a
+                   flat mirror.
                 */
 
                 float fragmentNoise =
@@ -1480,12 +1478,11 @@ console.log(
 
                         vec2(
 
-                            uv.x * 9.0,
+                            uv.x * 10.0,
 
-                            waterDistance * 20.0
-
+                            waterDepth *
+                            25.0
                             +
-
                             time *
                             0.012
 
@@ -1498,18 +1495,18 @@ console.log(
 
                     sin(
 
-                        waterDistance *
-                        170.0
+                        waterDepth *
+                        180.0
 
                         +
 
                         time *
-                        0.055
+                        0.07
 
                         +
 
                         uv.x *
-                        2.0
+                        3.0
 
                     );
 
@@ -1518,7 +1515,7 @@ console.log(
 
                     smoothstep(
                         0.25,
-                        0.72,
+                        0.70,
                         fragmentNoise
                     );
 
@@ -1526,8 +1523,8 @@ console.log(
                 float wavePattern =
 
                     smoothstep(
-                        0.18,
-                        0.76,
+                        0.12,
+                        0.82,
                         horizontalWave
                     );
 
@@ -1535,112 +1532,63 @@ console.log(
                 float fragmentation =
 
                     mix(
-                        brokenPattern,
+                        0.62,
                         brokenPattern *
                         wavePattern,
-                        0.42
-                    );
-
-
-                /*
-                   Surface lighting determines how
-                   strongly the reflected banner appears.
-                */
-
-                float facing =
-
-                    max(
-
-                        dot(
-
-                            normal,
-
-                            normalize(
-
-                                vec3(
-                                    0.0,
-                                    0.42,
-                                    1.0
-                                )
-
-                            )
-
-                        ),
-
-                        0.0
-
-                    );
-
-
-                float shimmer =
-
-                    pow(
-                        facing,
-                        8.0
-                    );
-
-
-                float softSurface =
-
-                    pow(
-                        max(
-                            normal.z,
-                            0.0
-                        ),
-                        4.0
-                    );
-
-
-                float surfaceLight =
-
-                    shimmer *
-                    0.74
-
-                    +
-
-                    softSurface *
-                    0.26;
-
-
-                /*
-                   Reflections are strongest near the
-                   horizon and become more fragmented
-                   toward the foreground.
-                */
-
-                float distanceFade =
-
-                    mix(
-                        0.92,
-                        0.42,
-                        perspectiveDepth
-                    );
-
-
-                float foregroundFragmentation =
-
-                    mix(
-                        1.0,
-                        fragmentation,
                         smoothstep(
-                            0.18,
-                            0.92,
-                            perspectiveDepth
+                            0.08,
+                            0.95,
+                            waterDepth
                         )
                     );
 
 
                 /*
-                   Fade the edges of the reflected
-                   banner naturally.
+                   Reflection intensity.
+
+                   Strongest near the horizon.
+                */
+
+                float horizonGlow =
+
+                    1.0 -
+                    smoothstep(
+                        0.0,
+                        0.55,
+                        waterDepth
+                    );
+
+
+                float surfaceFacing =
+
+                    max(
+                        normal.z,
+                        0.0
+                    );
+
+
+                float surfaceLight =
+
+                    mix(
+                        0.48,
+                        1.0,
+                        pow(
+                            surfaceFacing,
+                            3.0
+                        )
+                    );
+
+
+                /*
+                   Natural vertical fading.
                 */
 
                 float verticalFade =
 
                     smoothstep(
                         0.0,
-                        0.07,
-                        perspectiveDepth
+                        0.025,
+                        waterDepth
                     )
 
                     *
@@ -1648,18 +1596,22 @@ console.log(
                     (
                         1.0 -
                         smoothstep(
-                            0.88,
+                            0.90,
                             1.0,
-                            perspectiveDepth
+                            waterDepth
                         )
                     );
 
+
+                /*
+                   Natural horizontal fading.
+                */
 
                 float horizontalFade =
 
                     smoothstep(
                         0.0,
-                        0.12,
+                        0.10,
                         sourceX
                     )
 
@@ -1668,24 +1620,32 @@ console.log(
                     (
                         1.0 -
                         smoothstep(
-                            0.88,
+                            0.90,
                             1.0,
                             sourceX
                         )
                     );
 
 
-                float reflectionAlpha =
+                float alpha =
 
                     reflected.a
 
                     *
 
-                    distanceFade
+                    1.15
 
                     *
 
-                    foregroundFragmentation
+                    mix(
+                        0.95,
+                        0.58,
+                        waterDepth
+                    )
+
+                    *
+
+                    fragmentation
 
                     *
 
@@ -1701,8 +1661,8 @@ console.log(
 
 
                 /*
-                   The banner itself is mostly white /
-                   blue, so let it behave as moonlight.
+                   Turn the banner into cool
+                   moonlit blue-white light.
                 */
 
                 vec3 reflectionColor =
@@ -1712,26 +1672,43 @@ console.log(
                     *
 
                     vec3(
-                        0.72,
-                        0.88,
+                        0.70,
+                        0.90,
                         1.0
                     );
+
+
+                /*
+                   Add a tiny horizon glow so the
+                   reflected branding feels like light
+                   rather than ink.
+                */
+
+                reflectionColor +=
+
+                    vec3(
+                        0.015,
+                        0.035,
+                        0.050
+                    )
+                    *
+                    horizonGlow;
 
 
                 return
 
                     reflectionColor
                     *
-                    reflectionAlpha
+                    alpha
                     *
-                    1.75;
+                    1.65;
 
             }
 
 
             /* =============================================
-               MAIN IMAGE
-            ============================================= */
+               MAIN
+            ============================================== */
 
             void main() {
 
@@ -1926,7 +1903,7 @@ console.log(
 
 
                 /* -----------------------------------------
-                   REAL BANNER REFLECTION
+                   BANNER REFLECTION ONLY
                 ----------------------------------------- */
 
                 vec3 reflection =
@@ -1942,59 +1919,37 @@ console.log(
 
 
                 /* -----------------------------------------
-                   AMBIENT MOONLIGHT
+                   VERY SUBTLE AMBIENT LIGHT
+
+                   This is NOT a moon reflection.
+                   It simply keeps the pond from becoming
+                   completely black between reflections.
                 ----------------------------------------- */
 
-                float upperLight =
+                float ambient =
 
                     smoothstep(
-                        0.10,
-                        0.95,
+                        0.62,
+                        1.0,
                         uv.y
                     );
-
-
-                float centerLight =
-
-                    exp(
-
-                        -pow(
-
-                            (
-                                uv.x -
-                                0.50
-                            )
-                            /
-                            0.52,
-
-                            2.0
-
-                        )
-
-                    );
-
-
-                float ambientMoon =
-
-                    upperLight *
-                    centerLight;
 
 
                 color +=
 
                     vec3(
-                        0.010,
-                        0.024,
-                        0.040
+                        0.003,
+                        0.009,
+                        0.015
                     )
 
                     *
 
-                    ambientMoon;
+                    ambient;
 
 
                 /* -----------------------------------------
-                   CINEMATIC VIGNETTE
+                   VIGNETTE
                 ----------------------------------------- */
 
                 float vignette =
@@ -2063,7 +2018,9 @@ console.log(
         ) {
 
             const shader =
-                gl.createShader(type);
+                gl.createShader(
+                    type
+                );
 
 
             gl.shaderSource(
@@ -2092,6 +2049,11 @@ console.log(
                         shader
                     )
 
+                );
+
+
+                gl.deleteShader(
+                    shader
                 );
 
 
@@ -2353,11 +2315,6 @@ console.log(
                 );
 
 
-                /*
-                   Temporary 1x1 texture so WebGL has
-                   valid texture data before the logo loads.
-                */
-
                 gl.texImage2D(
 
                     gl.TEXTURE_2D,
@@ -2401,16 +2358,6 @@ console.log(
                     clientX,
                     clientY
                 ) {
-
-                    console.log(
-
-                        "INFINITE POND RIPPLE:",
-
-                        clientX,
-                        clientY
-
-                    );
-
 
                     const rect =
                         canvas.getBoundingClientRect();
@@ -2501,11 +2448,6 @@ console.log(
                     "pointerdown",
 
                     function(event) {
-
-                        console.log(
-                            "POINTER DETECTED"
-                        );
-
 
                         if (
 
@@ -2604,8 +2546,16 @@ console.log(
 
 
                 /* =================================================
-                   LOGO LOAD
+                   BANNER LOAD EVENTS
                 ================================================= */
+
+                function markReflectionDirty() {
+
+                    reflectionDirty =
+                        true;
+
+                }
+
 
                 if (
                     logoElement
@@ -2623,19 +2573,21 @@ console.log(
                         logoElement.addEventListener(
 
                             "load",
-
-                            function() {
-
-                                reflectionDirty =
-                                    true;
-
-                            }
+                            markReflectionDirty
 
                         );
 
                     }
 
                 }
+
+
+                window.addEventListener(
+
+                    "resize",
+                    markReflectionDirty
+
+                );
 
 
                 /* =================================================
@@ -2657,14 +2609,14 @@ console.log(
                     );
 
 
-                   if (
-    reflectionDirty &&
-    reflectionTexture
-) {
+                    if (
+                        reflectionDirty &&
+                        reflectionTexture
+                    ) {
 
-    updateReflectionSource();
+                        updateReflectionSource();
 
-}
+                    }
 
 
                     while (
@@ -2792,6 +2744,7 @@ console.log(
                     gl.uniform1f(
 
                         timeLocation,
+
                         currentTime
 
                     );
@@ -2800,6 +2753,7 @@ console.log(
                     gl.uniform1f(
 
                         scrollLocation,
+
                         window.scrollY
 
                     );
@@ -2808,6 +2762,7 @@ console.log(
                     gl.uniform2fv(
 
                         ripplePositionsLocation,
+
                         positions
 
                     );
@@ -2816,6 +2771,7 @@ console.log(
                     gl.uniform1fv(
 
                         rippleStartsLocation,
+
                         starts
 
                     );
@@ -2824,6 +2780,7 @@ console.log(
                     gl.uniform1fv(
 
                         rippleStrengthsLocation,
+
                         strengths
 
                     );
