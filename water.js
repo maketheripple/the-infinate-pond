@@ -4,7 +4,7 @@
 ========================================================= */
 
 const canvas =
-document.getElementById("waterCanvas");
+    document.getElementById("waterCanvas");
 
 if (!canvas) {
 
@@ -137,35 +137,29 @@ if (!canvas) {
 
                 float b =
                     hash(
-
                         i +
                         vec2(
                             1.0,
                             0.0
                         )
-
                     );
 
                 float c =
                     hash(
-
                         i +
                         vec2(
                             0.0,
                             1.0
                         )
-
                     );
 
                 float d =
                     hash(
-
                         i +
                         vec2(
                             1.0,
                             1.0
                         )
-
                     );
 
                 return mix(
@@ -202,13 +196,9 @@ if (!canvas) {
                     0.5;
 
                 for (
-
                     int i = 0;
-
                     i < 5;
-
                     i++
-
                 ) {
 
                     value +=
@@ -596,50 +586,33 @@ if (!canvas) {
 
 
                 for (
-
                     int i = 0;
-
                     i < MAX_RIPPLES;
-
                     i++
-
                 ) {
 
                     float strength =
                         rippleStrengths[i];
 
 
-                    if (
-
-                        strength > 0.0
-
-                    ) {
+                    if (strength > 0.0) {
 
                         float elapsed =
 
                             max(
-
                                 0.0,
-
                                 time -
                                 rippleStarts[i]
-
                             );
 
 
-                        if (
-
-                            elapsed < 2.5
-
-                        ) {
+                        if (elapsed < 2.5) {
 
                             float d =
 
                                 distance(
-
                                     p,
                                     ripplePositions[i]
-
                                 );
 
 
@@ -864,9 +837,7 @@ if (!canvas) {
 
                         cloudUV *
                         2.2
-
                         +
-
                         vec2(
                             7.3,
                             2.4
@@ -914,10 +885,8 @@ if (!canvas) {
                 float distanceFromMoon =
 
                     distance(
-
                         uv,
                         moonPosition
-
                     );
 
 
@@ -942,34 +911,17 @@ if (!canvas) {
                     moonClouds(uv);
 
 
-                float horizonFade =
+                return
 
-    smoothstep(
-        0.54,
-        0.61,
-        uv.y
-    );
+                    glow *
 
+                    mix(
 
-return
+                        0.82,
+                        0.38,
+                        clouds
 
-    glow *
-
-    mix(
-
-        0.82,
-        0.38,
-        clouds
-
-    )
-
-    *
-
-    mix(
-        0.18,
-        1.0,
-        horizonFade
-    );
+                    );
 
             }
 
@@ -993,13 +945,13 @@ return
 
                 float waterMask =
 
-                   smoothstep(
+                    smoothstep(
 
-                       0.50,
-                       0.43,
-                       uv.y
+                        0.60,
+                        0.53,
+                        uv.y
 
-          );
+                    );
 
 
                 float bottomFade =
@@ -1017,11 +969,7 @@ return
                     bottomFade;
 
 
-                if (
-
-                    waterMask <= 0.0
-
-                ) {
+                if (waterMask <= 0.0) {
 
                     return 0.0;
 
@@ -1328,12 +1276,9 @@ return
                     pow(
 
                         max(
-
                             normal.z,
                             0.0
-
                         ),
-
                         5.0
 
                     );
@@ -1558,10 +1503,8 @@ return
                 backgroundVariation =
 
                     (
-
                         backgroundVariation -
                         0.5
-
                     )
                     *
                     0.035;
@@ -1718,21 +1661,13 @@ return
 
                 float upperLight =
 
-    smoothstep(
+                    smoothstep(
 
-        0.10,
-        0.95,
-        uv.y
+                        0.10,
+                        0.95,
+                        uv.y
 
-    )
-
-    *
-
-    smoothstep(
-        0.54,
-        0.64,
-        uv.y
-    );
+                    );
 
 
                 float centerLight =
@@ -1742,10 +1677,8 @@ return
                         -pow(
 
                             (
-
                                 uv.x -
                                 0.50
-
                             )
                             /
                             0.52,
