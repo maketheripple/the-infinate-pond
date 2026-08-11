@@ -15,7 +15,13 @@
 
         :root {
 
-            --banner-height: 330px;
+            /*
+               The banner is intentionally tall enough that
+               its bottom border sits BELOW:
+               "Every Ripple Begins Somewhere"
+            */
+
+            --banner-height: 370px;
 
             --page-bg:
                 #020b12;
@@ -83,18 +89,28 @@
             justify-content: center;
 
             padding:
-                24px 24px 34px;
+                28px 24px 42px;
 
             background:
                 var(--banner-bg);
 
             border-bottom:
                 1px solid
-                rgba(150, 220, 255, 0.12);
+                rgba(
+                    150,
+                    220,
+                    255,
+                    0.12
+                );
 
             box-shadow:
                 0 8px 30px
-                rgba(0, 0, 0, 0.28);
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.28
+                );
 
             pointer-events:
                 auto;
@@ -127,31 +143,42 @@
             display: block;
 
             /*
-               Enlarged substantially from the original.
-               The actual image is the Make the Ripple logo
-               stored in the GitHub images folder.
+               Large Make the Ripple logo.
             */
 
-            max-width: 540px;
-            max-height: 180px;
+            max-width:
+                540px;
 
-            width: auto;
-            height: auto;
+            max-height:
+                180px;
 
-            object-fit: contain;
+            width:
+                auto;
 
-            margin-bottom: 16px;
+            height:
+                auto;
+
+            object-fit:
+                contain;
+
+            margin-bottom:
+                16px;
 
             filter:
                 drop-shadow(
                     0 0 18px
-                    rgba(120, 220, 255, 0.32)
+                    rgba(
+                        120,
+                        220,
+                        255,
+                        0.32
+                    )
                 );
         }
 
 
         /* =====================================================
-           PRESENTED BY
+           PRESENTS
         ===================================================== */
 
         #presented {
@@ -177,7 +204,7 @@
 
 
         /* =====================================================
-           POND TITLE
+           THE INFINITE POND
         ===================================================== */
 
         #pondTitle {
@@ -209,34 +236,39 @@
 
             text-shadow:
                 0 0 18px
-                rgba(130, 220, 255, 0.20);
+                rgba(
+                    130,
+                    220,
+                    255,
+                    0.20
+                );
         }
 
 
         /* =====================================================
-           SUBTITLE
+           TAGLINE
         ===================================================== */
 
         #pondSubtitle {
 
             margin:
-                12px 0 0;
+                16px 0 0;
 
             color:
                 var(--text-soft);
 
             font-size:
                 clamp(
-                    12px,
-                    1.5vw,
-                    17px
+                    13px,
+                    1.6vw,
+                    18px
                 );
 
             line-height:
                 1.5;
 
             letter-spacing:
-                0.12em;
+                0.10em;
         }
 
 
@@ -248,10 +280,14 @@
 
             position: fixed;
 
-            top: 24px;
-            right: 24px;
+            top:
+                24px;
 
-            z-index: 200;
+            right:
+                24px;
+
+            z-index:
+                200;
 
             padding:
                 12px 20px;
@@ -353,9 +389,11 @@
             top:
                 var(--banner-height);
 
-            left: 0;
+            left:
+                0;
 
-            width: 100%;
+            width:
+                100%;
 
             height:
                 calc(
@@ -427,9 +465,11 @@
 
         .water-stage {
 
-            position: relative;
+            position:
+                relative;
 
-            width: 100%;
+            width:
+                100%;
 
             min-height:
                 2400px;
@@ -448,17 +488,26 @@
 
         #waterCanvas {
 
-            position: absolute;
+            position:
+                absolute;
 
-            top: 0;
-            left: 0;
+            top:
+                0;
 
-            width: 100%;
-            height: 100%;
+            left:
+                0;
 
-            display: block;
+            width:
+                100%;
 
-            z-index: 0;
+            height:
+                100%;
+
+            display:
+                block;
+
+            z-index:
+                0;
 
             pointer-events:
                 auto;
@@ -471,14 +520,18 @@
 
         .pond-content {
 
-            position: relative;
+            position:
+                relative;
 
-            z-index: 2;
+            z-index:
+                2;
 
             width:
                 min(
                     900px,
-                    calc(100% - 48px)
+                    calc(
+                        100% - 48px
+                    )
                 );
 
             margin:
@@ -588,15 +641,20 @@
 
             :root {
 
+                /*
+                   Mobile banner also leaves enough room
+                   underneath the tagline.
+                */
+
                 --banner-height:
-                    270px;
+                    310px;
             }
 
 
             .stationary-banner {
 
                 padding:
-                    18px 18px 28px;
+                    20px 18px 34px;
             }
 
 
@@ -623,23 +681,37 @@
             }
 
 
+            #pondTitle {
+
+                font-size:
+                    clamp(
+                        28px,
+                        8vw,
+                        46px
+                    );
+            }
+
+
             #pondSubtitle {
 
                 margin-top:
-                    9px;
+                    12px;
 
                 letter-spacing:
-                    0.08em;
+                    0.07em;
+
+                font-size:
+                    12px;
             }
 
 
             #rippleButton {
 
                 top:
-                    16px;
+                    14px;
 
                 right:
-                    16px;
+                    14px;
 
                 padding:
                     10px 16px;
@@ -679,7 +751,7 @@
 
 
     <!-- =====================================================
-         FIXED BANNER
+         FIXED TOP BANNER
     ===================================================== -->
 
     <header class="stationary-banner">
@@ -689,10 +761,6 @@
 
             <!-- =================================================
                  MAKE THE RIPPLE LOGO
-
-                 GitHub:
-                 maketheripple/the-infinate-pond
-                 /images/Make the Ripple Large Logo.png
             ================================================== -->
 
             <img
@@ -713,7 +781,7 @@
 
 
             <p id="pondSubtitle">
-                An ever-changing surface of light, water, and reflection
+                Every Ripple Begins Somewhere
             </p>
 
         </div>
@@ -723,10 +791,7 @@
 
     <!-- =====================================================
          MAKE A RIPPLE BUTTON
-
-         Kept outside the water canvas so it remains fixed
-         and cannot create an accidental water ripple.
-    ====================================================== -->
+    ===================================================== -->
 
     <button
         id="rippleButton"
@@ -737,8 +802,8 @@
 
 
     <!-- =====================================================
-         EVERYTHING BELOW THE BANNER IS SCROLLABLE
-    ====================================================== -->
+         SCROLLABLE WATER AREA
+    ===================================================== -->
 
     <main class="water-scroll">
 
@@ -835,7 +900,6 @@
     ===================================================== -->
 
     <script src="water.js"></script>
-
 
 </body>
 </html>
