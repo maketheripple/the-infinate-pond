@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.6.1 — SYNTAX & STRUCTURE REPAIR
+   VERSION 10.7 — ANCHORED BANNER REFLECTION
 ========================================================= */
 
 const canvas =
@@ -23,7 +23,6 @@ if (!canvas) {
                 powerPreference: "high-performance"
             }
         );
-
 
     if (!gl) {
 
@@ -72,6 +71,14 @@ if (!canvas) {
             reflectionCanvas.getContext("2d");
 
         let reflectionTexture = null;
+
+        /*
+           Once created, the reflection source remains
+           anchored to the pond.
+
+           Scrolling the page does NOT rebuild the source.
+        */
+
         let reflectionDirty = true;
 
 
@@ -275,7 +282,7 @@ if (!canvas) {
 
 
         /* =================================================
-           BUILD REFLECTION SOURCE
+           BUILD ANCHORED REFLECTION SOURCE
         ================================================= */
 
         function updateReflectionSource() {
@@ -377,6 +384,20 @@ if (!canvas) {
                 scaleY
             );
 
+
+            /*
+               IMPORTANT:
+
+               The reflection texture is captured only
+               when necessary.
+
+               It is NOT rebuilt during page scrolling.
+
+               This keeps the reflection physically
+               anchored to the pond instead of following
+               the HTML banner.
+            */
+
             reflectionDirty = false;
 
             if (reflectionTexture) {
@@ -439,7 +460,6 @@ if (!canvas) {
 
             uniform vec2 resolution;
             uniform float time;
-            uniform float scroll;
             uniform sampler2D bannerTexture;
 
             uniform vec2 ripplePositions[MAX_RIPPLES];
@@ -930,7 +950,7 @@ if (!canvas) {
 
 
             /* =============================================
-               MIRRORED BANNER MOONLIGHT REFLECTION
+               ANCHORED BANNER REFLECTION
             ============================================== */
 
             vec3 getBannerReflection(
@@ -943,7 +963,10 @@ if (!canvas) {
                     uv.y;
 
                 /*
-                   Reflection begins lower on the page.
+                   Reflection is tied directly to the
+                   fixed pond coordinate system.
+
+                   Page scrolling does not affect this.
                 */
 
                 float horizon =
@@ -975,11 +998,10 @@ if (!canvas) {
 
 
                 /*
-                   Vertical mirror.
+                   Mirrored vertical source.
 
-                   The source is sampled from bottom
-                   toward top, creating an upside-down
-                   reflection without horizontal reversal.
+                   This preserves the current mirrored
+                   appearance that is working well.
                 */
 
                 float sourceCanvasY =
@@ -1050,7 +1072,7 @@ if (!canvas) {
 
 
                 /*
-                   Preserve normal left/right orientation.
+                   Preserve horizontal orientation.
                 */
 
                 float sourceX =
@@ -1074,6 +1096,7 @@ if (!canvas) {
                     0.045
                     +
                     distortionY;
+
 
                 sourceX =
                     clamp(
@@ -1194,7 +1217,7 @@ if (!canvas) {
 
 
                 /*
-                   Fade reflection with distance.
+                   Fade reflection toward foreground.
                 */
 
                 float distanceFade =
@@ -1305,9 +1328,19 @@ if (!canvas) {
                     resolution.x /
                     resolution.y;
 
-                p.y +=
-                    scroll *
-                    0.00022;
+                /*
+                   IMPORTANT — VERSION 10.7
+
+                   The previous version shifted the water
+                   coordinate system according to page
+                   scroll.
+
+                   That caused the visual surface to move
+                   relative to the anchored reflection.
+
+                   The pond is now completely locked to the
+                   viewport.
+                */
 
                 p.y *=
                     1.55;
@@ -1430,7 +1463,7 @@ if (!canvas) {
 
 
                 /* -----------------------------------------
-                   BANNER MOONLIGHT
+                   ANCHORED BANNER REFLECTION
                 ----------------------------------------- */
 
                 vec3 reflection =
@@ -1702,12 +1735,6 @@ if (!canvas) {
                         "time"
                     );
 
-                const scrollLocation =
-                    gl.getUniformLocation(
-                        program,
-                        "scroll"
-                    );
-
                 const bannerTextureLocation =
                     gl.getUniformLocation(
                         program,
@@ -1946,6 +1973,12 @@ if (!canvas) {
                         canvas.height
                     );
 
+                    /*
+                       The banner must be recaptured when
+                       the viewport changes because its
+                       position and scale may change.
+                    */
+
                     reflectionDirty =
                         true;
 
@@ -1963,17 +1996,6 @@ if (!canvas) {
                 /* =================================================
                    BANNER CHANGE DETECTION
                 ================================================= */
-
-                window.addEventListener(
-                    "resize",
-                    function() {
-
-                        reflectionDirty =
-                            true;
-
-                    }
-                );
-
 
                 if (
                     logoElement
@@ -2002,6 +2024,17 @@ if (!canvas) {
 
                 }
 
+
+                /*
+                   Watch banner dimensions.
+
+                   IMPORTANT:
+
+                   This does NOT watch scroll.
+
+                   Therefore the reflection remains anchored
+                   instead of following the page.
+                */
 
                 if (
                     window.ResizeObserver
@@ -2051,6 +2084,11 @@ if (!canvas) {
                         program
                     );
 
+
+                    /* ---------------------------------------------
+                       UPDATE REFLECTION ONLY WHEN NEEDED
+                    --------------------------------------------- */
+
                     if (
                         reflectionDirty
                     ) {
@@ -2058,6 +2096,11 @@ if (!canvas) {
                         updateReflectionSource();
 
                     }
+
+
+                    /* ---------------------------------------------
+                       REMOVE OLD RIPPLES
+                    --------------------------------------------- */
 
                     while (
                         ripples.length > 0 &&
@@ -2069,6 +2112,11 @@ if (!canvas) {
                         ripples.shift();
 
                     }
+
+
+                    /* ---------------------------------------------
+                       RIPPLE ARRAYS
+                    --------------------------------------------- */
 
                     const positions =
                         new Float32Array(
@@ -2084,6 +2132,7 @@ if (!canvas) {
                         new Float32Array(
                             MAX_RIPPLES
                         );
+
 
                     for (
                         let i = 0;
@@ -2126,6 +2175,10 @@ if (!canvas) {
                     }
 
 
+                    /* ---------------------------------------------
+                       BANNER TEXTURE
+                    --------------------------------------------- */
+
                     gl.activeTexture(
                         gl.TEXTURE0
                     );
@@ -2134,6 +2187,11 @@ if (!canvas) {
                         gl.TEXTURE_2D,
                         reflectionTexture
                     );
+
+
+                    /* ---------------------------------------------
+                       UNIFORMS
+                    --------------------------------------------- */
 
                     gl.uniform2f(
                         resolutionLocation,
@@ -2144,11 +2202,6 @@ if (!canvas) {
                     gl.uniform1f(
                         timeLocation,
                         currentTime
-                    );
-
-                    gl.uniform1f(
-                        scrollLocation,
-                        window.scrollY
                     );
 
                     gl.uniform2fv(
@@ -2166,11 +2219,17 @@ if (!canvas) {
                         strengths
                     );
 
+
+                    /* ---------------------------------------------
+                       DRAW
+                    --------------------------------------------- */
+
                     gl.drawArrays(
                         gl.TRIANGLES,
                         0,
                         6
                     );
+
 
                     requestAnimationFrame(
                         renderWater
@@ -2178,6 +2237,10 @@ if (!canvas) {
 
                 }
 
+
+                /* =================================================
+                   START
+                ================================================= */
 
                 requestAnimationFrame(
                     renderWater
