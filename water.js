@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.4B — RAISED MOONLIGHT REFLECTION
+   VERSION 10.4C — PERSPECTIVE MOONLIGHT REFLECTION
 ========================================================= */
 
 const canvas =
@@ -927,12 +927,19 @@ if (!canvas) {
 
 
             /* =================================================
-               NATURAL MOONLIGHT REFLECTION
+               PERSPECTIVE MOONLIGHT REFLECTION
 
-               VERSION 10.4B
+               VERSION 10.4C
 
-               Reflection depth begins higher so the visible
-               moonlight is pulled closer toward the horizon.
+               The reflection behaves like a distant source
+               spreading toward the viewer.
+
+               Narrow near the horizon.
+               Wider toward the foreground.
+               Soft flat-top silhouette.
+               Natural broken water fragments.
+               Scroll subtly adjusts perspective without
+               moving the entire water surface.
             ================================================= */
 
             float moonReflection(
@@ -942,6 +949,10 @@ if (!canvas) {
                 vec3 normal
 
             ) {
+
+                /* ---------------------------------------------
+                   WATER MASK
+                --------------------------------------------- */
 
                 float waterMask =
 
@@ -976,22 +987,55 @@ if (!canvas) {
                 }
 
 
+                /* ---------------------------------------------
+                   SCROLL INFLUENCE
+
+                   Only the reflection responds to scrolling.
+                   The actual water surface stays visually
+                   anchored.
+                --------------------------------------------- */
+
+                float scrollShift =
+
+                    clamp(
+
+                        scroll *
+                        0.000055,
+
+                        -0.035,
+                        0.035
+
+                    );
+
+
+                /* ---------------------------------------------
+                   DEPTH
+
+                   0 = distant/horizon
+                   1 = foreground
+                --------------------------------------------- */
+
                 float depth =
 
                     clamp(
 
                         (
-                            0.54 -
+                            0.555 +
+                            scrollShift -
                             uv.y
                         )
                         /
-                        0.42,
+                        0.40,
 
                         0.0,
                         1.0
 
                     );
 
+
+                /* ---------------------------------------------
+                   NATURAL HORIZONTAL DRIFT
+                --------------------------------------------- */
 
                 float broadDrift =
 
@@ -1040,23 +1084,51 @@ if (!canvas) {
                     organicDrift;
 
 
-                float reflectionWidth =
+                /* ---------------------------------------------
+                   PERSPECTIVE WIDTH
 
-                    mix(
+                   The important change:
 
-                        0.035,
-                        0.20,
+                   The reflection starts narrow and becomes
+                   progressively wider toward the viewer.
 
-                        smoothstep(
+                   This creates the visual impression of a
+                   triangular / pyramid-shaped moon path.
+                --------------------------------------------- */
 
-                            0.0,
-                            1.0,
-                            depth
+                float perspectiveDepth =
 
-                        )
+                    smoothstep(
+
+                        0.0,
+                        1.0,
+                        depth
 
                     );
 
+
+                float baseWidth =
+
+                    mix(
+
+                        0.030,
+                        0.235,
+
+                        perspectiveDepth
+
+                    );
+
+
+                /* ---------------------------------------------
+                   FLAT-TOP PROFILE
+
+                   Instead of a simple Gaussian blob, use a
+                   broad central plateau with softly tapered
+                   edges.
+
+                   This gives the reflection its distinctive
+                   flat-top pyramid appearance.
+                --------------------------------------------- */
 
                 float horizontalDistance =
 
@@ -1068,21 +1140,98 @@ if (!canvas) {
                     );
 
 
-                float envelope =
+                float innerWidth =
+
+                    baseWidth *
+                    0.62;
+
+
+                float outerWidth =
+
+                    baseWidth;
+
+
+                float flatTop =
+
+                    1.0 -
+
+                    smoothstep(
+
+                        innerWidth,
+                        outerWidth,
+                        horizontalDistance
+
+                    );
+
+
+                /* ---------------------------------------------
+                   VERY SOFT CENTRAL CORE
+
+                   Keeps the reflection realistic rather than
+                   looking like a geometric shape.
+                --------------------------------------------- */
+
+                float centralGlow =
 
                     exp(
 
                         -pow(
 
                             horizontalDistance /
-                            reflectionWidth,
+                            (
+                                baseWidth *
+                                0.72
+                            ),
 
-                            2.0
+                            4.0
 
                         )
 
                     );
 
+
+                float perspectiveEnvelope =
+
+                    mix(
+
+                        flatTop,
+                        centralGlow,
+                        0.18
+
+                    );
+
+
+                /* ---------------------------------------------
+                   FAR-END HORIZON SOFTENING
+
+                   Keeps the distant end subtle and narrow.
+                --------------------------------------------- */
+
+                float horizonFade =
+
+                    smoothstep(
+
+                        0.02,
+                        0.18,
+                        depth
+
+                    );
+
+
+                perspectiveEnvelope *=
+
+                    mix(
+
+                        0.62,
+                        1.0,
+                        horizonFade
+
+                    );
+
+
+                /* ---------------------------------------------
+                   FRAGMENTED WATER LIGHT
+                --------------------------------------------- */
 
                 float fragmentA =
 
@@ -1179,6 +1328,10 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   HORIZONTAL WATER STREAKS
+                --------------------------------------------- */
+
                 float horizontalPattern =
 
                     sin(
@@ -1233,6 +1386,10 @@ if (!canvas) {
 
                     );
 
+
+                /* ---------------------------------------------
+                   SURFACE ANGLE RESPONSE
+                --------------------------------------------- */
 
                 float facing =
 
@@ -1295,6 +1452,10 @@ if (!canvas) {
                     0.22;
 
 
+                /* ---------------------------------------------
+                   CLOUD MODULATION
+                --------------------------------------------- */
+
                 float cloudAmount =
 
                     moonClouds(uv);
@@ -1311,12 +1472,19 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   DISTANCE FADE
+
+                   Farther portions remain softer so the
+                   foreground appears closer and brighter.
+                --------------------------------------------- */
+
                 float distanceFade =
 
                     mix(
 
+                        0.62,
                         1.0,
-                        0.58,
 
                         smoothstep(
 
@@ -1329,9 +1497,16 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   BROKEN REFLECTION
+
+                   The geometry stays continuous enough to read
+                   as moonlight, but the water breaks it apart.
+                --------------------------------------------- */
+
                 float fragmentedReflection =
 
-                    envelope *
+                    perspectiveEnvelope *
 
                     (
 
@@ -1347,9 +1522,16 @@ if (!canvas) {
                     );
 
 
+                /* ---------------------------------------------
+                   SOFT BASE LIGHT
+
+                   Prevents the reflection from looking like
+                   disconnected glowing particles.
+                --------------------------------------------- */
+
                 float softReflection =
 
-                    envelope *
+                    perspectiveEnvelope *
                     0.045;
 
 
@@ -1410,10 +1592,18 @@ if (!canvas) {
                     resolution.y;
 
 
-                p.y +=
+                /*
+                   IMPORTANT:
 
-                    scroll *
-                    0.00022;
+                   The old version shifted the entire water
+                   surface with scroll.
+
+                   That made it look as though the page was
+                   moving behind the moon reflection.
+
+                   The surface now remains anchored while
+                   scroll is used only inside moonReflection().
+                */
 
 
                 p.y *=
@@ -2464,6 +2654,13 @@ if (!canvas) {
 
                     );
 
+
+                    /*
+                       Scroll is still passed into the shader,
+                       but it now affects only the moonlight
+                       perspective instead of translating the
+                       entire water surface.
+                    */
 
                     gl.uniform1f(
 
