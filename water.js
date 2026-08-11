@@ -1,7 +1,6 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.6.1 — RESTORED WATER + MIRRORED REFLECTION
+   VERSION 10.6.1 — SYNTAX & STRUCTURE REPAIR
 ========================================================= */
 
 const canvas =
@@ -25,6 +24,7 @@ if (!canvas) {
             }
         );
 
+
     if (!gl) {
 
         console.error(
@@ -32,6 +32,7 @@ if (!canvas) {
         );
 
     } else {
+
 
         /* =================================================
            SETTINGS
@@ -87,9 +88,7 @@ if (!canvas) {
         ) {
 
             if (!text) {
-
                 return;
-
             }
 
             if (
@@ -104,7 +103,6 @@ if (!canvas) {
                 );
 
                 return;
-
             }
 
             let totalWidth = 0;
@@ -121,7 +119,8 @@ if (!canvas) {
                     ).width;
 
                 if (
-                    i < text.length - 1
+                    i <
+                    text.length - 1
                 ) {
 
                     totalWidth +=
@@ -153,7 +152,8 @@ if (!canvas) {
                 drawX +=
                     context.measureText(
                         character
-                    ).width +
+                    ).width
+                    +
                     letterSpacing;
 
             }
@@ -173,9 +173,7 @@ if (!canvas) {
         ) {
 
             if (!element) {
-
                 return;
-
             }
 
             const rect =
@@ -201,9 +199,7 @@ if (!canvas) {
                 );
 
             if (!fontSize) {
-
                 return;
-
             }
 
             const fontWeight =
@@ -221,24 +217,13 @@ if (!canvas) {
                 element.textContent.trim();
 
             if (!text) {
-
                 return;
-
             }
 
             context.save();
 
-            /*
-               Parser-safe font construction.
-               Deliberately avoids template literals.
-            */
-
             context.font =
-                fontWeight +
-                " " +
-                (fontSize * scaleY) +
-                "px " +
-                fontFamily;
+                `${fontWeight} ${fontSize * scaleY}px ${fontFamily}`;
 
             context.fillStyle =
                 style.color;
@@ -259,7 +244,8 @@ if (!canvas) {
                 (
                     rect.left +
                     rect.width * 0.5
-                ) *
+                )
+                *
                 scaleX;
 
             const baselineY =
@@ -267,7 +253,8 @@ if (!canvas) {
                     rect.top +
                     rect.height -
                     fontSize * 0.12
-                ) *
+                )
+                *
                 scaleY;
 
             drawTrackedText(
@@ -279,8 +266,7 @@ if (!canvas) {
                     isFinite(letterSpacing)
                         ? letterSpacing
                         : 0
-                ) *
-                scaleX
+                ) * scaleX
             );
 
             context.restore();
@@ -295,9 +281,7 @@ if (!canvas) {
         function updateReflectionSource() {
 
             if (!reflectionContext) {
-
                 return;
-
             }
 
             const viewportWidth =
@@ -393,8 +377,7 @@ if (!canvas) {
                 scaleY
             );
 
-            reflectionDirty =
-                false;
+            reflectionDirty = false;
 
             if (reflectionTexture) {
 
@@ -573,14 +556,13 @@ if (!canvas) {
                 ) {
 
                     value +=
-                        noise(p) *
+                        noise(p)
+                        *
                         amplitude;
 
-                    p *=
-                        2.0;
+                    p *= 2.0;
 
-                    amplitude *=
-                        0.5;
+                    amplitude *= 0.5;
 
                 }
 
@@ -825,9 +807,7 @@ if (!canvas) {
                     float strength =
                         rippleStrengths[i];
 
-                    if (
-                        strength > 0.0
-                    ) {
+                    if (strength > 0.0) {
 
                         float elapsed =
                             max(
@@ -836,9 +816,7 @@ if (!canvas) {
                                 rippleStarts[i]
                             );
 
-                        if (
-                            elapsed < 2.5
-                        ) {
+                        if (elapsed < 2.5) {
 
                             float d =
                                 distance(
@@ -862,11 +840,8 @@ if (!canvas) {
 
                             float impactWave =
                                 cos(
-                                    d *
-                                    42.0
-                                    -
-                                    elapsed *
-                                    7.0
+                                    d * 42.0 -
+                                    elapsed * 7.0
                                 );
 
                             float decay =
@@ -968,7 +943,7 @@ if (!canvas) {
                     uv.y;
 
                 /*
-                   Reflection pushed lower on page.
+                   Reflection begins lower on the page.
                 */
 
                 float horizon =
@@ -1002,8 +977,9 @@ if (!canvas) {
                 /*
                    Vertical mirror.
 
-                   Sampling travels through the source
-                   image in reverse vertical order.
+                   The source is sampled from bottom
+                   toward top, creating an upside-down
+                   reflection without horizontal reversal.
                 */
 
                 float sourceCanvasY =
@@ -1030,7 +1006,7 @@ if (!canvas) {
 
 
                 /*
-                   Horizontal distortion.
+                   Organic horizontal distortion.
                 */
 
                 float distortionX =
@@ -1074,12 +1050,11 @@ if (!canvas) {
 
 
                 /*
-                   Preserve left/right orientation.
+                   Preserve normal left/right orientation.
                 */
 
                 float sourceX =
-                    0.5
-                    +
+                    0.5 +
                     (
                         uv.x -
                         0.5
@@ -1094,13 +1069,11 @@ if (!canvas) {
                     normal.x *
                     0.065;
 
-
                 sourceCanvasY +=
                     normal.y *
                     0.045
                     +
                     distortionY;
-
 
                 sourceX =
                     clamp(
@@ -1108,7 +1081,6 @@ if (!canvas) {
                         0.001,
                         0.999
                     );
-
 
                 sourceCanvasY =
                     clamp(
@@ -1118,26 +1090,17 @@ if (!canvas) {
                     );
 
 
-                /*
-                   The reflection canvas is top-origin.
-
-                   Sampling the opposite vertical coordinate
-                   creates the upside-down mirror.
-                */
-
                 vec2 reflectionUV =
                     vec2(
                         sourceX,
                         sourceCanvasY
                     );
 
-
                 vec4 reflected =
                     texture2D(
                         bannerTexture,
                         reflectionUV
                     );
-
 
                 if (
                     reflected.a <= 0.001
@@ -1148,9 +1111,9 @@ if (!canvas) {
                 }
 
 
-                /* -----------------------------------------
-                   HORIZONTAL FRAGMENTATION
-                ----------------------------------------- */
+                /*
+                   Horizontal fragmentation.
+                */
 
                 float fragmentNoise =
                     fbm(
@@ -1161,19 +1124,12 @@ if (!canvas) {
                         )
                     );
 
-
                 float wave =
                     sin(
-                        depth *
-                        185.0
-                        +
-                        time *
-                        0.06
-                        +
-                        uv.x *
-                        3.0
+                        depth * 185.0 +
+                        time * 0.06 +
+                        uv.x * 3.0
                     );
-
 
                 float horizontalBreakup =
                     smoothstep(
@@ -1182,14 +1138,12 @@ if (!canvas) {
                         fragmentNoise
                     );
 
-
                 float waveBreakup =
                     smoothstep(
                         -0.20,
                         0.72,
                         wave
                     );
-
 
                 float fragmentation =
                     mix(
@@ -1200,9 +1154,9 @@ if (!canvas) {
                     );
 
 
-                /* -----------------------------------------
-                   SURFACE RESPONSE
-                ----------------------------------------- */
+                /*
+                   Reflection responds to water angle.
+                */
 
                 float facing =
                     max(
@@ -1219,17 +1173,14 @@ if (!canvas) {
                         0.0
                     );
 
-
                 float shimmer =
                     pow(
                         facing,
                         7.0
                     );
 
-
                 float surfaceLight =
-                    shimmer *
-                    0.78
+                    shimmer * 0.78
                     +
                     pow(
                         max(
@@ -1242,9 +1193,9 @@ if (!canvas) {
                     0.22;
 
 
-                /* -----------------------------------------
-                   DISTANCE FADE
-                ----------------------------------------- */
+                /*
+                   Fade reflection with distance.
+                */
 
                 float distanceFade =
                     mix(
@@ -1252,7 +1203,6 @@ if (!canvas) {
                         0.34,
                         perspective
                     );
-
 
                 float foregroundBreakup =
                     mix(
@@ -1266,9 +1216,9 @@ if (!canvas) {
                     );
 
 
-                /* -----------------------------------------
-                   EDGE FADES
-                ----------------------------------------- */
+                /*
+                   Vertical edge fade.
+                */
 
                 float verticalFade =
                     smoothstep(
@@ -1286,6 +1236,10 @@ if (!canvas) {
                         )
                     );
 
+
+                /*
+                   Horizontal edge fade.
+                */
 
                 float horizontalFade =
                     smoothstep(
@@ -1305,38 +1259,29 @@ if (!canvas) {
 
 
                 float alpha =
-                    reflected.a
-                    *
-                    distanceFade
-                    *
-                    foregroundBreakup
-                    *
-                    surfaceLight
-                    *
-                    verticalFade
-                    *
+                    reflected.a *
+                    distanceFade *
+                    foregroundBreakup *
+                    surfaceLight *
+                    verticalFade *
                     horizontalFade;
 
 
-                /* -----------------------------------------
-                   MOONLIT COLOR
-                ----------------------------------------- */
+                /*
+                   Cool moonlit color.
+                */
 
                 vec3 moonlightColor =
-                    reflected.rgb
-                    *
+                    reflected.rgb *
                     vec3(
                         0.70,
                         0.88,
                         1.0
                     );
 
-
                 return
-                    moonlightColor
-                    *
-                    alpha
-                    *
+                    moonlightColor *
+                    alpha *
                     1.85;
 
             }
@@ -1397,32 +1342,25 @@ if (!canvas) {
                         0.082
                     );
 
-
                 float variation =
                     surface *
-                    0.55
-                    +
+                    0.55 +
                     0.5;
-
 
                 float naturalSurface =
                     naturalWaterSurface(p);
 
-
                 variation +=
                     naturalSurface;
 
-
                 float backgroundVariation =
                     fbm(
-                        p * 0.42
-                        +
+                        p * 0.42 +
                         vec2(
                             time * 0.004,
                             -time * 0.003
                         )
                     );
-
 
                 backgroundVariation =
                     (
@@ -1432,10 +1370,8 @@ if (!canvas) {
                     *
                     0.035;
 
-
                 variation +=
                     backgroundVariation;
-
 
                 variation =
                     clamp(
@@ -1443,7 +1379,6 @@ if (!canvas) {
                         0.0,
                         1.0
                     );
-
 
                 vec3 color =
                     mix(
@@ -1466,7 +1401,6 @@ if (!canvas) {
                         7.0
                     );
 
-
                 color +=
                     vec3(
                         0.012,
@@ -1484,7 +1418,6 @@ if (!canvas) {
                 float surfaceSheen =
                     naturalSurface *
                     0.55;
-
 
                 color +=
                     vec3(
@@ -1506,7 +1439,6 @@ if (!canvas) {
                         normal
                     );
 
-
                 color +=
                     reflection;
 
@@ -1522,7 +1454,6 @@ if (!canvas) {
                         uv.y
                     );
 
-
                 float centerLight =
                     exp(
                         -pow(
@@ -1536,11 +1467,9 @@ if (!canvas) {
                         )
                     );
 
-
                 float ambientMoon =
                     upperLight *
                     centerLight;
-
 
                 color +=
                     vec3(
@@ -1570,7 +1499,6 @@ if (!canvas) {
                         )
                     );
 
-
                 color *=
                     mix(
                         0.68,
@@ -1588,7 +1516,6 @@ if (!canvas) {
                         color,
                         vec3(0.86)
                     );
-
 
                 gl_FragColor =
                     vec4(
@@ -1652,7 +1579,6 @@ if (!canvas) {
                 gl.VERTEX_SHADER,
                 vertexShaderSource
             );
-
 
         const fragmentShader =
             createShader(
@@ -1729,7 +1655,6 @@ if (!canvas) {
                 gl.bufferData(
                     gl.ARRAY_BUFFER,
                     new Float32Array([
-
                         -1, -1,
                          1, -1,
                         -1,  1,
@@ -1737,11 +1662,9 @@ if (!canvas) {
                         -1,  1,
                          1, -1,
                          1,  1
-
                     ]),
                     gl.STATIC_DRAW
                 );
-
 
                 const position =
                     gl.getAttribLocation(
@@ -1749,11 +1672,9 @@ if (!canvas) {
                         "position"
                     );
 
-
                 gl.enableVertexAttribArray(
                     position
                 );
-
 
                 gl.vertexAttribPointer(
                     position,
@@ -1897,54 +1818,43 @@ if (!canvas) {
                         clientY
                     );
 
-
                     const rect =
                         canvas.getBoundingClientRect();
-
 
                     const localX =
                         clientX -
                         rect.left;
 
-
                     const localY =
                         clientY -
                         rect.top;
-
 
                     const uvX =
                         localX /
                         rect.width;
 
-
                     const uvY =
                         localY /
                         rect.height;
-
 
                     let rippleX =
                         uvX -
                         0.5;
 
-
                     let rippleY =
                         0.5 -
                         uvY;
-
 
                     rippleX *=
                         rect.width /
                         rect.height;
 
-
                     rippleY *=
                         1.55;
-
 
                     const now =
                         performance.now() *
                         0.001;
-
 
                     ripples.push({
 
@@ -1961,7 +1871,6 @@ if (!canvas) {
                             3.0
 
                     });
-
 
                     if (
                         ripples.length >
@@ -1992,7 +1901,6 @@ if (!canvas) {
 
                         }
 
-
                         createRipple(
                             event.clientX,
                             event.clientY
@@ -2011,31 +1919,25 @@ if (!canvas) {
 
                     const ratio =
                         Math.min(
-                            window.devicePixelRatio ||
-                            1,
+                            window.devicePixelRatio || 1,
                             2
                         );
-
 
                     canvas.width =
                         window.innerWidth *
                         ratio;
 
-
                     canvas.height =
                         window.innerHeight *
                         ratio;
-
 
                     canvas.style.width =
                         window.innerWidth +
                         "px";
 
-
                     canvas.style.height =
                         window.innerHeight +
                         "px";
-
 
                     gl.viewport(
                         0,
@@ -2043,7 +1945,6 @@ if (!canvas) {
                         canvas.width,
                         canvas.height
                     );
-
 
                     reflectionDirty =
                         true;
@@ -2055,7 +1956,6 @@ if (!canvas) {
                     "resize",
                     resizeWater
                 );
-
 
                 resizeWater();
 
@@ -2075,7 +1975,9 @@ if (!canvas) {
                 );
 
 
-                if (logoElement) {
+                if (
+                    logoElement
+                ) {
 
                     if (
                         logoElement.complete
@@ -2115,12 +2017,10 @@ if (!canvas) {
                             }
                         );
 
-
                     const pondHeader =
                         document.querySelector(
                             ".pond-header"
                         );
-
 
                     if (
                         pondHeader
@@ -2147,11 +2047,9 @@ if (!canvas) {
                         milliseconds *
                         0.001;
 
-
                     gl.useProgram(
                         program
                     );
-
 
                     if (
                         reflectionDirty
@@ -2160,7 +2058,6 @@ if (!canvas) {
                         updateReflectionSource();
 
                     }
-
 
                     while (
                         ripples.length > 0 &&
@@ -2173,24 +2070,20 @@ if (!canvas) {
 
                     }
 
-
                     const positions =
                         new Float32Array(
                             MAX_RIPPLES * 2
                         );
-
 
                     const starts =
                         new Float32Array(
                             MAX_RIPPLES
                         );
 
-
                     const strengths =
                         new Float32Array(
                             MAX_RIPPLES
                         );
-
 
                     for (
                         let i = 0;
@@ -2202,42 +2095,28 @@ if (!canvas) {
                             i < ripples.length
                         ) {
 
-                            positions[
-                                i * 2
-                            ] =
+                            positions[i * 2] =
                                 ripples[i].x;
 
-
-                            positions[
-                                i * 2 + 1
-                            ] =
+                            positions[i * 2 + 1] =
                                 ripples[i].y;
-
 
                             starts[i] =
                                 ripples[i].start;
-
 
                             strengths[i] =
                                 ripples[i].strength;
 
                         } else {
 
-                            positions[
-                                i * 2
-                            ] =
+                            positions[i * 2] =
                                 0.0;
 
-
-                            positions[
-                                i * 2 + 1
-                            ] =
+                            positions[i * 2 + 1] =
                                 0.0;
-
 
                             starts[i] =
                                 -100.0;
-
 
                             strengths[i] =
                                 0.0;
@@ -2251,12 +2130,10 @@ if (!canvas) {
                         gl.TEXTURE0
                     );
 
-
                     gl.bindTexture(
                         gl.TEXTURE_2D,
                         reflectionTexture
                     );
-
 
                     gl.uniform2f(
                         resolutionLocation,
@@ -2264,43 +2141,36 @@ if (!canvas) {
                         canvas.height
                     );
 
-
                     gl.uniform1f(
                         timeLocation,
                         currentTime
                     );
-
 
                     gl.uniform1f(
                         scrollLocation,
                         window.scrollY
                     );
 
-
                     gl.uniform2fv(
                         ripplePositionsLocation,
                         positions
                     );
-
 
                     gl.uniform1fv(
                         rippleStartsLocation,
                         starts
                     );
 
-
                     gl.uniform1fv(
                         rippleStrengthsLocation,
                         strengths
                     );
-
 
                     gl.drawArrays(
                         gl.TRIANGLES,
                         0,
                         6
                     );
-
 
                     requestAnimationFrame(
                         renderWater
@@ -2320,4 +2190,3 @@ if (!canvas) {
     }
 
 }
-```
