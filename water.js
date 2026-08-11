@@ -1,7 +1,7 @@
 ```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.6 — MIRRORED BANNER MOONLIGHT REFLECTION
+   VERSION 10.6.1 — TRUE MIRRORED BANNER MOONLIGHT REFLECTION
 ========================================================= */
 
 const canvas =
@@ -488,6 +488,13 @@ if (!canvas) {
 
                 );
 
+
+                /*
+                   Keep WebGL's normal texture orientation.
+
+                   The shader performs the actual vertical
+                   reflection conversion.
+                */
 
                 gl.pixelStorei(
 
@@ -1238,13 +1245,15 @@ if (!canvas) {
             /* =============================================
                MIRRORED BANNER MOONLIGHT REFLECTION
 
-               VERSION 10.6
+               VERSION 10.6.1
 
-               The reflection is vertically inverted.
-               The image is NOT horizontally flipped.
+               TRUE VERTICAL MIRROR:
 
-               The reflection begins slightly lower than
-               Version 10.4 and expands toward the viewer.
+               - Left/right orientation remains unchanged.
+               - Top/bottom orientation is inverted.
+               - Reflection begins at the lower banner area.
+               - Logo appears upside-down in the water.
+               - Wording is also upside-down.
             ============================================== */
 
             vec3 getBannerReflection(
@@ -1256,13 +1265,7 @@ if (!canvas) {
             ) {
 
                 /*
-                   Move the reflection farther down.
-
-                   Version 10.4:
-                   horizon = 0.65
-
-                   Version 10.6:
-                   horizon = 0.70
+                   Reflection begins lower on the page.
                 */
 
                 float screenY =
@@ -1294,9 +1297,9 @@ if (!canvas) {
                 }
 
 
-                /*
-                   Smooth perspective depth.
-                */
+                /* -----------------------------------------
+                   PERSPECTIVE
+                ----------------------------------------- */
 
                 float perspective =
 
@@ -1307,17 +1310,19 @@ if (!canvas) {
                     );
 
 
-                /*
-                   MIRROR THE BANNER VERTICALLY.
+                /* -----------------------------------------
+                   SOURCE VERTICAL POSITION
 
-                   The source image is sampled from its
-                   bottom toward its top as the reflection
-                   travels toward the viewer.
+                   Top-origin coordinate system:
 
-                   This creates the upside-down reflection
-                   while preserving the normal left/right
-                   orientation.
-                */
+                   0.025 = top of banner
+                   0.63  = lower banner
+
+                   The reflection travels from the
+                   bottom of the banner toward the top.
+
+                   This is the actual vertical inversion.
+                ----------------------------------------- */
 
                 float sourceCanvasY =
 
@@ -1328,9 +1333,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Reflection becomes wider toward viewer.
-                */
+                /* -----------------------------------------
+                   REFLECTION WIDTH
+                ----------------------------------------- */
 
                 float widthScale =
 
@@ -1344,9 +1349,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Organic horizontal distortion.
-                */
+                /* -----------------------------------------
+                   HORIZONTAL DISTORTION
+                ----------------------------------------- */
 
                 float distortionX =
 
@@ -1372,9 +1377,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Vertical distortion.
-                */
+                /* -----------------------------------------
+                   VERTICAL DISTORTION
+                ----------------------------------------- */
 
                 float distortionY =
 
@@ -1396,12 +1401,16 @@ if (!canvas) {
                     0.028;
 
 
-                /*
-                   Horizontal source position.
+                /* -----------------------------------------
+                   SOURCE HORIZONTAL POSITION
 
-                   NOTE:
-                   No horizontal mirroring is applied.
-                */
+                   IMPORTANT:
+
+                   Do NOT reverse X.
+
+                   The water reflection should remain
+                   left/right correct.
+                ----------------------------------------- */
 
                 float sourceX =
 
@@ -1421,9 +1430,9 @@ if (!canvas) {
                     distortionX;
 
 
-                /*
-                   Surface normal bends reflected image.
-                */
+                /* -----------------------------------------
+                   WATER NORMAL DISTORTION
+                ----------------------------------------- */
 
                 sourceX +=
                     normal.x *
@@ -1458,15 +1467,27 @@ if (!canvas) {
                     );
 
 
-                /*
-                   IMPORTANT:
+                /* -----------------------------------------
+                   CRITICAL MIRROR CONVERSION
 
                    The reflection canvas is top-origin.
 
-                   We intentionally reverse the texture
-                   coordinate here so the banner appears
-                   vertically mirrored in the water.
-                */
+                   WebGL texture coordinates are
+                   bottom-origin.
+
+                   Therefore:
+
+                       canvas Y
+                       ↓
+
+                       1.0 - canvas Y
+                       ↓
+
+                       WebGL texture Y
+
+                   This preserves the intended vertical
+                   mirror rather than cancelling it.
+                ----------------------------------------- */
 
                 vec2 reflectionUV =
 
@@ -1474,6 +1495,7 @@ if (!canvas) {
 
                         sourceX,
 
+                        1.0 -
                         sourceCanvasY
 
                     );
@@ -1487,9 +1509,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                   No banner pixel = no reflection.
-                */
+                /* -----------------------------------------
+                   EMPTY PIXEL CHECK
+                ----------------------------------------- */
 
                 if (
                     reflected.a <= 0.001
@@ -1500,10 +1522,9 @@ if (!canvas) {
                 }
 
 
-                /*
-                   Break image into horizontal
-                   moonlight fragments.
-                */
+                /* -----------------------------------------
+                   HORIZONTAL MOONLIGHT FRAGMENTATION
+                ----------------------------------------- */
 
                 float fragmentNoise =
 
@@ -1570,9 +1591,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Reflection responds to water angle.
-                */
+                /* -----------------------------------------
+                   SURFACE ANGLE
+                ----------------------------------------- */
 
                 float facing =
 
@@ -1625,10 +1646,9 @@ if (!canvas) {
                     0.22;
 
 
-                /*
-                   Reflection is brightest near horizon
-                   and becomes increasingly fragmented.
-                */
+                /* -----------------------------------------
+                   DISTANCE FADE
+                ----------------------------------------- */
 
                 float distanceFade =
 
@@ -1652,9 +1672,9 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Fade extreme vertical edges.
-                */
+                /* -----------------------------------------
+                   VERTICAL FADE
+                ----------------------------------------- */
 
                 float verticalFade =
 
@@ -1674,6 +1694,10 @@ if (!canvas) {
                     );
 
 
+                /* -----------------------------------------
+                   HORIZONTAL FADE
+                ----------------------------------------- */
+
                 float horizontalFade =
 
                     smoothstep(
@@ -1691,6 +1715,10 @@ if (!canvas) {
                         )
                     );
 
+
+                /* -----------------------------------------
+                   FINAL REFLECTION ALPHA
+                ----------------------------------------- */
 
                 float alpha =
 
@@ -1717,9 +1745,9 @@ if (!canvas) {
                     horizontalFade;
 
 
-                /*
-                   Cool moonlit color.
-                */
+                /* -----------------------------------------
+                   COOL MOONLIT COLOR
+                ----------------------------------------- */
 
                 vec3 moonlightColor =
 
@@ -1770,9 +1798,9 @@ if (!canvas) {
                     resolution.y;
 
 
-                /*
-                   Preserve subtle scroll integration.
-                */
+                /* -----------------------------------------
+                   SCROLL INTEGRATION
+                ----------------------------------------- */
 
                 p.y +=
 
