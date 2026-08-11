@@ -1,6 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.7.4 — BANNER CLICK PROTECTION
+   VERSION 10.7.5 — RELIABLE BANNER CLICK PROTECTION
 ========================================================= */
 
 const canvas =
@@ -2064,8 +2064,8 @@ if (!canvas) {
 
 
                 /* =================================================
-                   BANNER CLICK DETECTION
-                   VERSION 10.7.4
+                   BANNER HIT TEST
+                   VERSION 10.7.5
                 ================================================= */
 
                 function pointIsInsideBanner(
@@ -2086,6 +2086,16 @@ if (!canvas) {
                         stationaryBanner.getBoundingClientRect();
 
 
+                    if (
+                        bannerRect.width <= 0 ||
+                        bannerRect.height <= 0
+                    ) {
+
+                        return false;
+
+                    }
+
+
                     return (
                         clientX >= bannerRect.left &&
                         clientX <= bannerRect.right &&
@@ -2097,25 +2107,56 @@ if (!canvas) {
 
 
                 /* =================================================
-                   POINTER RIPPLE
-                   VERSION 10.7.4
+                   WATER HIT TEST
+                   VERSION 10.7.5
                 ================================================= */
 
-                canvas.addEventListener(
+                function pointIsInsideWater(
+                    clientX,
+                    clientY
+                ) {
+
+                    const rect =
+                        canvas.getBoundingClientRect();
+
+
+                    if (
+                        rect.width <= 0 ||
+                        rect.height <= 0
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    return (
+                        clientX >= rect.left &&
+                        clientX <= rect.right &&
+                        clientY >= rect.top &&
+                        clientY <= rect.bottom
+                    );
+
+                }
+
+
+                /* =================================================
+                   RELIABLE POINTER RIPPLE
+                   VERSION 10.7.5
+                ================================================= */
+
+                document.addEventListener(
                     "pointerdown",
                     function(event) {
 
                         /*
-                           The canvas covers the page and may
-                           receive the pointer event even when
-                           the user visually clicks the banner.
+                           FIRST:
+                           If the pointer is anywhere inside
+                           the stationary banner, completely
+                           ignore it.
 
-                           Therefore we explicitly test the
-                           screen coordinates against the
-                           stationary banner.
-
-                           If the click is anywhere inside the
-                           banner, absolutely no ripple is made.
+                           This check happens BEFORE checking
+                           whether the canvas received the event.
                         */
 
                         if (
@@ -2135,13 +2176,32 @@ if (!canvas) {
 
 
                         /*
+                           SECOND:
+                           Only create a ripple if the pointer
+                           is physically inside the water canvas.
+                        */
+
+                        if (
+                            !pointIsInsideWater(
+                                event.clientX,
+                                event.clientY
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        /*
+                           THIRD:
                            Only accept primary mouse clicks
                            and touch input.
                         */
 
                         if (
-                            event.button !== 0 &&
-                            event.pointerType !== "touch"
+                            event.pointerType !== "touch" &&
+                            event.button !== 0
                         ) {
 
                             return;
