@@ -1,7 +1,6 @@
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.7.3 — VIEWPORT-ANCHORED REFLECTION
-   BANNER CLICK PROTECTION
+   VERSION 10.7.3 — BANNER PROTECTED FROM RIPPLE INTERACTION
 ========================================================= */
 
 const canvas =
@@ -25,7 +24,6 @@ if (!canvas) {
             }
         );
 
-
     if (!gl) {
 
         console.error(
@@ -33,7 +31,6 @@ if (!canvas) {
         );
 
     } else {
-
 
         /* =================================================
            SETTINGS
@@ -122,9 +119,7 @@ if (!canvas) {
 
             }
 
-
             let totalWidth = 0;
-
 
             for (
                 let i = 0;
@@ -149,11 +144,9 @@ if (!canvas) {
 
             }
 
-
             let drawX =
                 x -
                 totalWidth * 0.5;
-
 
             for (
                 let i = 0;
@@ -197,10 +190,8 @@ if (!canvas) {
                 return;
             }
 
-
             const rect =
                 element.getBoundingClientRect();
-
 
             if (
                 rect.width <= 0 ||
@@ -211,23 +202,19 @@ if (!canvas) {
 
             }
 
-
             const style =
                 window.getComputedStyle(
                     element
                 );
-
 
             const fontSize =
                 parseFloat(
                     style.fontSize
                 );
 
-
             if (!fontSize) {
                 return;
             }
-
 
             const fontWeight =
                 style.fontWeight;
@@ -240,42 +227,32 @@ if (!canvas) {
                     style.letterSpacing
                 );
 
-
             const text =
                 element.textContent.trim();
-
 
             if (!text) {
                 return;
             }
 
-
             context.save();
-
 
             context.font =
                 `${fontWeight} ${fontSize * scaleY}px ${fontFamily}`;
 
-
             context.fillStyle =
                 style.color;
-
 
             context.textAlign =
                 "left";
 
-
             context.textBaseline =
                 "alphabetic";
-
 
             context.shadowColor =
                 "rgba(120,210,240,0.35)";
 
-
             context.shadowBlur =
                 12;
-
 
             const centerX =
                 (
@@ -285,7 +262,6 @@ if (!canvas) {
                 *
                 scaleX;
 
-
             const baselineY =
                 (
                     rect.top +
@@ -294,7 +270,6 @@ if (!canvas) {
                 )
                 *
                 scaleY;
-
 
             drawTrackedText(
                 context,
@@ -307,7 +282,6 @@ if (!canvas) {
                         : 0
                 ) * scaleX
             );
-
 
             context.restore();
 
@@ -323,7 +297,6 @@ if (!canvas) {
             const viewportHeight =
                 window.innerHeight;
 
-
             if (
                 viewportHeight <= 0
             ) {
@@ -332,22 +305,8 @@ if (!canvas) {
 
             }
 
-
-            /*
-               The banner is fixed.
-
-               We deliberately measure its fixed
-               viewport position instead of using
-               document scroll position.
-
-               This means the reflection remains
-               locked to the banner while the page
-               underneath scrolls.
-            */
-
             let bannerBottom =
                 viewportHeight * 0.65;
-
 
             if (
                 stationaryBanner
@@ -355,7 +314,6 @@ if (!canvas) {
 
                 const bannerRect =
                     stationaryBanner.getBoundingClientRect();
-
 
                 if (
                     bannerRect.height > 0
@@ -368,7 +326,6 @@ if (!canvas) {
 
             }
 
-
             reflectionTop =
                 Math.max(
                     0.0,
@@ -378,7 +335,6 @@ if (!canvas) {
                         viewportHeight
                     )
                 );
-
 
             reflectionBottom =
                 1.0;
@@ -396,13 +352,11 @@ if (!canvas) {
                 return;
             }
 
-
             const viewportWidth =
                 window.innerWidth;
 
             const viewportHeight =
                 window.innerHeight;
-
 
             if (
                 viewportWidth <= 0 ||
@@ -413,19 +367,15 @@ if (!canvas) {
 
             }
 
-
             updateReflectionPosition();
-
 
             const scaleX =
                 reflectionCanvas.width /
                 viewportWidth;
 
-
             const scaleY =
                 reflectionCanvas.height /
                 viewportHeight;
-
 
             reflectionContext.clearRect(
                 0,
@@ -448,21 +398,16 @@ if (!canvas) {
                 const rect =
                     logoElement.getBoundingClientRect();
 
-
                 reflectionContext.save();
-
 
                 reflectionContext.globalAlpha =
                     0.98;
 
-
                 reflectionContext.shadowColor =
                     "rgba(120,210,240,0.38)";
 
-
                 reflectionContext.shadowBlur =
                     20;
-
 
                 reflectionContext.drawImage(
                     logoElement,
@@ -471,7 +416,6 @@ if (!canvas) {
                     rect.width * scaleX,
                     rect.height * scaleY
                 );
-
 
                 reflectionContext.restore();
 
@@ -489,14 +433,12 @@ if (!canvas) {
                 scaleY
             );
 
-
             drawTextElement(
                 reflectionContext,
                 titleElement,
                 scaleX,
                 scaleY
             );
-
 
             drawTextElement(
                 reflectionContext,
@@ -505,10 +447,8 @@ if (!canvas) {
                 scaleY
             );
 
-
             reflectionDirty =
                 false;
-
 
             if (reflectionTexture) {
 
@@ -517,12 +457,10 @@ if (!canvas) {
                     reflectionTexture
                 );
 
-
                 gl.pixelStorei(
                     gl.UNPACK_FLIP_Y_WEBGL,
                     false
                 );
-
 
                 gl.texImage2D(
                     gl.TEXTURE_2D,
@@ -624,7 +562,6 @@ if (!canvas) {
                 vec2 f =
                     fract(p);
 
-
                 f =
                     f *
                     f *
@@ -632,7 +569,6 @@ if (!canvas) {
                         3.0 -
                         2.0 * f
                     );
-
 
                 float a =
                     hash(i);
@@ -664,7 +600,6 @@ if (!canvas) {
                         )
                     );
 
-
                 return mix(
                     mix(
                         a,
@@ -694,7 +629,6 @@ if (!canvas) {
                 float amplitude =
                     0.5;
 
-
                 for (
                     int i = 0;
                     i < 5;
@@ -706,16 +640,13 @@ if (!canvas) {
                         *
                         amplitude;
 
-
                     p *=
                         2.0;
-
 
                     amplitude *=
                         0.5;
 
                 }
-
 
                 return value;
 
@@ -746,7 +677,6 @@ if (!canvas) {
                         0.055
                     );
 
-
                 float waveB =
                     sin(
                         dot(
@@ -764,7 +694,6 @@ if (!canvas) {
                         time *
                         0.042
                     );
-
 
                 return
                     waveA * 0.055
@@ -798,7 +727,6 @@ if (!canvas) {
                         0.18
                     );
 
-
                 float waveB =
                     sin(
                         dot(
@@ -816,7 +744,6 @@ if (!canvas) {
                         time *
                         0.14
                     );
-
 
                 return
                     waveA * 0.012
@@ -838,13 +765,11 @@ if (!canvas) {
                         -time * 0.003
                     );
 
-
                 float n =
                     fbm(
                         p * 0.48 +
                         drift
                     );
-
 
                 return
                     (
@@ -869,20 +794,17 @@ if (!canvas) {
                         -time * 0.0018
                     );
 
-
                 float broadA =
                     fbm(
                         p * 0.36 +
                         slowDrift
                     );
 
-
                 float broadB =
                     fbm(
                         p * 0.68 -
                         slowDrift * 1.35
                     );
-
 
                 float fine =
                     fbm(
@@ -894,12 +816,10 @@ if (!canvas) {
                         )
                     );
 
-
                 float surfaceVariation =
                     broadA * 0.58 +
                     broadB * 0.30 +
                     fine * 0.12;
-
 
                 return
                     (
@@ -924,13 +844,11 @@ if (!canvas) {
                         -time * 0.004
                     );
 
-
                 float broadA =
                     fbm(
                         p * 0.30 +
                         movementDrift
                     );
-
 
                 float broadB =
                     fbm(
@@ -938,11 +856,9 @@ if (!canvas) {
                         movementDrift * 1.15
                     );
 
-
                 float movement =
                     broadA * 0.68 +
                     broadB * 0.32;
-
 
                 return
                     (
@@ -964,7 +880,6 @@ if (!canvas) {
                 float field =
                     0.0;
 
-
                 for (
                     int i = 0;
                     i < MAX_RIPPLES;
@@ -973,7 +888,6 @@ if (!canvas) {
 
                     float strength =
                         rippleStrengths[i];
-
 
                     if (
                         strength > 0.0
@@ -986,7 +900,6 @@ if (!canvas) {
                                 rippleStarts[i]
                             );
 
-
                         if (
                             elapsed < 2.5
                         ) {
@@ -997,12 +910,10 @@ if (!canvas) {
                                     ripplePositions[i]
                                 );
 
-
                             float impactRadius =
                                 0.055 +
                                 elapsed *
                                 0.045;
-
 
                             float impactShape =
                                 exp(
@@ -1013,20 +924,17 @@ if (!canvas) {
                                     )
                                 );
 
-
                             float impactWave =
                                 cos(
                                     d * 42.0 -
                                     elapsed * 7.0
                                 );
 
-
                             float decay =
                                 exp(
                                     -elapsed *
                                     1.35
                                 );
-
 
                             field +=
                                 impactShape *
@@ -1040,7 +948,6 @@ if (!canvas) {
                     }
 
                 }
-
 
                 return field;
 
@@ -1076,10 +983,8 @@ if (!canvas) {
                 float e =
                     0.0025;
 
-
                 float center =
                     waterHeight(p);
-
 
                 float x =
                     waterHeight(
@@ -1090,7 +995,6 @@ if (!canvas) {
                         )
                     );
 
-
                 float y =
                     waterHeight(
                         p +
@@ -1099,7 +1003,6 @@ if (!canvas) {
                             e
                         )
                     );
-
 
                 return normalize(
                     vec3(
@@ -1125,7 +1028,6 @@ if (!canvas) {
                     1.0 -
                     uv.y;
 
-
                 float depth =
                     (
                         screenY -
@@ -1138,7 +1040,6 @@ if (!canvas) {
                         0.001
                     );
 
-
                 if (
                     depth <= 0.0 ||
                     depth > 1.0
@@ -1148,7 +1049,6 @@ if (!canvas) {
 
                 }
 
-
                 float perspective =
                     smoothstep(
                         0.0,
@@ -1156,14 +1056,12 @@ if (!canvas) {
                         depth
                     );
 
-
                 float sourceCanvasY =
                     mix(
                         0.63,
                         0.025,
                         perspective
                     );
-
 
                 float widthScale =
                     mix(
@@ -1174,7 +1072,6 @@ if (!canvas) {
                             0.72
                         )
                     );
-
 
                 float distortionX =
                     (
@@ -1195,7 +1092,6 @@ if (!canvas) {
                         perspective
                     );
 
-
                 float distortionY =
                     (
                         fbm(
@@ -1211,7 +1107,6 @@ if (!canvas) {
                     *
                     0.028;
 
-
                 float sourceX =
                     0.5 +
                     (
@@ -1223,18 +1118,15 @@ if (!canvas) {
                     +
                     distortionX;
 
-
                 sourceX +=
                     normal.x *
                     0.065;
-
 
                 sourceCanvasY +=
                     normal.y *
                     0.045
                     +
                     distortionY;
-
 
                 sourceX =
                     clamp(
@@ -1243,7 +1135,6 @@ if (!canvas) {
                         0.999
                     );
 
-
                 sourceCanvasY =
                     clamp(
                         sourceCanvasY,
@@ -1251,20 +1142,17 @@ if (!canvas) {
                         0.999
                     );
 
-
                 vec2 reflectionUV =
                     vec2(
                         sourceX,
                         sourceCanvasY
                     );
 
-
                 vec4 reflected =
                     texture2D(
                         bannerTexture,
                         reflectionUV
                     );
-
 
                 if (
                     reflected.a <= 0.001
@@ -1273,7 +1161,6 @@ if (!canvas) {
                     return vec3(0.0);
 
                 }
-
 
                 float fragmentNoise =
                     fbm(
@@ -1284,14 +1171,12 @@ if (!canvas) {
                         )
                     );
 
-
                 float wave =
                     sin(
                         depth * 185.0 +
                         time * 0.06 +
                         uv.x * 3.0
                     );
-
 
                 float horizontalBreakup =
                     smoothstep(
@@ -1300,14 +1185,12 @@ if (!canvas) {
                         fragmentNoise
                     );
 
-
                 float waveBreakup =
                     smoothstep(
                         -0.20,
                         0.72,
                         wave
                     );
-
 
                 float fragmentation =
                     mix(
@@ -1316,7 +1199,6 @@ if (!canvas) {
                         waveBreakup,
                         0.50
                     );
-
 
                 float facing =
                     max(
@@ -1333,13 +1215,11 @@ if (!canvas) {
                         0.0
                     );
 
-
                 float shimmer =
                     pow(
                         facing,
                         7.0
                     );
-
 
                 float surfaceLight =
                     shimmer * 0.78
@@ -1354,14 +1234,12 @@ if (!canvas) {
                     *
                     0.22;
 
-
                 float distanceFade =
                     mix(
                         1.0,
                         0.34,
                         perspective
                     );
-
 
                 float foregroundBreakup =
                     mix(
@@ -1373,7 +1251,6 @@ if (!canvas) {
                             perspective
                         )
                     );
-
 
                 float verticalFade =
                     smoothstep(
@@ -1391,7 +1268,6 @@ if (!canvas) {
                         )
                     );
 
-
                 float horizontalFade =
                     smoothstep(
                         0.0,
@@ -1408,7 +1284,6 @@ if (!canvas) {
                         )
                     );
 
-
                 float alpha =
                     reflected.a *
                     distanceFade *
@@ -1417,7 +1292,6 @@ if (!canvas) {
                     verticalFade *
                     horizontalFade;
 
-
                 vec3 moonlightColor =
                     reflected.rgb *
                     vec3(
@@ -1425,7 +1299,6 @@ if (!canvas) {
                         0.88,
                         1.0
                     );
-
 
                 return
                     moonlightColor *
@@ -1445,36 +1318,22 @@ if (!canvas) {
                     gl_FragCoord.xy /
                     resolution;
 
-
                 vec2 p =
                     uv -
                     0.5;
-
 
                 p.x *=
                     resolution.x /
                     resolution.y;
 
-
                 p.y *=
                     1.55;
-
-
-                /* -----------------------------------------
-                   WATER HEIGHT
-                ----------------------------------------- */
 
                 float surface =
                     waterHeight(p);
 
-
                 vec3 normal =
                     surfaceNormal(p);
-
-
-                /* -----------------------------------------
-                   BASE WATER
-                ----------------------------------------- */
 
                 vec3 deepWater =
                     vec3(
@@ -1483,7 +1342,6 @@ if (!canvas) {
                         0.032
                     );
 
-
                 vec3 blueWater =
                     vec3(
                         0.008,
@@ -1491,20 +1349,16 @@ if (!canvas) {
                         0.082
                     );
 
-
                 float variation =
                     surface *
                     0.55 +
                     0.5;
 
-
                 float naturalSurface =
                     naturalWaterSurface(p);
 
-
                 variation +=
                     naturalSurface;
-
 
                 float backgroundVariation =
                     fbm(
@@ -1515,7 +1369,6 @@ if (!canvas) {
                         )
                     );
 
-
                 backgroundVariation =
                     (
                         backgroundVariation -
@@ -1524,10 +1377,8 @@ if (!canvas) {
                     *
                     0.035;
 
-
                 variation +=
                     backgroundVariation;
-
 
                 variation =
                     clamp(
@@ -1536,18 +1387,12 @@ if (!canvas) {
                         1.0
                     );
 
-
                 vec3 color =
                     mix(
                         deepWater,
                         blueWater,
                         variation
                     );
-
-
-                /* -----------------------------------------
-                   SURFACE HIGHLIGHTS
-                ----------------------------------------- */
 
                 float highlight =
                     pow(
@@ -1558,7 +1403,6 @@ if (!canvas) {
                         7.0
                     );
 
-
                 color +=
                     vec3(
                         0.012,
@@ -1568,15 +1412,9 @@ if (!canvas) {
                     *
                     highlight;
 
-
-                /* -----------------------------------------
-                   NATURAL SHEEN
-                ----------------------------------------- */
-
                 float surfaceSheen =
                     naturalSurface *
                     0.55;
-
 
                 color +=
                     vec3(
@@ -1587,25 +1425,14 @@ if (!canvas) {
                     *
                     surfaceSheen;
 
-
-                /* -----------------------------------------
-                   BANNER MOONLIGHT
-                ----------------------------------------- */
-
                 vec3 reflection =
                     getBannerReflection(
                         uv,
                         normal
                     );
 
-
                 color +=
                     reflection;
-
-
-                /* -----------------------------------------
-                   SUBTLE AMBIENT MOONLIGHT
-                ----------------------------------------- */
 
                 float upperLight =
                     smoothstep(
@@ -1613,7 +1440,6 @@ if (!canvas) {
                         0.95,
                         uv.y
                     );
-
 
                 float centerLight =
                     exp(
@@ -1628,11 +1454,9 @@ if (!canvas) {
                         )
                     );
 
-
                 float ambientMoon =
                     upperLight *
                     centerLight;
-
 
                 color +=
                     vec3(
@@ -1642,11 +1466,6 @@ if (!canvas) {
                     )
                     *
                     ambientMoon;
-
-
-                /* -----------------------------------------
-                   VIGNETTE
-                ----------------------------------------- */
 
                 float vignette =
                     1.0 -
@@ -1662,7 +1481,6 @@ if (!canvas) {
                         )
                     );
 
-
                 color *=
                     mix(
                         0.68,
@@ -1670,17 +1488,11 @@ if (!canvas) {
                         vignette
                     );
 
-
-                /* -----------------------------------------
-                   FINAL CONTRAST
-                ----------------------------------------- */
-
                 color =
                     pow(
                         color,
                         vec3(0.86)
                     );
-
 
                 gl_FragColor =
                     vec4(
@@ -1705,17 +1517,14 @@ if (!canvas) {
             const shader =
                 gl.createShader(type);
 
-
             gl.shaderSource(
                 shader,
                 source
             );
 
-
             gl.compileShader(
                 shader
             );
-
 
             if (
                 !gl.getShaderParameter(
@@ -1729,16 +1538,13 @@ if (!canvas) {
                     gl.getShaderInfoLog(shader)
                 );
 
-
                 gl.deleteShader(
                     shader
                 );
 
-
                 return null;
 
             }
-
 
             return shader;
 
@@ -1750,7 +1556,6 @@ if (!canvas) {
                 gl.VERTEX_SHADER,
                 vertexShaderSource
             );
-
 
         const fragmentShader =
             createShader(
@@ -1778,18 +1583,15 @@ if (!canvas) {
             const program =
                 gl.createProgram();
 
-
             gl.attachShader(
                 program,
                 vertexShader
             );
 
-
             gl.attachShader(
                 program,
                 fragmentShader
             );
-
 
             gl.linkProgram(
                 program
@@ -1822,12 +1624,10 @@ if (!canvas) {
                 const buffer =
                     gl.createBuffer();
 
-
                 gl.bindBuffer(
                     gl.ARRAY_BUFFER,
                     buffer
                 );
-
 
                 gl.bufferData(
                     gl.ARRAY_BUFFER,
@@ -1850,11 +1650,9 @@ if (!canvas) {
                         "position"
                     );
 
-
                 gl.enableVertexAttribArray(
                     position
                 );
-
 
                 gl.vertexAttribPointer(
                     position,
@@ -1876,13 +1674,11 @@ if (!canvas) {
                         "resolution"
                     );
 
-
                 const timeLocation =
                     gl.getUniformLocation(
                         program,
                         "time"
                     );
-
 
                 const scrollLocation =
                     gl.getUniformLocation(
@@ -1890,13 +1686,11 @@ if (!canvas) {
                         "scroll"
                     );
 
-
                 const reflectionTopLocation =
                     gl.getUniformLocation(
                         program,
                         "reflectionTop"
                     );
-
 
                 const reflectionBottomLocation =
                     gl.getUniformLocation(
@@ -1904,13 +1698,11 @@ if (!canvas) {
                         "reflectionBottom"
                     );
 
-
                 const bannerTextureLocation =
                     gl.getUniformLocation(
                         program,
                         "bannerTexture"
                     );
-
 
                 const ripplePositionsLocation =
                     gl.getUniformLocation(
@@ -1918,13 +1710,11 @@ if (!canvas) {
                         "ripplePositions"
                     );
 
-
                 const rippleStartsLocation =
                     gl.getUniformLocation(
                         program,
                         "rippleStarts"
                     );
-
 
                 const rippleStrengthsLocation =
                     gl.getUniformLocation(
@@ -1940,17 +1730,14 @@ if (!canvas) {
                 reflectionTexture =
                     gl.createTexture();
 
-
                 gl.activeTexture(
                     gl.TEXTURE0
                 );
-
 
                 gl.bindTexture(
                     gl.TEXTURE_2D,
                     reflectionTexture
                 );
-
 
                 gl.texParameteri(
                     gl.TEXTURE_2D,
@@ -1958,13 +1745,11 @@ if (!canvas) {
                     gl.LINEAR
                 );
 
-
                 gl.texParameteri(
                     gl.TEXTURE_2D,
                     gl.TEXTURE_MAG_FILTER,
                     gl.LINEAR
                 );
-
 
                 gl.texParameteri(
                     gl.TEXTURE_2D,
@@ -1972,13 +1757,11 @@ if (!canvas) {
                     gl.CLAMP_TO_EDGE
                 );
 
-
                 gl.texParameteri(
                     gl.TEXTURE_2D,
                     gl.TEXTURE_WRAP_T,
                     gl.CLAMP_TO_EDGE
                 );
-
 
                 gl.texImage2D(
                     gl.TEXTURE_2D,
@@ -1996,7 +1779,6 @@ if (!canvas) {
                         0
                     ])
                 );
-
 
                 gl.uniform1i(
                     bannerTextureLocation,
@@ -2026,54 +1808,43 @@ if (!canvas) {
                         clientY
                     );
 
-
                     const rect =
                         canvas.getBoundingClientRect();
-
 
                     const localX =
                         clientX -
                         rect.left;
 
-
                     const localY =
                         clientY -
                         rect.top;
-
 
                     const uvX =
                         localX /
                         rect.width;
 
-
                     const uvY =
                         localY /
                         rect.height;
-
 
                     let rippleX =
                         uvX -
                         0.5;
 
-
                     let rippleY =
                         0.5 -
                         uvY;
-
 
                     rippleX *=
                         rect.width /
                         rect.height;
 
-
                     rippleY *=
                         1.55;
-
 
                     const now =
                         performance.now() *
                         0.001;
-
 
                     ripples.push({
 
@@ -2091,7 +1862,6 @@ if (!canvas) {
 
                     });
 
-
                     if (
                         ripples.length >
                         MAX_RIPPLES
@@ -2106,7 +1876,15 @@ if (!canvas) {
 
                 /* =================================================
                    POINTER RIPPLE
-                   BANNER CLICKS ARE IGNORED
+                   
+                   IMPORTANT:
+                   The stationary banner is protected.
+
+                   Clicking/tapping the banner will NOT
+                   create a ripple.
+
+                   The pond remains interactive everywhere
+                   outside the banner.
                 ================================================= */
 
                 window.addEventListener(
@@ -2123,10 +1901,23 @@ if (!canvas) {
                         }
 
 
+                        /*
+                           PROTECT THE BANNER
+
+                           We check the actual event target
+                           rather than coordinates so that
+                           the entire banner and anything
+                           inside it remains protected.
+                        */
+
                         if (
                             stationaryBanner &&
-                            stationaryBanner.contains(
-                                event.target
+                            (
+                                event.target ===
+                                stationaryBanner ||
+                                stationaryBanner.contains(
+                                    event.target
+                                )
                             )
                         ) {
 
@@ -2157,26 +1948,21 @@ if (!canvas) {
                             2
                         );
 
-
                     canvas.width =
                         window.innerWidth *
                         ratio;
-
 
                     canvas.height =
                         window.innerHeight *
                         ratio;
 
-
                     canvas.style.width =
                         window.innerWidth +
                         "px";
 
-
                     canvas.style.height =
                         window.innerHeight +
                         "px";
-
 
                     gl.viewport(
                         0,
@@ -2185,10 +1971,8 @@ if (!canvas) {
                         canvas.height
                     );
 
-
                     reflectionDirty =
                         true;
-
 
                     updateReflectionPosition();
 
@@ -2199,7 +1983,6 @@ if (!canvas) {
                     "resize",
                     resizeWater
                 );
-
 
                 resizeWater();
 
@@ -2282,7 +2065,6 @@ if (!canvas) {
                             ".pond-header"
                         );
 
-
                     if (
                         pondHeader
                     ) {
@@ -2308,19 +2090,10 @@ if (!canvas) {
                         milliseconds *
                         0.001;
 
-
                     gl.useProgram(
                         program
                     );
 
-
-                    /*
-                       The reflection position is refreshed
-                       independently from document scrolling.
-
-                       This keeps the reflection tied to
-                       the stationary banner.
-                    */
 
                     if (
                         reflectionDirty
@@ -2348,12 +2121,10 @@ if (!canvas) {
                             MAX_RIPPLES * 2
                         );
 
-
                     const starts =
                         new Float32Array(
                             MAX_RIPPLES
                         );
-
 
                     const strengths =
                         new Float32Array(
@@ -2374,14 +2145,11 @@ if (!canvas) {
                             positions[i * 2] =
                                 ripples[i].x;
 
-
                             positions[i * 2 + 1] =
                                 ripples[i].y;
 
-
                             starts[i] =
                                 ripples[i].start;
-
 
                             strengths[i] =
                                 ripples[i].strength;
@@ -2391,14 +2159,11 @@ if (!canvas) {
                             positions[i * 2] =
                                 0.0;
 
-
                             positions[i * 2 + 1] =
                                 0.0;
 
-
                             starts[i] =
                                 -100.0;
-
 
                             strengths[i] =
                                 0.0;
@@ -2412,7 +2177,6 @@ if (!canvas) {
                         gl.TEXTURE0
                     );
 
-
                     gl.bindTexture(
                         gl.TEXTURE_2D,
                         reflectionTexture
@@ -2425,7 +2189,6 @@ if (!canvas) {
                         canvas.height
                     );
 
-
                     gl.uniform1f(
                         timeLocation,
                         currentTime
@@ -2433,11 +2196,7 @@ if (!canvas) {
 
 
                     /*
-                       Document scrolling does not affect
-                       the water coordinate system.
-
-                       The uniform remains available for
-                       compatibility.
+                       Scrolling does not move the water.
                     */
 
                     gl.uniform1f(
@@ -2445,30 +2204,25 @@ if (!canvas) {
                         0.0
                     );
 
-
                     gl.uniform1f(
                         reflectionTopLocation,
                         reflectionTop
                     );
-
 
                     gl.uniform1f(
                         reflectionBottomLocation,
                         reflectionBottom
                     );
 
-
                     gl.uniform2fv(
                         ripplePositionsLocation,
                         positions
                     );
 
-
                     gl.uniform1fv(
                         rippleStartsLocation,
                         starts
                     );
-
 
                     gl.uniform1fv(
                         rippleStrengthsLocation,
