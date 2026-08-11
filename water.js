@@ -1,6 +1,7 @@
+```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.7.1 — TRUE BANNER-ANCHORED REFLECTION
+   VERSION 10.7.2 — VIEWPORT-ANCHORED WATER & REFLECTION
 ========================================================= */
 
 const canvas =
@@ -1529,17 +1530,17 @@ if (!canvas) {
 
 
                 /*
-                   Keep the water animation alive.
+                   Keep the water surface anchored to the
+                   viewport.
 
                    IMPORTANT:
-                   scroll is NOT used to position the
-                   banner reflection.
+                   The water coordinate system does NOT
+                   move with document scrolling.
+
+                   This keeps the moonlight reflection,
+                   its distortion, and its perspective
+                   locked beneath the stationary banner.
                 */
-
-                p.y +=
-                    scroll *
-                    0.00022;
-
 
                 p.y *=
                     1.55;
@@ -2504,14 +2505,16 @@ if (!canvas) {
 
 
                     /*
-                       scroll remains available to the water
-                       animation, but is intentionally NOT used
-                       to position the banner reflection.
+                       Document scrolling no longer affects
+                       the water coordinate system.
+
+                       The uniform remains available for
+                       compatibility with the existing shader.
                     */
 
                     gl.uniform1f(
                         scrollLocation,
-                        window.scrollY
+                        0.0
                     );
 
 
@@ -2570,3 +2573,4 @@ if (!canvas) {
     }
 
 }
+```
