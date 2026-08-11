@@ -1,589 +1,906 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+```
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>The Infinite Pond</title>
+<title>The Infinite Pond</title>
 
-    <style>
+<style>
+
+    :root {
+        --banner-height: 260px;
+
+        --page-bg:
+            #020b12;
+
+        --banner-bg:
+            rgba(2, 10, 17, 0.96);
+
+        --text-main:
+            #d9f6ff;
+
+        --text-soft:
+            #8fb7c7;
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+
+        margin: 0;
+        padding: 0;
+
+        background:
+            var(--page-bg);
+
+        color:
+            var(--text-main);
+
+        font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
+       FIXED BANNER
+    ===================================================== */
+
+    .stationary-banner {
+
+        position: fixed;
+
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: var(--banner-height);
+
+        z-index: 100;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+
+        padding:
+            24px 24px 28px;
+
+        background:
+            var(--banner-bg);
+
+        border-bottom:
+            1px solid
+            rgba(150, 220, 255, 0.12);
+
+        box-shadow:
+            0 8px 30px
+            rgba(0, 0, 0, 0.28);
+
+        pointer-events:
+            auto;
+    }
+
+
+    /* =====================================================
+       POND HEADER
+    ===================================================== */
+
+    .pond-header {
+
+        position: relative;
+
+        width: 100%;
+
+        max-width:
+            1100px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       MAKE THE RIPPLE LOGO
+    ===================================================== */
+
+    #pondLogo {
+
+        display: block;
+
+        max-width:
+            210px;
+
+        max-height:
+            88px;
+
+        width: auto;
+        height: auto;
+
+        object-fit:
+            contain;
+
+        margin-bottom:
+            10px;
+
+        filter:
+            drop-shadow(
+                0 0 16px
+                rgba(120, 220, 255, 0.30)
+            );
+    }
+
+
+    /* =====================================================
+       PRESENTS
+    ===================================================== */
+
+    #presented {
+
+        margin:
+            0 0 7px;
+
+        color:
+            #8fb7c7;
+
+        font-size:
+            11px;
+
+        line-height:
+            1.4;
+
+        letter-spacing:
+            0.28em;
+
+        text-transform:
+            uppercase;
+    }
+
+
+    /* =====================================================
+       THE INFINITE POND
+    ===================================================== */
+
+    #pondTitle {
+
+        margin:
+            0;
+
+        color:
+            var(--text-main);
+
+        font-size:
+            clamp(
+                32px,
+                5vw,
+                62px
+            );
+
+        line-height:
+            0.98;
+
+        font-weight:
+            500;
+
+        letter-spacing:
+            0.08em;
+
+        text-transform:
+            uppercase;
+
+        text-shadow:
+            0 0 18px
+            rgba(130, 220, 255, 0.20);
+    }
+
+
+    /* =====================================================
+       TAGLINE
+    ===================================================== */
+
+    #pondSubtitle {
+
+        margin:
+            11px 0 0;
+
+        color:
+            var(--text-soft);
+
+        font-size:
+            clamp(
+                12px,
+                1.5vw,
+                17px
+            );
+
+        line-height:
+            1.5;
+
+        letter-spacing:
+            0.12em;
+    }
+
+
+    /* =====================================================
+       MAKE A RIPPLE BUTTON
+    ===================================================== */
+
+    .make-ripple-button {
+
+        position: absolute;
+
+        top: 22px;
+        right: 24px;
+
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        min-width:
+            132px;
+
+        padding:
+            10px 18px;
+
+        border:
+            1px solid
+            rgba(
+                150,
+                220,
+                255,
+                0.38
+            );
+
+        border-radius:
+            999px;
+
+        background:
+            rgba(
+                8,
+                30,
+                45,
+                0.72
+            );
+
+        color:
+            #d9f6ff;
+
+        font-family:
+            Georgia,
+            "Times New Roman",
+            serif;
+
+        font-size:
+            12px;
+
+        letter-spacing:
+            0.12em;
+
+        text-transform:
+            uppercase;
+
+        cursor:
+            pointer;
+
+        text-decoration:
+            none;
+
+        box-shadow:
+            0 0 18px
+            rgba(
+                80,
+                190,
+                230,
+                0.10
+            );
+
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease,
+            transform 0.25s ease;
+
+        z-index:
+            5;
+    }
+
+
+    .make-ripple-button:hover {
+
+        background:
+            rgba(
+                20,
+                65,
+                85,
+                0.82
+            );
+
+        border-color:
+            rgba(
+                170,
+                235,
+                255,
+                0.62
+            );
+
+        box-shadow:
+            0 0 24px
+            rgba(
+                80,
+                190,
+                230,
+                0.20
+            );
+
+        transform:
+            translateY(-1px);
+    }
+
+
+    .make-ripple-button:active {
+
+        transform:
+            translateY(0);
+    }
+
+
+    /* =====================================================
+       SCROLLABLE AREA
+    ===================================================== */
+
+    .water-scroll {
+
+        position: fixed;
+
+        top:
+            var(--banner-height);
+
+        left: 0;
+
+        width: 100%;
+
+        height:
+            calc(
+                100vh -
+                var(--banner-height)
+            );
+
+        overflow-y:
+            auto;
+
+        overflow-x:
+            hidden;
+
+        overscroll-behavior:
+            contain;
+
+        -webkit-overflow-scrolling:
+            touch;
+
+        background:
+            #020b12;
+
+        scrollbar-width:
+            thin;
+
+        scrollbar-color:
+            rgba(
+                150,
+                220,
+                255,
+                0.25
+            )
+            transparent;
+    }
+
+
+    .water-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+
+    .water-scroll::-webkit-scrollbar-track {
+        background:
+            transparent;
+    }
+
+
+    .water-scroll::-webkit-scrollbar-thumb {
+
+        background:
+            rgba(
+                150,
+                220,
+                255,
+                0.22
+            );
+
+        border-radius:
+            8px;
+    }
+
+
+    /* =====================================================
+       WATER STAGE
+    ===================================================== */
+
+    .water-stage {
+
+        position: relative;
+
+        width: 100%;
+
+        min-height:
+            2400px;
+
+        isolation:
+            isolate;
+
+        background:
+            #020b12;
+    }
+
+
+    /* =====================================================
+       WEBGL WATER
+    ===================================================== */
+
+    #waterCanvas {
+
+        position: absolute;
+
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        display: block;
+
+        z-index: 0;
+
+        pointer-events:
+            auto;
+    }
+
+
+    /* =====================================================
+       SCROLLABLE CONTENT
+    ===================================================== */
+
+    .pond-content {
+
+        position: relative;
+
+        z-index: 2;
+
+        width:
+            min(
+                900px,
+                calc(
+                    100% - 48px
+                )
+            );
+
+        margin:
+            0 auto;
+
+        padding:
+            360px 0 240px;
+
+        pointer-events:
+            none;
+    }
+
+
+    .pond-section {
+
+        margin:
+            0 auto 180px;
+
+        max-width:
+            760px;
+
+        padding:
+            40px;
+
+        border:
+            1px solid
+            rgba(
+                150,
+                220,
+                255,
+                0.10
+            );
+
+        border-radius:
+            16px;
+
+        background:
+            rgba(
+                2,
+                15,
+                25,
+                0.28
+            );
+
+        backdrop-filter:
+            blur(3px);
+
+        box-shadow:
+            0 20px 80px
+            rgba(
+                0,
+                0,
+                0,
+                0.22
+            );
+
+        pointer-events:
+            auto;
+    }
+
+
+    .pond-section h2 {
+
+        margin:
+            0 0 18px;
+
+        font-size:
+            28px;
+
+        font-weight:
+            400;
+
+        letter-spacing:
+            0.08em;
+
+        color:
+            #d9f6ff;
+    }
+
+
+    .pond-section p {
+
+        margin:
+            0;
+
+        color:
+            rgba(
+                190,
+                225,
+                238,
+                0.78
+            );
+
+        font-size:
+            17px;
+
+        line-height:
+            1.8;
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 700px) {
+
         :root {
-            --banner-height: 260px;
 
-            --page-bg:
-                #020b12;
-
-            --banner-bg:
-                rgba(2, 10, 17, 0.96);
-
-            --text-main:
-                #d9f6ff;
-
-            --text-soft:
-                #8fb7c7;
+            --banner-height:
+                220px;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-
-            background:
-                var(--page-bg);
-
-            color:
-                var(--text-main);
-
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
-
-            overflow: hidden;
-        }
-
-
-        /* =====================================================
-           FIXED BANNER
-        ===================================================== */
 
         .stationary-banner {
-            position: fixed;
-
-            top: 0;
-            left: 0;
-
-            width: 100%;
-            height: var(--banner-height);
-
-            z-index: 100;
-
-            display: flex;
-            flex-direction: column;
-
-            align-items: center;
-            justify-content: center;
 
             padding:
-                24px 24px 28px;
-
-            background:
-                var(--banner-bg);
-
-            border-bottom:
-                1px solid rgba(150, 220, 255, 0.12);
-
-            box-shadow:
-                0 8px 30px
-                rgba(0, 0, 0, 0.28);
-
-            pointer-events:
-                auto;
-        }
-
-
-        .pond-header {
-            position: relative;
-
-            width: 100%;
-            max-width: 1100px;
-
-            display: flex;
-            flex-direction: column;
-
-            align-items: center;
-            justify-content: center;
-
-            text-align: center;
+                18px 18px 22px;
         }
 
 
         #pondLogo {
-            display: block;
 
-            max-width: 180px;
-            max-height: 80px;
+            max-width:
+                145px;
 
-            width: auto;
-            height: auto;
+            max-height:
+                64px;
 
-            object-fit: contain;
-
-            margin-bottom: 14px;
-
-            filter:
-                drop-shadow(
-                    0 0 14px
-                    rgba(120, 220, 255, 0.28)
-                );
-        }
-
-
-        #presented {
-            margin: 0 0 8px;
-
-            color:
-                #8fb7c7;
-
-            font-size:
-                12px;
-
-            line-height:
-                1.4;
-
-            letter-spacing:
-                0.24em;
-
-            text-transform:
-                uppercase;
-        }
-
-
-        #pondTitle {
-            margin: 0;
-
-            color:
-                var(--text-main);
-
-            font-size:
-                clamp(32px, 5vw, 62px);
-
-            line-height:
-                0.98;
-
-            font-weight:
-                500;
-
-            letter-spacing:
-                0.08em;
-
-            text-transform:
-                uppercase;
-
-            text-shadow:
-                0 0 18px
-                rgba(130, 220, 255, 0.20);
-        }
-
-
-        #pondSubtitle {
-            margin:
-                12px 0 0;
-
-            color:
-                var(--text-soft);
-
-            font-size:
-                clamp(12px, 1.5vw, 17px);
-
-            line-height:
-                1.5;
-
-            letter-spacing:
-                0.12em;
-        }
-
-
-        /* =====================================================
-           SCROLLABLE AREA
-        ===================================================== */
-
-        .water-scroll {
-            position: fixed;
-
-            top:
-                var(--banner-height);
-
-            left: 0;
-
-            width: 100%;
-
-            height:
-                calc(100vh - var(--banner-height));
-
-            overflow-y:
-                auto;
-
-            overflow-x:
-                hidden;
-
-            overscroll-behavior:
-                contain;
-
-            -webkit-overflow-scrolling:
-                touch;
-
-            background:
-                #020b12;
-
-            scrollbar-width:
-                thin;
-
-            scrollbar-color:
-                rgba(150, 220, 255, 0.25)
-                transparent;
-        }
-
-
-        .water-scroll::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .water-scroll::-webkit-scrollbar-track {
-            background:
-                transparent;
-        }
-
-        .water-scroll::-webkit-scrollbar-thumb {
-            background:
-                rgba(150, 220, 255, 0.22);
-
-            border-radius:
+            margin-bottom:
                 8px;
         }
 
 
-        /* =====================================================
-           WATER STAGE
-        ===================================================== */
+        #presented {
 
-        .water-stage {
-            position: relative;
+            font-size:
+                9px;
 
-            width: 100%;
-
-            /*
-               This gives the pond enough physical space to
-               scroll while keeping the WebGL surface attached
-               to the water area.
-            */
-            min-height:
-                2400px;
-
-            isolation:
-                isolate;
-
-            background:
-                #020b12;
+            margin-bottom:
+                5px;
         }
 
 
-        /*
-           The WebGL surface covers the entire scrollable
-           water stage.
+        #pondTitle {
 
-           It is intentionally BELOW the banner because the
-           banner lives outside this element.
-        */
+            font-size:
+                clamp(
+                    27px,
+                    8vw,
+                    42px
+                );
+        }
 
-        #waterCanvas {
-            position: absolute;
 
-            top: 0;
-            left: 0;
+        #pondSubtitle {
 
-            width: 100%;
-            height: 100%;
+            margin-top:
+                8px;
 
-            display: block;
+            letter-spacing:
+                0.08em;
+        }
 
-            z-index: 0;
 
-            pointer-events:
+        .make-ripple-button {
+
+            top:
+                12px;
+
+            right:
+                12px;
+
+            min-width:
                 auto;
-        }
-
-
-        /* =====================================================
-           SCROLLABLE CONTENT
-        ===================================================== */
-
-        .pond-content {
-            position: relative;
-
-            z-index: 2;
-
-            width: min(
-                900px,
-                calc(100% - 48px)
-            );
-
-            margin:
-                0 auto;
 
             padding:
-                360px 0 240px;
+                8px 12px;
 
-            pointer-events:
-                none;
+            font-size:
+                9px;
+
+            letter-spacing:
+                0.08em;
+        }
+
+
+        .pond-content {
+
+            width:
+                calc(
+                    100% - 28px
+                );
+
+            padding-top:
+                280px;
         }
 
 
         .pond-section {
-            margin:
-                0 auto 180px;
-
-            max-width:
-                760px;
 
             padding:
-                40px;
+                26px;
 
-            border:
-                1px solid
-                rgba(150, 220, 255, 0.10);
-
-            border-radius:
-                16px;
-
-            background:
-                rgba(2, 15, 25, 0.28);
-
-            backdrop-filter:
-                blur(3px);
-
-            box-shadow:
-                0 20px 80px
-                rgba(0, 0, 0, 0.22);
-
-            pointer-events:
-                auto;
+            margin-bottom:
+                120px;
         }
+    }
 
+</style>
+```
 
-        .pond-section h2 {
-            margin:
-                0 0 18px;
-
-            font-size:
-                28px;
-
-            font-weight:
-                400;
-
-            letter-spacing:
-                0.08em;
-
-            color:
-                #d9f6ff;
-        }
-
-
-        .pond-section p {
-            margin:
-                0;
-
-            color:
-                rgba(190, 225, 238, 0.78);
-
-            font-size:
-                17px;
-
-            line-height:
-                1.8;
-        }
-
-
-        /* =====================================================
-           MOBILE
-        ===================================================== */
-
-        @media (max-width: 700px) {
-
-            :root {
-                --banner-height: 220px;
-            }
-
-            .stationary-banner {
-                padding:
-                    18px 18px 22px;
-            }
-
-            #pondLogo {
-                max-width: 135px;
-                max-height: 60px;
-                margin-bottom: 10px;
-            }
-
-            #presented {
-                font-size: 9px;
-                margin-bottom: 6px;
-            }
-
-            #pondSubtitle {
-                margin-top: 9px;
-                letter-spacing: 0.08em;
-            }
-
-            .pond-content {
-                width:
-                    calc(100% - 28px);
-
-                padding-top:
-                    280px;
-            }
-
-            .pond-section {
-                padding:
-                    26px;
-
-                margin-bottom:
-                    120px;
-            }
-        }
-    </style>
 </head>
-
 
 <body>
 
-    <!-- =====================================================
-         FIXED BANNER
-         This is deliberately outside the water canvas.
-         It can never receive a water ripple.
-    ====================================================== -->
+```
+<!-- =====================================================
+     FIXED MAKE THE RIPPLE BANNER
+====================================================== -->
 
-    <header class="stationary-banner">
+<header class="stationary-banner">
 
-        <div class="pond-header">
+    <div class="pond-header">
 
-            <!--
-                Replace this with your existing logo path.
-            -->
-            <img
-                id="pondLogo"
-                src="assets/pond-logo.png"
-                alt="The Infinite Pond logo"
-            >
 
-            <p id="presented">
-                Presented by
-            </p>
+        <!-- =============================================
+             MAKE THE RIPPLE LOGO
 
-            <h1 id="pondTitle">
-                The Infinite Pond
-            </h1>
+             This is the existing Make the Ripple
+             logo uploaded to the project.
+        ============================================== -->
 
-            <p id="pondSubtitle">
-                An ever-changing surface of light, water, and reflection
-            </p>
+        <img
+            id="pondLogo"
+            src="Make the Ripple Large Logo.png"
+            alt="Make the Ripple"
+        >
+
+
+        <!-- =============================================
+             PRESENTS
+        ============================================== -->
+
+        <p id="presented">
+            Presents
+        </p>
+
+
+        <!-- =============================================
+             THE INFINITE POND
+        ============================================== -->
+
+        <h1 id="pondTitle">
+            The Infinite Pond
+        </h1>
+
+
+        <!-- =============================================
+             TAGLINE
+        ============================================== -->
+
+        <p id="pondSubtitle">
+            Every Ripple Begins Somewhere
+        </p>
+
+
+        <!-- =============================================
+             MAKE A RIPPLE
+        ============================================== -->
+
+        <a
+            class="make-ripple-button"
+            href="#"
+            aria-label="Make a Ripple"
+        >
+            Make a Ripple
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     EVERYTHING BELOW THE BANNER IS SCROLLABLE
+====================================================== -->
+
+<main class="water-scroll">
+
+
+    <section class="water-stage">
+
+
+        <!-- =================================================
+             WEBGL WATER SURFACE
+
+             DO NOT MODIFY.
+
+             Version 10.9 water.js controls:
+             - natural water
+             - ripples
+             - mirrored reflection
+             - perspective
+             - water breakup
+        ================================================== -->
+
+        <canvas
+            id="waterCanvas"
+            aria-hidden="true"
+        ></canvas>
+
+
+        <!-- =================================================
+             OPTIONAL CONTENT
+        ================================================== -->
+
+        <div class="pond-content">
+
+
+            <section class="pond-section">
+
+                <h2>
+                    Beneath the Surface
+                </h2>
+
+                <p>
+                    The water begins immediately beneath the
+                    stationary banner. Scroll through the pond
+                    and the surface continues beneath you.
+                    Click or tap anywhere on the water to disturb
+                    it with a ripple.
+                </p>
+
+            </section>
+
+
+            <section class="pond-section">
+
+                <h2>
+                    The Infinite Pond
+                </h2>
+
+                <p>
+                    This section is intentionally transparent
+                    enough to allow the moving water to remain
+                    visible beneath the content.
+                </p>
+
+            </section>
+
+
+            <section class="pond-section">
+
+                <h2>
+                    Further Down
+                </h2>
+
+                <p>
+                    The water surface continues for the entire
+                    scrollable stage, creating the impression that
+                    the page extends beneath the original surface.
+                </p>
+
+            </section>
+
+
+            <section class="pond-section">
+
+                <h2>
+                    End of the Pond
+                </h2>
+
+                <p>
+                    Additional site content can be placed here
+                    without changing the water system.
+                </p>
+
+            </section>
+
 
         </div>
 
-    </header>
+    </section>
+
+</main>
 
 
-    <!-- =====================================================
-         EVERYTHING BELOW THE BANNER IS SCROLLABLE
-    ====================================================== -->
+<!-- =====================================================
+     WATER ENGINE
+====================================================== -->
 
-    <main class="water-scroll">
-
-        <section class="water-stage">
-
-            <!--
-                WebGL water surface.
-
-                The canvas itself is the complete interaction
-                surface. Since it lives below the banner, clicks
-                on the banner cannot create ripples.
-            -->
-            <canvas
-                id="waterCanvas"
-                aria-hidden="true"
-            ></canvas>
-
-
-            <!-- =================================================
-                 OPTIONAL CONTENT
-                 Replace these sections with the site's actual
-                 content later.
-            ================================================== -->
-
-            <div class="pond-content">
-
-                <section class="pond-section">
-
-                    <h2>
-                        Beneath the Surface
-                    </h2>
-
-                    <p>
-                        The water begins immediately beneath the
-                        stationary banner. Scroll through the pond
-                        and the surface continues beneath you.
-                        Click or tap anywhere on the water to disturb
-                        it with a ripple.
-                    </p>
-
-                </section>
-
-
-                <section class="pond-section">
-
-                    <h2>
-                        The Infinite Pond
-                    </h2>
-
-                    <p>
-                        This section is intentionally transparent
-                        enough to allow the moving water to remain
-                        visible beneath the content.
-                    </p>
-
-                </section>
-
-
-                <section class="pond-section">
-
-                    <h2>
-                        Further Down
-                    </h2>
-
-                    <p>
-                        The water surface continues for the entire
-                        scrollable stage, creating the impression that
-                        the page extends beneath the original surface.
-                    </p>
-
-                </section>
-
-
-                <section class="pond-section">
-
-                    <h2>
-                        End of the Pond
-                    </h2>
-
-                    <p>
-                        Additional site content can be placed here
-                        without changing the water system.
-                    </p>
-
-                </section>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- =====================================================
-         WATER ENGINE
-    ====================================================== -->
-
-    <script src="water.js"></script>
+<script src="water.js"></script>
+```
 
 </body>
 </html>
