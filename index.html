@@ -101,7 +101,7 @@ body {
     left: 0;
 
     width: 100%;
-    height: 42vh;
+    height: 65vh;
 
     background:
 
@@ -137,7 +137,7 @@ body {
     left: 0;
 
     width: 100%;
-    height: 42vh;
+    height: 65vh;
 
     pointer-events: none;
 
@@ -444,7 +444,7 @@ body {
         90vw
     );
 
-    height: 41vh;
+    height: 65vh;
 
     display: flex;
 
@@ -463,25 +463,22 @@ body {
     pointer-events:
         none;
 
-    z-index:
-        7;
+    z-index: 7;
 
 }
 
 
 /* =====================================================
    MAKE THE RIPPLE LOGO
-
-   LOCKED IN CURRENT POSITION
 ===================================================== */
 
 .pond-logo {
 
     width:
         clamp(
-            210px,
-            30vw,
-            340px
+            105px,
+            15vw,
+            170px
         );
 
     height:
@@ -499,63 +496,24 @@ body {
     filter:
 
         drop-shadow(
-            0 0 16px
+            0 0 8px
             rgba(
                 120,
                 205,
                 235,
-                0.42
+                0.24
             )
         )
 
         drop-shadow(
-            0 0 48px
+            0 0 24px
             rgba(
                 100,
                 190,
                 225,
-                0.34
-            )
-        )
-
-        drop-shadow(
-            0 0 90px
-            rgba(
-                100,
-                190,
-                225,
-                0.22
+                0.18
             )
         );
-
-}
-
-
-/* =====================================================
-   HEADER WORDING GROUP
-
-   MOVES INDEPENDENTLY FROM THE LOGO
-
-   This allows the logo to remain locked in place
-   while all wording below it moves together.
-===================================================== */
-
-.pond-header-text {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    align-items:
-        center;
-
-    width:
-        100%;
-
-    margin-top:
-        2.8vh;
 
 }
 
@@ -657,6 +615,8 @@ body {
 
 /* =====================================================
    SUBTITLE
+
+   Kept ABOVE the horizon.
 ===================================================== */
 
 .pond-subtitle {
@@ -769,6 +729,10 @@ body {
 
 /* =====================================================
    MAKE A RIPPLE BUTTON
+
+   Fixed independently from the centered logo.
+   Positioned in the far-right corner and vertically
+   aligned with the logo.
 ===================================================== */
 
 .make-ripple-button {
@@ -778,8 +742,8 @@ body {
     right:
         24px;
 
-    bottom:
-        24px;
+    top:
+        2.5vh;
 
     z-index:
         20;
@@ -1046,18 +1010,10 @@ body {
     .pond-logo {
 
         width:
-            210px;
+            105px;
 
         margin-top:
             3vh;
-
-    }
-
-
-    .pond-header-text {
-
-        margin-top:
-            2.4vh;
 
     }
 
@@ -1105,8 +1061,8 @@ body {
         right:
             16px;
 
-        bottom:
-            18px;
+        top:
+            3vh;
 
         padding:
             11px
@@ -1196,8 +1152,9 @@ body {
 
         <!-- =============================================
              MAKE THE RIPPLE LOGO
-
-             LOCKED POSITION
+             
+             Remains centered independently of the
+             Make a Ripple button.
         ============================================== -->
 
         <img
@@ -1208,49 +1165,35 @@ body {
 
 
         <!-- =============================================
-             HEADER WORDING GROUP
-
-             MOVES TOGETHER INDEPENDENTLY FROM LOGO
+             PRESENTS
         ============================================== -->
 
         <div
-            class="pond-header-text"
+            class="presented"
         >
+            Presents
+        </div>
 
 
-            <!-- =========================================
-                 PRESENTS
-            ========================================== -->
+        <!-- =============================================
+             TITLE
+        ============================================== -->
 
-            <div
-                class="presented"
-            >
-                Presents
-            </div>
-
-
-            <!-- =========================================
-                 TITLE
-            ========================================== -->
-
-            <h1
-                class="pond-title"
-            >
-                The Infinite Pond
-            </h1>
+        <h1
+            class="pond-title"
+        >
+            The Infinite Pond
+        </h1>
 
 
-            <!-- =========================================
-                 SUBTITLE
-            ========================================== -->
+        <!-- =============================================
+             SUBTITLE
+        ============================================== -->
 
-            <div
-                class="pond-subtitle"
-            >
-                Every Ripple Begins Somewhere
-            </div>
-
-
+        <div
+            class="pond-subtitle"
+        >
+            Every Ripple Begins Somewhere
         </div>
 
 
@@ -1273,6 +1216,8 @@ body {
 
 <!-- =====================================================
      MAKE A RIPPLE BUTTON
+
+     Positioned independently from the centered logo.
 ====================================================== -->
 
 <button
@@ -1305,7 +1250,7 @@ body {
 
 <!-- =====================================================
      MAKE A RIPPLE BUTTON
-     
+
      Submission workflow will be connected here
      in a later version.
 ====================================================== -->
