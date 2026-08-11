@@ -253,10 +253,13 @@
 
     .make-ripple-button {
 
-        position: absolute;
+        position: fixed;
 
-        top: 22px;
-        right: 24px;
+        top:
+            8px;
+
+        right:
+            10px;
 
         display: inline-flex;
 
@@ -328,7 +331,7 @@
             transform 0.25s ease;
 
         z-index:
-            5;
+            110;
     }
 
 
@@ -675,10 +678,10 @@
         .make-ripple-button {
 
             top:
-                12px;
+                6px;
 
             right:
-                12px;
+                8px;
 
             min-width:
                 auto;
@@ -735,14 +738,11 @@
 
         <!-- =============================================
              MAKE THE RIPPLE LOGO
-
-             This is the existing Make the Ripple
-             logo uploaded to the project.
         ============================================== -->
 
         <img
             id="pondLogo"
-            src="Make the Ripple Large Logo.png"
+            src="images/Make the Ripple Large Logo.png"
             alt="Make the Ripple"
         >
 
@@ -804,14 +804,12 @@
         <!-- =================================================
              WEBGL WATER SURFACE
 
-             DO NOT MODIFY.
-
-             Version 10.9 water.js controls:
-             - natural water
-             - ripples
-             - mirrored reflection
-             - perspective
-             - water breakup
+             VERSION 10.9 WATER.JS CONTROLS:
+             - Natural water
+             - Ripples
+             - Mirrored reflection
+             - Perspective
+             - Water breakup
         ================================================== -->
 
         <canvas
