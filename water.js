@@ -1,1288 +1,2598 @@
-<!DOCTYPE html>
-<html lang="en">
+/* =========================================================
+   THE INFINITE POND
+   VERSION 10.4B — RAISED MOONLIGHT REFLECTION
+========================================================= */
 
-<head>
+const canvas =
+document.getElementById("waterCanvas");
 
-<meta charset="UTF-8">
+if (!canvas) {
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-    The Infinite Pond — Make the Ripple
-</title>
-
-
-<style>
-
-/* =====================================================
-   GLOBAL
-===================================================== */
-
-html,
-body {
-
-    margin: 0;
-    padding: 0;
-
-    width: 100%;
-    min-height: 100%;
-
-    background:
-        #02070d;
-
-    color: white;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-}
-
-
-body {
-
-    overflow-x: hidden;
-
-}
-
-
-/* =====================================================
-   WATER CANVAS
-===================================================== */
-
-#waterCanvas {
-
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    z-index: 0;
-
-    display: block;
-
-    pointer-events: none;
-
-}
-
-
-/* =====================================================
-   PAGE CONTENT
-===================================================== */
-
-.pond-page {
-
-    position: relative;
-
-    z-index: 2;
-
-    min-height: 160vh;
-
-    pointer-events: none;
-
-}
-
-
-/* =====================================================
-   TOP NIGHT SKY
-===================================================== */
-
-.night-sky {
-
-    position: fixed;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 65vh;
-
-    background:
-
-        radial-gradient(
-            circle at 50% 20%,
-            rgba(170, 205, 225, 0.08),
-            transparent 28%
-        ),
-
-        linear-gradient(
-            to bottom,
-            rgba(1, 7, 14, 0.96),
-            rgba(2, 10, 18, 0.72),
-            rgba(2, 12, 20, 0)
-        );
-
-    pointer-events: none;
-
-    z-index: 1;
-
-}
-
-
-/* =====================================================
-   STARS
-===================================================== */
-
-.stars {
-
-    position: fixed;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 65vh;
-
-    pointer-events: none;
-
-    z-index: 3;
-
-}
-
-
-.star {
-
-    position: absolute;
-
-    width: 2px;
-    height: 2px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(
-            220,
-            240,
-            255,
-            0.8
-        );
-
-    box-shadow:
-
-        0 0 5px
-        rgba(
-            180,
-            220,
-            255,
-            0.55
-        );
-
-    animation:
-        starPulse
-        4s
-        ease-in-out
-        infinite;
-
-}
-
-
-.star:nth-child(1) {
-
-    left: 8%;
-    top: 12%;
-
-}
-
-
-.star:nth-child(2) {
-
-    left: 17%;
-    top: 23%;
-
-    animation-delay:
-        1s;
-
-}
-
-
-.star:nth-child(3) {
-
-    left: 28%;
-    top: 9%;
-
-    animation-delay:
-        2s;
-
-}
-
-
-.star:nth-child(4) {
-
-    left: 39%;
-    top: 17%;
-
-    animation-delay:
-        0.5s;
-
-}
-
-
-.star:nth-child(5) {
-
-    left: 62%;
-    top: 11%;
-
-    animation-delay:
-        1.7s;
-
-}
-
-
-.star:nth-child(6) {
-
-    left: 73%;
-    top: 25%;
-
-    animation-delay:
-        2.5s;
-
-}
-
-
-.star:nth-child(7) {
-
-    left: 84%;
-    top: 13%;
-
-    animation-delay:
-        0.8s;
-
-}
-
-
-.star:nth-child(8) {
-
-    left: 92%;
-    top: 30%;
-
-    animation-delay:
-        1.4s;
-
-}
-
-
-@keyframes starPulse {
-
-    0%,
-    100% {
-
-        opacity:
-            0.35;
-
-        transform:
-            scale(0.8);
-
-    }
-
-    50% {
-
-        opacity:
-            1;
-
-        transform:
-            scale(1.35);
-
-    }
-
-}
-
-
-/* =====================================================
-   HORIZON LINE
-===================================================== */
-
-.horizon {
-
-    position: fixed;
-
-    left: 0;
-
-    top: 65vh;
-
-    width: 100%;
-
-    height: 2px;
-
-    z-index: 6;
-
-    pointer-events: none;
-
-    background:
-
-        linear-gradient(
-            to right,
-
-            transparent 0%,
-
-            rgba(
-                170,
-                220,
-                240,
-                0.04
-            ) 8%,
-
-            rgba(
-                180,
-                225,
-                245,
-                0.28
-            ) 25%,
-
-            rgba(
-                210,
-                240,
-                255,
-                0.38
-            ) 50%,
-
-            rgba(
-                180,
-                225,
-                245,
-                0.28
-            ) 75%,
-
-            rgba(
-                170,
-                220,
-                240,
-                0.04
-            ) 92%,
-
-            transparent 100%
-        );
-
-    box-shadow:
-
-        0 0 7px
-        rgba(
-            160,
-            215,
-            240,
-            0.18
-        ),
-
-        0 0 25px
-        rgba(
-            120,
-            195,
-            225,
-            0.12
-        );
-
-}
-
-
-/* =====================================================
-   HORIZON FOG
-===================================================== */
-
-.horizon::before {
-
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-
-    top: -32px;
-
-    width: 100%;
-
-    height: 65px;
-
-    background:
-
-        radial-gradient(
-            ellipse at center,
-
-            rgba(
-                155,
-                210,
-                235,
-                0.075
-            ),
-
-            rgba(
-                90,
-                160,
-                195,
-                0.025
-            ) 38%,
-
-            transparent 72%
-        );
-
-    filter:
-        blur(8px);
-
-}
-
-
-/* =====================================================
-   MAIN HEADER
-===================================================== */
-
-.pond-header {
-
-    position: fixed;
-
-    top: 0;
-    left: 50%;
-
-    transform:
-        translateX(-50%);
-
-    width: min(
-        900px,
-        90vw
+    console.error(
+        "The Infinite Pond: waterCanvas not found."
     );
 
-    height: 65vh;
+} else {
 
-    display: flex;
+    const gl =
+        canvas.getContext("webgl", {
+            alpha: false,
+            antialias: false,
+            powerPreference: "high-performance"
+        });
 
-    flex-direction:
-        column;
+    if (!gl) {
 
-    align-items:
-        center;
-
-    justify-content:
-        flex-start;
-
-    text-align:
-        center;
-
-    pointer-events:
-        none;
-
-    z-index: 7;
-
-}
-
-
-/* =====================================================
-   MAKE THE RIPPLE LOGO
-===================================================== */
-
-.pond-logo {
-
-    width:
-        clamp(
-            105px,
-            15vw,
-            170px
+        console.error(
+            "The Infinite Pond: WebGL unavailable."
         );
 
-    height:
-        auto;
+    } else {
 
-    margin-top:
-        2.5vh;
+        /* =================================================
+           SETTINGS
+        ================================================= */
 
-    margin-bottom:
-        0.8vh;
+        const MAX_RIPPLES = 12;
 
-    opacity:
-        0.96;
 
-    filter:
+        /* =================================================
+           VERTEX SHADER
+        ================================================= */
 
-        drop-shadow(
-            0 0 8px
-            rgba(
-                120,
-                205,
-                235,
-                0.24
-            )
-        )
+        const vertexShaderSource = `
 
-        drop-shadow(
-            0 0 24px
-            rgba(
-                100,
-                190,
-                225,
-                0.18
-            )
-        );
+            attribute vec2 position;
 
-}
+            void main() {
 
+                gl_Position =
+                    vec4(
+                        position,
+                        0.0,
+                        1.0
+                    );
 
-/* =====================================================
-   PRESENTED
-===================================================== */
+            }
 
-.presented {
+        `;
 
-    margin-bottom:
-        5px;
 
-    font-size:
-        clamp(
-            0.7rem,
-            1.35vw,
-            0.95rem
-        );
+        /* =================================================
+           FRAGMENT SHADER
+        ================================================= */
 
-    letter-spacing:
-        0.28em;
+        const fragmentShaderSource = `
 
-    text-transform:
-        uppercase;
+            precision highp float;
 
-    color:
-        rgba(
-            220,
-            240,
-            250,
-            0.68
-        );
+            const int MAX_RIPPLES = 12;
 
-}
 
+            /* =================================================
+               UNIFORMS
+            ================================================= */
 
-/* =====================================================
-   MAIN TITLE
-===================================================== */
+            uniform vec2 resolution;
+            uniform float time;
+            uniform float scroll;
 
-.pond-title {
+            uniform vec2 ripplePositions[MAX_RIPPLES];
+            uniform float rippleStarts[MAX_RIPPLES];
+            uniform float rippleStrengths[MAX_RIPPLES];
 
-    margin:
-        0;
 
-    font-size:
-        clamp(
-            1.9rem,
-            5.5vw,
-            4.2rem
-        );
+            /* =================================================
+               HASH
+            ================================================= */
 
-    font-weight:
-        300;
+            float hash(vec2 p) {
 
-    letter-spacing:
-        0.12em;
+                return fract(
 
-    text-transform:
-        uppercase;
+                    sin(
 
-    color:
-        rgba(
-            235,
-            248,
-            255,
-            0.95
-        );
+                        dot(
 
-    text-shadow:
+                            p,
 
-        0 0 12px
-        rgba(
-            130,
-            205,
-            255,
-            0.28
-        ),
+                            vec2(
+                                127.1,
+                                311.7
+                            )
 
-        0 0 35px
-        rgba(
-            80,
-            170,
-            220,
-            0.22
-        ),
+                        )
 
-        0 0 70px
-        rgba(
-            80,
-            170,
-            220,
-            0.12
-        );
+                    )
+                    *
+                    43758.5453123
 
-}
-
-
-/* =====================================================
-   SUBTITLE
-
-   Kept ABOVE the horizon.
-===================================================== */
-
-.pond-subtitle {
-
-    margin-top:
-        10px;
-
-    font-size:
-        clamp(
-            0.7rem,
-            1.35vw,
-            0.95rem
-        );
-
-    letter-spacing:
-        0.18em;
-
-    text-transform:
-        uppercase;
-
-    color:
-        rgba(
-            210,
-            235,
-            245,
-            0.62
-        );
-
-    text-shadow:
-
-        0 0 12px
-        rgba(
-            110,
-            195,
-            225,
-            0.15
-        );
-
-}
-
-
-/* =====================================================
-   INTERACTION PROMPT
-===================================================== */
-
-.interaction-cue {
-
-    position: fixed;
-
-    left: 50%;
-
-    bottom:
-        42px;
-
-    transform:
-        translateX(-50%);
-
-    z-index:
-        10;
-
-    padding:
-        9px
-        18px;
-
-    border-radius:
-        999px;
-
-    background:
-        rgba(
-            2,
-            12,
-            20,
-            0.48
-        );
-
-    border:
-        1px solid
-        rgba(
-            180,
-            225,
-            245,
-            0.12
-        );
-
-    color:
-        rgba(
-            220,
-            240,
-            250,
-            0.58
-        );
-
-    font-size:
-        0.75rem;
-
-    letter-spacing:
-        0.08em;
-
-    backdrop-filter:
-        blur(8px);
-
-    -webkit-backdrop-filter:
-        blur(8px);
-
-    pointer-events:
-        none;
-
-}
-
-
-/* =====================================================
-   MAKE A RIPPLE BUTTON
-
-   Fixed independently from the centered logo.
-   Positioned in the far-right corner and vertically
-   aligned with the logo.
-===================================================== */
-
-.make-ripple-button {
-
-    position: fixed;
-
-    right:
-        24px;
-
-    top:
-        2.5vh;
-
-    z-index:
-        20;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        9px;
-
-    padding:
-        12px
-        17px;
-
-    border-radius:
-        999px;
-
-    border:
-        1px solid
-        rgba(
-            175,
-            225,
-            245,
-            0.28
-        );
-
-    background:
-        rgba(
-            3,
-            18,
-            29,
-            0.72
-        );
-
-    color:
-        rgba(
-            235,
-            249,
-            255,
-            0.92
-        );
-
-    font-family:
-        inherit;
-
-    font-size:
-        0.78rem;
-
-    font-weight:
-        600;
-
-    letter-spacing:
-        0.09em;
-
-    text-transform:
-        uppercase;
-
-    cursor:
-        pointer;
-
-    box-shadow:
-
-        0 5px 24px
-        rgba(
-            0,
-            0,
-            0,
-            0.35
-        ),
-
-        0 0 18px
-        rgba(
-            70,
-            170,
-            220,
-            0.08
-        );
-
-    backdrop-filter:
-        blur(10px);
-
-    -webkit-backdrop-filter:
-        blur(10px);
-
-    transition:
-
-        transform
-        0.25s
-        ease,
-
-        background
-        0.25s
-        ease,
-
-        border-color
-        0.25s
-        ease,
-
-        box-shadow
-        0.25s
-        ease;
-
-    pointer-events:
-        auto;
-
-}
-
-
-.make-ripple-button:hover {
-
-    transform:
-        translateY(-2px);
-
-    background:
-        rgba(
-            8,
-            34,
-            49,
-            0.86
-        );
-
-    border-color:
-        rgba(
-            185,
-            235,
-            255,
-            0.52
-        );
-
-    box-shadow:
-
-        0 8px 30px
-        rgba(
-            0,
-            0,
-            0,
-            0.42
-        ),
-
-        0 0 24px
-        rgba(
-            90,
-            190,
-            235,
-            0.18
-        );
-
-}
-
-
-.make-ripple-button:active {
-
-    transform:
-        translateY(0)
-        scale(0.97);
-
-}
-
-
-/* =====================================================
-   BUTTON RIPPLE ICON
-===================================================== */
-
-.ripple-icon {
-
-    position:
-        relative;
-
-    width:
-        17px;
-
-    height:
-        17px;
-
-    display:
-        inline-block;
-
-}
-
-
-.ripple-icon::before,
-.ripple-icon::after {
-
-    content:
-        "";
-
-    position:
-        absolute;
-
-    left:
-        50%;
-
-    top:
-        50%;
-
-    border:
-        1px solid
-        rgba(
-            210,
-            240,
-            255,
-            0.78
-        );
-
-    border-radius:
-        50%;
-
-    transform:
-        translate(
-            -50%,
-            -50%
-        );
-
-}
-
-
-.ripple-icon::before {
-
-    width:
-        6px;
-
-    height:
-        6px;
-
-}
-
-
-.ripple-icon::after {
-
-    width:
-        15px;
-
-    height:
-        9px;
-
-    border-left-color:
-        transparent;
-
-    border-right-color:
-        transparent;
-
-    border-bottom-color:
-        rgba(
-            210,
-            240,
-            255,
-            0.42
-        );
-
-}
-
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media (
-    max-width: 600px
-) {
-
-    .pond-logo {
-
-        width:
-            105px;
-
-        margin-top:
-            3vh;
-
-    }
-
-
-    .pond-title {
-
-        font-size:
-            clamp(
-                1.55rem,
-                8vw,
-                2.7rem
-            );
-
-    }
-
-
-    .pond-subtitle {
-
-        font-size:
-            0.66rem;
-
-        letter-spacing:
-            0.14em;
-
-    }
-
-
-    .interaction-cue {
-
-        bottom:
-            88px;
-
-        font-size:
-            0.68rem;
-
-        padding:
-            8px
-            14px;
-
-    }
-
-
-    .make-ripple-button {
-
-        right:
-            16px;
-
-        top:
-            3vh;
-
-        padding:
-            11px
-            14px;
-
-        font-size:
-            0.7rem;
-
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-
-<!-- =====================================================
-     WATER
-====================================================== -->
-
-<canvas
-    id="waterCanvas"
-></canvas>
-
-
-<!-- =====================================================
-     NIGHT SKY
-====================================================== -->
-
-<div
-    class="night-sky"
-></div>
-
-
-<!-- =====================================================
-     STARS
-====================================================== -->
-
-<div
-    class="stars"
-    aria-hidden="true"
->
-
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-
-</div>
-
-
-<!-- =====================================================
-     HORIZON
-====================================================== -->
-
-<div
-    class="horizon"
-    aria-hidden="true"
-></div>
-
-
-<!-- =====================================================
-     PAGE
-====================================================== -->
-
-<main
-    class="pond-page"
->
-
-
-    <!-- =================================================
-         HEADER
-    ================================================== -->
-
-    <header
-        class="pond-header"
-    >
-
-
-        <!-- =============================================
-             MAKE THE RIPPLE LOGO
-             
-             Remains centered independently of the
-             Make a Ripple button.
-        ============================================== -->
-
-        <img
-            class="pond-logo"
-            src="images/Make the Ripple Large Logo.png"
-            alt="Make the Ripple"
-        >
-
-
-        <!-- =============================================
-             PRESENTS
-        ============================================== -->
-
-        <div
-            class="presented"
-        >
-            Presents
-        </div>
-
-
-        <!-- =============================================
-             TITLE
-        ============================================== -->
-
-        <h1
-            class="pond-title"
-        >
-            The Infinite Pond
-        </h1>
-
-
-        <!-- =============================================
-             SUBTITLE
-        ============================================== -->
-
-        <div
-            class="pond-subtitle"
-        >
-            Every Ripple Begins Somewhere
-        </div>
-
-
-    </header>
-
-
-</main>
-
-
-<!-- =====================================================
-     INTERACTION CUE
-====================================================== -->
-
-<div
-    class="interaction-cue"
->
-    Click anywhere on the pond to make a ripple
-</div>
-
-
-<!-- =====================================================
-     MAKE A RIPPLE BUTTON
-
-     Positioned independently from the centered logo.
-====================================================== -->
-
-<button
-    id="makeRippleButton"
-    class="make-ripple-button"
-    type="button"
-    aria-label="Make a Ripple"
->
-
-    <span
-        class="ripple-icon"
-        aria-hidden="true"
-    ></span>
-
-    <span>
-        Make a Ripple
-    </span>
-
-</button>
-
-
-<!-- =====================================================
-     WATER ENGINE
-====================================================== -->
-
-<script
-    src="water.js"
-></script>
-
-
-<!-- =====================================================
-     MAKE A RIPPLE BUTTON
-
-     Submission workflow will be connected here
-     in a later version.
-====================================================== -->
-
-<script>
-
-    const makeRippleButton =
-        document.getElementById(
-            "makeRippleButton"
-        );
-
-
-    if (
-        makeRippleButton
-    ) {
-
-        makeRippleButton.addEventListener(
-            "click",
-            function () {
-
-                console.log(
-                    "Make a Ripple button clicked."
                 );
 
             }
-        );
+
+
+            /* =================================================
+               SMOOTH NOISE
+            ================================================= */
+
+            float noise(vec2 p) {
+
+                vec2 i =
+                    floor(p);
+
+                vec2 f =
+                    fract(p);
+
+                f =
+                    f *
+                    f *
+                    (
+                        3.0 -
+                        2.0 * f
+                    );
+
+                float a =
+                    hash(i);
+
+                float b =
+                    hash(
+
+                        i +
+                        vec2(
+                            1.0,
+                            0.0
+                        )
+
+                    );
+
+                float c =
+                    hash(
+
+                        i +
+                        vec2(
+                            0.0,
+                            1.0
+                        )
+
+                    );
+
+                float d =
+                    hash(
+
+                        i +
+                        vec2(
+                            1.0,
+                            1.0
+                        )
+
+                    );
+
+                return mix(
+
+                    mix(
+                        a,
+                        b,
+                        f.x
+                    ),
+
+                    mix(
+                        c,
+                        d,
+                        f.x
+                    ),
+
+                    f.y
+
+                );
+
+            }
+
+
+            /* =================================================
+               FRACTAL BROWNIAN MOTION
+            ================================================= */
+
+            float fbm(vec2 p) {
+
+                float value =
+                    0.0;
+
+                float amplitude =
+                    0.5;
+
+                for (
+
+                    int i = 0;
+
+                    i < 5;
+
+                    i++
+
+                ) {
+
+                    value +=
+                        noise(p) *
+                        amplitude;
+
+                    p *=
+                        2.0;
+
+                    amplitude *=
+                        0.5;
+
+                }
+
+                return value;
+
+            }
+
+
+            /* =================================================
+               LARGE WATER MOTION
+            ================================================= */
+
+            float largeWave(vec2 p) {
+
+                float waveA =
+
+                    sin(
+
+                        dot(
+
+                            p,
+
+                            normalize(
+
+                                vec2(
+                                    1.0,
+                                    0.18
+                                )
+
+                            )
+
+                        )
+                        *
+                        0.72
+                        +
+                        time *
+                        0.055
+
+                    );
+
+
+                float waveB =
+
+                    sin(
+
+                        dot(
+
+                            p,
+
+                            normalize(
+
+                                vec2(
+                                    -0.32,
+                                    1.0
+                                )
+
+                            )
+
+                        )
+                        *
+                        0.58
+                        -
+                        time *
+                        0.042
+
+                    );
+
+
+                return
+
+                    waveA *
+                    0.055
+
+                    +
+
+                    waveB *
+                    0.035;
+
+            }
+
+
+            /* =================================================
+               SMALL SURFACE WAVES
+            ================================================= */
+
+            float smallWaves(vec2 p) {
+
+                float waveA =
+
+                    sin(
+
+                        dot(
+
+                            p,
+
+                            normalize(
+
+                                vec2(
+                                    0.35,
+                                    1.0
+                                )
+
+                            )
+
+                        )
+                        *
+                        2.8
+                        +
+                        time *
+                        0.18
+
+                    );
+
+
+                float waveB =
+
+                    sin(
+
+                        dot(
+
+                            p,
+
+                            normalize(
+
+                                vec2(
+                                    -0.72,
+                                    0.38
+                                )
+
+                            )
+
+                        )
+                        *
+                        3.6
+                        -
+                        time *
+                        0.14
+
+                    );
+
+
+                return
+
+                    waveA *
+                    0.012
+
+                    +
+
+                    waveB *
+                    0.008;
+
+            }
+
+
+            /* =================================================
+               ORGANIC MOTION
+            ================================================= */
+
+            float organicMotion(vec2 p) {
+
+                vec2 drift =
+
+                    vec2(
+
+                        time *
+                        0.004,
+
+                        -time *
+                        0.003
+
+                    );
+
+
+                float n =
+
+                    fbm(
+
+                        p *
+                        0.48
+                        +
+                        drift
+
+                    );
+
+
+                return
+
+                    (
+                        n -
+                        0.5
+                    )
+                    *
+                    0.035;
+
+            }
+
+
+            /* =================================================
+               NATURAL WATER SURFACE
+            ================================================= */
+
+            float naturalWaterSurface(vec2 p) {
+
+                vec2 slowDrift =
+
+                    vec2(
+
+                        time *
+                        0.0025,
+
+                        -time *
+                        0.0018
+
+                    );
+
+
+                float broadA =
+
+                    fbm(
+
+                        p *
+                        0.36
+                        +
+                        slowDrift
+
+                    );
+
+
+                float broadB =
+
+                    fbm(
+
+                        p *
+                        0.68
+                        -
+                        slowDrift *
+                        1.35
+
+                    );
+
+
+                float fine =
+
+                    fbm(
+
+                        p *
+                        1.35
+                        +
+                        slowDrift *
+                        0.65
+                        +
+                        vec2(
+                            4.7,
+                            8.2
+                        )
+
+                    );
+
+
+                float surfaceVariation =
+
+                    broadA *
+                    0.58
+
+                    +
+
+                    broadB *
+                    0.30
+
+                    +
+
+                    fine *
+                    0.12;
+
+
+                return
+
+                    (
+                        surfaceVariation -
+                        0.5
+                    )
+                    *
+                    0.060;
+
+            }
+
+
+            /* =================================================
+               NATURAL WATER MOVEMENT
+            ================================================= */
+
+            float naturalWaterMovement(vec2 p) {
+
+                vec2 movementDrift =
+
+                    vec2(
+
+                        time *
+                        0.006,
+
+                        -time *
+                        0.004
+
+                    );
+
+
+                float broadA =
+
+                    fbm(
+
+                        p *
+                        0.30
+                        +
+                        movementDrift
+
+                    );
+
+
+                float broadB =
+
+                    fbm(
+
+                        p *
+                        0.52
+                        -
+                        movementDrift *
+                        1.15
+
+                    );
+
+
+                float movement =
+
+                    broadA *
+                    0.68
+
+                    +
+
+                    broadB *
+                    0.32;
+
+
+                return
+
+                    (
+                        movement -
+                        0.5
+                    )
+                    *
+                    0.018;
+
+            }
+
+
+            /* =================================================
+               RIPPLE INTERFERENCE
+            ================================================= */
+
+            float rippleInterference(vec2 p) {
+
+                return 0.0;
+
+            }
+
+
+            /* =================================================
+               IMPACT DISPLACEMENT
+            ================================================= */
+
+            float impactDisplacement(vec2 p) {
+
+                float field =
+                    0.0;
+
+
+                for (
+
+                    int i = 0;
+
+                    i < MAX_RIPPLES;
+
+                    i++
+
+                ) {
+
+                    float strength =
+                        rippleStrengths[i];
+
+
+                    if (
+
+                        strength > 0.0
+
+                    ) {
+
+                        float elapsed =
+
+                            max(
+
+                                0.0,
+
+                                time -
+                                rippleStarts[i]
+
+                            );
+
+
+                        if (
+
+                            elapsed < 2.5
+
+                        ) {
+
+                            float d =
+
+                                distance(
+
+                                    p,
+                                    ripplePositions[i]
+
+                                );
+
+
+                            float impactRadius =
+
+                                0.055 +
+                                elapsed *
+                                0.045;
+
+
+                            float impactShape =
+
+                                exp(
+
+                                    -pow(
+
+                                        d /
+                                        impactRadius,
+
+                                        2.0
+
+                                    )
+
+                                );
+
+
+                            float impactWave =
+
+                                cos(
+
+                                    d *
+                                    42.0
+
+                                    -
+
+                                    elapsed *
+                                    7.0
+
+                                );
+
+
+                            float decay =
+
+                                exp(
+
+                                    -elapsed *
+                                    1.35
+
+                                );
+
+
+                            field +=
+
+                                impactShape
+                                *
+                                impactWave
+                                *
+                                decay
+                                *
+                                strength
+                                *
+                                -0.075;
+
+                        }
+
+                    }
+
+                }
+
+
+                return field;
+
+            }
+
+
+            /* =================================================
+               RIPPLE MICRO-WAVES
+            ================================================= */
+
+            float rippleMicroWaves(vec2 p) {
+
+                return 0.0;
+
+            }
+
+
+            /* =================================================
+               TOTAL WATER HEIGHT
+            ================================================= */
+
+            float waterHeight(vec2 p) {
+
+                return
+
+                    largeWave(p)
+
+                    +
+
+                    smallWaves(p)
+
+                    +
+
+                    organicMotion(p)
+
+                    +
+
+                    naturalWaterMovement(p)
+
+                    +
+
+                    rippleInterference(p)
+
+                    +
+
+                    impactDisplacement(p)
+
+                    +
+
+                    rippleMicroWaves(p);
+
+            }
+
+
+            /* =================================================
+               SURFACE NORMAL
+            ================================================= */
+
+            vec3 surfaceNormal(vec2 p) {
+
+                float e =
+                    0.0025;
+
+
+                float center =
+                    waterHeight(p);
+
+
+                float x =
+
+                    waterHeight(
+
+                        p +
+                        vec2(
+                            e,
+                            0.0
+                        )
+
+                    );
+
+
+                float y =
+
+                    waterHeight(
+
+                        p +
+                        vec2(
+                            0.0,
+                            e
+                        )
+
+                    );
+
+
+                return normalize(
+
+                    vec3(
+
+                        center - x,
+
+                        center - y,
+
+                        e
+
+                    )
+
+                );
+
+            }
+
+
+            /* =================================================
+               MOON CLOUDS
+            ================================================= */
+
+            float moonClouds(vec2 uv) {
+
+                vec2 cloudUV =
+
+                    uv *
+                    vec2(
+                        2.0,
+                        1.15
+                    );
+
+
+                cloudUV +=
+
+                    vec2(
+
+                        time *
+                        0.004,
+
+                        -time *
+                        0.0015
+
+                    );
+
+
+                float cloudA =
+
+                    fbm(
+
+                        cloudUV *
+                        1.15
+
+                    );
+
+
+                float cloudB =
+
+                    fbm(
+
+                        cloudUV *
+                        2.2
+
+                        +
+
+                        vec2(
+                            7.3,
+                            2.4
+                        )
+
+                    );
+
+
+                float clouds =
+
+                    cloudA *
+                    0.72
+
+                    +
+
+                    cloudB *
+                    0.28;
+
+
+                return smoothstep(
+
+                    0.48,
+                    0.72,
+                    clouds
+
+                );
+
+            }
+
+
+            /* =================================================
+               MOON ATMOSPHERE
+            ================================================= */
+
+            float moonAtmosphere(vec2 uv) {
+
+                vec2 moonPosition =
+
+                    vec2(
+                        0.50,
+                        1.12
+                    );
+
+
+                float distanceFromMoon =
+
+                    distance(
+
+                        uv,
+                        moonPosition
+
+                    );
+
+
+                float glow =
+
+                    exp(
+
+                        -pow(
+
+                            distanceFromMoon /
+                            0.28,
+
+                            2.0
+
+                        )
+
+                    );
+
+
+                float clouds =
+
+                    moonClouds(uv);
+
+
+                float horizonFade =
+
+    smoothstep(
+        0.54,
+        0.61,
+        uv.y
+    );
+
+
+return
+
+    glow *
+
+    mix(
+
+        0.82,
+        0.38,
+        clouds
+
+    )
+
+    *
+
+    mix(
+        0.18,
+        1.0,
+        horizonFade
+    );
+
+            }
+
+
+            /* =================================================
+               NATURAL MOONLIGHT REFLECTION
+
+               VERSION 10.4B
+
+               Reflection depth begins higher so the visible
+               moonlight is pulled closer toward the horizon.
+            ================================================= */
+
+            float moonReflection(
+
+                vec2 uv,
+
+                vec3 normal
+
+            ) {
+
+                float waterMask =
+
+                   smoothstep(
+
+                       0.50,
+                       0.43,
+                       uv.y
+
+          );
+
+
+                float bottomFade =
+
+                    smoothstep(
+
+                        0.015,
+                        0.12,
+                        uv.y
+
+                    );
+
+
+                waterMask *=
+                    bottomFade;
+
+
+                if (
+
+                    waterMask <= 0.0
+
+                ) {
+
+                    return 0.0;
+
+                }
+
+
+                float depth =
+
+                    clamp(
+
+                        (
+                            0.54 -
+                            uv.y
+                        )
+                        /
+                        0.42,
+
+                        0.0,
+                        1.0
+
+                    );
+
+
+                float broadDrift =
+
+                    sin(
+
+                        uv.y *
+                        11.0
+                        +
+                        time *
+                        0.018
+
+                    )
+                    *
+                    0.018;
+
+
+                float organicDrift =
+
+                    (
+                        fbm(
+
+                            vec2(
+
+                                uv.y *
+                                2.8,
+
+                                time *
+                                0.008
+
+                            )
+
+                        )
+                        -
+                        0.5
+                    )
+                    *
+                    0.045;
+
+
+                float reflectionCenter =
+
+                    0.50
+                    +
+                    broadDrift
+                    +
+                    organicDrift;
+
+
+                float reflectionWidth =
+
+                    mix(
+
+                        0.035,
+                        0.20,
+
+                        smoothstep(
+
+                            0.0,
+                            1.0,
+                            depth
+
+                        )
+
+                    );
+
+
+                float horizontalDistance =
+
+                    abs(
+
+                        uv.x -
+                        reflectionCenter
+
+                    );
+
+
+                float envelope =
+
+                    exp(
+
+                        -pow(
+
+                            horizontalDistance /
+                            reflectionWidth,
+
+                            2.0
+
+                        )
+
+                    );
+
+
+                float fragmentA =
+
+                    noise(
+
+                        vec2(
+
+                            uv.x *
+                            7.0,
+
+                            uv.y *
+                            15.0
+
+                        )
+
+                    );
+
+
+                float fragmentB =
+
+                    noise(
+
+                        vec2(
+
+                            uv.x *
+                            13.0
+                            +
+                            4.0,
+
+                            uv.y *
+                            29.0
+                            -
+                            time *
+                            0.012
+
+                        )
+
+                    );
+
+
+                float fragmentC =
+
+                    fbm(
+
+                        vec2(
+
+                            uv.x *
+                            5.5,
+
+                            uv.y *
+                            11.0
+
+                        )
+
+                        +
+
+                        vec2(
+
+                            time *
+                            0.006,
+
+                            -time *
+                            0.004
+
+                        )
+
+                    );
+
+
+                float fragments =
+
+                    fragmentA *
+                    0.34
+
+                    +
+
+                    fragmentB *
+                    0.26
+
+                    +
+
+                    fragmentC *
+                    0.40;
+
+
+                float brokenLight =
+
+                    smoothstep(
+
+                        0.48,
+                        0.67,
+                        fragments
+
+                    );
+
+
+                float horizontalPattern =
+
+                    sin(
+
+                        uv.y *
+                        170.0
+                        +
+                        time *
+                        0.055
+
+                    );
+
+
+                horizontalPattern =
+
+                    smoothstep(
+
+                        0.15,
+                        0.78,
+                        horizontalPattern
+
+                    );
+
+
+                float streakNoise =
+
+                    noise(
+
+                        vec2(
+
+                            uv.y *
+                            24.0,
+
+                            uv.x *
+                            3.0
+
+                        )
+
+                    );
+
+
+                float streaks =
+
+                    mix(
+
+                        horizontalPattern,
+
+                        horizontalPattern *
+                        streakNoise,
+
+                        0.55
+
+                    );
+
+
+                float facing =
+
+                    max(
+
+                        dot(
+
+                            normal,
+
+                            normalize(
+
+                                vec3(
+
+                                    0.0,
+                                    0.45,
+                                    1.0
+
+                                )
+
+                            )
+
+                        ),
+
+                        0.0
+
+                    );
+
+
+                float shimmer =
+
+                    pow(
+
+                        facing,
+                        13.0
+
+                    );
+
+
+                float softShimmer =
+
+                    pow(
+
+                        max(
+
+                            normal.z,
+                            0.0
+
+                        ),
+
+                        5.0
+
+                    );
+
+
+                float surfaceLight =
+
+                    shimmer *
+                    0.78
+
+                    +
+
+                    softShimmer *
+                    0.22;
+
+
+                float cloudAmount =
+
+                    moonClouds(uv);
+
+
+                float cloudLight =
+
+                    mix(
+
+                        1.0,
+                        0.30,
+                        cloudAmount
+
+                    );
+
+
+                float distanceFade =
+
+                    mix(
+
+                        1.0,
+                        0.58,
+
+                        smoothstep(
+
+                            0.0,
+                            1.0,
+                            depth
+
+                        )
+
+                    );
+
+
+                float fragmentedReflection =
+
+                    envelope *
+
+                    (
+
+                        brokenLight *
+                        0.72
+
+                        +
+
+                        brokenLight *
+                        streaks *
+                        0.28
+
+                    );
+
+
+                float softReflection =
+
+                    envelope *
+                    0.045;
+
+
+                float finalReflection =
+
+                    (
+
+                        fragmentedReflection
+                        +
+                        softReflection
+
+                    )
+
+                    *
+
+                    surfaceLight
+
+                    *
+
+                    cloudLight
+
+                    *
+
+                    distanceFade
+
+                    *
+
+                    waterMask;
+
+
+                return finalReflection;
+
+            }
+
+
+            /* =================================================
+               MAIN IMAGE
+            ================================================= */
+
+            void main() {
+
+                vec2 uv =
+
+                    gl_FragCoord.xy
+                    /
+                    resolution;
+
+
+                vec2 p =
+
+                    uv -
+                    0.5;
+
+
+                p.x *=
+
+                    resolution.x /
+                    resolution.y;
+
+
+                p.y +=
+
+                    scroll *
+                    0.00022;
+
+
+                p.y *=
+                    1.55;
+
+
+                /* ---------------------------------------------
+                   WATER SURFACE
+                --------------------------------------------- */
+
+                float surface =
+
+                    waterHeight(p);
+
+
+                vec3 normal =
+
+                    surfaceNormal(p);
+
+
+                /* ---------------------------------------------
+                   BASE WATER
+                --------------------------------------------- */
+
+                vec3 deepWater =
+
+                    vec3(
+
+                        0.0035,
+                        0.018,
+                        0.032
+
+                    );
+
+
+                vec3 blueWater =
+
+                    vec3(
+
+                        0.008,
+                        0.052,
+                        0.082
+
+                    );
+
+
+                float variation =
+
+                    surface *
+                    0.55
+                    +
+                    0.5;
+
+
+                float naturalSurface =
+
+                    naturalWaterSurface(p);
+
+
+                variation +=
+
+                    naturalSurface;
+
+
+                float backgroundVariation =
+
+                    fbm(
+
+                        p *
+                        0.42
+
+                        +
+
+                        vec2(
+
+                            time *
+                            0.004,
+
+                            -time *
+                            0.003
+
+                        )
+
+                    );
+
+
+                backgroundVariation =
+
+                    (
+
+                        backgroundVariation -
+                        0.5
+
+                    )
+                    *
+                    0.035;
+
+
+                variation +=
+
+                    backgroundVariation;
+
+
+                variation =
+
+                    clamp(
+
+                        variation,
+
+                        0.0,
+                        1.0
+
+                    );
+
+
+                vec3 color =
+
+                    mix(
+
+                        deepWater,
+                        blueWater,
+                        variation
+
+                    );
+
+
+                /* ---------------------------------------------
+                   SURFACE HIGHLIGHTS
+                --------------------------------------------- */
+
+                float highlight =
+
+                    pow(
+
+                        max(
+
+                            normal.z,
+                            0.0
+
+                        ),
+                        7.0
+
+                    );
+
+
+                color +=
+
+                    vec3(
+
+                        0.012,
+                        0.035,
+                        0.055
+
+                    )
+
+                    *
+
+                    highlight;
+
+
+                /* ---------------------------------------------
+                   NATURAL SURFACE SHEEN
+                --------------------------------------------- */
+
+                float surfaceSheen =
+
+                    naturalSurface *
+                    0.55;
+
+
+                color +=
+
+                    vec3(
+
+                        0.004,
+                        0.010,
+                        0.014
+
+                    )
+
+                    *
+
+                    surfaceSheen;
+
+
+                /* ---------------------------------------------
+                   NATURAL MOON REFLECTION
+                --------------------------------------------- */
+
+                float reflection =
+
+                    moonReflection(
+
+                        uv,
+                        normal
+
+                    );
+
+
+                vec3 moonColor =
+
+                    vec3(
+
+                        0.58,
+                        0.74,
+                        0.88
+
+                    );
+
+
+                color +=
+
+                    moonColor
+                    *
+                    reflection
+                    *
+                    1.65;
+
+
+                /* ---------------------------------------------
+                   SOFT ATMOSPHERIC MOONLIGHT
+                --------------------------------------------- */
+
+                float atmosphere =
+
+                    moonAtmosphere(uv);
+
+
+                color +=
+
+                    vec3(
+
+                        0.008,
+                        0.018,
+                        0.030
+
+                    )
+
+                    *
+
+                    atmosphere;
+
+
+                /* ---------------------------------------------
+                   AMBIENT MOONLIGHT
+                --------------------------------------------- */
+
+                float upperLight =
+
+    smoothstep(
+
+        0.10,
+        0.95,
+        uv.y
+
+    )
+
+    *
+
+    smoothstep(
+        0.54,
+        0.64,
+        uv.y
+    );
+
+
+                float centerLight =
+
+                    exp(
+
+                        -pow(
+
+                            (
+
+                                uv.x -
+                                0.50
+
+                            )
+                            /
+                            0.52,
+
+                            2.0
+
+                        )
+
+                    );
+
+
+                float ambientMoon =
+
+                    upperLight *
+                    centerLight;
+
+
+                color +=
+
+                    vec3(
+
+                        0.010,
+                        0.024,
+                        0.040
+
+                    )
+
+                    *
+
+                    ambientMoon;
+
+
+                /* ---------------------------------------------
+                   CINEMATIC VIGNETTE
+                --------------------------------------------- */
+
+                float vignette =
+
+                    1.0 -
+
+                    smoothstep(
+
+                        0.30,
+                        0.92,
+
+                        distance(
+
+                            uv,
+
+                            vec2(
+
+                                0.5,
+                                0.43
+
+                            )
+
+                        )
+
+                    );
+
+
+                color *=
+
+                    mix(
+
+                        0.68,
+                        1.0,
+                        vignette
+
+                    );
+
+
+                /* ---------------------------------------------
+                   FINAL CONTRAST
+                --------------------------------------------- */
+
+                color =
+
+                    pow(
+
+                        color,
+
+                        vec3(
+                            0.86
+                        )
+
+                    );
+
+
+                gl_FragColor =
+
+                    vec4(
+
+                        color,
+                        1.0
+
+                    );
+
+            }
+
+        `;
+
+
+        /* =====================================================
+           SHADER COMPILATION
+        ===================================================== */
+
+        function createShader(
+
+            type,
+            source
+
+        ) {
+
+            const shader =
+
+                gl.createShader(
+                    type
+                );
+
+
+            gl.shaderSource(
+
+                shader,
+                source
+
+            );
+
+
+            gl.compileShader(
+
+                shader
+
+            );
+
+
+            if (
+
+                !gl.getShaderParameter(
+
+                    shader,
+                    gl.COMPILE_STATUS
+
+                )
+
+            ) {
+
+                console.error(
+
+                    "The Infinite Pond shader error:",
+
+                    gl.getShaderInfoLog(
+                        shader
+                    )
+
+                );
+
+
+                return null;
+
+            }
+
+
+            return shader;
+
+        }
+
+
+        const vertexShader =
+
+            createShader(
+
+                gl.VERTEX_SHADER,
+                vertexShaderSource
+
+            );
+
+
+        const fragmentShader =
+
+            createShader(
+
+                gl.FRAGMENT_SHADER,
+                fragmentShaderSource
+
+            );
+
+
+        if (
+
+            !vertexShader ||
+
+            !fragmentShader
+
+        ) {
+
+            console.error(
+
+                "The Infinite Pond: Shader creation failed."
+
+            );
+
+        } else {
+
+
+            /* =================================================
+               PROGRAM
+            ================================================= */
+
+            const program =
+
+                gl.createProgram();
+
+
+            gl.attachShader(
+
+                program,
+                vertexShader
+
+            );
+
+
+            gl.attachShader(
+
+                program,
+                fragmentShader
+
+            );
+
+
+            gl.linkProgram(
+
+                program
+
+            );
+
+
+            if (
+
+                !gl.getProgramParameter(
+
+                    program,
+                    gl.LINK_STATUS
+
+                )
+
+            ) {
+
+                console.error(
+
+                    "The Infinite Pond program error:",
+
+                    gl.getProgramInfoLog(
+                        program
+                    )
+
+                );
+
+            } else {
+
+
+                gl.useProgram(
+
+                    program
+
+                );
+
+
+                /* =================================================
+                   FULL SCREEN QUAD
+                ================================================= */
+
+                const buffer =
+
+                    gl.createBuffer();
+
+
+                gl.bindBuffer(
+
+                    gl.ARRAY_BUFFER,
+                    buffer
+
+                );
+
+
+                gl.bufferData(
+
+                    gl.ARRAY_BUFFER,
+
+                    new Float32Array([
+
+                        -1, -1,
+                         1, -1,
+                        -1,  1,
+
+                        -1,  1,
+                         1, -1,
+                         1,  1
+
+                    ]),
+
+                    gl.STATIC_DRAW
+
+                );
+
+
+                /* =================================================
+                   POSITION ATTRIBUTE
+                ================================================= */
+
+                const position =
+
+                    gl.getAttribLocation(
+
+                        program,
+                        "position"
+
+                    );
+
+
+                gl.enableVertexAttribArray(
+
+                    position
+
+                );
+
+
+                gl.vertexAttribPointer(
+
+                    position,
+
+                    2,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
+
+                );
+
+
+                /* =================================================
+                   UNIFORMS
+                ================================================= */
+
+                const resolutionLocation =
+
+                    gl.getUniformLocation(
+
+                        program,
+                        "resolution"
+
+                    );
+
+
+                const timeLocation =
+
+                    gl.getUniformLocation(
+
+                        program,
+                        "time"
+
+                    );
+
+
+                const scrollLocation =
+
+                    gl.getUniformLocation(
+
+                        program,
+                        "scroll"
+
+                    );
+
+
+                const ripplePositionsLocation =
+
+                    gl.getUniformLocation(
+
+                        program,
+                        "ripplePositions"
+
+                    );
+
+
+                const rippleStartsLocation =
+
+                    gl.getUniformLocation(
+
+                        program,
+                        "rippleStarts"
+
+                    );
+
+
+                const rippleStrengthsLocation =
+
+                    gl.getUniformLocation(
+
+                        program,
+                        "rippleStrengths"
+
+                    );
+
+
+                /* =================================================
+                   RIPPLE STORAGE
+                ================================================= */
+
+                const ripples = [];
+
+
+                /* =================================================
+                   CREATE RIPPLE
+                ================================================= */
+
+                function createRipple(
+
+                    clientX,
+                    clientY
+
+                ) {
+
+                    console.log(
+
+                        "INFINITE POND RIPPLE:",
+
+                        clientX,
+                        clientY
+
+                    );
+
+
+                    const rect =
+
+                        canvas.getBoundingClientRect();
+
+
+                    const localX =
+
+                        clientX -
+                        rect.left;
+
+
+                    const localY =
+
+                        clientY -
+                        rect.top;
+
+
+                    const uvX =
+
+                        localX /
+                        rect.width;
+
+
+                    const uvY =
+
+                        localY /
+                        rect.height;
+
+
+                    let rippleX =
+
+                        uvX -
+                        0.5;
+
+
+                    let rippleY =
+
+                        0.5 -
+                        uvY;
+
+
+                    rippleX *=
+
+                        rect.width /
+                        rect.height;
+
+
+                    rippleY *=
+
+                        1.55;
+
+
+                    const now =
+
+                        performance.now()
+                        *
+                        0.001;
+
+
+                    ripples.push({
+
+                        x:
+                            rippleX,
+
+                        y:
+                            rippleY,
+
+                        start:
+                            now,
+
+                        strength:
+                            3.0
+
+                    });
+
+
+                    if (
+
+                        ripples.length >
+                        MAX_RIPPLES
+
+                    ) {
+
+                        ripples.shift();
+
+                    }
+
+                }
+
+
+                /* =================================================
+                   POINTER RIPPLE
+                ================================================= */
+
+                window.addEventListener(
+
+                    "pointerdown",
+
+                    function (event) {
+
+                        console.log(
+
+                            "POINTER DETECTED"
+
+                        );
+
+
+                        if (
+
+                            event.button !== 0 &&
+
+                            event.pointerType !== "touch"
+
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        createRipple(
+
+                            event.clientX,
+                            event.clientY
+
+                        );
+
+                    },
+
+                    true
+
+                );
+
+
+                /* =================================================
+                   RESIZE
+                ================================================= */
+
+                function resizeWater() {
+
+                    const ratio =
+
+                        Math.min(
+
+                            window.devicePixelRatio ||
+                            1,
+
+                            2
+
+                        );
+
+
+                    canvas.width =
+
+                        window.innerWidth *
+                        ratio;
+
+
+                    canvas.height =
+
+                        window.innerHeight *
+                        ratio;
+
+
+                    canvas.style.width =
+
+                        window.innerWidth +
+                        "px";
+
+
+                    canvas.style.height =
+
+                        window.innerHeight +
+                        "px";
+
+
+                    gl.viewport(
+
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+
+                    );
+
+                }
+
+
+                window.addEventListener(
+
+                    "resize",
+
+                    resizeWater
+
+                );
+
+
+                resizeWater();
+
+
+                /* =================================================
+                   RENDER LOOP
+                ================================================= */
+
+                function renderWater(
+
+                    milliseconds
+
+                ) {
+
+                    const currentTime =
+
+                        milliseconds *
+                        0.001;
+
+
+                    gl.useProgram(
+
+                        program
+
+                    );
+
+
+                    while (
+
+                        ripples.length > 0 &&
+
+                        currentTime -
+                        ripples[0].start >
+                        12.0
+
+                    ) {
+
+                        ripples.shift();
+
+                    }
+
+
+                    const positions =
+
+                        new Float32Array(
+
+                            MAX_RIPPLES *
+                            2
+
+                        );
+
+
+                    const starts =
+
+                        new Float32Array(
+
+                            MAX_RIPPLES
+
+                        );
+
+
+                    const strengths =
+
+                        new Float32Array(
+
+                            MAX_RIPPLES
+
+                        );
+
+
+                    for (
+
+                        let i = 0;
+
+                        i < MAX_RIPPLES;
+
+                        i++
+
+                    ) {
+
+                        if (
+
+                            i <
+                            ripples.length
+
+                        ) {
+
+                            positions[
+                                i * 2
+                            ] =
+
+                                ripples[i].x;
+
+
+                            positions[
+                                i * 2 + 1
+                            ] =
+
+                                ripples[i].y;
+
+
+                            starts[i] =
+
+                                ripples[i].start;
+
+
+                            strengths[i] =
+
+                                ripples[i].strength;
+
+                        } else {
+
+                            positions[
+                                i * 2
+                            ] =
+
+                                0.0;
+
+
+                            positions[
+                                i * 2 + 1
+                            ] =
+
+                                0.0;
+
+
+                            starts[i] =
+
+                                -100.0;
+
+
+                            strengths[i] =
+
+                                0.0;
+
+                        }
+
+                    }
+
+
+                    gl.uniform2f(
+
+                        resolutionLocation,
+
+                        canvas.width,
+                        canvas.height
+
+                    );
+
+
+                    gl.uniform1f(
+
+                        timeLocation,
+                        currentTime
+
+                    );
+
+
+                    gl.uniform1f(
+
+                        scrollLocation,
+                        window.scrollY
+
+                    );
+
+
+                    gl.uniform2fv(
+
+                        ripplePositionsLocation,
+                        positions
+
+                    );
+
+
+                    gl.uniform1fv(
+
+                        rippleStartsLocation,
+                        starts
+
+                    );
+
+
+                    gl.uniform1fv(
+
+                        rippleStrengthsLocation,
+                        strengths
+
+                    );
+
+
+                    gl.drawArrays(
+
+                        gl.TRIANGLES,
+
+                        0,
+                        6
+
+                    );
+
+
+                    requestAnimationFrame(
+
+                        renderWater
+
+                    );
+
+                }
+
+
+                requestAnimationFrame(
+
+                    renderWater
+
+                );
+
+            }
+
+        }
 
     }
 
-</script>
-
-
-</body>
-
-</html>
+}
