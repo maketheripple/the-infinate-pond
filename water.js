@@ -1,11 +1,11 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.4.1 — BANNER REFLECTION SHADER FIX
-   ========================================================= */
+   VERSION 10.4 — BANNER MOONLIGHT REFLECTION
+========================================================= */
 
 const canvas =
     document.getElementById("waterCanvas");
+
 
 if (!canvas) {
 
@@ -43,42 +43,53 @@ if (!canvas) {
 
 
         /* =================================================
-           REFLECTION SOURCE
+           BANNER ELEMENTS
+
+           These IDs now match index.html exactly.
+        ================================================= */
+
+        const logoElement =
+            document.getElementById(
+                "pondLogo"
+            );
+
+
+        const presentedElement =
+            document.getElementById(
+                "presented"
+            );
+
+
+        const titleElement =
+            document.getElementById(
+                "pondTitle"
+            );
+
+
+        const subtitleElement =
+            document.getElementById(
+                "pondSubtitle"
+            );
+
+
+        /* =================================================
+           OFF-SCREEN BANNER REFLECTION
         ================================================= */
 
         const reflectionCanvas =
-            document.createElement("canvas");
+            document.createElement(
+                "canvas"
+            );
+
 
         reflectionCanvas.width = 1024;
         reflectionCanvas.height = 768;
 
 
         const reflectionContext =
-            reflectionCanvas.getContext("2d");
-
-
-        /*
-           IMPORTANT:
-
-           The HTML uses classes for these elements,
-           not IDs. Use querySelector so the actual
-           banner elements are found correctly.
-        */
-
-        const logoElement =
-            document.querySelector(".pond-logo");
-
-
-        const presentedElement =
-            document.querySelector(".presented");
-
-
-        const titleElement =
-            document.querySelector(".pond-title");
-
-
-        const subtitleElement =
-            document.querySelector(".pond-subtitle");
+            reflectionCanvas.getContext(
+                "2d"
+            );
 
 
         let reflectionTexture = null;
@@ -87,7 +98,7 @@ if (!canvas) {
 
 
         /* =================================================
-           TEXT DRAWING
+           DRAW TRACKED TEXT
         ================================================= */
 
         function drawTrackedText(
@@ -184,7 +195,7 @@ if (!canvas) {
 
 
         /* =================================================
-           GET CSS TEXT INFORMATION
+           DRAW ACTUAL HTML TEXT
         ================================================= */
 
         function drawTextElement(
@@ -205,6 +216,16 @@ if (!canvas) {
                 element.getBoundingClientRect();
 
 
+            if (
+                rect.width <= 0 ||
+                rect.height <= 0
+            ) {
+
+                return;
+
+            }
+
+
             const style =
                 window.getComputedStyle(
                     element
@@ -217,7 +238,7 @@ if (!canvas) {
                 );
 
 
-            if (!isFinite(fontSize)) {
+            if (!fontSize) {
 
                 return;
 
@@ -232,7 +253,7 @@ if (!canvas) {
                 style.fontFamily;
 
 
-            const letterSpacingValue =
+            const letterSpacing =
                 parseFloat(
                     style.letterSpacing
                 );
@@ -270,11 +291,11 @@ if (!canvas) {
 
 
             context.shadowColor =
-                "rgba(100,190,225,0.28)";
+                "rgba(120,210,240,0.35)";
 
 
             context.shadowBlur =
-                10;
+                12;
 
 
             const centerX =
@@ -307,10 +328,8 @@ if (!canvas) {
                 baselineY,
 
                 (
-                    isFinite(
-                        letterSpacingValue
-                    )
-                        ? letterSpacingValue
+                    isFinite(letterSpacing)
+                        ? letterSpacing
                         : 0
                 )
                 *
@@ -325,7 +344,7 @@ if (!canvas) {
 
 
         /* =================================================
-           BUILD REAL BANNER REFLECTION SOURCE
+           BUILD REFLECTION SOURCE
         ================================================= */
 
         function updateReflectionSource() {
@@ -337,17 +356,17 @@ if (!canvas) {
             }
 
 
-            const width =
+            const viewportWidth =
                 window.innerWidth;
 
 
-            const height =
+            const viewportHeight =
                 window.innerHeight;
 
 
             if (
-                width <= 0 ||
-                height <= 0
+                viewportWidth <= 0 ||
+                viewportHeight <= 0
             ) {
 
                 return;
@@ -357,12 +376,12 @@ if (!canvas) {
 
             const scaleX =
                 reflectionCanvas.width /
-                width;
+                viewportWidth;
 
 
             const scaleY =
                 reflectionCanvas.height /
-                height;
+                viewportHeight;
 
 
             reflectionContext.clearRect(
@@ -376,7 +395,7 @@ if (!canvas) {
 
 
             /* ---------------------------------------------
-               ACTUAL LOGO
+               LOGO
             --------------------------------------------- */
 
             if (
@@ -393,15 +412,15 @@ if (!canvas) {
 
 
                 reflectionContext.globalAlpha =
-                    0.96;
+                    0.98;
 
 
                 reflectionContext.shadowColor =
-                    "rgba(100,190,225,0.32)";
+                    "rgba(120,210,240,0.38)";
 
 
                 reflectionContext.shadowBlur =
-                    18;
+                    20;
 
 
                 reflectionContext.drawImage(
@@ -409,11 +428,9 @@ if (!canvas) {
                     logoElement,
 
                     rect.left * scaleX,
-
                     rect.top * scaleY,
 
                     rect.width * scaleX,
-
                     rect.height * scaleY
 
                 );
@@ -425,17 +442,14 @@ if (!canvas) {
 
 
             /* ---------------------------------------------
-               ACTUAL BANNER WORDING
+               BANNER WORDING
             --------------------------------------------- */
 
             drawTextElement(
 
                 reflectionContext,
-
                 presentedElement,
-
                 scaleX,
-
                 scaleY
 
             );
@@ -444,11 +458,8 @@ if (!canvas) {
             drawTextElement(
 
                 reflectionContext,
-
                 titleElement,
-
                 scaleX,
-
                 scaleY
 
             );
@@ -457,11 +468,8 @@ if (!canvas) {
             drawTextElement(
 
                 reflectionContext,
-
                 subtitleElement,
-
                 scaleX,
-
                 scaleY
 
             );
@@ -471,10 +479,6 @@ if (!canvas) {
                 false;
 
 
-            /*
-               Upload the canvas into the WebGL texture.
-            */
-
             if (
                 reflectionTexture
             ) {
@@ -482,17 +486,22 @@ if (!canvas) {
                 gl.bindTexture(
 
                     gl.TEXTURE_2D,
-
                     reflectionTexture
 
                 );
 
 
+                /*
+                   We intentionally do NOT flip the
+                   texture here. The shader converts
+                   its water coordinates to the correct
+                   canvas orientation.
+                */
+
                 gl.pixelStorei(
 
                     gl.UNPACK_FLIP_Y_WEBGL,
-
-                    true
+                    false
 
                 );
 
@@ -500,60 +509,11 @@ if (!canvas) {
                 gl.texImage2D(
 
                     gl.TEXTURE_2D,
-
                     0,
-
                     gl.RGBA,
-
                     gl.RGBA,
-
                     gl.UNSIGNED_BYTE,
-
                     reflectionCanvas
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-
-                    gl.TEXTURE_MIN_FILTER,
-
-                    gl.LINEAR
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-
-                    gl.TEXTURE_MAG_FILTER,
-
-                    gl.LINEAR
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-
-                    gl.TEXTURE_WRAP_S,
-
-                    gl.CLAMP_TO_EDGE
-
-                );
-
-
-                gl.texParameteri(
-
-                    gl.TEXTURE_2D,
-
-                    gl.TEXTURE_WRAP_T,
-
-                    gl.CLAMP_TO_EDGE
 
                 );
 
@@ -602,17 +562,13 @@ if (!canvas) {
             uniform float scroll;
 
 
-            /*
-               IMPORTANT:
-
-               This name intentionally differs from
-               the bannerReflection() function below.
-
-               Previous version used the same name for
-               both and caused a GLSL redefinition error.
+            /* IMPORTANT:
+               This is the TEXTURE name.
+               It is intentionally NOT the same
+               name as the reflection function.
             */
 
-            uniform sampler2D bannerReflectionTexture;
+            uniform sampler2D bannerTexture;
 
 
             uniform vec2 ripplePositions[MAX_RIPPLES];
@@ -735,7 +691,6 @@ if (!canvas) {
                 float value =
                     0.0;
 
-
                 float amplitude =
                     0.5;
 
@@ -747,7 +702,8 @@ if (!canvas) {
                 ) {
 
                     value +=
-                        noise(p) *
+                        noise(p)
+                        *
                         amplitude;
 
 
@@ -1296,24 +1252,25 @@ if (!canvas) {
 
 
             /* =============================================
-               REAL BANNER REFLECTION
+               BANNER MOONLIGHT REFLECTION
 
                IMPORTANT:
-
-               This is the FUNCTION.
-
-               The texture itself is now called
-               bannerReflectionTexture so there is
-               no naming collision.
+               This function has a different name from
+               the bannerTexture uniform.
             ============================================== */
 
-            vec3 bannerReflection(
+            vec3 getBannerReflection(
 
                 vec2 uv,
 
                 vec3 normal
 
             ) {
+
+                /*
+                   The water begins below the 65vh
+                   banner horizon.
+                */
 
                 float screenY =
                     1.0 -
@@ -1324,7 +1281,7 @@ if (!canvas) {
                     0.65;
 
 
-                float waterDistance =
+                float depth =
 
                     (
                         screenY -
@@ -1335,8 +1292,8 @@ if (!canvas) {
 
 
                 if (
-                    waterDistance <= 0.0 ||
-                    waterDistance > 1.0
+                    depth <= 0.0 ||
+                    depth > 1.0
                 ) {
 
                     return vec3(0.0);
@@ -1344,26 +1301,59 @@ if (!canvas) {
                 }
 
 
-                float perspectiveDepth =
+                /*
+                   Smooth perspective depth.
+                */
+
+                float perspective =
 
                     smoothstep(
                         0.0,
                         1.0,
-                        waterDistance
+                        depth
                     );
 
 
-                float sourceY =
+                /*
+                   Reflection geometry.
 
-                    pow(
-                        perspectiveDepth,
-                        0.82
+                   Near the horizon we see the lower
+                   portion of the banner.
+
+                   As the reflection travels toward
+                   the viewer, it travels upward through
+                   the logo and wording.
+                */
+
+                float sourceCanvasY =
+
+                    mix(
+                        0.63,
+                        0.025,
+                        perspective
                     );
 
 
-                /* -----------------------------------------
-                   WATER DISTORTION
-                ----------------------------------------- */
+                /*
+                   The reflected image becomes wider
+                   toward the viewer.
+                */
+
+                float widthScale =
+
+                    mix(
+                        0.32,
+                        1.05,
+                        pow(
+                            perspective,
+                            0.72
+                        )
+                    );
+
+
+                /*
+                   Organic horizontal distortion.
+                */
 
                 float distortionX =
 
@@ -1372,7 +1362,7 @@ if (!canvas) {
 
                             vec2(
                                 uv.x * 7.0,
-                                waterDistance * 8.0
+                                depth * 10.0
                                 +
                                 time * 0.018
                             )
@@ -1382,8 +1372,16 @@ if (!canvas) {
                         0.5
                     )
                     *
-                    0.035;
+                    mix(
+                        0.012,
+                        0.055,
+                        perspective
+                    );
 
+
+                /*
+                   Vertical distortion.
+                */
 
                 float distortionY =
 
@@ -1391,12 +1389,10 @@ if (!canvas) {
                         fbm(
 
                             vec2(
-                                uv.x * 5.0
-                                +
-                                3.7,
-                                waterDistance * 12.0
+                                uv.x * 5.0 + 4.2,
+                                depth * 14.0
                                 -
-                                time * 0.012
+                                time * 0.014
                             )
 
                         )
@@ -1404,23 +1400,7 @@ if (!canvas) {
                         0.5
                     )
                     *
-                    0.018;
-
-
-                /* -----------------------------------------
-                   PERSPECTIVE WIDTH
-                ----------------------------------------- */
-
-                float widthScale =
-
-                    mix(
-                        0.34,
-                        1.0,
-                        pow(
-                            perspectiveDepth,
-                            0.72
-                        )
-                    );
+                    0.028;
 
 
                 float sourceX =
@@ -1441,52 +1421,19 @@ if (!canvas) {
                     distortionX;
 
 
-                float finalSourceY =
-
-                    sourceY +
-                    distortionY;
-
-
-                sourceX =
-
-                    clamp(
-                        sourceX,
-                        0.001,
-                        0.999
-                    );
-
-
-                finalSourceY =
-
-                    clamp(
-                        finalSourceY,
-                        0.001,
-                        0.999
-                    );
-
-
-                /* -----------------------------------------
-                   SURFACE NORMAL DISTORTION
-                ----------------------------------------- */
-
-                float normalDistortionX =
-
-                    normal.x *
-                    0.055;
-
-
-                float normalDistortionY =
-
-                    normal.y *
-                    0.040;
-
+                /*
+                   Surface normal bends the reflected
+                   light.
+                */
 
                 sourceX +=
-                    normalDistortionX;
+                    normal.x *
+                    0.065;
 
 
-                finalSourceY +=
-                    normalDistortionY;
+                sourceCanvasY +=
+                    normal.y *
+                    0.045;
 
 
                 sourceX =
@@ -1498,38 +1445,58 @@ if (!canvas) {
                     );
 
 
-                finalSourceY =
+                sourceCanvasY =
 
                     clamp(
-                        finalSourceY,
+                        sourceCanvasY,
                         0.001,
                         0.999
-                    );
-
-
-                vec2 reflectionUV =
-
-                    vec2(
-                        sourceX,
-                        finalSourceY
                     );
 
 
                 /*
-                   THIS IS THE CORRECTED TEXTURE NAME.
+                   Convert top-origin canvas coordinates
+                   into WebGL texture coordinates.
                 */
+
+                vec2 reflectionUV =
+
+                    vec2(
+
+                        sourceX,
+
+                        1.0 -
+                        sourceCanvasY
+
+                    );
+
 
                 vec4 reflected =
 
                     texture2D(
-                        bannerReflectionTexture,
+                        bannerTexture,
                         reflectionUV
                     );
 
 
-                /* -----------------------------------------
-                   WATER FRAGMENTATION
-                ----------------------------------------- */
+                /*
+                   If there is no banner pixel here,
+                   there is no reflected light.
+                */
+
+                if (
+                    reflected.a <= 0.001
+                ) {
+
+                    return vec3(0.0);
+
+                }
+
+
+                /*
+                   Break the image into horizontal
+                   moonlight fragments.
+                */
 
                 float fragmentNoise =
 
@@ -1537,71 +1504,69 @@ if (!canvas) {
 
                         vec2(
 
-                            uv.x * 9.0,
+                            uv.x * 11.0,
 
-                            waterDistance * 20.0
-
+                            depth * 22.0
                             +
-
-                            time *
-                            0.012
+                            time * 0.012
 
                         )
 
                     );
 
 
-                float horizontalWave =
+                float wave =
 
                     sin(
 
-                        waterDistance *
-                        170.0
+                        depth *
+                        185.0
 
                         +
 
                         time *
-                        0.055
+                        0.06
 
                         +
 
                         uv.x *
-                        2.0
+                        3.0
 
                     );
 
 
-                float brokenPattern =
+                float horizontalBreakup =
 
                     smoothstep(
-                        0.25,
-                        0.72,
+                        0.20,
+                        0.76,
                         fragmentNoise
                     );
 
 
-                float wavePattern =
+                float waveBreakup =
 
                     smoothstep(
-                        0.18,
-                        0.76,
-                        horizontalWave
+                        -0.20,
+                        0.72,
+                        wave
                     );
 
 
                 float fragmentation =
 
                     mix(
-                        brokenPattern,
-                        brokenPattern *
-                        wavePattern,
-                        0.42
+                        horizontalBreakup,
+                        horizontalBreakup *
+                        waveBreakup,
+                        0.50
                     );
 
 
-                /* -----------------------------------------
-                   REFLECTION LIGHTING
-                ----------------------------------------- */
+                /*
+                   Reflection is strongest on favorable
+                   surface angles.
+                */
 
                 float facing =
 
@@ -1632,78 +1597,74 @@ if (!canvas) {
 
                     pow(
                         facing,
-                        8.0
-                    );
-
-
-                float softSurface =
-
-                    pow(
-                        max(
-                            normal.z,
-                            0.0
-                        ),
-                        4.0
+                        7.0
                     );
 
 
                 float surfaceLight =
 
                     shimmer *
-                    0.74
+                    0.78
 
                     +
 
-                    softSurface *
-                    0.26;
+                    pow(
+                        max(
+                            normal.z,
+                            0.0
+                        ),
+                        5.0
+                    )
+                    *
+                    0.22;
 
 
-                /* -----------------------------------------
-                   DISTANCE FADE
-                ----------------------------------------- */
+                /*
+                   Reflection is brightest close to
+                   the horizon and becomes more broken
+                   farther away.
+                */
 
                 float distanceFade =
 
                     mix(
-                        0.92,
-                        0.42,
-                        perspectiveDepth
+                        1.0,
+                        0.34,
+                        perspective
                     );
 
 
-                float foregroundFragmentation =
+                float foregroundBreakup =
 
                     mix(
                         1.0,
                         fragmentation,
                         smoothstep(
-                            0.18,
-                            0.92,
-                            perspectiveDepth
+                            0.10,
+                            0.88,
+                            perspective
                         )
                     );
 
 
-                /* -----------------------------------------
-                   NATURAL EDGES
-                ----------------------------------------- */
+                /*
+                   Fade the extreme edges.
+                */
 
                 float verticalFade =
 
                     smoothstep(
                         0.0,
-                        0.07,
-                        perspectiveDepth
+                        0.045,
+                        perspective
                     )
-
                     *
-
                     (
                         1.0 -
                         smoothstep(
-                            0.88,
+                            0.92,
                             1.0,
-                            perspectiveDepth
+                            perspective
                         )
                     );
 
@@ -1712,23 +1673,21 @@ if (!canvas) {
 
                     smoothstep(
                         0.0,
-                        0.12,
+                        0.08,
                         sourceX
                     )
-
                     *
-
                     (
                         1.0 -
                         smoothstep(
-                            0.88,
+                            0.92,
                             1.0,
                             sourceX
                         )
                     );
 
 
-                float reflectionAlpha =
+                float alpha =
 
                     reflected.a
 
@@ -1738,7 +1697,7 @@ if (!canvas) {
 
                     *
 
-                    foregroundFragmentation
+                    foregroundBreakup
 
                     *
 
@@ -1754,30 +1713,35 @@ if (!canvas) {
 
 
                 /*
-                   Convert the banner into cool
-                   moonlight.
+                   Convert the actual banner colors
+                   into cool moonlit water.
                 */
 
-                vec3 reflectionColor =
+                vec3 moonlightColor =
 
                     reflected.rgb
 
                     *
 
                     vec3(
-                        0.72,
+                        0.70,
                         0.88,
                         1.0
                     );
 
 
+                /*
+                   Slightly increase luminosity while
+                   keeping it subordinate to the banner.
+                */
+
                 return
 
-                    reflectionColor
+                    moonlightColor
                     *
-                    reflectionAlpha
+                    alpha
                     *
-                    1.75;
+                    1.85;
 
             }
 
@@ -1807,6 +1771,11 @@ if (!canvas) {
                     resolution.y;
 
 
+                /*
+                   Keep the subtle scroll integration
+                   from Version 10.3.
+                */
+
                 p.y +=
 
                     scroll *
@@ -1818,7 +1787,7 @@ if (!canvas) {
 
 
                 /* -----------------------------------------
-                   WATER
+                   WATER HEIGHT
                 ----------------------------------------- */
 
                 float surface =
@@ -1956,7 +1925,7 @@ if (!canvas) {
 
 
                 /* -----------------------------------------
-                   NATURAL SURFACE SHEEN
+                   NATURAL SHEEN
                 ----------------------------------------- */
 
                 float surfaceSheen =
@@ -1979,12 +1948,12 @@ if (!canvas) {
 
 
                 /* -----------------------------------------
-                   REAL BANNER REFLECTION
+                   BANNER MOONLIGHT
                 ----------------------------------------- */
 
                 vec3 reflection =
 
-                    bannerReflection(
+                    getBannerReflection(
                         uv,
                         normal
                     );
@@ -1995,7 +1964,7 @@ if (!canvas) {
 
 
                 /* -----------------------------------------
-                   AMBIENT MOONLIGHT
+                   SUBTLE AMBIENT MOONLIGHT
                 ----------------------------------------- */
 
                 float upperLight =
@@ -2047,7 +2016,7 @@ if (!canvas) {
 
 
                 /* -----------------------------------------
-                   CINEMATIC VIGNETTE
+                   VIGNETTE
                 ----------------------------------------- */
 
                 float vignette =
@@ -2145,6 +2114,11 @@ if (!canvas) {
                         shader
                     )
 
+                );
+
+
+                gl.deleteShader(
+                    shader
                 );
 
 
@@ -2321,14 +2295,10 @@ if (!canvas) {
                     );
 
 
-                /*
-                   CORRECTED UNIFORM NAME
-                */
-
-                const bannerReflectionLocation =
+                const bannerTextureLocation =
                     gl.getUniformLocation(
                         program,
-                        "bannerReflectionTexture"
+                        "bannerTexture"
                     );
 
 
@@ -2410,10 +2380,6 @@ if (!canvas) {
                 );
 
 
-                /*
-                   Temporary transparent texture.
-                */
-
                 gl.texImage2D(
 
                     gl.TEXTURE_2D,
@@ -2436,7 +2402,7 @@ if (!canvas) {
 
                 gl.uniform1i(
 
-                    bannerReflectionLocation,
+                    bannerTextureLocation,
                     0
 
                 );
@@ -2558,11 +2524,6 @@ if (!canvas) {
 
                     function(event) {
 
-                        console.log(
-                            "POINTER DETECTED"
-                        );
-
-
                         if (
 
                             event.button !== 0 &&
@@ -2660,16 +2621,29 @@ if (!canvas) {
 
 
                 /* =================================================
-                   LOGO LOAD
+                   BANNER CHANGE DETECTION
                 ================================================= */
+
+                window.addEventListener(
+
+                    "resize",
+
+                    function() {
+
+                        reflectionDirty =
+                            true;
+
+                    }
+
+                );
+
 
                 if (
                     logoElement
                 ) {
 
                     if (
-                        logoElement.complete &&
-                        logoElement.naturalWidth > 0
+                        logoElement.complete
                     ) {
 
                         reflectionDirty =
@@ -2695,47 +2669,45 @@ if (!canvas) {
                 }
 
 
-                /* =================================================
-                   INITIAL BANNER REFLECTION RETRY
-                ================================================= */
-
                 /*
-                   The first few frames are intentionally
-                   checked so the reflection source is built
-                   after the page layout and fonts settle.
+                   A small observer makes sure the reflection
+                   is rebuilt if the banner layout changes.
                 */
 
-                let reflectionAttempts = 0;
+                if (
+                    window.ResizeObserver
+                ) {
 
+                    const bannerObserver =
+                        new ResizeObserver(
 
-                const reflectionRetry =
+                            function() {
 
-                    setInterval(
-
-                        function() {
-
-                            reflectionDirty =
-                                true;
-
-
-                            reflectionAttempts++;
-
-
-                            if (
-                                reflectionAttempts >= 10
-                            ) {
-
-                                clearInterval(
-                                    reflectionRetry
-                                );
+                                reflectionDirty =
+                                    true;
 
                             }
 
-                        },
+                        );
 
-                        250
 
-                    );
+                    if (
+                        document.querySelector(
+                            ".pond-header"
+                        )
+                    ) {
+
+                        bannerObserver.observe(
+
+                            document.querySelector(
+                                ".pond-header"
+                            )
+
+                        );
+
+                    }
+
+                }
 
 
                 /* =================================================
@@ -2955,4 +2927,3 @@ if (!canvas) {
     }
 
 }
-```
