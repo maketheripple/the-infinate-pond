@@ -52,6 +52,8 @@ body {
 
 /* =====================================================
    WATER CANVAS
+
+   The water remains behind the stationary banner.
 ===================================================== */
 
 #waterCanvas {
@@ -74,6 +76,8 @@ body {
 
 /* =====================================================
    PAGE CONTENT
+
+   Provides scrolling space beneath the stationary banner.
 ===================================================== */
 
 .pond-page {
@@ -83,6 +87,33 @@ body {
     z-index: 2;
 
     min-height: 160vh;
+
+    pointer-events: none;
+
+}
+
+
+/* =====================================================
+   STATIONARY BANNER
+
+   EVERYTHING INSIDE THIS AREA REMAINS FIXED
+   WHILE THE PAGE SCROLLS.
+
+   The banner occupies the upper portion of the screen.
+===================================================== */
+
+.stationary-banner {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    height: 65vh;
+
+    z-index: 5;
 
     pointer-events: none;
 
@@ -107,15 +138,35 @@ body {
 
         radial-gradient(
             circle at 50% 20%,
-            rgba(170, 205, 225, 0.08),
+            rgba(
+                170,
+                205,
+                225,
+                0.08
+            ),
             transparent 28%
         ),
 
         linear-gradient(
             to bottom,
-            rgba(1, 7, 14, 0.96),
-            rgba(2, 10, 18, 0.72),
-            rgba(2, 12, 20, 0)
+            rgba(
+                1,
+                7,
+                14,
+                0.96
+            ),
+            rgba(
+                2,
+                10,
+                18,
+                0.72
+            ),
+            rgba(
+                2,
+                12,
+                20,
+                0
+            )
         );
 
     pointer-events: none;
@@ -295,6 +346,9 @@ body {
 
 /* =====================================================
    HORIZON LINE
+
+   This is the visual barrier between the stationary
+   banner and the pond.
 ===================================================== */
 
 .horizon {
@@ -309,7 +363,7 @@ body {
 
     height: 2px;
 
-    z-index: 6;
+    z-index: 9;
 
     pointer-events: none;
 
@@ -426,7 +480,10 @@ body {
 
 
 /* =====================================================
-   MAIN HEADER
+   MAIN HEADER / LOGO GROUP
+
+   The complete branding group is locked inside the
+   stationary banner.
 ===================================================== */
 
 .pond-header {
@@ -463,22 +520,24 @@ body {
     pointer-events:
         none;
 
-    z-index: 7;
+    z-index: 8;
 
 }
 
 
 /* =====================================================
    MAKE THE RIPPLE LOGO
+
+   Locked in the centre of the stationary banner.
 ===================================================== */
 
 .pond-logo {
 
     width:
         clamp(
-            105px,
-            15vw,
-            170px
+            210px,
+            30vw,
+            340px
         );
 
     height:
@@ -496,24 +555,60 @@ body {
     filter:
 
         drop-shadow(
-            0 0 8px
+            0 0 12px
             rgba(
                 120,
                 205,
                 235,
-                0.24
+                0.34
             )
         )
 
         drop-shadow(
-            0 0 24px
+            0 0 32px
             rgba(
                 100,
                 190,
                 225,
-                0.18
+                0.30
+            )
+        )
+
+        drop-shadow(
+            0 0 65px
+            rgba(
+                100,
+                190,
+                225,
+                0.20
             )
         );
+
+}
+
+
+/* =====================================================
+   WORDING GROUP
+
+   Keeps all wording together so it moves as one unit.
+===================================================== */
+
+.banner-wording {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-start;
+
+    margin-top:
+        0.5vh;
 
 }
 
@@ -615,8 +710,6 @@ body {
 
 /* =====================================================
    SUBTITLE
-
-   Kept ABOVE the horizon.
 ===================================================== */
 
 .pond-subtitle {
@@ -659,91 +752,21 @@ body {
 
 
 /* =====================================================
-   INTERACTION PROMPT
-===================================================== */
-
-.interaction-cue {
-
-    position: fixed;
-
-    left: 50%;
-
-    bottom:
-        42px;
-
-    transform:
-        translateX(-50%);
-
-    z-index:
-        10;
-
-    padding:
-        9px
-        18px;
-
-    border-radius:
-        999px;
-
-    background:
-        rgba(
-            2,
-            12,
-            20,
-            0.48
-        );
-
-    border:
-        1px solid
-        rgba(
-            180,
-            225,
-            245,
-            0.12
-        );
-
-    color:
-        rgba(
-            220,
-            240,
-            250,
-            0.58
-        );
-
-    font-size:
-        0.75rem;
-
-    letter-spacing:
-        0.08em;
-
-    backdrop-filter:
-        blur(8px);
-
-    -webkit-backdrop-filter:
-        blur(8px);
-
-    pointer-events:
-        none;
-
-}
-
-
-/* =====================================================
    MAKE A RIPPLE BUTTON
 
-   Fixed independently from the centered logo.
-   Positioned in the far-right corner and vertically
-   aligned with the logo.
+   Fixed to the far-right of the stationary banner
+   and vertically aligned with the logo.
 ===================================================== */
 
 .make-ripple-button {
 
     position: fixed;
 
-    right:
-        24px;
-
     top:
         2.5vh;
+
+    right:
+        24px;
 
     z-index:
         20;
@@ -1000,6 +1023,77 @@ body {
 
 
 /* =====================================================
+   INTERACTION PROMPT
+
+   Remains below the stationary banner.
+===================================================== */
+
+.interaction-cue {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom:
+        42px;
+
+    transform:
+        translateX(-50%);
+
+    z-index:
+        10;
+
+    padding:
+        9px
+        18px;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(
+            2,
+            12,
+            20,
+            0.48
+        );
+
+    border:
+        1px solid
+        rgba(
+            180,
+            225,
+            245,
+            0.12
+        );
+
+    color:
+        rgba(
+            220,
+            240,
+            250,
+            0.58
+        );
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.08em;
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    pointer-events:
+        none;
+
+}
+
+
+/* =====================================================
    RESPONSIVE
 ===================================================== */
 
@@ -1010,7 +1104,7 @@ body {
     .pond-logo {
 
         width:
-            105px;
+            210px;
 
         margin-top:
             3vh;
@@ -1058,11 +1152,11 @@ body {
 
     .make-ripple-button {
 
-        right:
-            16px;
-
         top:
             3vh;
+
+        right:
+            12px;
 
         padding:
             11px
@@ -1084,7 +1178,9 @@ body {
 
 
 <!-- =====================================================
-     WATER
+     WATER ENGINE
+
+     Remains behind the stationary banner.
 ====================================================== -->
 
 <canvas
@@ -1093,56 +1189,48 @@ body {
 
 
 <!-- =====================================================
-     NIGHT SKY
+     STATIONARY BANNER
+
+     This entire visual layer stays fixed while scrolling.
 ====================================================== -->
 
 <div
-    class="night-sky"
-></div>
-
-
-<!-- =====================================================
-     STARS
-====================================================== -->
-
-<div
-    class="stars"
-    aria-hidden="true"
->
-
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-
-</div>
-
-
-<!-- =====================================================
-     HORIZON
-====================================================== -->
-
-<div
-    class="horizon"
-    aria-hidden="true"
-></div>
-
-
-<!-- =====================================================
-     PAGE
-====================================================== -->
-
-<main
-    class="pond-page"
+    class="stationary-banner"
 >
 
 
     <!-- =================================================
-         HEADER
+         NIGHT SKY
+    ================================================== -->
+
+    <div
+        class="night-sky"
+    ></div>
+
+
+    <!-- =================================================
+         STARS
+    ================================================== -->
+
+    <div
+        class="stars"
+        aria-hidden="true"
+    >
+
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+
+    </div>
+
+
+    <!-- =================================================
+         MAIN HEADER
     ================================================== -->
 
     <header
@@ -1152,9 +1240,6 @@ body {
 
         <!-- =============================================
              MAKE THE RIPPLE LOGO
-             
-             Remains centered independently of the
-             Make a Ripple button.
         ============================================== -->
 
         <img
@@ -1165,41 +1250,103 @@ body {
 
 
         <!-- =============================================
-             PRESENTS
+             WORDING GROUP
         ============================================== -->
 
         <div
-            class="presented"
+            class="banner-wording"
         >
-            Presents
-        </div>
 
 
-        <!-- =============================================
-             TITLE
-        ============================================== -->
+            <!-- =========================================
+                 PRESENTS
+            ========================================== -->
 
-        <h1
-            class="pond-title"
-        >
-            The Infinite Pond
-        </h1>
+            <div
+                class="presented"
+            >
+                Presents
+            </div>
 
 
-        <!-- =============================================
-             SUBTITLE
-        ============================================== -->
+            <!-- =========================================
+                 TITLE
+            ========================================== -->
 
-        <div
-            class="pond-subtitle"
-        >
-            Every Ripple Begins Somewhere
+            <h1
+                class="pond-title"
+            >
+                The Infinite Pond
+            </h1>
+
+
+            <!-- =========================================
+                 SUBTITLE
+            ========================================== -->
+
+            <div
+                class="pond-subtitle"
+            >
+                Every Ripple Begins Somewhere
+            </div>
+
+
         </div>
 
 
     </header>
 
 
+    <!-- =================================================
+         MAKE A RIPPLE BUTTON
+
+         Positioned at the far-right of the banner,
+         level with the logo.
+    ================================================== -->
+
+    <button
+        id="makeRippleButton"
+        class="make-ripple-button"
+        type="button"
+        aria-label="Make a Ripple"
+    >
+
+        <span
+            class="ripple-icon"
+            aria-hidden="true"
+        ></span>
+
+        <span>
+            Make a Ripple
+        </span>
+
+    </button>
+
+
+</div>
+
+
+<!-- =====================================================
+     HORIZON BARRIER
+
+     This remains fixed while the page scrolls.
+====================================================== -->
+
+<div
+    class="horizon"
+    aria-hidden="true"
+></div>
+
+
+<!-- =====================================================
+     PAGE CONTENT
+
+     The pond continues beneath the stationary banner.
+====================================================== -->
+
+<main
+    class="pond-page"
+>
 </main>
 
 
@@ -1212,31 +1359,6 @@ body {
 >
     Click anywhere on the pond to make a ripple
 </div>
-
-
-<!-- =====================================================
-     MAKE A RIPPLE BUTTON
-
-     Positioned independently from the centered logo.
-====================================================== -->
-
-<button
-    id="makeRippleButton"
-    class="make-ripple-button"
-    type="button"
-    aria-label="Make a Ripple"
->
-
-    <span
-        class="ripple-icon"
-        aria-hidden="true"
-    ></span>
-
-    <span>
-        Make a Ripple
-    </span>
-
-</button>
 
 
 <!-- =====================================================
