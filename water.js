@@ -1,7 +1,7 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.7.2 — VIEWPORT-ANCHORED WATER & REFLECTION
+   VERSION 10.7.3 — VIEWPORT-ANCHORED REFLECTION
+   BANNER CLICK PROTECTION
 ========================================================= */
 
 const canvas =
@@ -1121,28 +1121,10 @@ if (!canvas) {
                 vec3 normal
             ) {
 
-                /*
-                   Convert WebGL UV coordinates into
-                   normal top-to-bottom screen coordinates.
-
-                   screenY = 0.0  -> top
-                   screenY = 1.0  -> bottom
-                */
-
                 float screenY =
                     1.0 -
                     uv.y;
 
-
-                /*
-                   The reflection region is explicitly
-                   tied to the stationary banner.
-
-                   It does NOT use scroll.
-
-                   Therefore scrolling the document
-                   underneath cannot move the reflection.
-                */
 
                 float depth =
                     (
@@ -1175,18 +1157,6 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Mirrored source.
-
-                   The reflection starts with the lower
-                   portion of the banner and progressively
-                   samples upward as it moves toward the
-                   viewer.
-
-                   Horizontal orientation remains
-                   unchanged.
-                */
-
                 float sourceCanvasY =
                     mix(
                         0.63,
@@ -1194,13 +1164,6 @@ if (!canvas) {
                         perspective
                     );
 
-
-                /*
-                   Perspective expansion.
-
-                   Narrow near the banner.
-                   Wider toward the foreground.
-                */
 
                 float widthScale =
                     mix(
@@ -1212,10 +1175,6 @@ if (!canvas) {
                         )
                     );
 
-
-                /*
-                   Organic horizontal distortion.
-                */
 
                 float distortionX =
                     (
@@ -1237,10 +1196,6 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Vertical distortion.
-                */
-
                 float distortionY =
                     (
                         fbm(
@@ -1256,10 +1211,6 @@ if (!canvas) {
                     *
                     0.028;
 
-
-                /*
-                   Preserve horizontal orientation.
-                */
 
                 float sourceX =
                     0.5 +
@@ -1324,10 +1275,6 @@ if (!canvas) {
                 }
 
 
-                /*
-                   Horizontal fragmentation.
-                */
-
                 float fragmentNoise =
                     fbm(
                         vec2(
@@ -1371,10 +1318,6 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Reflection responds to water angle.
-                */
-
                 float facing =
                     max(
                         dot(
@@ -1412,10 +1355,6 @@ if (!canvas) {
                     0.22;
 
 
-                /*
-                   Fade reflection with distance.
-                */
-
                 float distanceFade =
                     mix(
                         1.0,
@@ -1436,10 +1375,6 @@ if (!canvas) {
                     );
 
 
-                /*
-                   Vertical edge fade.
-                */
-
                 float verticalFade =
                     smoothstep(
                         0.0,
@@ -1456,10 +1391,6 @@ if (!canvas) {
                         )
                     );
 
-
-                /*
-                   Horizontal edge fade.
-                */
 
                 float horizontalFade =
                     smoothstep(
@@ -1486,10 +1417,6 @@ if (!canvas) {
                     verticalFade *
                     horizontalFade;
 
-
-                /*
-                   Cool moonlit color.
-                */
 
                 vec3 moonlightColor =
                     reflected.rgb *
@@ -1528,19 +1455,6 @@ if (!canvas) {
                     resolution.x /
                     resolution.y;
 
-
-                /*
-                   Keep the water surface anchored to the
-                   viewport.
-
-                   IMPORTANT:
-                   The water coordinate system does NOT
-                   move with document scrolling.
-
-                   This keeps the moonlight reflection,
-                   its distortion, and its perspective
-                   locked beneath the stationary banner.
-                */
 
                 p.y *=
                     1.55;
@@ -2192,6 +2106,7 @@ if (!canvas) {
 
                 /* =================================================
                    POINTER RIPPLE
+                   BANNER CLICKS ARE IGNORED
                 ================================================= */
 
                 window.addEventListener(
@@ -2201,6 +2116,18 @@ if (!canvas) {
                         if (
                             event.button !== 0 &&
                             event.pointerType !== "touch"
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        if (
+                            stationaryBanner &&
+                            stationaryBanner.contains(
+                                event.target
+                            )
                         ) {
 
                             return;
@@ -2391,7 +2318,8 @@ if (!canvas) {
                        The reflection position is refreshed
                        independently from document scrolling.
 
-                       This is the critical anchoring change.
+                       This keeps the reflection tied to
+                       the stationary banner.
                     */
 
                     if (
@@ -2505,11 +2433,11 @@ if (!canvas) {
 
 
                     /*
-                       Document scrolling no longer affects
+                       Document scrolling does not affect
                        the water coordinate system.
 
                        The uniform remains available for
-                       compatibility with the existing shader.
+                       compatibility.
                     */
 
                     gl.uniform1f(
@@ -2573,4 +2501,3 @@ if (!canvas) {
     }
 
 }
-```
