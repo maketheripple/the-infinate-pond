@@ -942,17 +942,34 @@ if (!canvas) {
                     moonClouds(uv);
 
 
-                return
+                float horizonFade =
 
-                    glow *
+    smoothstep(
+        0.54,
+        0.61,
+        uv.y
+    );
 
-                    mix(
 
-                        0.82,
-                        0.38,
-                        clouds
+return
 
-                    );
+    glow *
+
+    mix(
+
+        0.82,
+        0.38,
+        clouds
+
+    )
+
+    *
+
+    mix(
+        0.18,
+        1.0,
+        horizonFade
+    );
 
             }
 
@@ -976,13 +993,13 @@ if (!canvas) {
 
                 float waterMask =
 
-                    smoothstep(
+                   smoothstep(
 
-                        0.48,
-                        0.40,
-                        uv.y
+                       0.60,
+                       0.53,
+                       uv.y
 
-                    );
+          );
 
 
                 float bottomFade =
@@ -1701,13 +1718,21 @@ if (!canvas) {
 
                 float upperLight =
 
-                    smoothstep(
+    smoothstep(
 
-                        0.10,
-                        0.95,
-                        uv.y
+        0.10,
+        0.95,
+        uv.y
 
-                    );
+    )
+
+    *
+
+    smoothstep(
+        0.54,
+        0.64,
+        uv.y
+    );
 
 
                 float centerLight =
