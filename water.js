@@ -1,7 +1,7 @@
 ```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.7.3 — WATER INTERACTION & BANNER PROTECTION
+   VERSION 10.7.4 — WATER-ONLY RIPPLE & BANNER PROTECTION
 ========================================================= */
 
 const canvas =
@@ -332,18 +332,6 @@ if (!canvas) {
 
             }
 
-
-            /*
-               The banner is fixed.
-
-               We deliberately measure its fixed
-               viewport position instead of using
-               document scroll position.
-
-               This means the reflection remains
-               locked to the banner while the page
-               underneath scrolls.
-            */
 
             let bannerBottom =
                 viewportHeight * 0.65;
@@ -2074,12 +2062,55 @@ if (!canvas) {
 
                 /* =================================================
                    POINTER RIPPLE
-                   BANNER CLICKS ARE IGNORED
+                   VERSION 10.7.4
+                   WATER-ONLY RIPPLE CLICK
                 ================================================= */
 
-                window.addEventListener(
+                canvas.addEventListener(
                     "pointerdown",
                     function(event) {
+
+                        /*
+                           -------------------------------------------------
+                           WATER-ONLY CLICK PROTECTION
+                           -------------------------------------------------
+
+                           The canvas covers the viewport, so we explicitly
+                           prevent ripple creation when the pointer is
+                           anywhere inside the stationary banner.
+                        */
+
+                        const currentBanner =
+                            document.querySelector(
+                                ".stationary-banner"
+                            );
+
+
+                        if (currentBanner) {
+
+                            const bannerRect =
+                                currentBanner.getBoundingClientRect();
+
+
+                            if (
+                                event.clientX >= bannerRect.left &&
+                                event.clientX <= bannerRect.right &&
+                                event.clientY >= bannerRect.top &&
+                                event.clientY <= bannerRect.bottom
+                            ) {
+
+                                return;
+
+                            }
+
+                        }
+
+
+                        /*
+                           -------------------------------------------------
+                           NORMAL MOUSE / TOUCH FILTER
+                           -------------------------------------------------
+                        */
 
                         if (
                             event.button !== 0 &&
@@ -2092,30 +2123,10 @@ if (!canvas) {
 
 
                         /*
-                           The water interaction remains attached
-                           to the window so the existing water/ripple
-                           coordinate system continues to work.
-
-                           However, anything inside the stationary
-                           top banner is explicitly excluded.
-
-                           This means clicking the logo, title,
-                           subtitle, or any other banner content
-                           will NOT create a ripple.
+                           -------------------------------------------------
+                           CREATE WATER RIPPLE
+                           -------------------------------------------------
                         */
-
-                        if (
-                            stationaryBanner &&
-                            event.target &&
-                            stationaryBanner.contains(
-                                event.target
-                            )
-                        ) {
-
-                            return;
-
-                        }
-
 
                         createRipple(
                             event.clientX,
@@ -2123,7 +2134,7 @@ if (!canvas) {
                         );
 
                     },
-                    true
+                    false
                 );
 
 
@@ -2405,14 +2416,6 @@ if (!canvas) {
                         currentTime
                     );
 
-
-                    /*
-                       Document scrolling no longer affects
-                       the water coordinate system.
-
-                       The uniform remains available for
-                       compatibility with the existing shader.
-                    */
 
                     gl.uniform1f(
                         scrollLocation,
