@@ -79,6 +79,16 @@ const subtitleElement =
         ".pond-subtitle"
     );
 
+console.log(
+    "REFLECTION ELEMENTS:",
+    {
+        logo: !!logoElement,
+        presented: !!presentedElement,
+        title: !!titleElement,
+        subtitle: !!subtitleElement
+    }
+);
+
 
         let reflectionTexture = null;
 
@@ -2647,13 +2657,14 @@ const subtitleElement =
                     );
 
 
-                    if (
-                        reflectionDirty
-                    ) {
+                   if (
+    reflectionDirty &&
+    reflectionTexture
+) {
 
-                        updateReflectionSource();
+    updateReflectionSource();
 
-                    }
+}
 
 
                     while (
