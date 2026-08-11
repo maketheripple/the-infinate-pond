@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,8 +52,6 @@ body {
 
 /* =====================================================
    WATER CANVAS
-
-   The water remains behind the stationary banner.
 ===================================================== */
 
 #waterCanvas {
@@ -76,39 +73,7 @@ body {
 
 
 /* =====================================================
-   REFLECTION SOURCE CANVAS
-
-   Hidden source used by the water engine.
-
-   This canvas is NOT visible on the page.
-
-   It contains a high-resolution representation of the
-   actual Make the Ripple logo and banner wording so
-   water.js can turn the branding into a realistic
-   water reflection.
-===================================================== */
-
-#reflectionSourceCanvas {
-
-    position: fixed;
-
-    left: -10000px;
-    top: -10000px;
-
-    width: 1024px;
-    height: 768px;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-}
-
-
-/* =====================================================
    PAGE CONTENT
-
-   Provides scrolling space beneath the stationary banner.
 ===================================================== */
 
 .pond-page {
@@ -126,11 +91,6 @@ body {
 
 /* =====================================================
    STATIONARY BANNER
-
-   EVERYTHING INSIDE THIS AREA REMAINS FIXED
-   WHILE THE PAGE SCROLLS.
-
-   The banner occupies the upper portion of the screen.
 ===================================================== */
 
 .stationary-banner {
@@ -376,10 +336,7 @@ body {
 
 
 /* =====================================================
-   HORIZON LINE
-
-   This is the visual barrier between the stationary
-   banner and the pond.
+   HORIZON
 ===================================================== */
 
 .horizon {
@@ -511,10 +468,7 @@ body {
 
 
 /* =====================================================
-   MAIN HEADER / LOGO GROUP
-
-   The complete branding group is locked inside the
-   stationary banner.
+   MAIN HEADER
 ===================================================== */
 
 .pond-header {
@@ -551,15 +505,14 @@ body {
     pointer-events:
         none;
 
-    z-index: 8;
+    z-index:
+        8;
 
 }
 
 
 /* =====================================================
-   MAKE THE RIPPLE LOGO
-
-   Locked in the centre of the stationary banner.
+   LOGO
 ===================================================== */
 
 .pond-logo {
@@ -620,8 +573,6 @@ body {
 
 /* =====================================================
    WORDING GROUP
-
-   Keeps all wording together so it moves as one unit.
 ===================================================== */
 
 .banner-wording {
@@ -784,9 +735,6 @@ body {
 
 /* =====================================================
    MAKE A RIPPLE BUTTON
-
-   Fixed to the far-right of the stationary banner
-   and vertically aligned with the logo.
 ===================================================== */
 
 .make-ripple-button {
@@ -1055,8 +1003,6 @@ body {
 
 /* =====================================================
    INTERACTION PROMPT
-
-   Remains below the stationary banner.
 ===================================================== */
 
 .interaction-cue {
@@ -1210,8 +1156,6 @@ body {
 
 <!-- =====================================================
      WATER ENGINE
-
-     Remains behind the stationary banner.
 ====================================================== -->
 
 <canvas
@@ -1220,29 +1164,7 @@ body {
 
 
 <!-- =====================================================
-     REFLECTION SOURCE
-
-     This canvas remains completely invisible.
-
-     The branding currently displayed in the stationary
-     banner will be reproduced here at high resolution.
-
-     Version 10.4 water.js will use this canvas as the
-     source texture for the reflected identity.
-====================================================== -->
-
-<canvas
-    id="reflectionSourceCanvas"
-    width="1024"
-    height="768"
-    aria-hidden="true"
-></canvas>
-
-
-<!-- =====================================================
      STATIONARY BANNER
-
-     This entire visual layer stays fixed while scrolling.
 ====================================================== -->
 
 <div
@@ -1250,18 +1172,10 @@ body {
 >
 
 
-    <!-- =================================================
-         NIGHT SKY
-    ================================================== -->
-
     <div
         class="night-sky"
     ></div>
 
-
-    <!-- =================================================
-         STARS
-    ================================================== -->
 
     <div
         class="stars"
@@ -1280,62 +1194,42 @@ body {
     </div>
 
 
-    <!-- =================================================
-         MAIN HEADER
-    ================================================= -->
-
     <header
         class="pond-header"
     >
 
 
-        <!-- =============================================
-             MAKE THE RIPPLE LOGO
-        ============================================== -->
-
         <img
+            id="pondLogo"
             class="pond-logo"
             src="images/Make the Ripple Large Logo.png"
             alt="Make the Ripple"
         >
 
 
-        <!-- =============================================
-             WORDING GROUP
-        ============================================== -->
-
         <div
             class="banner-wording"
         >
 
 
-            <!-- =========================================
-                 PRESENTS
-            ========================================== -->
-
             <div
+                id="presented"
                 class="presented"
             >
                 Presents
             </div>
 
 
-            <!-- =========================================
-                 TITLE
-            ========================================== -->
-
             <h1
+                id="pondTitle"
                 class="pond-title"
             >
                 The Infinite Pond
             </h1>
 
 
-            <!-- =========================================
-                 SUBTITLE
-            ========================================== -->
-
             <div
+                id="pondSubtitle"
                 class="pond-subtitle"
             >
                 Every Ripple Begins Somewhere
@@ -1347,13 +1241,6 @@ body {
 
     </header>
 
-
-    <!-- =================================================
-         MAKE A RIPPLE BUTTON
-
-         Positioned at the far-right of the banner,
-         level with the logo.
-    ================================================== -->
 
     <button
         id="makeRippleButton"
@@ -1378,9 +1265,7 @@ body {
 
 
 <!-- =====================================================
-     HORIZON BARRIER
-
-     This remains fixed while the page scrolls.
+     HORIZON
 ====================================================== -->
 
 <div
@@ -1391,8 +1276,6 @@ body {
 
 <!-- =====================================================
      PAGE CONTENT
-
-     The pond continues beneath the stationary banner.
 ====================================================== -->
 
 <main
@@ -1403,786 +1286,13 @@ body {
 
 <!-- =====================================================
      INTERACTION CUE
-===================================================== -->
+====================================================== -->
 
 <div
     class="interaction-cue"
 >
     Click anywhere on the pond to make a ripple
 </div>
-
-
-<!-- =====================================================
-     REFLECTION SOURCE BUILDER
-
-     Version 10.4
-
-     Creates a high-resolution, transparent image of the
-     exact branding currently displayed in the banner.
-
-     This is intentionally kept separate from water.js.
-
-     water.js will consume the completed canvas as a
-     WebGL texture in the next step.
-====================================================== -->
-
-<script>
-
-(function () {
-
-    const reflectionCanvas =
-        document.getElementById(
-            "reflectionSourceCanvas"
-        );
-
-
-    const logo =
-        document.querySelector(
-            ".pond-logo"
-        );
-
-
-    const presented =
-        document.querySelector(
-            ".presented"
-        );
-
-
-    const title =
-        document.querySelector(
-            ".pond-title"
-        );
-
-
-    const subtitle =
-        document.querySelector(
-            ".pond-subtitle"
-        );
-
-
-    if (
-        !reflectionCanvas ||
-        !logo ||
-        !presented ||
-        !title ||
-        !subtitle
-    ) {
-
-        console.warn(
-            "The Infinite Pond: Reflection source elements not found."
-        );
-
-        return;
-
-    }
-
-
-    const ctx =
-        reflectionCanvas.getContext(
-            "2d"
-        );
-
-
-    if (!ctx) {
-
-        console.warn(
-            "The Infinite Pond: Reflection source canvas unavailable."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       -----------------------------------------------------
-       DRAW LETTER-SPACED TEXT
-
-       Canvas does not provide reliable CSS-style
-       letter-spacing across browsers, so we draw the
-       characters individually.
-       -----------------------------------------------------
-    */
-
-    function drawLetterSpacedText(
-        text,
-        x,
-        y,
-        letterSpacing,
-        align
-    ) {
-
-        const characters =
-            Array.from(text);
-
-
-        const widths =
-            characters.map(
-                function (character) {
-
-                    return ctx.measureText(
-                        character
-                    ).width;
-
-                }
-            );
-
-
-        const totalWidth =
-
-            widths.reduce(
-                function (
-                    total,
-                    width
-                ) {
-
-                    return total + width;
-
-                },
-                0
-            )
-
-            +
-
-            Math.max(
-                0,
-                characters.length - 1
-            )
-            *
-            letterSpacing;
-
-
-        let currentX;
-
-
-        if (align === "center") {
-
-            currentX =
-                x -
-                totalWidth /
-                2;
-
-        } else {
-
-            currentX =
-                x;
-
-        }
-
-
-        characters.forEach(
-            function (
-                character,
-                index
-            ) {
-
-                ctx.fillText(
-                    character,
-                    currentX,
-                    y
-                );
-
-
-                currentX +=
-                    widths[index];
-
-
-                currentX +=
-                    letterSpacing;
-
-            }
-        );
-
-    }
-
-
-    /*
-       -----------------------------------------------------
-       COPY CSS TEXT APPEARANCE
-       -----------------------------------------------------
-    */
-
-    function getFontSizeInPixels(
-        element
-    ) {
-
-        return parseFloat(
-            getComputedStyle(
-                element
-            ).fontSize
-        );
-
-    }
-
-
-    function getLetterSpacingInPixels(
-        element
-    ) {
-
-        const computed =
-            getComputedStyle(
-                element
-            ).letterSpacing;
-
-
-        if (
-            computed === "normal"
-        ) {
-
-            return 0;
-
-        }
-
-
-        const value =
-            parseFloat(
-                computed
-            );
-
-
-        return Number.isFinite(
-            value
-        )
-            ? value
-            : 0;
-
-    }
-
-
-    /*
-       -----------------------------------------------------
-       BUILD REFLECTION SOURCE
-       -----------------------------------------------------
-    */
-
-    function buildReflectionSource() {
-
-        const sourceWidth =
-            reflectionCanvas.width;
-
-
-        const sourceHeight =
-            reflectionCanvas.height;
-
-
-        ctx.clearRect(
-            0,
-            0,
-            sourceWidth,
-            sourceHeight
-        );
-
-
-        /*
-           Everything is drawn against a transparent
-           background.
-
-           The water shader will determine the actual
-           reflected colour, brightness, distortion,
-           fragmentation and fading.
-        */
-
-
-        const viewportWidth =
-            window.innerWidth;
-
-
-        const viewportHeight =
-            window.innerHeight;
-
-
-        /*
-           -------------------------------------------------
-           LOGO
-           -------------------------------------------------
-        */
-
-        if (
-            logo.complete &&
-            logo.naturalWidth > 0
-        ) {
-
-            const logoRect =
-                logo.getBoundingClientRect();
-
-
-            const logoScale =
-                sourceWidth /
-                viewportWidth;
-
-
-            const logoX =
-                logoRect.left *
-                logoScale;
-
-
-            const logoY =
-                logoRect.top *
-                (
-                    sourceHeight /
-                    viewportHeight
-                );
-
-
-            const logoWidth =
-                logoRect.width *
-                logoScale;
-
-
-            const logoHeight =
-                logoRect.height *
-                (
-                    sourceHeight /
-                    viewportHeight
-                );
-
-
-            /*
-               Draw a very soft atmospheric glow into the
-               source itself.
-
-               The actual water shader will provide the
-               stronger moonlight behaviour.
-            */
-
-            ctx.save();
-
-
-            ctx.globalAlpha =
-                0.96;
-
-
-            ctx.shadowColor =
-                "rgba(170, 225, 250, 0.38)";
-
-
-            ctx.shadowBlur =
-                18 *
-                logoScale;
-
-
-            ctx.drawImage(
-
-                logo,
-
-                logoX,
-                logoY,
-
-                logoWidth,
-                logoHeight
-
-            );
-
-
-            ctx.restore();
-
-        }
-
-
-        /*
-           -------------------------------------------------
-           TEXT BASELINE / SCALE
-           -------------------------------------------------
-        */
-
-        const scaleX =
-            sourceWidth /
-            viewportWidth;
-
-
-        const scaleY =
-            sourceHeight /
-            viewportHeight;
-
-
-        /*
-           -------------------------------------------------
-           PRESENTS
-           -------------------------------------------------
-        */
-
-        const presentedStyle =
-            getComputedStyle(
-                presented
-            );
-
-
-        const presentedRect =
-            presented.getBoundingClientRect();
-
-
-        const presentedFontSize =
-            getFontSizeInPixels(
-                presented
-            )
-            *
-            scaleX;
-
-
-        ctx.save();
-
-
-        ctx.font =
-
-            `${presentedStyle.fontWeight} ` +
-            `${presentedFontSize}px ` +
-            `${presentedStyle.fontFamily}`;
-
-
-        ctx.fillStyle =
-            presentedStyle.color;
-
-
-        ctx.textAlign =
-            "left";
-
-
-        ctx.textBaseline =
-            "alphabetic";
-
-
-        ctx.shadowColor =
-            "rgba(120, 205, 235, 0.20)";
-
-
-        ctx.shadowBlur =
-            10 *
-            scaleX;
-
-
-        drawLetterSpacedText(
-
-            presented.textContent.trim(),
-
-            (
-                presentedRect.left +
-                presentedRect.width / 2
-            )
-            *
-            scaleX,
-
-            (
-                presentedRect.bottom
-            )
-            *
-            scaleY,
-
-            getLetterSpacingInPixels(
-                presented
-            )
-            *
-            scaleX,
-
-            "center"
-
-        );
-
-
-        ctx.restore();
-
-
-        /*
-           -------------------------------------------------
-           MAIN TITLE
-           -------------------------------------------------
-        */
-
-        const titleStyle =
-            getComputedStyle(
-                title
-            );
-
-
-        const titleRect =
-            title.getBoundingClientRect();
-
-
-        const titleFontSize =
-            getFontSizeInPixels(
-                title
-            )
-            *
-            scaleX;
-
-
-        ctx.save();
-
-
-        ctx.font =
-
-            `${titleStyle.fontWeight} ` +
-            `${titleFontSize}px ` +
-            `${titleStyle.fontFamily}`;
-
-
-        ctx.fillStyle =
-            titleStyle.color;
-
-
-        ctx.textAlign =
-            "left";
-
-
-        ctx.textBaseline =
-            "alphabetic";
-
-
-        ctx.shadowColor =
-            "rgba(110, 200, 245, 0.30)";
-
-
-        ctx.shadowBlur =
-            16 *
-            scaleX;
-
-
-        drawLetterSpacedText(
-
-            title.textContent.trim(),
-
-            (
-                titleRect.left +
-                titleRect.width / 2
-            )
-            *
-            scaleX,
-
-            (
-                titleRect.bottom
-            )
-            *
-            scaleY,
-
-            getLetterSpacingInPixels(
-                title
-            )
-            *
-            scaleX,
-
-            "center"
-
-        );
-
-
-        ctx.restore();
-
-
-        /*
-           -------------------------------------------------
-           SUBTITLE
-           -------------------------------------------------
-        */
-
-        const subtitleStyle =
-            getComputedStyle(
-                subtitle
-            );
-
-
-        const subtitleRect =
-            subtitle.getBoundingClientRect();
-
-
-        const subtitleFontSize =
-            getFontSizeInPixels(
-                subtitle
-            )
-            *
-            scaleX;
-
-
-        ctx.save();
-
-
-        ctx.font =
-
-            `${subtitleStyle.fontWeight} ` +
-            `${subtitleFontSize}px ` +
-            `${subtitleStyle.fontFamily}`;
-
-
-        ctx.fillStyle =
-            subtitleStyle.color;
-
-
-        ctx.textAlign =
-            "left";
-
-
-        ctx.textBaseline =
-            "alphabetic";
-
-
-        ctx.shadowColor =
-            "rgba(100, 190, 225, 0.18)";
-
-
-        ctx.shadowBlur =
-            10 *
-            scaleX;
-
-
-        drawLetterSpacedText(
-
-            subtitle.textContent.trim(),
-
-            (
-                subtitleRect.left +
-                subtitleRect.width / 2
-            )
-            *
-            scaleX,
-
-            (
-                subtitleRect.bottom
-            )
-            *
-            scaleY,
-
-            getLetterSpacingInPixels(
-                subtitle
-            )
-            *
-            scaleX,
-
-            "center"
-
-        );
-
-
-        ctx.restore();
-
-
-        /*
-           -------------------------------------------------
-           SIGNAL TO WATER.JS
-           -------------------------------------------------
-
-           The canvas is exposed globally so the next
-           water.js version can safely locate it without
-           requiring another DOM lookup strategy.
-        */
-
-        window.infinitePondReflectionCanvas =
-            reflectionCanvas;
-
-
-        /*
-           Optional diagnostic flag.
-
-           This lets us verify in the browser console that
-           Version 10.4 successfully built the reflection
-           source.
-        */
-
-        window.infinitePondReflectionReady =
-            true;
-
-    }
-
-
-    /*
-       -----------------------------------------------------
-       IMAGE LOADING
-       -----------------------------------------------------
-    */
-
-    if (
-        logo.complete &&
-        logo.naturalWidth > 0
-    ) {
-
-        buildReflectionSource();
-
-    } else {
-
-        logo.addEventListener(
-            "load",
-            buildReflectionSource,
-            {
-                once: true
-            }
-        );
-
-    }
-
-
-    /*
-       -----------------------------------------------------
-       FONT / LAYOUT READY
-       -----------------------------------------------------
-    */
-
-    if (
-        document.fonts &&
-        document.fonts.ready
-    ) {
-
-        document.fonts.ready.then(
-            function () {
-
-                buildReflectionSource();
-
-            }
-        );
-
-    }
-
-
-    /*
-       -----------------------------------------------------
-       RESIZE
-       -----------------------------------------------------
-
-       Rebuild the source whenever the viewport changes so
-       the reflection always corresponds to the actual
-       responsive banner.
-       -----------------------------------------------------
-    */
-
-    let resizeTimer;
-
-
-    window.addEventListener(
-        "resize",
-        function () {
-
-            clearTimeout(
-                resizeTimer
-            );
-
-
-            resizeTimer =
-                setTimeout(
-                    function () {
-
-                        buildReflectionSource();
-
-                    },
-                    120
-                );
-
-        }
-    );
-
-
-    /*
-       -----------------------------------------------------
-       INITIAL BUILD
-       -----------------------------------------------------
-    */
-
-    window.requestAnimationFrame(
-        function () {
-
-            buildReflectionSource();
-
-        }
-    );
-
-})();
-
-</script>
 
 
 <!-- =====================================================
@@ -2196,35 +1306,32 @@ body {
 
 <!-- =====================================================
      MAKE A RIPPLE BUTTON
-
-     Submission workflow will be connected here
-     in a later version.
 ====================================================== -->
 
 <script>
 
-    const makeRippleButton =
-        document.getElementById(
-            "makeRippleButton"
-        );
+const makeRippleButton =
+    document.getElementById(
+        "makeRippleButton"
+    );
 
 
-    if (
-        makeRippleButton
-    ) {
+if (
+    makeRippleButton
+) {
 
-        makeRippleButton.addEventListener(
-            "click",
-            function () {
+    makeRippleButton.addEventListener(
+        "click",
+        function () {
 
-                console.log(
-                    "Make a Ripple button clicked."
-                );
+            console.log(
+                "Make a Ripple button clicked."
+            );
 
-            }
-        );
+        }
+    );
 
-    }
+}
 
 </script>
 
@@ -2232,4 +1339,3 @@ body {
 </body>
 
 </html>
-```
