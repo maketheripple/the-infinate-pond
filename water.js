@@ -1,7 +1,6 @@
-```javascript
 /* =========================================================
    THE INFINITE POND
-   VERSION 10.7.4 — WATER-ONLY RIPPLE & BANNER PROTECTION
+   VERSION 10.7.4 — BANNER CLICK PROTECTION
 ========================================================= */
 
 const canvas =
@@ -107,6 +106,7 @@ if (!canvas) {
                 return;
             }
 
+
             if (
                 !letterSpacing ||
                 !isFinite(letterSpacing)
@@ -137,6 +137,7 @@ if (!canvas) {
                         text[i]
                     ).width;
 
+
                 if (
                     i <
                     text.length - 1
@@ -164,11 +165,13 @@ if (!canvas) {
                 const character =
                     text[i];
 
+
                 context.fillText(
                     character,
                     drawX,
                     y
                 );
+
 
                 drawX +=
                     context.measureText(
@@ -2061,9 +2064,41 @@ if (!canvas) {
 
 
                 /* =================================================
+                   BANNER CLICK DETECTION
+                   VERSION 10.7.4
+                ================================================= */
+
+                function pointIsInsideBanner(
+                    clientX,
+                    clientY
+                ) {
+
+                    if (
+                        !stationaryBanner
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const bannerRect =
+                        stationaryBanner.getBoundingClientRect();
+
+
+                    return (
+                        clientX >= bannerRect.left &&
+                        clientX <= bannerRect.right &&
+                        clientY >= bannerRect.top &&
+                        clientY <= bannerRect.bottom
+                    );
+
+                }
+
+
+                /* =================================================
                    POINTER RIPPLE
                    VERSION 10.7.4
-                   WATER-ONLY RIPPLE CLICK
                 ================================================= */
 
                 canvas.addEventListener(
@@ -2071,45 +2106,37 @@ if (!canvas) {
                     function(event) {
 
                         /*
-                           -------------------------------------------------
-                           WATER-ONLY CLICK PROTECTION
-                           -------------------------------------------------
+                           The canvas covers the page and may
+                           receive the pointer event even when
+                           the user visually clicks the banner.
 
-                           The canvas covers the viewport, so we explicitly
-                           prevent ripple creation when the pointer is
-                           anywhere inside the stationary banner.
+                           Therefore we explicitly test the
+                           screen coordinates against the
+                           stationary banner.
+
+                           If the click is anywhere inside the
+                           banner, absolutely no ripple is made.
                         */
 
-                        const currentBanner =
-                            document.querySelector(
-                                ".stationary-banner"
+                        if (
+                            pointIsInsideBanner(
+                                event.clientX,
+                                event.clientY
+                            )
+                        ) {
+
+                            console.log(
+                                "INFINITE POND: Banner click ignored."
                             );
 
-
-                        if (currentBanner) {
-
-                            const bannerRect =
-                                currentBanner.getBoundingClientRect();
-
-
-                            if (
-                                event.clientX >= bannerRect.left &&
-                                event.clientX <= bannerRect.right &&
-                                event.clientY >= bannerRect.top &&
-                                event.clientY <= bannerRect.bottom
-                            ) {
-
-                                return;
-
-                            }
+                            return;
 
                         }
 
 
                         /*
-                           -------------------------------------------------
-                           NORMAL MOUSE / TOUCH FILTER
-                           -------------------------------------------------
+                           Only accept primary mouse clicks
+                           and touch input.
                         */
 
                         if (
@@ -2121,12 +2148,6 @@ if (!canvas) {
 
                         }
 
-
-                        /*
-                           -------------------------------------------------
-                           CREATE WATER RIPPLE
-                           -------------------------------------------------
-                        */
 
                         createRipple(
                             event.clientX,
@@ -2478,4 +2499,3 @@ if (!canvas) {
     }
 
 }
-```
