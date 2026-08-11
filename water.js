@@ -60,24 +60,24 @@ if (!canvas) {
 
 
         const logoElement =
-            document.getElementById(
-                "pondLogo"
-            );
+    document.querySelector(
+        ".pond-logo"
+    );
 
-        const presentedElement =
-            document.getElementById(
-                "presented"
-            );
+const presentedElement =
+    document.querySelector(
+        ".presented"
+    );
 
-        const titleElement =
-            document.getElementById(
-                "pondTitle"
-            );
+const titleElement =
+    document.querySelector(
+        ".pond-title"
+    );
 
-        const subtitleElement =
-            document.getElementById(
-                "pondSubtitle"
-            );
+const subtitleElement =
+    document.querySelector(
+        ".pond-subtitle"
+    );
 
 
         let reflectionTexture = null;
