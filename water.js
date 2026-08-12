@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.1
+   VERSION 2.2
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -13,17 +13,20 @@
    3. DEPTH
       Floating Impact Ripples live beneath the surface.
 
-   NEW IN VERSION 2.1:
-   - Every floating Impact Ripple creates its own
-     subtle surrounding water disturbance.
-   - Larger Impact Ripples create larger disturbances.
-   - Ripple rings are irregular, elliptical and organic.
-   - Each Impact Ripple has an independent ripple rhythm.
+   VERSION 2.2
+   LIVING IMPACT RIPPLES
+
+   Impact Ripples now continuously disturb the water
+   around themselves while floating.
+
+   The larger / nearer the Impact Ripple appears,
+   the larger its surrounding ripple becomes.
 
    IMPORTANT:
    - Clicking water creates a ripple.
    - Clicking water does NOT open the submission window.
    - "Make a Ripple" button opens the submission window.
+   - Impact Ripples open their message only when clicked.
 ========================================================= */
 
 
@@ -41,6 +44,9 @@
 
     const waterWindow =
         document.getElementById("water-window");
+
+    const reflectionLayer =
+        document.getElementById("reflection-layer");
 
     const reflectionDistortion =
         document.getElementById("reflection-distortion");
@@ -270,14 +276,23 @@
 
     /* =====================================================
        FRAGMENT SHADER
+       
+       NATURAL MOONLIT WATER
+       + CONTINUOUS IMPACT RIPPLE DISTURBANCE
     ===================================================== */
 
     const fragmentShaderSource = `
 
         precision highp float;
 
+
         uniform vec2 u_resolution;
         uniform float u_time;
+
+
+        /* -------------------------------------------------
+           USER CLICK RIPPLES
+        ------------------------------------------------- */
 
         uniform vec2 u_ripple0;
         uniform float u_rippleTime0;
@@ -288,6 +303,42 @@
         uniform vec2 u_ripple2;
         uniform float u_rippleTime2;
 
+
+        /* -------------------------------------------------
+           IMPACT RIPPLE POSITIONS
+           
+           Each Impact Ripple continuously generates its
+           own small expanding water disturbance.
+        ------------------------------------------------- */
+
+        uniform vec2 u_impact0;
+        uniform float u_impactSize0;
+        uniform float u_impactPulse0;
+
+        uniform vec2 u_impact1;
+        uniform float u_impactSize1;
+        uniform float u_impactPulse1;
+
+        uniform vec2 u_impact2;
+        uniform float u_impactSize2;
+        uniform float u_impactPulse2;
+
+        uniform vec2 u_impact3;
+        uniform float u_impactSize3;
+        uniform float u_impactPulse3;
+
+        uniform vec2 u_impact4;
+        uniform float u_impactSize4;
+        uniform float u_impactPulse4;
+
+        uniform vec2 u_impact5;
+        uniform float u_impactSize5;
+        uniform float u_impactPulse5;
+
+
+        /* -------------------------------------------------
+           HASH
+        ------------------------------------------------- */
 
         float hash(vec2 p) {
 
@@ -313,6 +364,10 @@
                 );
         }
 
+
+        /* -------------------------------------------------
+           NOISE
+        ------------------------------------------------- */
 
         float noise(vec2 p) {
 
@@ -371,6 +426,10 @@
         }
 
 
+        /* -------------------------------------------------
+           FRACTAL ORGANIC MOTION
+        ------------------------------------------------- */
+
         float fbm(vec2 p) {
 
             float value = 0.0;
@@ -395,6 +454,10 @@
             return value;
         }
 
+
+        /* -------------------------------------------------
+           USER CLICK RIPPLE
+        ------------------------------------------------- */
 
         float ripple(
             vec2 uv,
@@ -452,12 +515,196 @@
         }
 
 
+        /* -------------------------------------------------
+           LIVING IMPACT RIPPLE
+           
+           Creates several soft, expanding disturbances.
+
+           The shape is intentionally imperfect.
+        ------------------------------------------------- */
+
+        float impactRipple(
+            vec2 uv,
+            vec2 center,
+            float size,
+            float pulse
+        ) {
+
+            vec2 p =
+                uv -
+                center;
+
+
+            /*
+             * Correct the horizontal aspect ratio.
+             */
+
+            p.x *=
+                u_resolution.x /
+                u_resolution.y;
+
+
+            /*
+             * Subtle organic distortion.
+             */
+
+            float organic =
+                fbm(
+                    p * 7.0 +
+                    vec2(
+                        pulse * 0.18,
+                        -pulse * 0.13
+                    )
+                );
+
+
+            float angle =
+                atan(
+                    p.y,
+                    p.x
+                );
+
+
+            float directional =
+                sin(
+                    angle * 3.0 +
+                    organic * 5.0 +
+                    pulse * 0.17
+                )
+                *
+                0.055;
+
+
+            float radius =
+                length(p);
+
+
+            radius +=
+                directional;
+
+
+            /*
+             * Main expanding ring.
+             */
+
+            float cycle =
+                mod(
+                    pulse * 0.075,
+                    1.0
+                );
+
+
+            float ringRadius =
+                cycle *
+                size;
+
+
+            float ringWidth =
+                0.012 +
+                size * 0.004;
+
+
+            float ring =
+                exp(
+                    -pow(
+                        (
+                            radius -
+                            ringRadius
+                        )
+                        /
+                        ringWidth,
+                        2.0
+                    )
+                );
+
+
+            /*
+             * Secondary inner ring.
+             */
+
+            float secondCycle =
+                mod(
+                    pulse * 0.075 + 0.42,
+                    1.0
+                );
+
+
+            float secondRadius =
+                secondCycle *
+                size;
+
+
+            float secondRing =
+                exp(
+                    -pow(
+                        (
+                            radius -
+                            secondRadius
+                        )
+                        /
+                        (
+                            ringWidth * 0.82
+                        ),
+                        2.0
+                    )
+                );
+
+
+            /*
+             * Outer fading disturbance.
+             */
+
+            float outerGlow =
+                exp(
+                    -radius *
+                    7.0
+                )
+                *
+                0.08;
+
+
+            /*
+             * Rings fade naturally as they expand.
+             */
+
+            float ringFade =
+                1.0 -
+                cycle;
+
+
+            float secondFade =
+                1.0 -
+                secondCycle;
+
+
+            return
+                (
+                    ring *
+                    ringFade
+                    +
+                    secondRing *
+                    secondFade *
+                    0.72
+                    +
+                    outerGlow
+                );
+        }
+
+
+        /* -------------------------------------------------
+           MAIN
+        ------------------------------------------------- */
+
         void main() {
 
             vec2 uv =
                 gl_FragCoord.xy /
                 u_resolution.xy;
 
+
+            /* ---------------------------------------------
+               ASPECT CORRECTION
+            --------------------------------------------- */
 
             vec2 aspectUV =
                 uv;
@@ -466,6 +713,10 @@
                 u_resolution.x /
                 u_resolution.y;
 
+
+            /* ---------------------------------------------
+               ORGANIC WATER MOVEMENT
+            --------------------------------------------- */
 
             vec2 flowUV =
                 aspectUV *
@@ -480,7 +731,9 @@
 
 
             float broadNoise =
-                fbm(flowUV);
+                fbm(
+                    flowUV
+                );
 
 
             float fineNoise =
@@ -497,6 +750,10 @@
                 broadNoise * 0.72 +
                 fineNoise * 0.28;
 
+
+            /* ---------------------------------------------
+               SMALL NATURAL WAVES
+            --------------------------------------------- */
 
             float waves =
                 sin(
@@ -518,6 +775,10 @@
                 0.009;
 
 
+            /* ---------------------------------------------
+               USER CLICK RIPPLES
+            --------------------------------------------- */
+
             float r0 =
                 ripple(
                     uv,
@@ -525,14 +786,12 @@
                     u_time - u_rippleTime0
                 );
 
-
             float r1 =
                 ripple(
                     uv,
                     u_ripple1,
                     u_time - u_rippleTime1
                 );
-
 
             float r2 =
                 ripple(
@@ -547,6 +806,71 @@
                 r1 +
                 r2;
 
+
+            /* ---------------------------------------------
+               IMPACT RIPPLE DISTURBANCES
+            --------------------------------------------- */
+
+            float impactValue = 0.0;
+
+
+            impactValue +=
+                impactRipple(
+                    uv,
+                    u_impact0,
+                    u_impactSize0,
+                    u_impactPulse0
+                );
+
+
+            impactValue +=
+                impactRipple(
+                    uv,
+                    u_impact1,
+                    u_impactSize1,
+                    u_impactPulse1
+                );
+
+
+            impactValue +=
+                impactRipple(
+                    uv,
+                    u_impact2,
+                    u_impactSize2,
+                    u_impactPulse2
+                );
+
+
+            impactValue +=
+                impactRipple(
+                    uv,
+                    u_impact3,
+                    u_impactSize3,
+                    u_impactPulse3
+                );
+
+
+            impactValue +=
+                impactRipple(
+                    uv,
+                    u_impact4,
+                    u_impactSize4,
+                    u_impactPulse4
+                );
+
+
+            impactValue +=
+                impactRipple(
+                    uv,
+                    u_impact5,
+                    u_impactSize5,
+                    u_impactPulse5
+                );
+
+
+            /* ---------------------------------------------
+               MOONLIGHT
+            --------------------------------------------- */
 
             float moonGlow =
                 exp(
@@ -593,6 +917,10 @@
                 0.16;
 
 
+            /* ---------------------------------------------
+               WATER COLOR
+            --------------------------------------------- */
+
             vec3 deepWater =
                 vec3(
                     0.005,
@@ -621,6 +949,10 @@
                 );
 
 
+            /* ---------------------------------------------
+               NATURAL WATER VARIATION
+            --------------------------------------------- */
+
             color +=
                 water *
                 vec3(
@@ -639,6 +971,10 @@
                 );
 
 
+            /* ---------------------------------------------
+               MOONLIGHT COLOR
+            --------------------------------------------- */
+
             color +=
                 moonReflection *
                 vec3(
@@ -647,6 +983,10 @@
                     0.88
                 );
 
+
+            /* ---------------------------------------------
+               USER RIPPLE HIGHLIGHTS
+            --------------------------------------------- */
 
             color +=
                 abs(
@@ -659,6 +999,26 @@
                     0.46
                 );
 
+
+            /* ---------------------------------------------
+               LIVING IMPACT RIPPLE HIGHLIGHTS
+               
+               Deliberately stronger than the previous
+               version so the effect is actually visible.
+            --------------------------------------------- */
+
+            color +=
+                impactValue *
+                vec3(
+                    0.11,
+                    0.29,
+                    0.36
+                );
+
+
+            /* ---------------------------------------------
+               DEPTH DARKENING
+            --------------------------------------------- */
 
             float depth =
                 smoothstep(
@@ -675,6 +1035,10 @@
                     depth * 0.62
                 );
 
+
+            /* ---------------------------------------------
+               TOP SURFACE GLOW
+            --------------------------------------------- */
 
             float surfaceGlow =
                 smoothstep(
@@ -836,12 +1200,49 @@
 
 
     /* =====================================================
+       IMPACT RIPPLE UNIFORMS
+    ===================================================== */
+
+    const impactLocations = [];
+
+
+    for (
+        let i = 0;
+        i < 6;
+        i++
+    ) {
+
+        impactLocations.push({
+
+            point:
+                gl.getUniformLocation(
+                    program,
+                    `u_impact${i}`
+                ),
+
+            size:
+                gl.getUniformLocation(
+                    program,
+                    `u_impactSize${i}`
+                ),
+
+            pulse:
+                gl.getUniformLocation(
+                    program,
+                    `u_impactPulse${i}`
+                )
+        });
+    }
+
+
+    /* =====================================================
        RIPPLE STATE
     ===================================================== */
 
     const MAX_RIPPLES = 3;
 
     const ripples = [];
+
 
     for (
         let i = 0;
@@ -884,17 +1285,24 @@
             return;
 
 
+        const percentX =
+            `${x * 100}%`;
+
+        const percentY =
+            `${y * 100}%`;
+
+
         reflectionDistortion.style
             .setProperty(
                 "--ripple-x",
-                `${x * 100}%`
+                percentX
             );
 
 
         reflectionDistortion.style
             .setProperty(
                 "--ripple-y",
-                `${y * 100}%`
+                percentY
             );
 
 
@@ -947,7 +1355,6 @@
 
         ripple.style.left =
             `${x * 100}%`;
-
 
         ripple.style.top =
             `${y * 100}%`;
@@ -1054,76 +1461,6 @@
 
 
     /* =====================================================
-       RENDER
-    ===================================================== */
-
-    function render() {
-
-        const elapsed =
-            (
-                performance.now() -
-                startTime
-            ) /
-            1000;
-
-
-        gl.useProgram(program);
-
-
-        gl.uniform2f(
-            uResolution,
-            canvas.width,
-            canvas.height
-        );
-
-
-        gl.uniform1f(
-            uTime,
-            elapsed
-        );
-
-
-        for (
-            let i = 0;
-            i < MAX_RIPPLES;
-            i++
-        ) {
-
-            const ripple =
-                ripples[i];
-
-
-            gl.uniform2f(
-                rippleLocations[i].point,
-                ripple.x,
-                1.0 - ripple.y
-            );
-
-
-            gl.uniform1f(
-                rippleLocations[i].time,
-                ripple.time
-            );
-        }
-
-
-        gl.drawArrays(
-            gl.TRIANGLES,
-            0,
-            6
-        );
-
-
-        requestAnimationFrame(
-            render
-        );
-    }
-
-
-    render();
-
-
-    /* =====================================================
        STAR FIELD
     ===================================================== */
 
@@ -1176,30 +1513,24 @@
             star.style.width =
                 `${size}px`;
 
-
             star.style.height =
                 `${size}px`;
-
 
             star.style.left =
                 `${Math.random() * 100}%`;
 
-
             star.style.top =
                 `${Math.random() * 72}%`;
-
 
             star.style.setProperty(
                 "--opacity",
                 opacity
             );
 
-
             star.style.setProperty(
                 "--glow",
                 `${glow}px`
             );
-
 
             star.style.setProperty(
                 "--duration",
@@ -1215,6 +1546,207 @@
 
 
     /* =====================================================
+       RENDER
+    ===================================================== */
+
+    function render() {
+
+        const elapsed =
+            (
+                performance.now() -
+                startTime
+            ) /
+            1000;
+
+
+        gl.useProgram(program);
+
+
+        gl.uniform2f(
+            uResolution,
+            canvas.width,
+            canvas.height
+        );
+
+
+        gl.uniform1f(
+            uTime,
+            elapsed
+        );
+
+
+        /* ---------------------------------------------
+           USER RIPPLE UNIFORMS
+        --------------------------------------------- */
+
+        for (
+            let i = 0;
+            i < MAX_RIPPLES;
+            i++
+        ) {
+
+            const ripple =
+                ripples[i];
+
+
+            gl.uniform2f(
+                rippleLocations[i].point,
+                ripple.x,
+                1.0 - ripple.y
+            );
+
+
+            gl.uniform1f(
+                rippleLocations[i].time,
+                ripple.time
+            );
+        }
+
+
+        /* ---------------------------------------------
+           IMPACT RIPPLE UNIFORMS
+        --------------------------------------------- */
+
+        const impactElements =
+            impactLayer
+                ? impactLayer.querySelectorAll(
+                    ".impact-ripple"
+                )
+                : [];
+
+
+        for (
+            let i = 0;
+            i < 6;
+            i++
+        ) {
+
+            const element =
+                impactElements[i];
+
+
+            if (!element) {
+
+                gl.uniform2f(
+                    impactLocations[i].point,
+                    -10,
+                    -10
+                );
+
+                gl.uniform1f(
+                    impactLocations[i].size,
+                    0.0
+                );
+
+                gl.uniform1f(
+                    impactLocations[i].pulse,
+                    0.0
+                );
+
+                continue;
+            }
+
+
+            const rect =
+                element.getBoundingClientRect();
+
+
+            const windowRect =
+                waterWindow.getBoundingClientRect();
+
+
+            const centerX =
+                (
+                    rect.left +
+                    rect.width * 0.5 -
+                    windowRect.left
+                ) /
+                windowRect.width;
+
+
+            const centerY =
+                (
+                    rect.top +
+                    rect.height * 0.5 -
+                    windowRect.top
+                ) /
+                windowRect.height;
+
+
+            /*
+             * Size is based on the visual size of
+             * the Impact Ripple.
+             */
+
+            const visualSize =
+                Math.max(
+                    rect.width,
+                    rect.height
+                ) /
+                windowRect.height;
+
+
+            /*
+             * Larger / nearer objects disturb
+             * more water.
+             */
+
+            const rippleSize =
+                Math.max(
+                    0.11,
+                    visualSize * 1.75
+                );
+
+
+            gl.uniform2f(
+                impactLocations[i].point,
+                centerX,
+                1.0 - centerY
+            );
+
+
+            gl.uniform1f(
+                impactLocations[i].size,
+                rippleSize
+            );
+
+
+            /*
+             * Each Impact Ripple gets a slightly
+             * different phase.
+             */
+
+            const phase =
+                (
+                    elapsed * 1.0 +
+                    i * 1.73
+                );
+
+
+            gl.uniform1f(
+                impactLocations[i].pulse,
+                phase
+            );
+        }
+
+
+        gl.drawArrays(
+            gl.TRIANGLES,
+            0,
+            6
+        );
+
+
+        requestAnimationFrame(
+            render
+        );
+    }
+
+
+    render();
+
+
+    /* =====================================================
        MODAL HELPERS
     ===================================================== */
 
@@ -1225,7 +1757,6 @@
 
 
         modal.classList.add("open");
-
 
         modal.setAttribute(
             "aria-hidden",
@@ -1245,7 +1776,6 @@
 
 
         modal.classList.remove("open");
-
 
         modal.setAttribute(
             "aria-hidden",
@@ -1385,15 +1915,17 @@
 
 
                 const message =
-                    document.getElementById(
-                        "ripple-message"
-                    );
+                    document
+                        .getElementById(
+                            "ripple-message"
+                        );
 
 
                 const name =
-                    document.getElementById(
-                        "ripple-name"
-                    );
+                    document
+                        .getElementById(
+                            "ripple-name"
+                        );
 
 
                 if (
@@ -1421,7 +1953,6 @@
 
                 message.value = "";
 
-
                 if (name) {
                     name.value = "";
                 }
@@ -1448,15 +1979,7 @@
 
 
     /* =====================================================
-       IMPACT RIPPLE DATA
-
-       rippleSize:
-       Controls how large the surrounding water
-       disturbance becomes.
-
-       far = smaller / quieter
-       mid = medium
-       near = stronger / larger
+       FUTURE IMPACT RIPPLE DATA
     ===================================================== */
 
     const impactRippleData = [
@@ -1466,10 +1989,7 @@
             y: 0.37,
             depth: "far",
             floatTime: "13s",
-            rotation: -8,
-            rippleSize: 0.72,
-            rippleDuration: "8.5s",
-            rippleDelay: "0s"
+            rotation: -8
         },
 
         {
@@ -1477,10 +1997,7 @@
             y: 0.53,
             depth: "mid",
             floatTime: "16s",
-            rotation: 6,
-            rippleSize: 1.00,
-            rippleDuration: "9.5s",
-            rippleDelay: "2.2s"
+            rotation: 6
         },
 
         {
@@ -1488,10 +2005,7 @@
             y: 0.39,
             depth: "near",
             floatTime: "14s",
-            rotation: -5,
-            rippleSize: 1.25,
-            rippleDuration: "10.5s",
-            rippleDelay: "1.1s"
+            rotation: -5
         },
 
         {
@@ -1499,10 +2013,7 @@
             y: 0.58,
             depth: "far",
             floatTime: "18s",
-            rotation: 11,
-            rippleSize: 0.68,
-            rippleDuration: "8.8s",
-            rippleDelay: "4.4s"
+            rotation: 11
         },
 
         {
@@ -1510,10 +2021,7 @@
             y: 0.72,
             depth: "mid",
             floatTime: "15s",
-            rotation: -12,
-            rippleSize: 0.95,
-            rippleDuration: "9.8s",
-            rippleDelay: "3.5s"
+            rotation: -12
         },
 
         {
@@ -1521,132 +2029,16 @@
             y: 0.78,
             depth: "near",
             floatTime: "17s",
-            rotation: 7,
-            rippleSize: 1.30,
-            rippleDuration: "11s",
-            rippleDelay: "5.1s"
+            rotation: 7
         }
     ];
 
 
     /* =====================================================
-       CREATE LIVING WATER RIPPLE
-    ===================================================== */
-
-    function createLivingWaterRipple(
-        parent,
-        data,
-        index
-    ) {
-
-        const waterRipple =
-            document.createElement("div");
-
-
-        waterRipple.className =
-            "impact-water-ripple";
-
-
-        /*
-         * The ripple is slightly larger than the
-         * Impact Ripple itself.
-         *
-         * Larger rippleSize values allow sponsored /
-         * larger future Impact Ripples to disturb
-         * more water.
-         */
-
-        const baseSize =
-            260 *
-            data.rippleSize;
-
-
-        waterRipple.style.width =
-            `${baseSize}px`;
-
-
-        waterRipple.style.height =
-            `${baseSize * 0.58}px`;
-
-
-        /*
-         * Each water ripple has its own orientation.
-         * This prevents the pond from looking mechanical.
-         */
-
-        const waterRotation =
-            data.rotation +
-            (
-                -12 +
-                Math.random() * 24
-            );
-
-
-        const innerRotation =
-            -waterRotation * 0.65;
-
-
-        waterRipple.style.setProperty(
-            "--water-rotation",
-            `${waterRotation}deg`
-        );
-
-
-        waterRipple.style.setProperty(
-            "--inner-rotation",
-            `${innerRotation}deg`
-        );
-
-
-        /*
-         * Slightly different opacity for each object.
-         */
-
-        const opacity =
-            0.12 +
-            (
-                data.rippleSize *
-                0.045
-            );
-
-
-        waterRipple.style.setProperty(
-            "--ripple-opacity",
-            opacity
-        );
-
-
-        waterRipple.style.setProperty(
-            "--ripple-duration",
-            data.rippleDuration
-        );
-
-
-        waterRipple.style.setProperty(
-            "--ripple-delay",
-            data.rippleDelay
-        );
-
-
-        /*
-         * Put the living water ripple behind
-         * the Impact Ripple itself.
-         */
-
-        parent.appendChild(
-            waterRipple
-        );
-
-
-        return waterRipple;
-    }
-
-
-    /* =====================================================
        CREATE IMPACT RIPPLES
        
-       No "Impact Ripple" text appears on the
-       floating objects.
+       The objects themselves remain unchanged.
+       Their water disturbance is generated by WebGL.
     ===================================================== */
 
     function createImpactRipples() {
@@ -1699,33 +2091,6 @@
                 );
 
 
-                /*
-                 * Create the water disturbance FIRST
-                 * so it sits underneath the Impact Ripple.
-                 */
-
-                createLivingWaterRipple(
-                    ripple,
-                    data,
-                    index
-                );
-
-
-                /*
-                 * The Impact Ripple itself remains
-                 * completely unchanged.
-                 *
-                 * Future versions can place:
-                 *
-                 * - company logos
-                 * - organization logos
-                 * - symbolic graphics
-                 * - approved images
-                 *
-                 * inside this object.
-                 */
-
-
                 ripple.addEventListener(
                     "click",
                     event => {
@@ -1760,7 +2125,6 @@
             document.getElementById(
                 "impact-quote"
             );
-
 
         const details =
             document.getElementById(
@@ -1856,22 +2220,22 @@
         "visibilitychange",
         () => {
 
-            /*
-             * The browser naturally throttles the
-             * animation when the tab is hidden.
-             *
-             * Nothing is destroyed.
-             */
+            if (document.hidden) {
+
+                /*
+                 * Browser handles animation throttling.
+                 */
+            }
         }
     );
 
 
     /* =====================================================
-       INITIALIZATION COMPLETE
+       INITIALIZATION
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.1 initialized."
+        "The Ripple Well v2.2 initialized."
     );
 
     console.log(
@@ -1887,7 +2251,7 @@
     );
 
     console.log(
-        "Living Impact Ripple Water Disturbances: active"
+        "Living Impact Ripples: active"
     );
 
 })();
