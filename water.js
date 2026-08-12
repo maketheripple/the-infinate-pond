@@ -1,1682 +1,1853 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 1.0.2
+   VERSION 2.0
 
-   ORGANIC FLOATING RIPPLE REFINEMENT
+   THREE-LAYER WATER EXPERIENCE
 
-   MAKE THE RIPPLE
+   1. SURFACE
+      Natural moonlit water movement.
 
-   IMPORTANT CONCEPT:
+   2. REFLECTION
+      Header reflection reacts to water interaction.
 
-   Floating Impact Ripples have NO visible text.
+   3. DEPTH
+      Floating Impact Ripples live beneath the surface.
 
-   They are intended to feel like organic objects/
-   disturbances naturally existing within The Ripple Well.
-
-   They become identified as an "Impact Ripple" only
-   after the visitor interacts with one.
+   IMPORTANT:
+   - Clicking water creates a ripple.
+   - Clicking water does NOT open the submission window.
+   - "Make a Ripple" button opens the submission window.
 ========================================================= */
 
 
-/* =========================================================
-   DOM REFERENCES
-========================================================= */
+(() => {
 
-const canvas =
-    document.getElementById(
-        "water-canvas"
-    );
-
-const ctx =
-    canvas.getContext("2d");
-
-const waterWindow =
-    document.getElementById(
-        "water-window"
-    );
-
-const rippleLayer =
-    document.getElementById(
-        "impact-ripples-layer"
-    );
-
-const makeRippleButton =
-    document.getElementById(
-        "make-ripple-button"
-    );
-
-const makeRippleModal =
-    document.getElementById(
-        "make-ripple-modal"
-    );
-
-const impactModal =
-    document.getElementById(
-        "impact-modal"
-    );
-
-const rippleForm =
-    document.getElementById(
-        "ripple-form"
-    );
-
-const starsContainer =
-    document.getElementById(
-        "stars"
-    );
+    "use strict";
 
 
-/* =========================================================
-   WATER STATE
-========================================================= */
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
 
-let width = 0;
-let height = 0;
+    const canvas =
+        document.getElementById("water-canvas");
 
-let pixelRatio =
-    Math.min(
-        window.devicePixelRatio || 1,
-        2
-    );
+    const waterWindow =
+        document.getElementById("water-window");
 
-let time = 0;
+    const reflectionLayer =
+        document.getElementById("reflection-layer");
 
-const temporaryRipples = [];
+    const reflectionDistortion =
+        document.getElementById("reflection-distortion");
 
-const MAX_TEMPORARY_RIPPLES = 18;
+    const impactLayer =
+        document.getElementById("impact-ripples-layer");
+
+    const makeRippleButton =
+        document.getElementById("make-ripple-button");
+
+    const makeRippleModal =
+        document.getElementById("make-ripple-modal");
+
+    const impactModal =
+        document.getElementById("impact-modal");
+
+    const rippleForm =
+        document.getElementById("ripple-form");
+
+    const closeButtons =
+        document.querySelectorAll("[data-close-modal]");
 
 
-/* =========================================================
-   APPROVED IMPACT RIPPLE DATA
-========================================================= */
+    if (!canvas || !waterWindow) {
 
-const impactRipples = [
+        console.error(
+            "The Ripple Well: required water elements were not found."
+        );
 
-    {
-        id: 1,
-
-        quote:
-            "You are not alone, even when it feels like you are.",
-
-        author:
-            "A Friend",
-
-        details:
-            "Sometimes the smallest reminder can make a difficult day feel a little less heavy."
-    },
-
-    {
-        id: 2,
-
-        quote:
-            "It's okay to take things one day at a time.",
-
-        author:
-            "Someone Who Understands",
-
-        details:
-            "You don't have to solve everything today. One small step is still a step forward."
-    },
-
-    {
-        id: 3,
-
-        quote:
-            "Your story is still being written.",
-
-        author:
-            "A Ripple Maker",
-
-        details:
-            "Whatever chapter you're in right now, it doesn't have to be the final one."
-    },
-
-    {
-        id: 4,
-
-        quote:
-            "Asking for help is not weakness.",
-
-        author:
-            "A Friend",
-
-        details:
-            "Sometimes the strongest thing we can do is allow someone else to stand beside us."
-    },
-
-    {
-        id: 5,
-
-        quote:
-            "Small acts of kindness can travel farther than we know.",
-
-        author:
-            "Make the Ripple Community",
-
-        details:
-            "A kind word may become the ripple that reaches someone when they need it most."
-    },
-
-    {
-        id: 6,
-
-        quote:
-            "You matter.",
-
-        author:
-            "Anonymous",
-
-        details:
-            "Simple words can carry enormous weight."
-    },
-
-    {
-        id: 7,
-
-        quote:
-            "There is no shame in beginning again.",
-
-        author:
-            "A Ripple Maker",
-
-        details:
-            "Starting over is sometimes the bravest kind of progress."
-    },
-
-    {
-        id: 8,
-
-        quote:
-            "Leave a little kindness wherever you go.",
-
-        author:
-            "Anonymous",
-
-        details:
-            "You never know whose day might be changed by something small."
+        return;
     }
 
-];
+
+    /* =====================================================
+       CANVAS
+    ===================================================== */
+
+    const gl =
+        canvas.getContext("webgl", {
+            alpha: true,
+            antialias: true
+        });
 
 
-/* =========================================================
-   RESIZE CANVAS
-========================================================= */
+    if (!gl) {
 
-function resizeCanvas() {
-
-    const rect =
-        waterWindow.getBoundingClientRect();
-
-    width =
-        Math.max(
-            1,
-            Math.floor(rect.width)
+        console.error(
+            "The Ripple Well: WebGL is not available."
         );
 
-    height =
-        Math.max(
-            1,
-            Math.floor(rect.height)
-        );
+        return;
+    }
 
-    pixelRatio =
+
+    /* =====================================================
+       DEVICE / SIZE
+    ===================================================== */
+
+    let width = 1;
+    let height = 1;
+
+    let dpr =
         Math.min(
             window.devicePixelRatio || 1,
             2
         );
 
-    canvas.width =
-        Math.floor(
-            width *
-            pixelRatio
+
+    function resize() {
+
+        const rect =
+            waterWindow.getBoundingClientRect();
+
+        width =
+            Math.max(1, rect.width);
+
+        height =
+            Math.max(1, rect.height);
+
+        canvas.width =
+            Math.floor(width * dpr);
+
+        canvas.height =
+            Math.floor(height * dpr);
+
+        canvas.style.width =
+            `${width}px`;
+
+        canvas.style.height =
+            `${height}px`;
+
+        gl.viewport(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+    }
+
+
+    window.addEventListener(
+        "resize",
+        resize,
+        { passive: true }
+    );
+
+    resize();
+
+
+    /* =====================================================
+       SHADER HELPERS
+    ===================================================== */
+
+    function createShader(type, source) {
+
+        const shader =
+            gl.createShader(type);
+
+        gl.shaderSource(
+            shader,
+            source
         );
 
-    canvas.height =
-        Math.floor(
-            height *
-            pixelRatio
+        gl.compileShader(shader);
+
+
+        if (
+            !gl.getShaderParameter(
+                shader,
+                gl.COMPILE_STATUS
+            )
+        ) {
+
+            console.error(
+                gl.getShaderInfoLog(shader)
+            );
+
+            gl.deleteShader(shader);
+
+            return null;
+        }
+
+        return shader;
+    }
+
+
+    function createProgram(
+        vertexSource,
+        fragmentSource
+    ) {
+
+        const vertexShader =
+            createShader(
+                gl.VERTEX_SHADER,
+                vertexSource
+            );
+
+        const fragmentShader =
+            createShader(
+                gl.FRAGMENT_SHADER,
+                fragmentSource
+            );
+
+
+        if (
+            !vertexShader ||
+            !fragmentShader
+        ) {
+
+            return null;
+        }
+
+
+        const program =
+            gl.createProgram();
+
+        gl.attachShader(
+            program,
+            vertexShader
         );
 
-    canvas.style.width =
-        `${width}px`;
+        gl.attachShader(
+            program,
+            fragmentShader
+        );
 
-    canvas.style.height =
-        `${height}px`;
+        gl.linkProgram(program);
 
-    ctx.setTransform(
-        pixelRatio,
-        0,
-        0,
-        pixelRatio,
+
+        if (
+            !gl.getProgramParameter(
+                program,
+                gl.LINK_STATUS
+            )
+        ) {
+
+            console.error(
+                gl.getProgramInfoLog(program)
+            );
+
+            return null;
+        }
+
+
+        return program;
+    }
+
+
+    /* =====================================================
+       VERTEX SHADER
+    ===================================================== */
+
+    const vertexShaderSource = `
+        attribute vec2 a_position;
+
+        void main() {
+
+            gl_Position =
+                vec4(
+                    a_position,
+                    0.0,
+                    1.0
+                );
+        }
+    `;
+
+
+    /* =====================================================
+       FRAGMENT SHADER
+       
+       Natural moonlit water.
+
+       This is deliberately organic rather than grid-like.
+    ===================================================== */
+
+    const fragmentShaderSource = `
+
+        precision highp float;
+
+
+        uniform vec2 u_resolution;
+        uniform float u_time;
+
+        uniform vec2 u_ripple0;
+        uniform float u_rippleTime0;
+
+        uniform vec2 u_ripple1;
+        uniform float u_rippleTime1;
+
+        uniform vec2 u_ripple2;
+        uniform float u_rippleTime2;
+
+
+        /* -------------------------------------------------
+           HASH / NOISE
+        ------------------------------------------------- */
+
+        float hash(vec2 p) {
+
+            p =
+                fract(
+                    p *
+                    vec2(
+                        123.34,
+                        456.21
+                    )
+                );
+
+            p +=
+                dot(
+                    p,
+                    p + 45.32
+                );
+
+            return
+                fract(
+                    p.x *
+                    p.y
+                );
+        }
+
+
+        float noise(vec2 p) {
+
+            vec2 i =
+                floor(p);
+
+            vec2 f =
+                fract(p);
+
+            f =
+                f *
+                f *
+                (
+                    3.0 -
+                    2.0 * f
+                );
+
+
+            float a =
+                hash(i);
+
+            float b =
+                hash(
+                    i +
+                    vec2(
+                        1.0,
+                        0.0
+                    )
+                );
+
+            float c =
+                hash(
+                    i +
+                    vec2(
+                        0.0,
+                        1.0
+                    )
+                );
+
+            float d =
+                hash(
+                    i +
+                    vec2(
+                        1.0,
+                        1.0
+                    )
+                );
+
+
+            return
+                mix(
+                    mix(a, b, f.x),
+                    mix(c, d, f.x),
+                    f.y
+                );
+        }
+
+
+        /* -------------------------------------------------
+           FRACTAL ORGANIC MOTION
+        ------------------------------------------------- */
+
+        float fbm(vec2 p) {
+
+            float value = 0.0;
+
+            float amplitude = 0.5;
+
+            for (
+                int i = 0;
+                i < 5;
+                i++
+            ) {
+
+                value +=
+                    amplitude *
+                    noise(p);
+
+                p *= 2.02;
+
+                amplitude *= 0.5;
+            }
+
+            return value;
+        }
+
+
+        /* -------------------------------------------------
+           RIPPLE FUNCTION
+        ------------------------------------------------- */
+
+        float ripple(
+            vec2 uv,
+            vec2 center,
+            float age
+        ) {
+
+            if (age < 0.0)
+                return 0.0;
+
+
+            float distanceFromCenter =
+                distance(
+                    uv,
+                    center
+                );
+
+
+            float radius =
+                age *
+                0.32;
+
+
+            float wave =
+                sin(
+                    (
+                        distanceFromCenter -
+                        radius
+                    ) *
+                    75.0
+                );
+
+
+            float ring =
+                exp(
+                    -abs(
+                        distanceFromCenter -
+                        radius
+                    ) *
+                    35.0
+                );
+
+
+            float fade =
+                exp(
+                    -age *
+                    0.72
+                );
+
+
+            return
+                wave *
+                ring *
+                fade;
+        }
+
+
+        /* -------------------------------------------------
+           MAIN
+        ------------------------------------------------- */
+
+        void main() {
+
+            vec2 uv =
+                gl_FragCoord.xy /
+                u_resolution.xy;
+
+
+            /*
+             * Correct the aspect ratio so the water
+             * behaves naturally on wide screens.
+             */
+
+            vec2 aspectUV =
+                uv;
+
+            aspectUV.x *=
+                u_resolution.x /
+                u_resolution.y;
+
+
+            /* ---------------------------------------------
+               ORGANIC WATER MOVEMENT
+            --------------------------------------------- */
+
+            vec2 flowUV =
+                aspectUV *
+                2.4;
+
+
+            flowUV +=
+                vec2(
+                    u_time * 0.012,
+                    u_time * 0.006
+                );
+
+
+            float broadNoise =
+                fbm(
+                    flowUV
+                );
+
+
+            float fineNoise =
+                fbm(
+                    flowUV * 3.1 +
+                    vec2(
+                        -u_time * 0.018,
+                        u_time * 0.011
+                    )
+                );
+
+
+            float water =
+                broadNoise * 0.72 +
+                fineNoise * 0.28;
+
+
+            /* ---------------------------------------------
+               SMALL NATURAL WAVES
+            --------------------------------------------- */
+
+            float waves =
+                sin(
+                    aspectUV.x * 23.0 +
+                    u_time * 0.18 +
+                    water * 4.0
+                )
+                *
+                0.018;
+
+
+            waves +=
+                sin(
+                    aspectUV.x * 51.0 -
+                    u_time * 0.11 +
+                    water * 7.0
+                )
+                *
+                0.009;
+
+
+            /* ---------------------------------------------
+               CLICK RIPPLES
+            --------------------------------------------- */
+
+            float r0 =
+                ripple(
+                    uv,
+                    u_ripple0,
+                    u_time - u_rippleTime0
+                );
+
+            float r1 =
+                ripple(
+                    uv,
+                    u_ripple1,
+                    u_time - u_rippleTime1
+                );
+
+            float r2 =
+                ripple(
+                    uv,
+                    u_ripple2,
+                    u_time - u_rippleTime2
+                );
+
+
+            float rippleValue =
+                r0 +
+                r1 +
+                r2;
+
+
+            /* ---------------------------------------------
+               MOONLIGHT
+            --------------------------------------------- */
+
+            float moonGlow =
+                exp(
+                    -pow(
+                        (uv.x - 0.5) * 3.2,
+                        2.0
+                    )
+                );
+
+
+            float reflectionNoise =
+                noise(
+                    vec2(
+                        uv.x * 9.0,
+                        uv.y * 3.0 +
+                        u_time * 0.02
+                    )
+                );
+
+
+            float moonReflection =
+                moonGlow *
+                (
+                    0.24 +
+                    reflectionNoise *
+                    0.34
+                );
+
+
+            /*
+             * Reflection becomes more fragmented lower
+             * into the water.
+             */
+
+            float reflectionFade =
+                smoothstep(
+                    0.0,
+                    0.68,
+                    1.0 - uv.y
+                );
+
+
+            moonReflection *=
+                reflectionFade;
+
+
+            moonReflection +=
+                rippleValue *
+                0.16;
+
+
+            /* ---------------------------------------------
+               WATER COLOR
+            --------------------------------------------- */
+
+            vec3 deepWater =
+                vec3(
+                    0.005,
+                    0.032,
+                    0.045
+                );
+
+
+            vec3 surfaceWater =
+                vec3(
+                    0.025,
+                    0.115,
+                    0.145
+                );
+
+
+            vec3 color =
+                mix(
+                    deepWater,
+                    surfaceWater,
+                    smoothstep(
+                        0.0,
+                        0.9,
+                        uv.y
+                    )
+                );
+
+
+            /* ---------------------------------------------
+               NATURAL WATER VARIATION
+            --------------------------------------------- */
+
+            color +=
+                water *
+                vec3(
+                    0.012,
+                    0.038,
+                    0.047
+                );
+
+
+            color +=
+                waves *
+                vec3(
+                    0.06,
+                    0.14,
+                    0.16
+                );
+
+
+            /* ---------------------------------------------
+               MOONLIGHT COLOR
+            --------------------------------------------- */
+
+            color +=
+                moonReflection *
+                vec3(
+                    0.48,
+                    0.78,
+                    0.88
+                );
+
+
+            /* ---------------------------------------------
+               RIPPLE HIGHLIGHTS
+            --------------------------------------------- */
+
+            color +=
+                abs(
+                    rippleValue
+                )
+                *
+                vec3(
+                    0.16,
+                    0.38,
+                    0.46
+                );
+
+
+            /* ---------------------------------------------
+               DEPTH DARKENING
+            --------------------------------------------- */
+
+            float depth =
+                smoothstep(
+                    0.0,
+                    1.0,
+                    uv.y
+                );
+
+
+            color *=
+                mix(
+                    1.0,
+                    0.55,
+                    depth * 0.62
+                );
+
+
+            /* ---------------------------------------------
+               TOP SURFACE GLOW
+            --------------------------------------------- */
+
+            float surfaceGlow =
+                smoothstep(
+                    0.42,
+                    0.0,
+                    uv.y
+                );
+
+
+            color +=
+                surfaceGlow *
+                vec3(
+                    0.025,
+                    0.065,
+                    0.08
+                );
+
+
+            gl_FragColor =
+                vec4(
+                    color,
+                    1.0
+                );
+        }
+    `;
+
+
+    /* =====================================================
+       PROGRAM
+    ===================================================== */
+
+    const program =
+        createProgram(
+            vertexShaderSource,
+            fragmentShaderSource
+        );
+
+
+    if (!program) {
+        return;
+    }
+
+
+    gl.useProgram(program);
+
+
+    /* =====================================================
+       FULLSCREEN QUAD
+    ===================================================== */
+
+    const positionBuffer =
+        gl.createBuffer();
+
+    gl.bindBuffer(
+        gl.ARRAY_BUFFER,
+        positionBuffer
+    );
+
+
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([
+            -1, -1,
+             1, -1,
+            -1,  1,
+
+            -1,  1,
+             1, -1,
+             1,  1
+        ]),
+        gl.STATIC_DRAW
+    );
+
+
+    const positionLocation =
+        gl.getAttribLocation(
+            program,
+            "a_position"
+        );
+
+
+    gl.enableVertexAttribArray(
+        positionLocation
+    );
+
+
+    gl.vertexAttribPointer(
+        positionLocation,
+        2,
+        gl.FLOAT,
+        false,
         0,
         0
     );
 
-    positionImpactRipples();
-}
+
+    /* =====================================================
+       UNIFORMS
+    ===================================================== */
+
+    const uResolution =
+        gl.getUniformLocation(
+            program,
+            "u_resolution"
+        );
+
+    const uTime =
+        gl.getUniformLocation(
+            program,
+            "u_time"
+        );
 
 
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
+    const rippleLocations = [
 
+        {
+            point:
+                gl.getUniformLocation(
+                    program,
+                    "u_ripple0"
+                ),
 
-/* =========================================================
-   NIGHT SKY STARS
-========================================================= */
-
-function createStars() {
-
-    starsContainer.innerHTML = "";
-
-    const starCount =
-        Math.max(
-            45,
-            Math.min(
-                115,
-                Math.floor(
-                    window.innerWidth / 12
+            time:
+                gl.getUniformLocation(
+                    program,
+                    "u_rippleTime0"
                 )
-            )
-        );
-
-    for (
-        let i = 0;
-        i < starCount;
-        i++
-    ) {
-
-        const star =
-            document.createElement(
-                "div"
-            );
-
-        star.className =
-            "star";
-
-        const size =
-            Math.random() < 0.84
-                ? Math.random() * 1.8 + 0.5
-                : Math.random() * 3 + 1.5;
-
-        const opacity =
-            Math.random() * 0.55 + 0.25;
-
-        const glow =
-            Math.random() * 7 + 1;
-
-        const duration =
-            Math.random() * 5 + 3;
-
-        star.style.width =
-            `${size}px`;
-
-        star.style.height =
-            `${size}px`;
-
-        star.style.left =
-            `${Math.random() * 100}%`;
-
-        star.style.top =
-            `${Math.random() * 72}%`;
-
-        star.style.setProperty(
-            "--opacity",
-            opacity
-        );
-
-        star.style.setProperty(
-            "--glow",
-            `${glow}px`
-        );
-
-        star.style.setProperty(
-            "--duration",
-            `${duration}s`
-        );
-
-        star.style.animationDelay =
-            `${Math.random() * duration}s`;
-
-        starsContainer.appendChild(
-            star
-        );
-    }
-}
-
-
-createStars();
-
-
-/* =========================================================
-   TEMPORARY WATER RIPPLE
-========================================================= */
-
-function createTemporaryRipple(
-    x,
-    y
-) {
-
-    if (
-        temporaryRipples.length >=
-        MAX_TEMPORARY_RIPPLES
-    ) {
-
-        temporaryRipples.shift();
-    }
-
-    temporaryRipples.push({
-
-        x,
-        y,
-
-        radius: 3,
-
-        strength: 1,
-
-        life: 1,
-
-        speed:
-            0.9 +
-            Math.random() * 0.45,
-
-        width:
-            1.0 +
-            Math.random() * 0.8
-    });
-}
-
-
-/* =========================================================
-   WATER BACKGROUND
-========================================================= */
-
-function drawWaterBackground() {
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            height
-        );
-
-    gradient.addColorStop(
-        0,
-        "#071c28"
-    );
-
-    gradient.addColorStop(
-        0.22,
-        "#061923"
-    );
-
-    gradient.addColorStop(
-        0.55,
-        "#03121b"
-    );
-
-    gradient.addColorStop(
-        1,
-        "#01090f"
-    );
-
-    ctx.fillStyle =
-        gradient;
-
-    ctx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-}
-
-
-/* =========================================================
-   NATURAL WATER MOVEMENT
-========================================================= */
-
-function drawNaturalWater() {
-
-    const horizonHeight =
-        Math.min(
-            115,
-            height * 0.22
-        );
-
-    for (
-        let band = 0;
-        band < 65;
-        band++
-    ) {
-
-        const normalized =
-            band / 65;
-
-        const y =
-            horizonHeight +
-            normalized *
-            (height - horizonHeight);
-
-        const amplitude =
-            1.1 +
-            normalized * 5.5;
-
-        const frequency =
-            0.008 +
-            normalized * 0.011;
-
-        const phase =
-            time *
-            (
-                0.0007 +
-                normalized * 0.0012
-            );
-
-        ctx.beginPath();
-
-        for (
-            let x = 0;
-            x <= width;
-            x += 12
-        ) {
-
-            const wave =
-                Math.sin(
-                    x * frequency +
-                    phase * 7 +
-                    normalized * 4
-                ) *
-                amplitude;
-
-            const wave2 =
-                Math.sin(
-                    x *
-                    frequency *
-                    2.2 -
-                    phase * 4
-                ) *
-                amplitude *
-                0.28;
-
-            const yy =
-                y +
-                wave +
-                wave2;
-
-            if (
-                x === 0
-            ) {
-
-                ctx.moveTo(
-                    x,
-                    yy
-                );
-
-            } else {
-
-                ctx.lineTo(
-                    x,
-                    yy
-                );
-            }
-        }
-
-        ctx.strokeStyle =
-            `rgba(
-                99,
-                174,
-                199,
-                ${0.015 + normalized * 0.025}
-            )`;
-
-        ctx.lineWidth =
-            0.6 +
-            normalized * 0.55;
-
-        ctx.stroke();
-    }
-}
-
-
-/* =========================================================
-   MOONLIGHT REFLECTION
-========================================================= */
-
-function drawMoonlightReflection() {
-
-    const centerX =
-        width * 0.5;
-
-    const horizonY =
-        Math.min(
-            95,
-            height * 0.16
-        );
-
-    for (
-        let i = 0;
-        i < 75;
-        i++
-    ) {
-
-        const depth =
-            i / 75;
-
-        const y =
-            horizonY +
-            depth *
-            Math.min(
-                height * 0.72,
-                620
-            );
-
-        const widthAtDepth =
-            18 +
-            depth *
-            depth *
-            330;
-
-        const waveOffset =
-            Math.sin(
-                time * 0.001 +
-                i * 0.17
-            ) *
-            (
-                3 +
-                depth * 11
-            );
-
-        const left =
-            centerX -
-            widthAtDepth / 2 +
-            waveOffset;
-
-        const right =
-            centerX +
-            widthAtDepth / 2 +
-            waveOffset;
-
-        const fragments =
-            4 +
-            Math.floor(
-                depth * 7
-            );
-
-        for (
-            let f = 0;
-            f < fragments;
-            f++
-        ) {
-
-            const fragmentWidth =
-                widthAtDepth /
-                fragments;
-
-            const startX =
-                left +
-                f *
-                fragmentWidth;
-
-            const gap =
-                Math.random() *
-                fragmentWidth *
-                0.55;
-
-            const endX =
-                Math.min(
-                    right,
-                    startX +
-                    fragmentWidth *
-                    (
-                        0.35 +
-                        Math.random() * 0.5
-                    )
-                );
-
-            const alpha =
-                (1 - depth) *
-                0.055 +
-                0.006;
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                startX + gap,
-                y
-            );
-
-            ctx.lineTo(
-                endX,
-                y
-            );
-
-            ctx.strokeStyle =
-                `rgba(
-                    206,
-                    244,
-                    255,
-                    ${alpha}
-                )`;
-
-            ctx.lineWidth =
-                0.7 +
-                (1 - depth) * 1.4;
-
-            ctx.stroke();
-        }
-    }
-
-    const glow =
-        ctx.createRadialGradient(
-            centerX,
-            horizonY,
-            4,
-            centerX,
-            horizonY,
-            Math.min(
-                width * 0.34,
-                340
-            )
-        );
-
-    glow.addColorStop(
-        0,
-        "rgba(180,235,250,0.13)"
-    );
-
-    glow.addColorStop(
-        0.35,
-        "rgba(100,190,220,0.045)"
-    );
-
-    glow.addColorStop(
-        1,
-        "rgba(0,0,0,0)"
-    );
-
-    ctx.fillStyle =
-        glow;
-
-    ctx.fillRect(
-        centerX - 360,
-        horizonY - 40,
-        720,
-        500
-    );
-}
-
-
-/* =========================================================
-   TEMPORARY RIPPLE DRAWING
-========================================================= */
-
-function drawTemporaryRipples() {
-
-    for (
-        let i =
-            temporaryRipples.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const ripple =
-            temporaryRipples[i];
-
-        ripple.radius +=
-            ripple.speed;
-
-        ripple.life -=
-            0.0075;
-
-        if (
-            ripple.life <= 0
-        ) {
-
-            temporaryRipples.splice(
-                i,
-                1
-            );
-
-            continue;
-        }
-
-
-        /* Primary ripple */
-
-        ctx.beginPath();
-
-        ctx.ellipse(
-
-            ripple.x,
-            ripple.y,
-
-            ripple.radius *
-                ripple.width,
-
-            ripple.radius *
-                0.34,
-
-            0,
-
-            0,
-            Math.PI * 2
-        );
-
-        ctx.strokeStyle =
-            `rgba(
-                157,
-                225,
-                243,
-                ${0.24 * ripple.life}
-            )`;
-
-        ctx.lineWidth =
-            1.2;
-
-        ctx.stroke();
-
-
-        /*
-         * Extremely faint outer disturbance.
-         *
-         * This should never look like a second
-         * obvious ripple.
-         */
-
-        ctx.beginPath();
-
-        ctx.ellipse(
-
-            ripple.x,
-            ripple.y,
-
-            ripple.radius * 1.7,
-
-            ripple.radius * 0.58,
-
-            0,
-
-            0,
-            Math.PI * 2
-        );
-
-        ctx.strokeStyle =
-            `rgba(
-                118,
-                199,
-                221,
-                ${0.035 * ripple.life}
-            )`;
-
-        ctx.lineWidth =
-            0.7;
-
-        ctx.stroke();
-    }
-}
-
-
-/* =========================================================
-   IMPACT RIPPLE REACTION
-========================================================= */
-
-function gentlyDisturbImpactRipples() {
-
-    const elements =
-        document.querySelectorAll(
-            ".impact-ripple"
-        );
-
-    elements.forEach(
-        (
-            element,
-            index
-        ) => {
-
-            const wave =
-                Math.sin(
-                    time * 0.0012 +
-                    index * 1.7
-                );
-
-            const x =
-                Math.sin(
-                    time * 0.00028 +
-                    index * 2.1
-                ) * 5;
-
-            const y =
-                wave * 3;
-
-            const rotation =
-                parseFloat(
-                    element.dataset.rotation ||
-                    "0"
-                );
-
-            element.style.transform =
-                `translate(
-                    calc(-50% + ${x}px),
-                    calc(-50% + ${y}px)
+        },
+
+        {
+            point:
+                gl.getUniformLocation(
+                    program,
+                    "u_ripple1"
+                ),
+
+            time:
+                gl.getUniformLocation(
+                    program,
+                    "u_rippleTime1"
                 )
-                rotate(${rotation}deg)
-                scale(
-                    var(--scale, 1)
-                )`;
+        },
+
+        {
+            point:
+                gl.getUniformLocation(
+                    program,
+                    "u_ripple2"
+                ),
+
+            time:
+                gl.getUniformLocation(
+                    program,
+                    "u_rippleTime2"
+                )
         }
-    );
-}
-
-
-/* =========================================================
-   ANIMATION LOOP
-========================================================= */
-
-function animate() {
-
-    time += 16.67;
-
-    drawWaterBackground();
-
-    drawMoonlightReflection();
-
-    drawNaturalWater();
-
-    drawTemporaryRipples();
-
-    gentlyDisturbImpactRipples();
-
-    requestAnimationFrame(
-        animate
-    );
-}
-
-
-/* =========================================================
-   CREATE ORGANIC IMPACT RIPPLE
-========================================================= */
-
-function createImpactRippleElement(
-    ripple,
-    index
-) {
-
-    const element =
-        document.createElement(
-            "div"
-        );
-
-    element.className =
-        "impact-ripple";
-
-    element.dataset.id =
-        ripple.id;
-
-
-    /*
-     * Each Ripple gets its own personality.
-     */
-
-    const rotation =
-        -22 +
-        Math.random() * 44;
-
-    const secondaryRotation =
-        -12 +
-        Math.random() * 24;
-
-    const floatTime =
-        5 +
-        Math.random() * 5;
-
-
-    element.dataset.rotation =
-        rotation;
-
-    element.style.setProperty(
-        "--rotation",
-        `${rotation}deg`
-    );
-
-    element.style.setProperty(
-        "--secondary-rotation",
-        `${secondaryRotation}deg`
-    );
-
-    element.style.setProperty(
-        "--float-time",
-        `${floatTime}s`
-    );
-
-
-    /*
-     * Slight size variation.
-     */
-
-    const scale =
-        0.78 +
-        Math.random() * 0.42;
-
-    element.style.setProperty(
-        "--scale",
-        scale
-    );
-
-
-    /*
-     * Organic shape variation.
-
-     * We deliberately generate four different
-     * border-radius values for each Ripple.
-     */
-
-    const radiusA =
-        45 +
-        Math.random() * 20;
-
-    const radiusB =
-        35 +
-        Math.random() * 25;
-
-    const radiusC =
-        50 +
-        Math.random() * 18;
-
-    const radiusD =
-        40 +
-        Math.random() * 25;
-
-    const radiusE =
-        44 +
-        Math.random() * 20;
-
-    const radiusF =
-        35 +
-        Math.random() * 25;
-
-    element.style.borderRadius =
-        `${radiusA}% ${radiusB}%
-         ${radiusC}% ${radiusD}%
-         /
-         ${radiusE}% ${radiusF}%
-         ${100 - radiusE}% ${100 - radiusF}%`;
-
-
-    /*
-     * Content container.
-
-     * Currently empty.
-
-     * Future sponsor/company logos can be inserted
-     * here without redesigning the object.
-     */
-
-    const content =
-        document.createElement(
-            "div"
-        );
-
-    content.className =
-        "impact-ripple-content";
-
-    element.appendChild(
-        content
-    );
-
-
-    /*
-     * Clicking the organic object reveals
-     * the complete message.
-     */
-
-    element.addEventListener(
-        "click",
-        function(event) {
-
-            event.stopPropagation();
-
-            showImpactRipple(
-                ripple
-            );
-        }
-    );
-
-
-    rippleLayer.appendChild(
-        element
-    );
-
-    return element;
-}
-
-
-/* =========================================================
-   POSITION IMPACT RIPPLES
-========================================================= */
-
-function positionImpactRipples() {
-
-    if (
-        !rippleLayer
-    ) {
-        return;
-    }
-
-    const elements =
-        document.querySelectorAll(
-            ".impact-ripple"
-        );
-
-
-    /*
-     * Positions are deliberately spread out
-     * to create the feeling of depth.
-     */
-
-    const positions = [
-
-        [17, 25],
-
-        [73, 20],
-
-        [42, 37],
-
-        [83, 44],
-
-        [23, 53],
-
-        [61, 59],
-
-        [36, 70],
-
-        [76, 76]
-
     ];
 
 
-    elements.forEach(
-        (
-            element,
-            index
-        ) => {
+    /* =====================================================
+       RIPPLE STATE
+    ===================================================== */
 
-            const position =
-                positions[
-                    index %
-                    positions.length
-                ];
+    const MAX_RIPPLES = 3;
 
-            element.style.left =
-                `${position[0]}%`;
+    const ripples = [];
 
-            element.style.top =
-                `${position[1]}%`;
-        }
-    );
-}
+    for (
+        let i = 0;
+        i < MAX_RIPPLES;
+        i++
+    ) {
 
-
-/* =========================================================
-   BUILD IMPACT RIPPLE FIELD
-========================================================= */
-
-function buildImpactRippleField() {
-
-    rippleLayer.innerHTML = "";
-
-    impactRipples.forEach(
-        (
-            ripple,
-            index
-        ) => {
-
-            createImpactRippleElement(
-                ripple,
-                index
-            );
-        }
-    );
-
-    positionImpactRipples();
-}
-
-
-/* =========================================================
-   SHOW IMPACT RIPPLE
-========================================================= */
-
-function showImpactRipple(
-    ripple
-) {
-
-    const quote =
-        document.getElementById(
-            "impact-quote"
-        );
-
-    const details =
-        document.getElementById(
-            "impact-details"
-        );
-
-
-    quote.textContent =
-        `"${ripple.quote}"`;
-
-
-    details.innerHTML =
-        `
-            <strong>
-                ${escapeHtml(
-                    ripple.author
-                )}
-            </strong>
-
-            <br><br>
-
-            ${escapeHtml(
-                ripple.details
-            )}
-        `;
-
-
-    openModal(
-        impactModal
-    );
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(
-    value
-) {
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-/* =========================================================
-   MODALS
-========================================================= */
-
-function openModal(
-    modal
-) {
-
-    modal.classList.add(
-        "open"
-    );
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-}
-
-
-function closeModal(
-    modal
-) {
-
-    modal.classList.remove(
-        "open"
-    );
-
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-}
-
-
-document.querySelectorAll(
-    "[data-close-modal]"
-).forEach(
-    button => {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                const modal =
-                    button.closest(
-                        ".modal-overlay"
-                    );
-
-                closeModal(
-                    modal
-                );
-            }
-        );
+        ripples.push({
+            x: -10,
+            y: -10,
+            time: -100
+        });
     }
-);
 
 
-/* =========================================================
-   MAKE A RIPPLE BUTTON
-========================================================= */
+    let rippleIndex = 0;
 
-makeRippleButton.addEventListener(
-    "click",
-    function() {
 
-        openModal(
-            makeRippleModal
+    /* =====================================================
+       TIME
+    ===================================================== */
+
+    const startTime =
+        performance.now();
+
+
+    /* =====================================================
+       REFLECTION DISTURBANCE
+    ===================================================== */
+
+    let reflectionTimeout = null;
+
+
+    function disturbReflection(
+        x,
+        y
+    ) {
+
+        if (!reflectionDistortion)
+            return;
+
+
+        const percentX =
+            `${x * 100}%`;
+
+        const percentY =
+            `${y * 100}%`;
+
+
+        reflectionDistortion.style
+            .setProperty(
+                "--ripple-x",
+                percentX
+            );
+
+
+        reflectionDistortion.style
+            .setProperty(
+                "--ripple-y",
+                percentY
+            );
+
+
+        reflectionDistortion.classList
+            .remove("active");
+
+
+        void reflectionDistortion.offsetWidth;
+
+
+        reflectionDistortion.classList
+            .add("active");
+
+
+        clearTimeout(
+            reflectionTimeout
         );
 
-        setTimeout(
+
+        reflectionTimeout =
+            setTimeout(
+                () => {
+
+                    reflectionDistortion
+                        .classList
+                        .remove("active");
+
+                },
+                850
+            );
+    }
+
+
+    /* =====================================================
+       CREATE VISIBLE RIPPLE
+    ===================================================== */
+
+    function createVisibleRipple(
+        x,
+        y
+    ) {
+
+        const ripple =
+            document.createElement("div");
+
+
+        ripple.className =
+            "click-ripple";
+
+
+        ripple.style.left =
+            `${x * 100}%`;
+
+        ripple.style.top =
+            `${y * 100}%`;
+
+
+        waterWindow.appendChild(
+            ripple
+        );
+
+
+        ripple.addEventListener(
+            "animationend",
             () => {
 
-                const field =
-                    document.getElementById(
-                        "ripple-message"
-                    );
-
-                if (field) {
-                    field.focus();
-                }
+                ripple.remove();
 
             },
-            350
-        );
-    }
-);
-
-
-/* =========================================================
-   CLICK OUTSIDE MODAL
-========================================================= */
-
-document.querySelectorAll(
-    ".modal-overlay"
-).forEach(
-    overlay => {
-
-        overlay.addEventListener(
-            "click",
-            function(event) {
-
-                if (
-                    event.target === overlay
-                ) {
-
-                    closeModal(
-                        overlay
-                    );
-                }
+            {
+                once: true
             }
         );
     }
-);
 
 
-/* =========================================================
-   ESCAPE KEY
-========================================================= */
+    /* =====================================================
+       ADD WATER RIPPLE
+    ===================================================== */
 
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            document.querySelectorAll(
-                ".modal-overlay.open"
-            ).forEach(
-                modal => {
-
-                    closeModal(
-                        modal
-                    );
-                }
-            );
-        }
-    }
-);
-
-
-/* =========================================================
-   WATER CLICK / TAP
-========================================================= */
-
-canvas.addEventListener(
-    "pointerdown",
-    function(event) {
+    function addRipple(
+        clientX,
+        clientY
+    ) {
 
         const rect =
-            canvas.getBoundingClientRect();
+            waterWindow.getBoundingClientRect();
+
 
         const x =
-            event.clientX -
-            rect.left;
+            (
+                clientX -
+                rect.left
+            ) /
+            rect.width;
+
 
         const y =
-            event.clientY -
-            rect.top;
+            (
+                clientY -
+                rect.top
+            ) /
+            rect.height;
 
 
-        /*
-         * Clicking the water creates ONLY
-         * a temporary visual ripple.
-         *
-         * It does NOT open the submission window.
-         */
+        const now =
+            (
+                performance.now() -
+                startTime
+            ) /
+            1000;
 
-        createTemporaryRipple(
+
+        ripples[rippleIndex] = {
+
+            x,
+            y,
+            time: now
+        };
+
+
+        rippleIndex =
+            (
+                rippleIndex + 1
+            ) %
+            MAX_RIPPLES;
+
+
+        createVisibleRipple(
+            x,
+            y
+        );
+
+
+        disturbReflection(
             x,
             y
         );
     }
-);
 
 
-/* =========================================================
-   FORM SUBMISSION
-========================================================= */
+    /* =====================================================
+       POINTER INTERACTION
+    ===================================================== */
 
-rippleForm.addEventListener(
-    "submit",
-    handleRippleSubmission
-);
+    canvas.addEventListener(
+        "pointerdown",
+        event => {
 
+            /*
+             * Only the water canvas creates water ripples.
+             * The Make a Ripple button remains separate.
+             */
 
-function handleRippleSubmission(
-    event
-) {
-
-    event.preventDefault();
-
-    const message =
-        document
-            .getElementById(
-                "ripple-message"
-            )
-            .value
-            .trim();
+            addRipple(
+                event.clientX,
+                event.clientY
+            );
+        }
+    );
 
 
-    if (
-        !message
-    ) {
-        return;
+    /* =====================================================
+       RENDER
+    ===================================================== */
+
+    function render() {
+
+        const elapsed =
+            (
+                performance.now() -
+                startTime
+            ) /
+            1000;
+
+
+        gl.useProgram(program);
+
+
+        gl.uniform2f(
+            uResolution,
+            canvas.width,
+            canvas.height
+        );
+
+
+        gl.uniform1f(
+            uTime,
+            elapsed
+        );
+
+
+        for (
+            let i = 0;
+            i < MAX_RIPPLES;
+            i++
+        ) {
+
+            const ripple =
+                ripples[i];
+
+
+            gl.uniform2f(
+                rippleLocations[i].point,
+                ripple.x,
+                1.0 - ripple.y
+            );
+
+
+            gl.uniform1f(
+                rippleLocations[i].time,
+                ripple.time
+            );
+        }
+
+
+        gl.drawArrays(
+            gl.TRIANGLES,
+            0,
+            6
+        );
+
+
+        requestAnimationFrame(
+            render
+        );
     }
 
 
-    /*
-     * At this stage submissions are only
-     * acknowledged locally.
-     *
-     * They do NOT automatically become
-     * Impact Ripples.
-     *
-     * The future moderation system will
-     * determine what becomes visible.
-     */
-
-    rippleForm.innerHTML =
-        `
-            <div
-                style="
-                    text-align:center;
-                    padding:25px 5px;
-                "
-            >
-
-                <div
-                    style="
-                        font-size:46px;
-                        margin-bottom:14px;
-                    "
-                >
-                    🌊
-                </div>
+    render();
 
 
-                <h3
-                    style="
-                        font-weight:400;
-                        font-size:25px;
-                        margin:0 0 12px;
-                    "
-                >
-                    Your Ripple Has Been Shared
-                </h3>
+    /* =====================================================
+       STAR FIELD
+    ===================================================== */
+
+    const stars =
+        document.getElementById("stars");
 
 
-                <p
-                    style="
-                        color:rgba(
-                            211,
-                            237,
-                            245,
-                            0.75
-                        );
-                        line-height:1.7;
-                        margin:0;
-                    "
-                >
+    if (stars) {
 
-                    Thank you for adding
-                    your voice to
-                    The Ripple Well.
-
-                    <br><br>
-
-                    Submissions are reviewed
-                    before they can become
-                    an <strong>Impact Ripple</strong>.
-
-                </p>
+        const starCount =
+            window.innerWidth < 700
+                ? 48
+                : 82;
 
 
-                <button
-                    type="button"
-                    class="modal-button submit"
-                    style="margin-top:25px;"
-                    id="submission-done"
-                >
-                    Return to the Well
-                </button>
+        for (
+            let i = 0;
+            i < starCount;
+            i++
+        ) {
 
-            </div>
-        `;
+            const star =
+                document.createElement("div");
 
+
+            star.className =
+                "star";
+
+
+            const size =
+                1 +
+                Math.random() * 2.1;
+
+
+            const opacity =
+                0.28 +
+                Math.random() * 0.58;
+
+
+            const glow =
+                2 +
+                Math.random() * 7;
+
+
+            const duration =
+                2.5 +
+                Math.random() * 5;
+
+
+            star.style.width =
+                `${size}px`;
+
+            star.style.height =
+                `${size}px`;
+
+            star.style.left =
+                `${Math.random() * 100}%`;
+
+            star.style.top =
+                `${Math.random() * 72}%`;
+
+            star.style.setProperty(
+                "--opacity",
+                opacity
+            );
+
+            star.style.setProperty(
+                "--glow",
+                `${glow}px`
+            );
+
+            star.style.setProperty(
+                "--duration",
+                `${duration}s`
+            );
+
+
+            stars.appendChild(
+                star
+            );
+        }
+    }
+
+
+    /* =====================================================
+       MODAL HELPERS
+    ===================================================== */
+
+    function openModal(modal) {
+
+        if (!modal)
+            return;
+
+
+        modal.classList.add("open");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+    }
+
+
+    function closeModal(modal) {
+
+        if (!modal)
+            return;
+
+
+        modal.classList.remove("open");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        /*
+         * Only restore scrolling if no other
+         * modal is open.
+         */
+
+        const anotherModalOpen =
+            document.querySelector(
+                ".modal-overlay.open"
+            );
+
+
+        if (!anotherModalOpen) {
+
+            document.body.style.overflow =
+                "";
+        }
+    }
+
+
+    /* =====================================================
+       MAKE A RIPPLE BUTTON
+    ===================================================== */
+
+    if (makeRippleButton) {
+
+        makeRippleButton.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                openModal(
+                    makeRippleModal
+                );
+            }
+        );
+    }
+
+
+    /* =====================================================
+       CLOSE BUTTONS
+    ===================================================== */
+
+    closeButtons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    closeModal(
+                        button.closest(
+                            ".modal-overlay"
+                        )
+                    );
+                }
+            );
+        }
+    );
+
+
+    /* =====================================================
+       CLICK OUTSIDE MODAL
+    ===================================================== */
 
     document
-        .getElementById(
-            "submission-done"
+        .querySelectorAll(
+            ".modal-overlay"
         )
-        .addEventListener(
-            "click",
-            function() {
+        .forEach(
+            overlay => {
+
+                overlay.addEventListener(
+                    "click",
+                    event => {
+
+                        if (
+                            event.target ===
+                            overlay
+                        ) {
+
+                            closeModal(
+                                overlay
+                            );
+                        }
+                    }
+                );
+            }
+        );
+
+
+    /* =====================================================
+       ESCAPE KEY
+    ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                document
+                    .querySelectorAll(
+                        ".modal-overlay.open"
+                    )
+                    .forEach(
+                        modal => {
+
+                            closeModal(
+                                modal
+                            );
+                        }
+                    );
+            }
+        }
+    );
+
+
+    /* =====================================================
+       SUBMISSION FORM
+       
+       This is intentionally still front-end only.
+       Approval/storage will be connected later.
+    ===================================================== */
+
+    if (rippleForm) {
+
+        rippleForm.addEventListener(
+            "submit",
+            event => {
+
+                event.preventDefault();
+
+
+                /*
+                 * For now we acknowledge the submission
+                 * locally rather than pretending it has
+                 * been permanently stored or approved.
+                 */
+
+                const message =
+                    document
+                        .getElementById(
+                            "ripple-message"
+                        );
+
+
+                const name =
+                    document
+                        .getElementById(
+                            "ripple-name"
+                        );
+
+
+                if (
+                    !message ||
+                    !message.value.trim()
+                ) {
+
+                    return;
+                }
+
+
+                /*
+                 * Future version:
+                 *
+                 * This is where the submission will
+                 * eventually be sent to the moderation /
+                 * approval system.
+                 */
+
+                console.log(
+                    "Ripple submitted:",
+                    {
+                        message:
+                            message.value.trim(),
+
+                        name:
+                            name
+                                ? name.value.trim()
+                                : ""
+                    }
+                );
+
+
+                message.value = "";
+
+                if (name) {
+                    name.value = "";
+                }
+
 
                 closeModal(
                     makeRippleModal
                 );
 
+
+                /*
+                 * Temporary acknowledgement.
+                 * We do NOT automatically create an
+                 * Impact Ripple because submissions
+                 * require approval.
+                 */
+
                 setTimeout(
-                    restoreRippleForm,
-                    350
+                    () => {
+
+                        alert(
+                            "Thank you for making a ripple. Your message has been submitted for review."
+                        );
+
+                    },
+                    250
                 );
             }
         );
-}
+    }
 
 
-/* =========================================================
-   RESTORE SUBMISSION FORM
-========================================================= */
+    /* =====================================================
+       FUTURE IMPACT RIPPLE DATA
+       
+       These are sample visual objects for now.
+       Eventually this array will be populated from
+       approved Impact Ripples.
+    ===================================================== */
 
-function restoreRippleForm() {
+    const impactRippleData = [
 
-    rippleForm.innerHTML =
-        `
-            <label for="ripple-message">
-                Your Ripple
-            </label>
+        {
+            x: 0.17,
+            y: 0.37,
+            depth: "far",
+            floatTime: "13s",
+            rotation: -8
+        },
 
+        {
+            x: 0.36,
+            y: 0.53,
+            depth: "mid",
+            floatTime: "16s",
+            rotation: 6
+        },
 
-            <textarea
-                id="ripple-message"
-                name="message"
-                maxlength="500"
-                required
-                placeholder="What would you like someone to find in The Ripple Well?"
-            ></textarea>
+        {
+            x: 0.62,
+            y: 0.39,
+            depth: "near",
+            floatTime: "14s",
+            rotation: -5
+        },
 
+        {
+            x: 0.80,
+            y: 0.58,
+            depth: "far",
+            floatTime: "18s",
+            rotation: 11
+        },
 
-            <label for="ripple-name">
-                Name or Display Name (Optional)
-            </label>
+        {
+            x: 0.25,
+            y: 0.72,
+            depth: "mid",
+            floatTime: "15s",
+            rotation: -12
+        },
 
-
-            <input
-                id="ripple-name"
-                name="name"
-                type="text"
-                maxlength="80"
-                placeholder="How would you like to be identified?"
-            >
-
-
-            <div class="modal-actions">
-
-                <button
-                    class="modal-button cancel"
-                    type="button"
-                    data-close-modal
-                >
-                    Maybe Later
-                </button>
-
-
-                <button
-                    class="modal-button submit"
-                    type="submit"
-                >
-                    Submit Ripple
-                </button>
-
-            </div>
-        `;
-
-
-    rippleForm.addEventListener(
-        "submit",
-        handleRippleSubmission
-    );
+        {
+            x: 0.71,
+            y: 0.78,
+            depth: "near",
+            floatTime: "17s",
+            rotation: 7
+        }
+    ];
 
 
-    rippleForm
-        .querySelectorAll(
-            "[data-close-modal]"
-        )
-        .forEach(
-            button => {
+    /* =====================================================
+       CREATE SAMPLE IMPACT RIPPLES
+       
+       No "Impact Ripple" text appears on the objects.
+    ===================================================== */
 
-                button.addEventListener(
+    function createImpactRipples() {
+
+        if (!impactLayer)
+            return;
+
+
+        impactLayer.innerHTML = "";
+
+
+        impactRippleData.forEach(
+            (data, index) => {
+
+                const ripple =
+                    document.createElement("div");
+
+
+                ripple.className =
+                    `impact-ripple depth-${data.depth}`;
+
+
+                ripple.dataset.index =
+                    index;
+
+
+                ripple.style.left =
+                    `${data.x * 100}%`;
+
+
+                ripple.style.top =
+                    `${data.y * 100}%`;
+
+
+                ripple.style.setProperty(
+                    "--rotation",
+                    `${data.rotation}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--secondary-rotation",
+                    `${-data.rotation * 0.55}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--float-time",
+                    data.floatTime
+                );
+
+
+                /*
+                 * Important:
+                 * No visible "Impact Ripple" label.
+                 *
+                 * Eventually this area can contain:
+                 *
+                 * - a company logo
+                 * - organization logo
+                 * - approved image
+                 * - symbolic graphic
+                 *
+                 * The message appears only when clicked.
+                 */
+
+
+                ripple.addEventListener(
                     "click",
-                    function() {
+                    event => {
 
-                        closeModal(
-                            makeRippleModal
+                        event.stopPropagation();
+
+
+                        openImpactRipple(
+                            index
                         );
                     }
                 );
+
+
+                impactLayer.appendChild(
+                    ripple
+                );
             }
         );
-}
+    }
 
 
-/* =========================================================
-   INITIALIZATION
-========================================================= */
+    /* =====================================================
+       IMPACT RIPPLE OPEN
+    ===================================================== */
 
-resizeCanvas();
+    function openImpactRipple(
+        index
+    ) {
 
-buildImpactRippleField();
+        const quote =
+            document.getElementById(
+                "impact-quote"
+            );
 
-animate();
+        const details =
+            document.getElementById(
+                "impact-details"
+            );
 
 
-/* =========================================================
-   VERSION 1.0.2 NOTES
+        if (!quote || !details)
+            return;
 
-   ✔ Corrected GitHub logo path:
-     images/Make the Ripple Large Logo.png
 
-   ✔ Floating Ripples contain NO TEXT
+        /*
+         * Temporary demonstration content.
+         *
+         * Later this will come from approved
+         * Impact Ripple data.
+         */
 
-   ✔ Floating Ripples are organic/oblong
+        const sampleMessages = [
 
-   ✔ Each Ripple has:
-       - different rotation
-       - different shape
-       - different size
-       - different floating motion
+            {
+                quote:
+                    "You are never as alone as you think you are.",
 
-   ✔ Hover reveals interactivity
+                details:
+                    "A message left in The Ripple Well to remind someone that there is always another ripple nearby."
+            },
 
-   ✔ Click opens the full message
+            {
+                quote:
+                    "Even the smallest ripple can reach someone.",
 
-   ✔ "Impact Ripple" terminology appears
-     inside the opened message only
+                details:
+                    "A reminder that kindness does not have to be enormous to matter."
+            },
 
-   ✔ Water clicks create temporary ripples
+            {
+                quote:
+                    "Keep going. Your story isn't finished.",
 
-   ✔ Water clicks do NOT open submission
+                details:
+                    "A message of encouragement from one visitor to another."
+            },
 
-   ✔ Make a Ripple button opens submission
+            {
+                quote:
+                    "You matter. More than you know.",
 
-   ✔ Submission does NOT automatically
-     become an Impact Ripple
+                details:
+                    "A simple reminder waiting beneath the surface."
+            },
 
-   ✔ Empty content area reserved for
-     future company/supporter logos
+            {
+                quote:
+                    "Someone out there is glad you are here.",
 
-   FUTURE:
+                details:
+                    "A message of hope left for whoever needs to find it."
+            },
 
-   - True water displacement
-   - Deeper diving/scrolling effect
-   - Floating physics
-   - Pop-up quotes
-   - Company logos
-   - Sponsor levels
-   - Subscription expiration
-   - Moderation system
-   - Database
-========================================================= */
+            {
+                quote:
+                    "Make the ripple you wish someone had made for you.",
+
+                details:
+                    "A reminder that every act of kindness has somewhere to go."
+            }
+        ];
+
+
+        const selected =
+            sampleMessages[
+                index %
+                sampleMessages.length
+            ];
+
+
+        quote.textContent =
+            `“${selected.quote}”`;
+
+
+        details.textContent =
+            selected.details;
+
+
+        openModal(
+            impactModal
+        );
+    }
+
+
+    createImpactRipples();
+
+
+    /* =====================================================
+       VISIBILITY OPTIMIZATION
+       
+       Reduce rendering pressure when the tab is hidden.
+    ===================================================== */
+
+    document.addEventListener(
+        "visibilitychange",
+        () => {
+
+            if (
+                document.hidden
+            ) {
+
+                /*
+                 * Nothing destructive happens here.
+                 * The animation loop naturally resumes
+                 * when the browser makes the tab active.
+                 */
+
+            }
+        }
+    );
+
+
+    /* =====================================================
+       INITIALIZATION COMPLETE
+    ===================================================== */
+
+    console.log(
+        "The Ripple Well v2.0 initialized."
+    );
+
+    console.log(
+        "Surface Layer: active"
+    );
+
+    console.log(
+        "Reflection Layer: active"
+    );
+
+    console.log(
+        "Depth Layer: active"
+    );
+
+})();
