@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.1
+   VERSION 2.0.3
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -13,19 +13,19 @@
    3. DEPTH
       Floating Impact Ripples live beneath the surface.
 
-   IMPACT RIPPLE WAKE — VERSION 2.1
+   IMPACT RIPPLE UPDATE — 2.0.3
    ---------------------------------------------------------
-   Each Impact Ripple now creates a subtle, singular,
-   organic water disturbance while floating.
+   The visible Impact Ripple body is now transparent.
 
-   The wake:
-   - comes from a roundish source
-   - expands as one continuous wave
-   - is irregular rather than perfectly circular
-   - slowly fades into the water
-   - repeats organically
-   - scales with the Impact Ripple
-   - does NOT create the previous triangular effect
+   The Impact Ripple still:
+   - Floats organically.
+   - Can be hovered.
+   - Can be clicked.
+   - Emits its surrounding ripple effect.
+   - Produces a larger ripple according to its depth/size.
+
+   The clickable area remains active but visually disappears
+   into the water.
 
    IMPORTANT:
    - Clicking water creates a ripple.
@@ -85,229 +85,66 @@
 
 
     /* =====================================================
-       IMPACT RIPPLE WAKE STYLE
+       INVISIBLE IMPACT RIPPLE BODY
        
-       Injected by JavaScript so index.html does not need
-       to be changed for this effect.
+       The clickable Impact Ripple remains in the DOM,
+       but its permanent oval/round body is invisible.
+
+       The ::before and ::after elements remain active so
+       the emitted ripple effect continues to be visible.
     ===================================================== */
 
-    const wakeStyle =
+    const impactRippleStyle =
         document.createElement("style");
 
-    wakeStyle.textContent = `
-
-        /* =================================================
-           IMPACT RIPPLE — SINGLE ORGANIC WATER WAKE
-        ================================================= */
-
-        .impact-ripple-wake {
-
-            position: absolute;
-
-            left: 50%;
-            top: 50%;
-
-            width: var(--wake-width, 125px);
-            height: var(--wake-height, 68px);
-
-            transform:
-                translate(-50%, -50%)
-                rotate(var(--wake-rotation, 0deg))
-                scale(0.28);
-
-            border-radius:
-                54% 46%
-                62% 38%
-                /
-                47% 58%
-                42% 53%;
-
-            border:
-                1px solid
-                rgba(145, 222, 241, 0.0);
-
-            background:
-                transparent;
-
-            box-shadow:
-                0 0 0
-                rgba(113, 214, 237, 0);
-
-            opacity: 0;
-
-            pointer-events: none;
-
-            animation:
-                impactWakeExpand
-                var(--wake-duration, 5.8s)
-                cubic-bezier(0.22, 0.61, 0.36, 1)
-                forwards;
-
-            z-index: -1;
-        }
-
-
-        /*
-         * The secondary edge gives the wake an irregular
-         * natural-water appearance without creating a
-         * second visible ring.
-         */
-
-        .impact-ripple-wake::after {
-
-            content: "";
-
-            position: absolute;
-
-            left: 4%;
-            top: 7%;
-
-            width: 92%;
-            height: 86%;
-
-            border-radius:
-                48% 52%
-                57% 43%
-                /
-                53% 46%
-                55% 45%;
-
-            border:
-                1px solid
-                rgba(163, 229, 244, 0.0);
-
-            transform:
-                rotate(-3deg)
-                scale(1.015);
-
-            opacity: 0.72;
-
-            pointer-events: none;
-        }
-
-
-        @keyframes impactWakeExpand {
-
-            0% {
-
-                opacity: 0;
-
-                transform:
-                    translate(-50%, -50%)
-                    rotate(var(--wake-rotation, 0deg))
-                    scale(0.28);
-
-                border-color:
-                    rgba(145, 222, 241, 0);
-
-                box-shadow:
-                    0 0 0
-                    rgba(113, 214, 237, 0);
-            }
-
-
-            12% {
-
-                opacity:
-                    var(--wake-opacity, 0.52);
-
-                border-color:
-                    rgba(145, 222, 241, 0.28);
-
-                box-shadow:
-                    0 0 7px
-                    rgba(113, 214, 237, 0.08);
-            }
-
-
-            42% {
-
-                opacity:
-                    var(--wake-opacity, 0.52);
-
-                border-color:
-                    rgba(145, 222, 241, 0.20);
-            }
-
-
-            72% {
-
-                opacity:
-                    calc(
-                        var(--wake-opacity, 0.52) * 0.42
-                    );
-
-                border-color:
-                    rgba(145, 222, 241, 0.09);
-
-                box-shadow:
-                    0 0 10px
-                    rgba(113, 214, 237, 0.04);
-            }
-
-
-            100% {
-
-                opacity: 0;
-
-                transform:
-                    translate(-50%, -50%)
-                    rotate(var(--wake-rotation, 0deg))
-                    scale(1.0);
-
-                border-color:
-                    rgba(145, 222, 241, 0);
-
-                box-shadow:
-                    0 0 0
-                    rgba(113, 214, 237, 0);
-            }
-        }
-
-
-        /*
-         * The wake sits underneath the Impact Ripple,
-         * allowing the source to remain visible.
-         */
+    impactRippleStyle.textContent = `
 
         .impact-ripple {
-            isolation: isolate;
+
+            background: transparent !important;
+
+            border: none !important;
+
+            box-shadow: none !important;
+
+            opacity: 1 !important;
         }
 
 
         /*
-         * Slightly different wake behavior depending on
-         * depth makes the pond feel less mechanically
-         * synchronized.
+         * Keep the emitted ripple/glow effects visible.
          */
 
-        .depth-far .impact-ripple-wake {
+        .impact-ripple::before {
 
-            filter:
-                blur(0.65px);
-
+            pointer-events: none;
         }
 
 
-        .depth-mid .impact-ripple-wake {
+        .impact-ripple::after {
 
-            filter:
-                blur(0.35px);
-
+            pointer-events: none;
         }
 
 
-        .depth-near .impact-ripple-wake {
+        /*
+         * Hover no longer reveals a solid oval.
+         * Instead, it simply enhances the emitted ripple.
+         */
 
-            filter:
-                blur(0.15px);
+        .impact-ripple:hover {
 
+            background: transparent !important;
+
+            border: none !important;
+
+            box-shadow: none !important;
         }
 
     `;
 
     document.head.appendChild(
-        wakeStyle
+        impactRippleStyle
     );
 
 
@@ -507,8 +344,6 @@
 
     /* =====================================================
        FRAGMENT SHADER
-       
-       Natural moonlit water.
     ===================================================== */
 
     const fragmentShaderSource = `
@@ -528,10 +363,6 @@
         uniform vec2 u_ripple2;
         uniform float u_rippleTime2;
 
-
-        /* -------------------------------------------------
-           HASH / NOISE
-        ------------------------------------------------- */
 
         float hash(vec2 p) {
 
@@ -615,10 +446,6 @@
         }
 
 
-        /* -------------------------------------------------
-           FRACTAL ORGANIC MOTION
-        ------------------------------------------------- */
-
         float fbm(vec2 p) {
 
             float value = 0.0;
@@ -643,10 +470,6 @@
             return value;
         }
 
-
-        /* -------------------------------------------------
-           RIPPLE FUNCTION
-        ------------------------------------------------- */
 
         float ripple(
             vec2 uv,
@@ -704,21 +527,12 @@
         }
 
 
-        /* -------------------------------------------------
-           MAIN
-        ------------------------------------------------- */
-
         void main() {
 
             vec2 uv =
                 gl_FragCoord.xy /
                 u_resolution.xy;
 
-
-            /*
-             * Correct the aspect ratio so the water
-             * behaves naturally on wide screens.
-             */
 
             vec2 aspectUV =
                 uv;
@@ -727,10 +541,6 @@
                 u_resolution.x /
                 u_resolution.y;
 
-
-            /* ---------------------------------------------
-               ORGANIC WATER MOVEMENT
-            --------------------------------------------- */
 
             vec2 flowUV =
                 aspectUV *
@@ -765,10 +575,6 @@
                 fineNoise * 0.28;
 
 
-            /* ---------------------------------------------
-               SMALL NATURAL WAVES
-            --------------------------------------------- */
-
             float waves =
                 sin(
                     aspectUV.x * 23.0 +
@@ -789,10 +595,6 @@
                 0.009;
 
 
-            /* ---------------------------------------------
-               CLICK RIPPLES
-            --------------------------------------------- */
-
             float r0 =
                 ripple(
                     uv,
@@ -800,12 +602,14 @@
                     u_time - u_rippleTime0
                 );
 
+
             float r1 =
                 ripple(
                     uv,
                     u_ripple1,
                     u_time - u_rippleTime1
                 );
+
 
             float r2 =
                 ripple(
@@ -820,10 +624,6 @@
                 r1 +
                 r2;
 
-
-            /* ---------------------------------------------
-               MOONLIGHT
-            --------------------------------------------- */
 
             float moonGlow =
                 exp(
@@ -853,11 +653,6 @@
                 );
 
 
-            /*
-             * Reflection becomes more fragmented lower
-             * into the water.
-             */
-
             float reflectionFade =
                 smoothstep(
                     0.0,
@@ -874,10 +669,6 @@
                 rippleValue *
                 0.16;
 
-
-            /* ---------------------------------------------
-               WATER COLOR
-            --------------------------------------------- */
 
             vec3 deepWater =
                 vec3(
@@ -907,10 +698,6 @@
                 );
 
 
-            /* ---------------------------------------------
-               NATURAL WATER VARIATION
-            --------------------------------------------- */
-
             color +=
                 water *
                 vec3(
@@ -929,10 +716,6 @@
                 );
 
 
-            /* ---------------------------------------------
-               MOONLIGHT COLOR
-            --------------------------------------------- */
-
             color +=
                 moonReflection *
                 vec3(
@@ -941,10 +724,6 @@
                     0.88
                 );
 
-
-            /* ---------------------------------------------
-               RIPPLE HIGHLIGHTS
-            --------------------------------------------- */
 
             color +=
                 abs(
@@ -957,10 +736,6 @@
                     0.46
                 );
 
-
-            /* ---------------------------------------------
-               DEPTH DARKENING
-            --------------------------------------------- */
 
             float depth =
                 smoothstep(
@@ -977,10 +752,6 @@
                     depth * 0.62
                 );
 
-
-            /* ---------------------------------------------
-               TOP SURFACE GLOW
-            --------------------------------------------- */
 
             float surfaceGlow =
                 smoothstep(
@@ -1189,24 +960,17 @@
             return;
 
 
-        const percentX =
-            `${x * 100}%`;
-
-        const percentY =
-            `${y * 100}%`;
-
-
         reflectionDistortion.style
             .setProperty(
                 "--ripple-x",
-                percentX
+                `${x * 100}%`
             );
 
 
         reflectionDistortion.style
             .setProperty(
                 "--ripple-y",
-                percentY
+                `${y * 100}%`
             );
 
 
@@ -1241,7 +1005,7 @@
 
 
     /* =====================================================
-       CREATE VISIBLE RIPPLE
+       CREATE VISIBLE WATER RIPPLE
     ===================================================== */
 
     function createVisibleRipple(
@@ -1355,11 +1119,6 @@
     canvas.addEventListener(
         "pointerdown",
         event => {
-
-            /*
-             * Only the water canvas creates water ripples.
-             * The Make a Ripple button remains separate.
-             */
 
             addRipple(
                 event.clientX,
@@ -1561,11 +1320,6 @@
         );
 
 
-        /*
-         * Only restore scrolling if no other
-         * modal is open.
-         */
-
         const anotherModalOpen =
             document.querySelector(
                 ".modal-overlay.open"
@@ -1686,9 +1440,6 @@
 
     /* =====================================================
        SUBMISSION FORM
-       
-       This is intentionally still front-end only.
-       Approval/storage will be connected later.
     ===================================================== */
 
     if (rippleForm) {
@@ -1701,17 +1452,15 @@
 
 
                 const message =
-                    document
-                        .getElementById(
-                            "ripple-message"
-                        );
+                    document.getElementById(
+                        "ripple-message"
+                    );
 
 
                 const name =
-                    document
-                        .getElementById(
-                            "ripple-name"
-                        );
+                    document.getElementById(
+                        "ripple-name"
+                    );
 
 
                 if (
@@ -1775,13 +1524,7 @@
             y: 0.37,
             depth: "far",
             floatTime: "13s",
-            rotation: -8,
-
-            wakeWidth: 86,
-            wakeHeight: 46,
-            wakeDuration: "6.8s",
-            wakeOpacity: 0.32,
-            wakeDelay: "0.4s"
+            rotation: -8
         },
 
         {
@@ -1789,13 +1532,7 @@
             y: 0.53,
             depth: "mid",
             floatTime: "16s",
-            rotation: 6,
-
-            wakeWidth: 108,
-            wakeHeight: 56,
-            wakeDuration: "6.4s",
-            wakeOpacity: 0.40,
-            wakeDelay: "1.8s"
+            rotation: 6
         },
 
         {
@@ -1803,13 +1540,7 @@
             y: 0.39,
             depth: "near",
             floatTime: "14s",
-            rotation: -5,
-
-            wakeWidth: 138,
-            wakeHeight: 72,
-            wakeDuration: "5.8s",
-            wakeOpacity: 0.54,
-            wakeDelay: "0.9s"
+            rotation: -5
         },
 
         {
@@ -1817,13 +1548,7 @@
             y: 0.58,
             depth: "far",
             floatTime: "18s",
-            rotation: 11,
-
-            wakeWidth: 92,
-            wakeHeight: 49,
-            wakeDuration: "7.2s",
-            wakeOpacity: 0.30,
-            wakeDelay: "3.2s"
+            rotation: 11
         },
 
         {
@@ -1831,13 +1556,7 @@
             y: 0.72,
             depth: "mid",
             floatTime: "15s",
-            rotation: -12,
-
-            wakeWidth: 112,
-            wakeHeight: 58,
-            wakeDuration: "6.6s",
-            wakeOpacity: 0.40,
-            wakeDelay: "2.6s"
+            rotation: -12
         },
 
         {
@@ -1845,147 +1564,16 @@
             y: 0.78,
             depth: "near",
             floatTime: "17s",
-            rotation: 7,
-
-            wakeWidth: 146,
-            wakeHeight: 76,
-            wakeDuration: "5.9s",
-            wakeOpacity: 0.55,
-            wakeDelay: "1.4s"
+            rotation: 7
         }
     ];
 
 
     /* =====================================================
-       IMPACT RIPPLE WAKE
-       
-       Creates ONE organic surrounding wave.
-       
-       The wake repeatedly emerges from underneath the
-       Impact Ripple and expands outward.
-    ===================================================== */
-
-    function createImpactRippleWake(
-        ripple,
-        data
-    ) {
-
-        const wake =
-            document.createElement("div");
-
-
-        wake.className =
-            "impact-ripple-wake";
-
-
-        wake.style.setProperty(
-            "--wake-width",
-            `${data.wakeWidth}px`
-        );
-
-
-        wake.style.setProperty(
-            "--wake-height",
-            `${data.wakeHeight}px`
-        );
-
-
-        wake.style.setProperty(
-            "--wake-duration",
-            data.wakeDuration
-        );
-
-
-        wake.style.setProperty(
-            "--wake-opacity",
-            data.wakeOpacity
-        );
-
-
-        /*
-         * Slightly different rotation keeps the wake
-         * from looking mechanically attached to the
-         * Impact Ripple's own rotation.
-         */
-
-        const wakeRotation =
-            data.rotation * 0.35 +
-            (Math.random() * 6 - 3);
-
-
-        wake.style.setProperty(
-            "--wake-rotation",
-            `${wakeRotation}deg`
-        );
-
-
-        wake.style.animationDelay =
-            data.wakeDelay;
-
-
-        ripple.insertBefore(
-            wake,
-            ripple.firstChild
-        );
-
-
-        wake.addEventListener(
-            "animationend",
-            () => {
-
-                /*
-                 * Re-create the wake after a small,
-                 * irregular pause.
-                 */
-
-                if (
-                    !document.body.contains(
-                        ripple
-                    )
-                ) {
-                    return;
-                }
-
-
-                const nextDelay =
-                    900 +
-                    Math.random() * 2300;
-
-
-                setTimeout(
-                    () => {
-
-                        if (
-                            document.body.contains(
-                                ripple
-                            )
-                        ) {
-
-                            createImpactRippleWake(
-                                ripple,
-                                data
-                            );
-                        }
-
-                    },
-                    nextDelay
-                );
-
-
-                wake.remove();
-
-            },
-            {
-                once: true
-            }
-        );
-    }
-
-
-    /* =====================================================
        CREATE IMPACT RIPPLES
        
-       No "Impact Ripple" text appears on the objects.
+       The original body is now invisible.
+       The ripple emission remains.
     ===================================================== */
 
     function createImpactRipples() {
@@ -2038,29 +1626,11 @@
                 );
 
 
-                /*
-                 * The Impact Ripple itself remains clean.
-                 *
-                 * The wake is a separate visual layer
-                 * underneath it.
-                 */
-
-                createImpactRippleWake(
-                    ripple,
-                    data
-                );
-
-
-                /* -----------------------------------------
-                   CLICK
-                ----------------------------------------- */
-
                 ripple.addEventListener(
                     "click",
                     event => {
 
                         event.stopPropagation();
-
 
                         openImpactRipple(
                             index
@@ -2173,10 +1743,6 @@
     }
 
 
-    /* =====================================================
-       INITIALIZE IMPACT RIPPLES
-    ===================================================== */
-
     createImpactRipples();
 
 
@@ -2188,12 +1754,16 @@
         "visibilitychange",
         () => {
 
-            /*
-             * The animation naturally pauses according
-             * to browser rendering behavior when the
-             * document is hidden.
-             */
+            if (
+                document.hidden
+            ) {
 
+                /*
+                 * Animation naturally resumes when
+                 * the browser makes the tab active.
+                 */
+
+            }
         }
     );
 
@@ -2203,7 +1773,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.1 initialized."
+        "The Ripple Well v2.0.3 initialized."
     );
 
     console.log(
@@ -2219,7 +1789,7 @@
     );
 
     console.log(
-        "Impact Ripple organic single-wave wakes: active"
+        "Impact Ripple bodies: invisible"
     );
 
 })();
