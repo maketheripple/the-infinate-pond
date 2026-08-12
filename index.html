@@ -8,13 +8,20 @@
 
     <meta
         name="description"
-        content="The Ripple Well — a living collection of messages of hope, encouragement, and support from Make the Ripple."
+        content="The Ripple Well — a living collection of messages of hope, encouragement, support and kindness from Make the Ripple."
     >
 
     <style>
 
         /* =====================================================
-           GLOBAL
+           THE RIPPLE WELL
+           VERSION 2.0
+           
+           THREE-LAYER WATER EXPERIENCE
+
+           1. SURFACE LAYER
+           2. REFLECTION LAYER
+           3. DEPTH LAYER
         ===================================================== */
 
         * {
@@ -46,6 +53,7 @@
 
         /* =====================================================
            FIXED NIGHT SKY BANNER
+           HEADER POSITION IS LOCKED
         ===================================================== */
 
         #sky-banner {
@@ -58,13 +66,6 @@
             left: 0;
 
             width: 100%;
-
-            /*
-             * Entire banner moved downward by extending
-             * its height. This gives the logo room at the top
-             * while preserving the spacing of the title stack.
-             */
-
             height: 470px;
 
             overflow: hidden;
@@ -100,11 +101,9 @@
             z-index: 20;
 
             left: -5%;
-
             bottom: -5px;
 
             width: 110%;
-
             height: 24px;
 
             background:
@@ -182,7 +181,7 @@
 
 
         /* =====================================================
-           BRANDING CONTAINER
+           BRANDING
         ===================================================== */
 
         #branding {
@@ -195,7 +194,6 @@
             left: 50%;
 
             width: min(700px, 92%);
-
             height: 100%;
 
             transform: translateX(-50%);
@@ -208,15 +206,12 @@
 
         /* =====================================================
            LOGO
+           LOCKED POSITION
         ===================================================== */
 
         #logo-wrap {
 
             position: absolute;
-
-            /*
-             * Logo moved down 60px.
-             */
 
             top: 68px;
 
@@ -225,13 +220,11 @@
             width: 260px;
             height: 150px;
 
-            transform:
-                translateX(-50%);
+            transform: translateX(-50%);
 
             display: flex;
 
             align-items: center;
-
             justify-content: center;
         }
 
@@ -266,7 +259,6 @@
             display: block;
 
             width: 240px;
-
             height: auto;
 
             filter:
@@ -282,7 +274,8 @@
 
 
         /* =====================================================
-           PRESENTS
+           HEADER WORDING
+           LOCKED POSITION
         ===================================================== */
 
         #presents {
@@ -313,10 +306,6 @@
                 rgba(151, 218, 240, 0.35);
         }
 
-
-        /* =====================================================
-           THE RIPPLE WELL
-        ===================================================== */
 
         #well-title {
 
@@ -349,10 +338,6 @@
                 rgba(98, 191, 224, 0.28);
         }
 
-
-        /* =====================================================
-           EVERY RIPPLE STARTS SMALL
-        ===================================================== */
 
         #well-tagline {
 
@@ -447,32 +432,32 @@
 
 
         /* =====================================================
-           RIPPLE WELL / WATER AREA
+           RIPPLE WELL
         ===================================================== */
 
         #ripple-well {
 
             position: relative;
 
-            min-height: 250vh;
-
-            /*
-             * Must match the banner height.
-             */
+            min-height: 300vh;
 
             margin-top: 470px;
 
             background:
                 linear-gradient(
                     to bottom,
-                    #05141e 0%,
-                    #04141e 10%,
-                    #03111a 38%,
-                    #020d15 68%,
-                    #01090f 100%
+                    #061721 0%,
+                    #04131d 18%,
+                    #031019 45%,
+                    #020c14 72%,
+                    #01080e 100%
                 );
         }
 
+
+        /* =====================================================
+           WATER WINDOW
+        ===================================================== */
 
         #water-window {
 
@@ -483,7 +468,6 @@
             top: 0;
 
             width: 100%;
-
             height: 100vh;
 
             overflow: hidden;
@@ -491,15 +475,128 @@
             background:
                 linear-gradient(
                     to bottom,
-                    rgba(6, 25, 35, 0.85),
-                    rgba(1, 10, 16, 0.98)
+                    #071d29 0%,
+                    #041721 38%,
+                    #020e16 100%
                 );
         }
 
 
+        /* =====================================================
+           LAYER 1 — SURFACE
+        ===================================================== */
+
+        #surface-layer {
+
+            position: absolute;
+
+            z-index: 1;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    ellipse at 50% -8%,
+                    rgba(174, 231, 247, 0.17),
+                    transparent 36%
+                ),
+
+                linear-gradient(
+                    to bottom,
+                    rgba(39, 112, 137, 0.24),
+                    rgba(3, 24, 34, 0.08) 42%,
+                    rgba(1, 11, 17, 0.46) 100%
+                );
+        }
+
+
+        /* =====================================================
+           SURFACE WAVE BANDS
+        ===================================================== */
+
+        .surface-wave {
+
+            position: absolute;
+
+            left: -15%;
+
+            width: 130%;
+
+            height: 95px;
+
+            border-top:
+                1px solid
+                rgba(144, 219, 237, 0.075);
+
+            border-radius: 50%;
+
+            filter: blur(1.2px);
+
+            opacity: 0.75;
+
+            animation:
+                surfaceDrift
+                var(--wave-speed)
+                ease-in-out
+                infinite
+                alternate;
+        }
+
+
+        .surface-wave:nth-child(1) {
+            top: 8%;
+            --wave-speed: 11s;
+        }
+
+        .surface-wave:nth-child(2) {
+            top: 16%;
+            --wave-speed: 14s;
+            opacity: 0.45;
+        }
+
+        .surface-wave:nth-child(3) {
+            top: 25%;
+            --wave-speed: 17s;
+            opacity: 0.30;
+        }
+
+        .surface-wave:nth-child(4) {
+            top: 34%;
+            --wave-speed: 13s;
+            opacity: 0.22;
+        }
+
+
+        @keyframes surfaceDrift {
+
+            from {
+                transform:
+                    translateX(-2%)
+                    scaleX(0.99);
+            }
+
+            to {
+                transform:
+                    translateX(2%)
+                    scaleX(1.015);
+            }
+        }
+
+
+        /* =====================================================
+           WATER CANVAS
+           CORE NATURAL WATER / RIPPLE ENGINE
+        ===================================================== */
+
         #water-canvas {
 
             position: absolute;
+
+            z-index: 3;
 
             inset: 0;
 
@@ -513,14 +610,343 @@
 
 
         /* =====================================================
-           FLOATING IMPACT RIPPLES
+           LAYER 2 — REFLECTION
+        ===================================================== */
+
+        #reflection-layer {
+
+            position: absolute;
+
+            z-index: 6;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+
+            height: 285px;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            /*
+             * The reflection begins exactly at the top of
+             * the water window.
+             */
+
+            opacity: 0.74;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,1) 0%,
+                    rgba(0,0,0,0.92) 35%,
+                    rgba(0,0,0,0.40) 75%,
+                    transparent 100%
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,1) 0%,
+                    rgba(0,0,0,0.92) 35%,
+                    rgba(0,0,0,0.40) 75%,
+                    transparent 100%
+                );
+        }
+
+
+        /*
+         * The reflection is intentionally upside down.
+         * It is not simply a second header.
+         */
+
+        #reflection-content {
+
+            position: absolute;
+
+            top: -8px;
+            left: 50%;
+
+            width: min(720px, 96vw);
+
+            height: 390px;
+
+            transform:
+                translateX(-50%)
+                scaleY(-0.58);
+
+            transform-origin: top center;
+
+            opacity: 0.68;
+
+            filter:
+                blur(1.1px);
+
+            text-align: center;
+        }
+
+
+        #reflection-logo-wrap {
+
+            position: absolute;
+
+            top: 18px;
+
+            left: 50%;
+
+            width: 270px;
+            height: 150px;
+
+            transform:
+                translateX(-50%);
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #reflection-logo-glow {
+
+            position: absolute;
+
+            width: 250px;
+            height: 135px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    ellipse,
+                    rgba(177, 231, 246, 0.26),
+                    rgba(74, 168, 197, 0.10) 38%,
+                    transparent 72%
+                );
+
+            filter: blur(13px);
+        }
+
+
+        #reflection-logo {
+
+            position: relative;
+
+            width: 240px;
+
+            height: auto;
+
+            opacity: 0.58;
+
+            filter:
+                blur(0.8px)
+                drop-shadow(
+                    0 0 9px
+                    rgba(126, 213, 236, 0.34)
+                );
+        }
+
+
+        #reflection-presents {
+
+            position: absolute;
+
+            top: 250px;
+
+            left: 0;
+
+            width: 100%;
+
+            color:
+                rgba(183, 229, 242, 0.42);
+
+            font-size: 18px;
+
+            letter-spacing: 0.24em;
+
+            text-transform: uppercase;
+        }
+
+
+        #reflection-title {
+
+            position: absolute;
+
+            top: 278px;
+
+            left: 0;
+
+            width: 100%;
+
+            color:
+                rgba(189, 233, 246, 0.48);
+
+            font-size:
+                clamp(38px, 5vw, 62px);
+
+            letter-spacing: 0.04em;
+
+            font-weight: 400;
+        }
+
+
+        #reflection-tagline {
+
+            position: absolute;
+
+            top: 352px;
+
+            left: 0;
+
+            width: 100%;
+
+            color:
+                rgba(170, 221, 235, 0.34);
+
+            font-size:
+                clamp(14px, 2vw, 19px);
+
+            letter-spacing: 0.20em;
+        }
+
+
+        /*
+         * Horizontal distortion lines make the reflection
+         * feel like light broken by a real water surface.
+         */
+
+        #reflection-ripples {
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    transparent 0px,
+                    transparent 12px,
+                    rgba(180, 232, 246, 0.035) 13px,
+                    transparent 15px,
+                    transparent 25px
+                );
+
+            mix-blend-mode: screen;
+
+            animation:
+                reflectionWaver
+                9s
+                ease-in-out
+                infinite
+                alternate;
+        }
+
+
+        @keyframes reflectionWaver {
+
+            from {
+                transform:
+                    translateX(-3px)
+                    skewX(-0.3deg);
+            }
+
+            to {
+                transform:
+                    translateX(4px)
+                    skewX(0.3deg);
+            }
+        }
+
+
+        /* =====================================================
+           REFLECTION DISTURBANCE
+           Added by JS when the water is clicked.
+        ===================================================== */
+
+        #reflection-distortion {
+
+            position: absolute;
+
+            z-index: 8;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            background:
+                radial-gradient(
+                    ellipse at var(--ripple-x) var(--ripple-y),
+                    rgba(196, 239, 249, 0.20),
+                    rgba(94, 192, 218, 0.07) 12%,
+                    transparent 32%
+                );
+
+            transition:
+                opacity 0.25s ease;
+        }
+
+
+        #reflection-distortion.active {
+            opacity: 1;
+        }
+
+
+        /* =====================================================
+           LAYER 3 — DEPTH
+        ===================================================== */
+
+        #depth-layer {
+
+            position: absolute;
+
+            z-index: 12;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            overflow: hidden;
+        }
+
+
+        /*
+         * Subtle depth haze.
+         */
+
+        #depth-haze {
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    rgba(0, 7, 12, 0.04) 22%,
+                    rgba(0, 7, 12, 0.22) 62%,
+                    rgba(0, 5, 9, 0.54) 100%
+                );
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           IMPACT RIPPLE OBJECTS
         ===================================================== */
 
         #impact-ripples-layer {
 
             position: absolute;
 
-            z-index: 10;
+            z-index: 15;
 
             inset: 0;
 
@@ -614,9 +1040,7 @@
                 rgba(157, 225, 243, 0.15);
 
             transform:
-                rotate(
-                    var(--secondary-rotation)
-                );
+                rotate(var(--secondary-rotation));
 
             filter: blur(0.7px);
 
@@ -731,14 +1155,46 @@
 
 
         /* =====================================================
-           BOTTOM WATER MESSAGE
+           DEPTH MARKERS
+           These make objects feel like they are at different
+           distances beneath the surface.
+        ===================================================== */
+
+        .depth-far {
+
+            opacity: 0.38;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0.72);
+        }
+
+
+        .depth-mid {
+
+            opacity: 0.60;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0.88);
+        }
+
+
+        .depth-near {
+
+            opacity: 0.82;
+        }
+
+
+        /* =====================================================
+           DEPTH MESSAGE
         ===================================================== */
 
         #depth-message {
 
             position: absolute;
 
-            z-index: 15;
+            z-index: 20;
 
             left: 50%;
             bottom: 45px;
@@ -765,6 +1221,80 @@
             text-shadow:
                 0 0 9px
                 rgba(80, 180, 210, 0.22);
+        }
+
+
+        /* =====================================================
+           CLICK RIPPLE VISUALS
+        ===================================================== */
+
+        .click-ripple {
+
+            position: absolute;
+
+            z-index: 25;
+
+            width: 20px;
+            height: 20px;
+
+            margin-left: -10px;
+            margin-top: -10px;
+
+            border:
+                1px solid
+                rgba(185, 237, 249, 0.72);
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            animation:
+                clickRipple
+                2.2s
+                ease-out
+                forwards;
+        }
+
+
+        .click-ripple::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 5px;
+
+            border:
+                1px solid
+                rgba(161, 226, 241, 0.42);
+
+            border-radius: 50%;
+        }
+
+
+        @keyframes clickRipple {
+
+            0% {
+
+                width: 20px;
+                height: 20px;
+
+                margin-left: -10px;
+                margin-top: -10px;
+
+                opacity: 0.82;
+            }
+
+            100% {
+
+                width: 430px;
+                height: 240px;
+
+                margin-left: -215px;
+                margin-top: -120px;
+
+                opacity: 0;
+            }
         }
 
 
@@ -1187,6 +1717,59 @@
             }
 
 
+            #reflection-layer {
+
+                height: 230px;
+            }
+
+
+            #reflection-content {
+
+                width: 100%;
+
+                transform:
+                    translateX(-50%)
+                    scaleY(-0.50);
+            }
+
+
+            #reflection-logo {
+
+                width: 145px;
+            }
+
+
+            #reflection-logo-wrap {
+
+                width: 160px;
+                height: 100px;
+            }
+
+
+            #reflection-presents {
+
+                top: 182px;
+
+                font-size: 13px;
+            }
+
+
+            #reflection-title {
+
+                top: 208px;
+
+                font-size: 36px;
+            }
+
+
+            #reflection-tagline {
+
+                top: 265px;
+
+                font-size: 12px;
+            }
+
+
             .impact-ripple {
 
                 width: 82px;
@@ -1221,8 +1804,6 @@
         <div id="branding">
 
 
-            <!-- MAKE THE RIPPLE LOGO -->
-
             <div id="logo-wrap">
 
                 <div id="logo-glow"></div>
@@ -1236,21 +1817,15 @@
             </div>
 
 
-            <!-- PRESENTS -->
-
             <div id="presents">
                 Presents
             </div>
 
 
-            <!-- TITLE -->
-
             <div id="well-title">
                 The Ripple Well
             </div>
 
-
-            <!-- TAGLINE -->
 
             <div id="well-tagline">
                 Every Ripple Starts Small
@@ -1259,8 +1834,6 @@
 
         </div>
 
-
-        <!-- MAKE A RIPPLE BUTTON -->
 
         <button
             id="make-ripple-button"
@@ -1280,21 +1853,95 @@
 
         <section id="water-window">
 
+
+            <!-- =============================================
+                 LAYER 1 — SURFACE
+            ============================================== -->
+
+            <div id="surface-layer">
+
+                <div class="surface-wave"></div>
+                <div class="surface-wave"></div>
+                <div class="surface-wave"></div>
+                <div class="surface-wave"></div>
+
+            </div>
+
+
+            <!-- =============================================
+                 CORE WATER CANVAS
+            ============================================== -->
+
             <canvas
                 id="water-canvas"
             ></canvas>
 
 
-            <div
-                id="impact-ripples-layer"
-            ></div>
+            <!-- =============================================
+                 LAYER 2 — REFLECTION
+            ============================================== -->
+
+            <div id="reflection-layer">
+
+                <div id="reflection-content">
 
 
-            <div
-                id="depth-message"
-            >
+                    <div id="reflection-logo-wrap">
+
+                        <div id="reflection-logo-glow"></div>
+
+                        <img
+                            id="reflection-logo"
+                            src="images/Make the Ripple Large Logo.png"
+                            alt=""
+                            aria-hidden="true"
+                        >
+
+                    </div>
+
+
+                    <div id="reflection-presents">
+                        Presents
+                    </div>
+
+
+                    <div id="reflection-title">
+                        The Ripple Well
+                    </div>
+
+
+                    <div id="reflection-tagline">
+                        Every Ripple Starts Small
+                    </div>
+
+
+                    <div id="reflection-ripples"></div>
+
+                </div>
+
+
+                <div id="reflection-distortion"></div>
+
+            </div>
+
+
+            <!-- =============================================
+                 LAYER 3 — DEPTH
+            ============================================== -->
+
+            <div id="depth-layer">
+
+                <div id="depth-haze"></div>
+
+                <div id="impact-ripples-layer"></div>
+
+            </div>
+
+
+            <div id="depth-message">
                 Explore the Ripples beneath the surface
             </div>
+
 
         </section>
 
