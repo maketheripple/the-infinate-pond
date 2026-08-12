@@ -13,6 +13,10 @@
 
     <style>
 
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
         * {
             box-sizing: border-box;
         }
@@ -41,18 +45,20 @@
 
 
         /* =====================================================
-           FIXED NIGHT SKY
+           FIXED NIGHT SKY BANNER
         ===================================================== */
 
         #sky-banner {
 
             position: fixed;
+
             z-index: 1000;
 
             top: 0;
             left: 0;
 
             width: 100%;
+
             height: 340px;
 
             overflow: hidden;
@@ -75,34 +81,40 @@
         }
 
 
+        /*
+         * Natural-looking lower edge of the night sky.
+         */
+
         #sky-banner::after {
 
             content: "";
 
             position: absolute;
 
-            z-index: 5;
+            z-index: 20;
 
             left: -5%;
+
             bottom: -5px;
 
             width: 110%;
-            height: 22px;
+
+            height: 24px;
 
             background:
                 radial-gradient(
-                    ellipse at 20% 40%,
-                    rgba(5, 17, 26, 0.95) 0 18%,
+                    ellipse at 18% 45%,
+                    rgba(5, 17, 26, 0.96) 0 18%,
                     transparent 19%
                 ),
                 radial-gradient(
-                    ellipse at 52% 60%,
-                    rgba(5, 17, 26, 0.95) 0 22%,
+                    ellipse at 51% 65%,
+                    rgba(5, 17, 26, 0.96) 0 22%,
                     transparent 23%
                 ),
                 radial-gradient(
-                    ellipse at 82% 35%,
-                    rgba(5, 17, 26, 0.95) 0 20%,
+                    ellipse at 83% 40%,
+                    rgba(5, 17, 26, 0.96) 0 20%,
                     transparent 21%
                 );
 
@@ -111,6 +123,10 @@
             pointer-events: none;
         }
 
+
+        /* =====================================================
+           STARS
+        ===================================================== */
 
         #stars {
 
@@ -131,8 +147,11 @@
             background: #ffffff;
 
             animation:
-                starPulse var(--duration)
-                ease-in-out infinite alternate;
+                starPulse
+                var(--duration)
+                ease-in-out
+                infinite
+                alternate;
 
             opacity: var(--opacity);
 
@@ -157,30 +176,30 @@
 
 
         /* =====================================================
-           BRANDING
+           BRANDING CONTAINER
+           
+           IMPORTANT:
+           This container no longer uses flex positioning
+           for the logo/title stack.
+
+           Each element is independently positioned so the
+           large logo cannot push the wording downward.
         ===================================================== */
 
         #branding {
 
-            position: relative;
+            position: absolute;
 
             z-index: 10;
 
-            width: min(650px, 90%);
+            top: 0;
+            left: 50%;
+
+            width: min(700px, 92%);
 
             height: 100%;
 
-            margin: 0 auto;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: flex-start;
-
-            padding-top: 8px;
+            transform: translateX(-50%);
 
             text-align: center;
 
@@ -188,19 +207,29 @@
         }
 
 
+        /* =====================================================
+           LOGO
+        ===================================================== */
+
         #logo-wrap {
 
-            position: relative;
+            position: absolute;
+
+            top: 8px;
+
+            left: 50%;
+
+            width: 260px;
+            height: 150px;
+
+            transform:
+                translateX(-50%);
 
             display: flex;
 
             align-items: center;
 
             justify-content: center;
-
-            width: 260px;
-            height: 145px;
-            flex-shrink: 0;
         }
 
 
@@ -231,6 +260,8 @@
 
             position: relative;
 
+            display: block;
+
             width: 240px;
 
             height: auto;
@@ -247,9 +278,21 @@
         }
 
 
+        /* =====================================================
+           PRESENTS
+        ===================================================== */
+
         #presents {
 
-            margin-top: -2px;
+            position: absolute;
+
+            top: 153px;
+
+            left: 0;
+
+            width: 100%;
+
+            margin: 0;
 
             font-size: 18px;
 
@@ -268,12 +311,26 @@
         }
 
 
+        /* =====================================================
+           THE RIPPLE WELL
+        ===================================================== */
+
         #well-title {
 
-            margin-top: 3px;
+            position: absolute;
+
+            top: 177px;
+
+            left: 0;
+
+            width: 100%;
+
+            margin: 0;
 
             font-size:
                 clamp(38px, 5vw, 62px);
+
+            line-height: 1.05;
 
             font-weight: 400;
 
@@ -290,12 +347,26 @@
         }
 
 
+        /* =====================================================
+           TAGLINE
+        ===================================================== */
+
         #well-tagline {
 
-            margin-top: 4px;
+            position: absolute;
+
+            top: 246px;
+
+            left: 0;
+
+            width: 100%;
+
+            margin: 0;
 
             font-size:
                 clamp(14px, 2vw, 19px);
+
+            line-height: 1.1;
 
             letter-spacing: 0.20em;
 
@@ -373,7 +444,7 @@
 
 
         /* =====================================================
-           THE RIPPLE WELL
+           RIPPLE WELL / WATER AREA
         ===================================================== */
 
         #ripple-well {
@@ -450,18 +521,6 @@
         }
 
 
-        /*
-         * IMPORTANT:
-         *
-         * These objects contain NO TEXT.
-         *
-         * They are deliberately irregular and organic.
-         *
-         * They should feel like something existing beneath
-         * or upon the surface of the Well rather than UI
-         * buttons.
-         */
-
         .impact-ripple {
 
             position: absolute;
@@ -516,7 +575,8 @@
                 organicFloat
                 var(--float-time)
                 ease-in-out
-                infinite alternate;
+                infinite
+                alternate;
 
             transition:
                 transform 0.55s ease,
@@ -525,12 +585,6 @@
                 box-shadow 0.45s ease;
         }
 
-
-        /*
-         * Second irregular surface disturbance.
-         *
-         * This is NOT a second visible circle.
-         */
 
         .impact-ripple::before {
 
@@ -563,10 +617,6 @@
         }
 
 
-        /*
-         * Very soft glow.
-         */
-
         .impact-ripple::after {
 
             content: "";
@@ -597,13 +647,6 @@
         }
 
 
-        /*
-         * Hover:
-         *
-         * The visitor discovers that the object is
-         * interactive without us having to label it.
-         */
-
         .impact-ripple:hover {
 
             --scale: 1.15;
@@ -631,33 +674,21 @@
         @keyframes organicFloat {
 
             0% {
-
                 margin-top: -7px;
                 margin-left: -5px;
             }
 
             50% {
-
                 margin-top: 3px;
                 margin-left: 6px;
             }
 
             100% {
-
                 margin-top: 9px;
                 margin-left: -3px;
             }
         }
 
-
-        /*
-         * Future content container.
-         *
-         * This is currently empty.
-         *
-         * A supporter/company logo can eventually be
-         * placed here without redesigning the Ripple.
-         */
 
         .impact-ripple-content {
 
@@ -693,7 +724,7 @@
 
 
         /* =====================================================
-           DEPTH MESSAGE
+           BOTTOM WATER MESSAGE
         ===================================================== */
 
         #depth-message {
@@ -845,7 +876,6 @@
 
 
         .modal-close:hover {
-
             color: #ffffff;
         }
 
@@ -1012,7 +1042,6 @@
         ===================================================== */
 
         #impact-message {
-
             text-align: center;
         }
 
@@ -1068,38 +1097,67 @@
         @media (max-width: 700px) {
 
             #sky-banner {
+
                 height: 310px;
             }
 
 
+            /*
+             * Mobile logo is smaller so the complete
+             * composition remains inside the banner.
+             */
+
             #branding {
-                padding-top: 24px;
+
+                width: 94%;
             }
 
 
             #logo-wrap {
 
-                width: 125px;
-                height: 88px;
+                top: 4px;
+
+                width: 150px;
+                height: 100px;
+            }
+
+
+            #logo-glow {
+
+                width: 145px;
+                height: 80px;
             }
 
 
             #brand-logo {
-                width: 100px;
+
+                width: 145px;
             }
 
 
             #presents {
+
+                top: 106px;
+
                 font-size: 13px;
+
+                letter-spacing: 0.18em;
             }
 
 
             #well-title {
+
+                top: 128px;
+
                 font-size: 36px;
+
+                line-height: 1.05;
             }
 
 
             #well-tagline {
+
+                top: 181px;
 
                 font-size: 12px;
 
@@ -1110,6 +1168,7 @@
             #make-ripple-button {
 
                 top: 17px;
+
                 right: 14px;
 
                 padding:
@@ -1120,6 +1179,7 @@
 
 
             #ripple-well {
+
                 margin-top: 310px;
             }
 
@@ -1127,6 +1187,7 @@
             .impact-ripple {
 
                 width: 82px;
+
                 height: 47px;
             }
 
@@ -1154,17 +1215,18 @@
         <div id="stars"></div>
 
 
+        <!-- =================================================
+             BRANDING
+        ================================================== -->
+
         <div id="branding">
+
+
+            <!-- LOGO -->
 
             <div id="logo-wrap">
 
                 <div id="logo-glow"></div>
-
-
-                <!--
-                    IMPORTANT:
-                    GitHub folder is lowercase "images"
-                -->
 
                 <img
                     id="brand-logo"
@@ -1175,22 +1237,33 @@
             </div>
 
 
+            <!-- PRESENTS -->
+
             <div id="presents">
                 Presents
             </div>
 
+
+            <!-- TITLE -->
 
             <div id="well-title">
                 The Ripple Well
             </div>
 
 
+            <!-- TAGLINE -->
+
             <div id="well-tagline">
                 Every Ripple Starts Small
             </div>
 
+
         </div>
 
+
+        <!-- =================================================
+             MAKE A RIPPLE BUTTON
+        ================================================== -->
 
         <button
             id="make-ripple-button"
@@ -1390,6 +1463,10 @@
 
     </div>
 
+
+    <!-- =====================================================
+         WATER ENGINE
+    ====================================================== -->
 
     <script src="water.js"></script>
 
