@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.0
+   VERSION 2.1
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -13,10 +13,16 @@
    3. DEPTH
       Floating Impact Ripples live beneath the surface.
 
+   IMPACT RIPPLES:
+      Irregular concentric elliptical rings
+      with subtle centers, water distortion,
+      and organic movement.
+
    IMPORTANT:
-   - Clicking water creates a ripple.
+   - Clicking water creates the animated water ripple.
    - Clicking water does NOT open the submission window.
-   - "Make a Ripple" button opens the submission window.
+   - "Make a Ripple" opens the submission window.
+   - Impact Ripples open their message when clicked.
 ========================================================= */
 
 
@@ -34,9 +40,6 @@
 
     const waterWindow =
         document.getElementById("water-window");
-
-    const reflectionLayer =
-        document.getElementById("reflection-layer");
 
     const reflectionDistortion =
         document.getElementById("reflection-distortion");
@@ -250,6 +253,7 @@
     ===================================================== */
 
     const vertexShaderSource = `
+
         attribute vec2 a_position;
 
         void main() {
@@ -261,6 +265,7 @@
                     1.0
                 );
         }
+
     `;
 
 
@@ -268,14 +273,11 @@
        FRAGMENT SHADER
        
        Natural moonlit water.
-
-       This is deliberately organic rather than grid-like.
     ===================================================== */
 
     const fragmentShaderSource = `
 
         precision highp float;
-
 
         uniform vec2 u_resolution;
         uniform float u_time;
@@ -289,10 +291,6 @@
         uniform vec2 u_ripple2;
         uniform float u_rippleTime2;
 
-
-        /* -------------------------------------------------
-           HASH / NOISE
-        ------------------------------------------------- */
 
         float hash(vec2 p) {
 
@@ -376,10 +374,6 @@
         }
 
 
-        /* -------------------------------------------------
-           FRACTAL ORGANIC MOTION
-        ------------------------------------------------- */
-
         float fbm(vec2 p) {
 
             float value = 0.0;
@@ -404,10 +398,6 @@
             return value;
         }
 
-
-        /* -------------------------------------------------
-           RIPPLE FUNCTION
-        ------------------------------------------------- */
 
         float ripple(
             vec2 uv,
@@ -465,21 +455,12 @@
         }
 
 
-        /* -------------------------------------------------
-           MAIN
-        ------------------------------------------------- */
-
         void main() {
 
             vec2 uv =
                 gl_FragCoord.xy /
                 u_resolution.xy;
 
-
-            /*
-             * Correct the aspect ratio so the water
-             * behaves naturally on wide screens.
-             */
 
             vec2 aspectUV =
                 uv;
@@ -489,9 +470,7 @@
                 u_resolution.y;
 
 
-            /* ---------------------------------------------
-               ORGANIC WATER MOVEMENT
-            --------------------------------------------- */
+            /* ORGANIC WATER */
 
             vec2 flowUV =
                 aspectUV *
@@ -526,9 +505,7 @@
                 fineNoise * 0.28;
 
 
-            /* ---------------------------------------------
-               SMALL NATURAL WAVES
-            --------------------------------------------- */
+            /* NATURAL WAVES */
 
             float waves =
                 sin(
@@ -550,9 +527,7 @@
                 0.009;
 
 
-            /* ---------------------------------------------
-               CLICK RIPPLES
-            --------------------------------------------- */
+            /* CLICK RIPPLES */
 
             float r0 =
                 ripple(
@@ -582,9 +557,7 @@
                 r2;
 
 
-            /* ---------------------------------------------
-               MOONLIGHT
-            --------------------------------------------- */
+            /* MOONLIGHT */
 
             float moonGlow =
                 exp(
@@ -614,11 +587,6 @@
                 );
 
 
-            /*
-             * Reflection becomes more fragmented lower
-             * into the water.
-             */
-
             float reflectionFade =
                 smoothstep(
                     0.0,
@@ -636,9 +604,7 @@
                 0.16;
 
 
-            /* ---------------------------------------------
-               WATER COLOR
-            --------------------------------------------- */
+            /* WATER COLOR */
 
             vec3 deepWater =
                 vec3(
@@ -668,10 +634,6 @@
                 );
 
 
-            /* ---------------------------------------------
-               NATURAL WATER VARIATION
-            --------------------------------------------- */
-
             color +=
                 water *
                 vec3(
@@ -690,10 +652,6 @@
                 );
 
 
-            /* ---------------------------------------------
-               MOONLIGHT COLOR
-            --------------------------------------------- */
-
             color +=
                 moonReflection *
                 vec3(
@@ -702,10 +660,6 @@
                     0.88
                 );
 
-
-            /* ---------------------------------------------
-               RIPPLE HIGHLIGHTS
-            --------------------------------------------- */
 
             color +=
                 abs(
@@ -719,9 +673,7 @@
                 );
 
 
-            /* ---------------------------------------------
-               DEPTH DARKENING
-            --------------------------------------------- */
+            /* DEPTH */
 
             float depth =
                 smoothstep(
@@ -739,9 +691,7 @@
                 );
 
 
-            /* ---------------------------------------------
-               TOP SURFACE GLOW
-            --------------------------------------------- */
+            /* SURFACE GLOW */
 
             float surfaceGlow =
                 smoothstep(
@@ -766,6 +716,7 @@
                     1.0
                 );
         }
+
     `;
 
 
@@ -950,24 +901,17 @@
             return;
 
 
-        const percentX =
-            `${x * 100}%`;
-
-        const percentY =
-            `${y * 100}%`;
-
-
         reflectionDistortion.style
             .setProperty(
                 "--ripple-x",
-                percentX
+                `${x * 100}%`
             );
 
 
         reflectionDistortion.style
             .setProperty(
                 "--ripple-y",
-                percentY
+                `${y * 100}%`
             );
 
 
@@ -1002,7 +946,7 @@
 
 
     /* =====================================================
-       CREATE VISIBLE RIPPLE
+       CREATE VISIBLE WATER RIPPLE
     ===================================================== */
 
     function createVisibleRipple(
@@ -1110,17 +1054,12 @@
 
 
     /* =====================================================
-       POINTER INTERACTION
+       WATER POINTER
     ===================================================== */
 
     canvas.addEventListener(
         "pointerdown",
         event => {
-
-            /*
-             * Only the water canvas creates water ripples.
-             * The Make a Ripple button remains separate.
-             */
 
             addRipple(
                 event.clientX,
@@ -1286,7 +1225,7 @@
 
 
     /* =====================================================
-       MODAL HELPERS
+       MODALS
     ===================================================== */
 
     function openModal(modal) {
@@ -1321,11 +1260,6 @@
             "true"
         );
 
-
-        /*
-         * Only restore scrolling if no other
-         * modal is open.
-         */
 
         const anotherModalOpen =
             document.querySelector(
@@ -1447,9 +1381,6 @@
 
     /* =====================================================
        SUBMISSION FORM
-       
-       This is intentionally still front-end only.
-       Approval/storage will be connected later.
     ===================================================== */
 
     if (rippleForm) {
@@ -1460,12 +1391,6 @@
 
                 event.preventDefault();
 
-
-                /*
-                 * For now we acknowledge the submission
-                 * locally rather than pretending it has
-                 * been permanently stored or approved.
-                 */
 
                 const message =
                     document
@@ -1489,14 +1414,6 @@
                     return;
                 }
 
-
-                /*
-                 * Future version:
-                 *
-                 * This is where the submission will
-                 * eventually be sent to the moderation /
-                 * approval system.
-                 */
 
                 console.log(
                     "Ripple submitted:",
@@ -1524,13 +1441,6 @@
                 );
 
 
-                /*
-                 * Temporary acknowledgement.
-                 * We do NOT automatically create an
-                 * Impact Ripple because submissions
-                 * require approval.
-                 */
-
                 setTimeout(
                     () => {
 
@@ -1547,11 +1457,7 @@
 
 
     /* =====================================================
-       FUTURE IMPACT RIPPLE DATA
-       
-       These are sample visual objects for now.
-       Eventually this array will be populated from
-       approved Impact Ripples.
+       SAMPLE IMPACT RIPPLE DATA
     ===================================================== */
 
     const impactRippleData = [
@@ -1561,7 +1467,12 @@
             y: 0.37,
             depth: "far",
             floatTime: "13s",
-            rotation: -8
+            rotation: -8,
+            ringAngle: 3,
+            ringAngleTwo: -7,
+            ringAngleThree: 4,
+            centerAngle: -4,
+            highlightAngle: -7
         },
 
         {
@@ -1569,7 +1480,12 @@
             y: 0.53,
             depth: "mid",
             floatTime: "16s",
-            rotation: 6
+            rotation: 6,
+            ringAngle: -4,
+            ringAngleTwo: 8,
+            ringAngleThree: -3,
+            centerAngle: 6,
+            highlightAngle: 4
         },
 
         {
@@ -1577,7 +1493,12 @@
             y: 0.39,
             depth: "near",
             floatTime: "14s",
-            rotation: -5
+            rotation: -5,
+            ringAngle: 7,
+            ringAngleTwo: -5,
+            ringAngleThree: 4,
+            centerAngle: -8,
+            highlightAngle: -5
         },
 
         {
@@ -1585,7 +1506,12 @@
             y: 0.58,
             depth: "far",
             floatTime: "18s",
-            rotation: 11
+            rotation: 11,
+            ringAngle: -6,
+            ringAngleTwo: 5,
+            ringAngleThree: -4,
+            centerAngle: 5,
+            highlightAngle: 8
         },
 
         {
@@ -1593,7 +1519,12 @@
             y: 0.72,
             depth: "mid",
             floatTime: "15s",
-            rotation: -12
+            rotation: -12,
+            ringAngle: 5,
+            ringAngleTwo: -8,
+            ringAngleThree: 6,
+            centerAngle: -3,
+            highlightAngle: -9
         },
 
         {
@@ -1601,15 +1532,29 @@
             y: 0.78,
             depth: "near",
             floatTime: "17s",
-            rotation: 7
+            rotation: 7,
+            ringAngle: -5,
+            ringAngleTwo: 7,
+            ringAngleThree: -6,
+            centerAngle: 7,
+            highlightAngle: 5
         }
     ];
 
 
     /* =====================================================
-       CREATE SAMPLE IMPACT RIPPLES
+       CREATE IMPACT RIPPLES
        
-       No "Impact Ripple" text appears on the objects.
+       No visible "Impact Ripple" text.
+       
+       Each object is now built from:
+       
+       - outer irregular ring
+       - second irregular ring
+       - inner ring
+       - subtle center
+       - broken highlight
+       - transparent water distortion
     ===================================================== */
 
     function createImpactRipples() {
@@ -1651,8 +1596,32 @@
 
 
                 ripple.style.setProperty(
-                    "--secondary-rotation",
-                    `${-data.rotation * 0.55}deg`
+                    "--ring-angle",
+                    `${data.ringAngle}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--ring-angle-two",
+                    `${data.ringAngleTwo}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--ring-angle-three",
+                    `${data.ringAngleThree}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--center-angle",
+                    `${data.centerAngle}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--highlight-angle",
+                    `${data.highlightAngle}deg`
                 );
 
 
@@ -1663,26 +1632,106 @@
 
 
                 /*
-                 * Important:
-                 * No visible "Impact Ripple" label.
-                 *
-                 * Eventually this area can contain:
-                 *
-                 * - a company logo
-                 * - organization logo
-                 * - approved image
-                 * - symbolic graphic
-                 *
-                 * The message appears only when clicked.
+                 * Transparent water body.
                  */
 
+                const water =
+                    document.createElement("div");
+
+                water.className =
+                    "ripple-water";
+
+
+                /*
+                 * Second ring.
+                 */
+
+                const ringTwo =
+                    document.createElement("div");
+
+                ringTwo.className =
+                    "ring-two";
+
+
+                /*
+                 * Third ring.
+                 */
+
+                const ringThree =
+                    document.createElement("div");
+
+                ringThree.className =
+                    "ring-three";
+
+
+                /*
+                 * Subtle center disturbance.
+                 */
+
+                const center =
+                    document.createElement("div");
+
+                center.className =
+                    "ripple-center";
+
+
+                /*
+                 * Broken reflected-light highlight.
+                 */
+
+                const highlight =
+                    document.createElement("div");
+
+                highlight.className =
+                    "ripple-highlight";
+
+
+                /*
+                 * Soft surrounding distortion.
+                 */
+
+                const distortion =
+                    document.createElement("div");
+
+                distortion.className =
+                    "ripple-distortion";
+
+
+                ripple.appendChild(
+                    water
+                );
+
+                ripple.appendChild(
+                    distortion
+                );
+
+                ripple.appendChild(
+                    ringTwo
+                );
+
+                ripple.appendChild(
+                    ringThree
+                );
+
+                ripple.appendChild(
+                    center
+                );
+
+                ripple.appendChild(
+                    highlight
+                );
+
+
+                /*
+                 * Clicking the ripple opens
+                 * its message.
+                 */
 
                 ripple.addEventListener(
                     "click",
                     event => {
 
                         event.stopPropagation();
-
 
                         openImpactRipple(
                             index
@@ -1700,7 +1749,7 @@
 
 
     /* =====================================================
-       IMPACT RIPPLE OPEN
+       IMPACT RIPPLE MESSAGE
     ===================================================== */
 
     function openImpactRipple(
@@ -1721,13 +1770,6 @@
         if (!quote || !details)
             return;
 
-
-        /*
-         * Temporary demonstration content.
-         *
-         * Later this will come from approved
-         * Impact Ripple data.
-         */
 
         const sampleMessages = [
 
@@ -1806,36 +1848,28 @@
 
 
     /* =====================================================
-       VISIBILITY OPTIMIZATION
-       
-       Reduce rendering pressure when the tab is hidden.
+       VISIBILITY
     ===================================================== */
 
     document.addEventListener(
         "visibilitychange",
         () => {
 
-            if (
-                document.hidden
-            ) {
+            /*
+             * Browser handles animation throttling
+             * naturally when the tab is hidden.
+             */
 
-                /*
-                 * Nothing destructive happens here.
-                 * The animation loop naturally resumes
-                 * when the browser makes the tab active.
-                 */
-
-            }
         }
     );
 
 
     /* =====================================================
-       INITIALIZATION COMPLETE
+       INITIALIZATION
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.0 initialized."
+        "The Ripple Well v2.1 initialized."
     );
 
     console.log(
@@ -1848,6 +1882,10 @@
 
     console.log(
         "Depth Layer: active"
+    );
+
+    console.log(
+        "Irregular concentric Impact Ripples: active"
     );
 
 })();
