@@ -59,7 +59,13 @@
 
             width: 100%;
 
-            height: 410px;
+            /*
+             * Entire banner moved downward by extending
+             * its height. This gives the logo room at the top
+             * while preserving the spacing of the title stack.
+             */
+
+            height: 470px;
 
             overflow: hidden;
 
@@ -201,14 +207,18 @@
 
 
         /* =====================================================
-           MAKE THE RIPPLE LOGO
+           LOGO
         ===================================================== */
 
         #logo-wrap {
 
             position: absolute;
 
-            top: 8px;
+            /*
+             * Logo moved down 60px.
+             */
+
+            top: 68px;
 
             left: 50%;
 
@@ -273,15 +283,13 @@
 
         /* =====================================================
            PRESENTS
-           
-           Deliberately separated from the title.
         ===================================================== */
 
         #presents {
 
             position: absolute;
 
-            top: 245px;
+            top: 250px;
 
             left: 0;
 
@@ -314,7 +322,7 @@
 
             position: absolute;
 
-            top: 273px;
+            top: 278px;
 
             left: 0;
 
@@ -344,16 +352,13 @@
 
         /* =====================================================
            EVERY RIPPLE STARTS SMALL
-           
-           This now has its own dedicated vertical position
-           below the title.
         ===================================================== */
 
         #well-tagline {
 
             position: absolute;
 
-            top: 347px;
+            top: 352px;
 
             left: 0;
 
@@ -451,7 +456,11 @@
 
             min-height: 250vh;
 
-            margin-top: 410px;
+            /*
+             * Must match the banner height.
+             */
+
+            margin-top: 470px;
 
             background:
                 linear-gradient(
@@ -504,7 +513,7 @@
 
 
         /* =====================================================
-           FLOATING IMPACT RIPPLE FIELD
+           FLOATING IMPACT RIPPLES
         ===================================================== */
 
         #impact-ripples-layer {
@@ -1095,7 +1104,7 @@
 
             #sky-banner {
 
-                height: 350px;
+                height: 410px;
             }
 
 
@@ -1107,7 +1116,7 @@
 
             #logo-wrap {
 
-                top: 4px;
+                top: 44px;
 
                 width: 150px;
                 height: 100px;
@@ -1129,7 +1138,7 @@
 
             #presents {
 
-                top: 122px;
+                top: 182px;
 
                 font-size: 13px;
 
@@ -1139,7 +1148,7 @@
 
             #well-title {
 
-                top: 148px;
+                top: 208px;
 
                 font-size: 36px;
 
@@ -1149,7 +1158,7 @@
 
             #well-tagline {
 
-                top: 205px;
+                top: 265px;
 
                 font-size: 12px;
 
@@ -1174,7 +1183,7 @@
 
             #ripple-well {
 
-                margin-top: 350px;
+                margin-top: 410px;
             }
 
 
@@ -1208,10 +1217,6 @@
 
         <div id="stars"></div>
 
-
-        <!-- =================================================
-             BRANDING
-        ================================================== -->
 
         <div id="branding">
 
@@ -1255,9 +1260,7 @@
         </div>
 
 
-        <!-- =================================================
-             MAKE A RIPPLE BUTTON
-        ================================================== -->
+        <!-- MAKE A RIPPLE BUTTON -->
 
         <button
             id="make-ripple-button"
