@@ -59,7 +59,7 @@
 
             width: 100%;
 
-            height: 340px;
+            height: 410px;
 
             overflow: hidden;
 
@@ -81,9 +81,9 @@
         }
 
 
-        /*
-         * Natural-looking lower edge of the night sky.
-         */
+        /* =====================================================
+           NATURAL BOTTOM EDGE
+        ===================================================== */
 
         #sky-banner::after {
 
@@ -177,13 +177,6 @@
 
         /* =====================================================
            BRANDING CONTAINER
-           
-           IMPORTANT:
-           This container no longer uses flex positioning
-           for the logo/title stack.
-
-           Each element is independently positioned so the
-           large logo cannot push the wording downward.
         ===================================================== */
 
         #branding {
@@ -208,7 +201,7 @@
 
 
         /* =====================================================
-           LOGO
+           MAKE THE RIPPLE LOGO
         ===================================================== */
 
         #logo-wrap {
@@ -280,13 +273,15 @@
 
         /* =====================================================
            PRESENTS
+           
+           Deliberately separated from the title.
         ===================================================== */
 
         #presents {
 
             position: absolute;
 
-            top: 205px;
+            top: 190px;
 
             left: 0;
 
@@ -319,7 +314,7 @@
 
             position: absolute;
 
-            top: 230px;
+            top: 218px;
 
             left: 0;
 
@@ -348,14 +343,17 @@
 
 
         /* =====================================================
-           TAGLINE
+           EVERY RIPPLE STARTS SMALL
+           
+           This now has its own dedicated vertical position
+           below the title.
         ===================================================== */
 
         #well-tagline {
 
             position: absolute;
 
-            top: 264px;
+            top: 292px;
 
             left: 0;
 
@@ -366,7 +364,7 @@
             font-size:
                 clamp(14px, 2vw, 19px);
 
-            line-height: 1.1;
+            line-height: 1.2;
 
             letter-spacing: 0.20em;
 
@@ -453,7 +451,7 @@
 
             min-height: 250vh;
 
-            margin-top: 340px;
+            margin-top: 410px;
 
             background:
                 linear-gradient(
@@ -913,8 +911,7 @@
 
             display: block;
 
-            margin:
-                17px 0 7px;
+            margin: 17px 0 7px;
 
             color:
                 rgba(220, 245, 251, 0.82);
@@ -1098,14 +1095,9 @@
 
             #sky-banner {
 
-                height: 310px;
+                height: 350px;
             }
 
-
-            /*
-             * Mobile logo is smaller so the complete
-             * composition remains inside the banner.
-             */
 
             #branding {
 
@@ -1137,7 +1129,7 @@
 
             #presents {
 
-                top: 106px;
+                top: 122px;
 
                 font-size: 13px;
 
@@ -1147,7 +1139,7 @@
 
             #well-title {
 
-                top: 128px;
+                top: 148px;
 
                 font-size: 36px;
 
@@ -1157,11 +1149,13 @@
 
             #well-tagline {
 
-                top: 181px;
+                top: 205px;
 
                 font-size: 12px;
 
                 letter-spacing: 0.12em;
+
+                line-height: 1.2;
             }
 
 
@@ -1180,7 +1174,7 @@
 
             #ripple-well {
 
-                margin-top: 310px;
+                margin-top: 350px;
             }
 
 
@@ -1222,7 +1216,7 @@
         <div id="branding">
 
 
-            <!-- LOGO -->
+            <!-- MAKE THE RIPPLE LOGO -->
 
             <div id="logo-wrap">
 
