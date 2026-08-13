@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.0.3
+   VERSION 2.0
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -13,19 +13,12 @@
    3. DEPTH
       Floating Impact Ripples live beneath the surface.
 
-   IMPACT RIPPLE UPDATE — 2.0.3
-   ---------------------------------------------------------
-   The visible Impact Ripple body is now transparent.
-
-   The Impact Ripple still:
-   - Floats organically.
-   - Can be hovered.
-   - Can be clicked.
-   - Emits its surrounding ripple effect.
-   - Produces a larger ripple according to its depth/size.
-
-   The clickable area remains active but visually disappears
-   into the water.
+   IMPACT RIPPLE ENHANCEMENT
+   - Irregular concentric elliptical ripple appearance.
+   - Transparent water distortion.
+   - Slow organic floating movement.
+   - Continuous single-wave ripple emission.
+   - No visible persistent outline around the clickable area.
 
    IMPORTANT:
    - Clicking water creates a ripple.
@@ -82,70 +75,6 @@
 
         return;
     }
-
-
-    /* =====================================================
-       INVISIBLE IMPACT RIPPLE BODY
-       
-       The clickable Impact Ripple remains in the DOM,
-       but its permanent oval/round body is invisible.
-
-       The ::before and ::after elements remain active so
-       the emitted ripple effect continues to be visible.
-    ===================================================== */
-
-    const impactRippleStyle =
-        document.createElement("style");
-
-    impactRippleStyle.textContent = `
-
-        .impact-ripple {
-
-            background: transparent !important;
-
-            border: none !important;
-
-            box-shadow: none !important;
-
-            opacity: 1 !important;
-        }
-
-
-        /*
-         * Keep the emitted ripple/glow effects visible.
-         */
-
-        .impact-ripple::before {
-
-            pointer-events: none;
-        }
-
-
-        .impact-ripple::after {
-
-            pointer-events: none;
-        }
-
-
-        /*
-         * Hover no longer reveals a solid oval.
-         * Instead, it simply enhances the emitted ripple.
-         */
-
-        .impact-ripple:hover {
-
-            background: transparent !important;
-
-            border: none !important;
-
-            box-shadow: none !important;
-        }
-
-    `;
-
-    document.head.appendChild(
-        impactRippleStyle
-    );
 
 
     /* =====================================================
@@ -344,6 +273,10 @@
 
     /* =====================================================
        FRAGMENT SHADER
+
+       Natural moonlit water.
+
+       Deliberately organic rather than grid-like.
     ===================================================== */
 
     const fragmentShaderSource = `
@@ -363,6 +296,10 @@
         uniform vec2 u_ripple2;
         uniform float u_rippleTime2;
 
+
+        /* -------------------------------------------------
+           HASH / NOISE
+        ------------------------------------------------- */
 
         float hash(vec2 p) {
 
@@ -446,6 +383,10 @@
         }
 
 
+        /* -------------------------------------------------
+           FRACTAL ORGANIC MOTION
+        ------------------------------------------------- */
+
         float fbm(vec2 p) {
 
             float value = 0.0;
@@ -470,6 +411,10 @@
             return value;
         }
 
+
+        /* -------------------------------------------------
+           CLICK RIPPLE FUNCTION
+        ------------------------------------------------- */
 
         float ripple(
             vec2 uv,
@@ -527,12 +472,21 @@
         }
 
 
+        /* -------------------------------------------------
+           MAIN
+        ------------------------------------------------- */
+
         void main() {
 
             vec2 uv =
                 gl_FragCoord.xy /
                 u_resolution.xy;
 
+
+            /*
+             * Correct aspect ratio so the water behaves
+             * naturally on wide screens.
+             */
 
             vec2 aspectUV =
                 uv;
@@ -541,6 +495,10 @@
                 u_resolution.x /
                 u_resolution.y;
 
+
+            /* ---------------------------------------------
+               ORGANIC WATER MOVEMENT
+            --------------------------------------------- */
 
             vec2 flowUV =
                 aspectUV *
@@ -575,6 +533,10 @@
                 fineNoise * 0.28;
 
 
+            /* ---------------------------------------------
+               SMALL NATURAL WAVES
+            --------------------------------------------- */
+
             float waves =
                 sin(
                     aspectUV.x * 23.0 +
@@ -595,6 +557,10 @@
                 0.009;
 
 
+            /* ---------------------------------------------
+               CLICK RIPPLES
+            --------------------------------------------- */
+
             float r0 =
                 ripple(
                     uv,
@@ -602,14 +568,12 @@
                     u_time - u_rippleTime0
                 );
 
-
             float r1 =
                 ripple(
                     uv,
                     u_ripple1,
                     u_time - u_rippleTime1
                 );
-
 
             float r2 =
                 ripple(
@@ -624,6 +588,10 @@
                 r1 +
                 r2;
 
+
+            /* ---------------------------------------------
+               MOONLIGHT
+            --------------------------------------------- */
 
             float moonGlow =
                 exp(
@@ -653,6 +621,11 @@
                 );
 
 
+            /*
+             * Reflection becomes more fragmented lower
+             * into the water.
+             */
+
             float reflectionFade =
                 smoothstep(
                     0.0,
@@ -669,6 +642,10 @@
                 rippleValue *
                 0.16;
 
+
+            /* ---------------------------------------------
+               WATER COLOR
+            --------------------------------------------- */
 
             vec3 deepWater =
                 vec3(
@@ -698,6 +675,10 @@
                 );
 
 
+            /* ---------------------------------------------
+               NATURAL WATER VARIATION
+            --------------------------------------------- */
+
             color +=
                 water *
                 vec3(
@@ -716,6 +697,10 @@
                 );
 
 
+            /* ---------------------------------------------
+               MOONLIGHT COLOR
+            --------------------------------------------- */
+
             color +=
                 moonReflection *
                 vec3(
@@ -724,6 +709,10 @@
                     0.88
                 );
 
+
+            /* ---------------------------------------------
+               RIPPLE HIGHLIGHTS
+            --------------------------------------------- */
 
             color +=
                 abs(
@@ -736,6 +725,10 @@
                     0.46
                 );
 
+
+            /* ---------------------------------------------
+               DEPTH DARKENING
+            --------------------------------------------- */
 
             float depth =
                 smoothstep(
@@ -752,6 +745,10 @@
                     depth * 0.62
                 );
 
+
+            /* ---------------------------------------------
+               TOP SURFACE GLOW
+            --------------------------------------------- */
 
             float surfaceGlow =
                 smoothstep(
@@ -960,17 +957,24 @@
             return;
 
 
+        const percentX =
+            `${x * 100}%`;
+
+        const percentY =
+            `${y * 100}%`;
+
+
         reflectionDistortion.style
             .setProperty(
                 "--ripple-x",
-                `${x * 100}%`
+                percentX
             );
 
 
         reflectionDistortion.style
             .setProperty(
                 "--ripple-y",
-                `${y * 100}%`
+                percentY
             );
 
 
@@ -1005,7 +1009,7 @@
 
 
     /* =====================================================
-       CREATE VISIBLE WATER RIPPLE
+       CREATE VISIBLE CLICK RIPPLE
     ===================================================== */
 
     function createVisibleRipple(
@@ -1452,15 +1456,17 @@
 
 
                 const message =
-                    document.getElementById(
-                        "ripple-message"
-                    );
+                    document
+                        .getElementById(
+                            "ripple-message"
+                        );
 
 
                 const name =
-                    document.getElementById(
-                        "ripple-name"
-                    );
+                    document
+                        .getElementById(
+                            "ripple-name"
+                        );
 
 
                 if (
@@ -1515,6 +1521,12 @@
 
     /* =====================================================
        IMPACT RIPPLE DATA
+       
+       SIZE NOW CONTROLS:
+       - Visible ripple scale
+       - Ripple travel distance
+       - Ripple duration
+       - Ripple opacity
     ===================================================== */
 
     const impactRippleData = [
@@ -1524,7 +1536,10 @@
             y: 0.37,
             depth: "far",
             floatTime: "13s",
-            rotation: -8
+            rotation: -8,
+            size: 0.78,
+            rippleScale: 0.82,
+            rippleTime: "7.8s"
         },
 
         {
@@ -1532,7 +1547,10 @@
             y: 0.53,
             depth: "mid",
             floatTime: "16s",
-            rotation: 6
+            rotation: 6,
+            size: 0.92,
+            rippleScale: 1.00,
+            rippleTime: "7.0s"
         },
 
         {
@@ -1540,7 +1558,10 @@
             y: 0.39,
             depth: "near",
             floatTime: "14s",
-            rotation: -5
+            rotation: -5,
+            size: 1.12,
+            rippleScale: 1.18,
+            rippleTime: "6.3s"
         },
 
         {
@@ -1548,7 +1569,10 @@
             y: 0.58,
             depth: "far",
             floatTime: "18s",
-            rotation: 11
+            rotation: 11,
+            size: 0.74,
+            rippleScale: 0.76,
+            rippleTime: "8.2s"
         },
 
         {
@@ -1556,7 +1580,10 @@
             y: 0.72,
             depth: "mid",
             floatTime: "15s",
-            rotation: -12
+            rotation: -12,
+            size: 0.96,
+            rippleScale: 1.04,
+            rippleTime: "7.1s"
         },
 
         {
@@ -1564,16 +1591,349 @@
             y: 0.78,
             depth: "near",
             floatTime: "17s",
-            rotation: 7
+            rotation: 7,
+            size: 1.16,
+            rippleScale: 1.24,
+            rippleTime: "6.0s"
         }
     ];
 
 
     /* =====================================================
-       CREATE IMPACT RIPPLES
+       IMPACT RIPPLE STYLE
        
-       The original body is now invisible.
-       The ripple emission remains.
+       IMPORTANT:
+       The clickable object itself has NO visible border,
+       background, or permanent outline.
+
+       The visual ripple is produced separately by
+       ::before and ::after.
+    ===================================================== */
+
+    const impactRippleStyle =
+        document.createElement("style");
+
+
+    impactRippleStyle.textContent = `
+
+        .impact-ripple {
+
+            /*
+             * The clickable area remains.
+             * The shape itself is invisible.
+             */
+
+            background: transparent !important;
+
+            border: none !important;
+
+            box-shadow: none !important;
+
+            overflow: visible;
+
+            opacity: 1;
+
+            filter: none;
+
+            /*
+             * Preserve the existing floating motion.
+             */
+
+            animation:
+                organicFloat
+                var(--float-time)
+                ease-in-out
+                infinite
+                alternate;
+        }
+
+
+        /*
+         * SINGLE SURROUNDING RIPPLE
+         *
+         * This is the visible effect.
+         *
+         * It starts close to the Impact Ripple,
+         * expands outward,
+         * becomes slightly distorted,
+         * and fades away.
+         */
+
+        .impact-ripple::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 58%;
+            height: 42%;
+
+            transform:
+                translate(-50%, -50%)
+                rotate(var(--ripple-rotation, 0deg))
+                scale(0.45);
+
+            transform-origin: center;
+
+            border:
+                1px solid
+                rgba(151, 226, 243, 0.34);
+
+            border-radius:
+                50%;
+
+            background:
+                transparent;
+
+            box-shadow:
+                0 0 5px
+                rgba(101, 203, 229, 0.11);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            animation:
+                impactRippleWave
+                var(--ripple-time, 7s)
+                ease-out
+                infinite;
+        }
+
+
+        /*
+         * VERY SOFT WATER DISTORTION
+         *
+         * This gives the wave a little irregularity
+         * instead of looking like a perfect graphic circle.
+         */
+
+        .impact-ripple::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 76%;
+            height: 52%;
+
+            transform:
+                translate(-50%, -50%)
+                rotate(var(--ripple-secondary-rotation, 0deg))
+                scale(0.40);
+
+            border-radius:
+                48%
+                52%
+                55%
+                45%
+                /
+                53%
+                47%
+                51%
+                49%;
+
+            border:
+                1px solid
+                rgba(120, 212, 235, 0.11);
+
+            background:
+                transparent;
+
+            filter:
+                blur(1.4px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            animation:
+                impactRippleDistortion
+                var(--ripple-time, 7s)
+                ease-out
+                infinite;
+        }
+
+
+        /*
+         * RIPPLE WAVE
+         */
+
+        @keyframes impactRippleWave {
+
+            0% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(var(--ripple-rotation, 0deg))
+                    scale(0.42);
+
+                opacity: 0;
+            }
+
+
+            8% {
+
+                opacity:
+                    var(--ripple-opacity, 0.34);
+            }
+
+
+            45% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.72
+                    );
+            }
+
+
+            78% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.26
+                    );
+            }
+
+
+            100% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(
+                        calc(
+                            var(--ripple-rotation, 0deg) + 5deg
+                        )
+                    )
+                    scale(
+                        var(--ripple-scale, 1)
+                    );
+
+                opacity: 0;
+            }
+        }
+
+
+        /*
+         * SECONDARY DISTORTION
+         */
+
+        @keyframes impactRippleDistortion {
+
+            0% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(
+                        var(
+                            --ripple-secondary-rotation,
+                            0deg
+                        )
+                    )
+                    scale(0.40);
+
+                opacity: 0;
+            }
+
+
+            15% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.24
+                    );
+            }
+
+
+            55% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.13
+                    );
+            }
+
+
+            100% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(
+                        calc(
+                            var(
+                                --ripple-secondary-rotation,
+                                0deg
+                            ) - 4deg
+                        )
+                    )
+                    scale(
+                        calc(
+                            var(--ripple-scale, 1) * 1.08
+                        )
+                    );
+
+                opacity: 0;
+            }
+        }
+
+
+        /*
+         * HOVER
+         *
+         * Only the ripple itself becomes more noticeable.
+         * The clickable area never receives an outline.
+         */
+
+        .impact-ripple:hover {
+
+            background: transparent !important;
+
+            border: none !important;
+
+            box-shadow: none !important;
+
+            filter: none;
+
+            opacity: 1;
+        }
+
+
+        .impact-ripple:hover::before {
+
+            border-color:
+                rgba(170, 235, 249, 0.52);
+
+            box-shadow:
+                0 0 9px
+                rgba(110, 215, 240, 0.24);
+        }
+
+
+        .impact-ripple:hover::after {
+
+            border-color:
+                rgba(145, 224, 241, 0.20);
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        impactRippleStyle
+    );
+
+
+    /* =====================================================
+       CREATE SAMPLE IMPACT RIPPLES
+       
+       No "Impact Ripple" text appears on objects.
     ===================================================== */
 
     function createImpactRipples() {
@@ -1626,11 +1986,80 @@
                 );
 
 
+                /*
+                 * Ripple-specific settings.
+                 */
+
+                ripple.style.setProperty(
+                    "--ripple-scale",
+                    data.rippleScale
+                );
+
+
+                ripple.style.setProperty(
+                    "--ripple-time",
+                    data.rippleTime
+                );
+
+
+                /*
+                 * Larger Impact Ripples create a larger,
+                 * slightly stronger surrounding ripple.
+                 */
+
+                const rippleOpacity =
+                    data.size >= 1.1
+                        ? 0.42
+                        : data.size >= 0.9
+                            ? 0.34
+                            : 0.27;
+
+
+                ripple.style.setProperty(
+                    "--ripple-opacity",
+                    rippleOpacity
+                );
+
+
+                ripple.style.setProperty(
+                    "--ripple-rotation",
+                    `${data.rotation * 0.35}deg`
+                );
+
+
+                ripple.style.setProperty(
+                    "--ripple-secondary-rotation",
+                    `${-data.rotation * 0.25}deg`
+                );
+
+
+                /*
+                 * Scale the invisible clickable area.
+                 * The size remains proportional to the
+                 * original Impact Ripple concept.
+                 */
+
+                ripple.style.setProperty(
+                    "--scale",
+                    data.size
+                );
+
+
+                /*
+                 * Important:
+                 *
+                 * There is intentionally NO visible
+                 * "Impact Ripple" label and NO permanent
+                 * outline around the clickable object.
+                 */
+
+
                 ripple.addEventListener(
                     "click",
                     event => {
 
                         event.stopPropagation();
+
 
                         openImpactRipple(
                             index
@@ -1754,16 +2183,12 @@
         "visibilitychange",
         () => {
 
-            if (
-                document.hidden
-            ) {
+            /*
+             * Nothing destructive happens here.
+             * The animation loop naturally resumes
+             * when the browser makes the tab active.
+             */
 
-                /*
-                 * Animation naturally resumes when
-                 * the browser makes the tab active.
-                 */
-
-            }
         }
     );
 
@@ -1773,7 +2198,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.0.3 initialized."
+        "The Ripple Well v2.0 initialized."
     );
 
     console.log(
@@ -1789,7 +2214,7 @@
     );
 
     console.log(
-        "Impact Ripple bodies: invisible"
+        "Impact Ripple Emission: active"
     );
 
 })();
