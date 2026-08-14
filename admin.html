@@ -559,15 +559,14 @@
 
 
         /* =================================================
-           SIZE SELECTOR
+           RIPPLE SIZE SELECTOR
         ================================================= */
 
-        .size-section {
+        .ripple-size-section {
 
-            margin-bottom: 20px;
+            margin-bottom: 22px;
 
-            padding:
-                16px 18px;
+            padding: 18px;
 
             background:
                 rgba(
@@ -583,14 +582,16 @@
                     130,
                     215,
                     235,
-                    0.10
+                    0.12
                 );
 
             border-radius: 9px;
         }
 
 
-        .size-title {
+        .ripple-size-title {
+
+            display: block;
 
             margin-bottom: 12px;
 
@@ -602,15 +603,15 @@
 
             color:
                 rgba(
-                    205,
-                    238,
-                    245,
-                    0.68
+                    210,
+                    240,
+                    248,
+                    0.62
                 );
         }
 
 
-        .size-options {
+        .ripple-size-options {
 
             display: grid;
 
@@ -620,17 +621,17 @@
                     1fr
                 );
 
-            gap: 8px;
+            gap: 9px;
         }
 
 
-        .size-option {
+        .ripple-size-option {
 
             position: relative;
         }
 
 
-        .size-option input {
+        .ripple-size-option input {
 
             position: absolute;
 
@@ -640,7 +641,7 @@
         }
 
 
-        .size-option label {
+        .ripple-size-option label {
 
             display: flex;
 
@@ -650,8 +651,7 @@
 
             min-height: 44px;
 
-            padding:
-                9px 8px;
+            padding: 10px 8px;
 
             border:
                 1px solid
@@ -659,7 +659,7 @@
                     130,
                     215,
                     235,
-                    0.16
+                    0.18
                 );
 
             border-radius: 7px;
@@ -667,9 +667,9 @@
             background:
                 rgba(
                     5,
-                    25,
-                    33,
-                    0.55
+                    30,
+                    40,
+                    0.45
                 );
 
             color:
@@ -677,85 +677,90 @@
                     220,
                     245,
                     250,
-                    0.68
+                    0.72
                 );
 
-            font-size: 12px;
+            font-size: 13px;
 
             cursor: pointer;
 
             transition:
                 0.2s ease;
-
-            text-align: center;
         }
 
 
-        .size-option label:hover {
+        .ripple-size-option label:hover {
 
             border-color:
                 rgba(
-                    130,
-                    215,
-                    235,
-                    0.40
+                    140,
+                    225,
+                    240,
+                    0.42
                 );
 
             background:
                 rgba(
-                    20,
-                    55,
-                    65,
-                    0.55
+                    50,
+                    120,
+                    140,
+                    0.20
                 );
         }
 
 
-        .size-option input:checked + label {
+        .ripple-size-option input:checked + label {
 
             border-color:
                 rgba(
-                    125,
-                    220,
-                    240,
+                    135,
+                    225,
+                    242,
                     0.75
                 );
 
             background:
                 rgba(
-                    70,
-                    165,
-                    190,
-                    0.24
+                    65,
+                    160,
+                    185,
+                    0.28
                 );
 
-            color:
-                #e6fbff;
+            color: #e5fbff;
 
             box-shadow:
                 0 0 12px
                 rgba(
-                    80,
-                    190,
-                    220,
-                    0.10
+                    100,
+                    210,
+                    235,
+                    0.12
                 );
         }
 
 
-        .size-help {
+        .size-required-message {
 
             margin-top: 10px;
 
-            font-size: 11px;
+            font-size: 12px;
 
             color:
                 rgba(
+                    230,
                     190,
-                    225,
-                    235,
-                    0.42
+                    190,
+                    0.72
                 );
+
+            display: block;
+        }
+
+
+        .size-required-message.hidden {
+
+            display: none;
         }
 
 
@@ -973,7 +978,7 @@
             }
 
 
-            .size-options {
+            .ripple-size-options {
 
                 grid-template-columns:
                     repeat(
@@ -1232,21 +1237,6 @@
 
 
         /* =================================================
-           LOAD CONTROL
-
-           Prevents multiple simultaneous database loads.
-
-           This is important because Supabase auth events
-           can fire more than once during initialization.
-        ================================================= */
-
-        let isLoadingSubmissions = false;
-
-        let lastLoadedSubmissionIds =
-            new Set();
-
-
-        /* =================================================
            STATUS MESSAGE
         ================================================= */
 
@@ -1392,6 +1382,7 @@
 
                 showDashboard();
 
+
                 await loadPendingSubmissions();
             }
         );
@@ -1403,151 +1394,93 @@
 
         async function loadPendingSubmissions() {
 
-            if (
-                isLoadingSubmissions
-            ) {
-
-                return;
-            }
-
-
-            isLoadingSubmissions =
-                true;
-
-
             clearStatus(
                 dashboardStatus
             );
 
 
-            try {
-
-                const {
-                    data: submissions,
-                    error
-                } =
-                    await supabaseClient
-                        .from(
-                            "ripple_submissions"
-                        )
-                        .select(
-                            "id, created_at, message, name, region, country, status, size"
-                        )
-                        .eq(
-                            "status",
-                            "pending"
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending: true
-                            }
-                        );
+            submissionsContainer.innerHTML =
+                "";
 
 
-                if (error) {
-
-                    console.error(
-                        "Could not load submissions:",
-                        error
-                    );
-
-
-                    showStatus(
-                        dashboardStatus,
-                        "Unable to load submissions. Please check your database policies.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * Build a unique list using the database ID.
-                 *
-                 * This protects the dashboard even if the
-                 * database response contains duplicate records.
-                 */
-
-                const uniqueSubmissions =
-                    [];
-
-                const seenIds =
-                    new Set();
-
-
-                submissions.forEach(
-                    submission => {
-
-                        if (
-                            !seenIds.has(
-                                submission.id
-                            )
-                        ) {
-
-                            seenIds.add(
-                                submission.id
-                            );
-
-                            uniqueSubmissions.push(
-                                submission
-                            );
+            const {
+                data: submissions,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .select(
+                        "id, created_at, message, name, region, country, status, size"
+                    )
+                    .eq(
+                        "status",
+                        "pending"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
                         }
-                    }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not load submissions:",
+                    error
                 );
 
 
-                pendingCount.textContent =
-                    uniqueSubmissions.length;
-
-
-                submissionsContainer.innerHTML =
-                    "";
-
-
-                lastLoadedSubmissionIds =
-                    seenIds;
-
-
-                if (
-                    uniqueSubmissions.length === 0
-                ) {
-
-                    submissionsContainer.innerHTML = `
-
-                        <div class="empty-state">
-
-                            <h2>
-                                No Pending Ripples
-                            </h2>
-
-                            <p>
-                                There are currently no submissions waiting for review.
-                            </p>
-
-                        </div>
-
-                    `;
-
-                    return;
-                }
-
-
-                uniqueSubmissions.forEach(
-                    submission => {
-
-                        createSubmissionCard(
-                            submission
-                        );
-                    }
+                showStatus(
+                    dashboardStatus,
+                    "Unable to load submissions. Please check your database policies.",
+                    "error"
                 );
 
-            } finally {
-
-                isLoadingSubmissions =
-                    false;
+                return;
             }
+
+
+            pendingCount.textContent =
+                submissions.length;
+
+
+            if (
+                submissions.length === 0
+            ) {
+
+                submissionsContainer.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <h2>
+                            No Pending Ripples
+                        </h2>
+
+                        <p>
+                            There are currently no submissions waiting for review.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            submissions.forEach(
+                submission => {
+
+                    createSubmissionCard(
+                        submission
+                    );
+
+                }
+            );
         }
 
 
@@ -1559,22 +1492,6 @@
             submission
         ) {
 
-            /*
-             * Prevent duplicate cards in the DOM.
-             */
-
-            const existingCard =
-                document.querySelector(
-                    `[data-submission-id="${CSS.escape(String(submission.id))}"]`
-                );
-
-
-            if (existingCard) {
-
-                return;
-            }
-
-
             const card =
                 document.createElement(
                     "article"
@@ -1583,10 +1500,6 @@
 
             card.className =
                 "submission-card";
-
-
-            card.dataset.submissionId =
-                submission.id;
 
 
             /* ---------------------------------------------
@@ -1658,15 +1571,6 @@
             );
 
 
-            meta.appendChild(
-                createMetaItem(
-                    "Current Size",
-                    submission.size ||
-                        "Not selected"
-                )
-            );
-
-
             /* ---------------------------------------------
                SIZE SELECTOR
             --------------------------------------------- */
@@ -1678,21 +1582,21 @@
 
 
             sizeSection.className =
-                "size-section";
+                "ripple-size-section";
 
 
             const sizeTitle =
                 document.createElement(
-                    "div"
+                    "span"
                 );
 
 
             sizeTitle.className =
-                "size-title";
+                "ripple-size-title";
 
 
             sizeTitle.textContent =
-                "Choose Impact Ripple Size";
+                "Ripple Size";
 
 
             sizeSection.appendChild(
@@ -1707,7 +1611,7 @@
 
 
             sizeOptions.className =
-                "size-options";
+                "ripple-size-options";
 
 
             const sizes = [
@@ -1729,15 +1633,10 @@
 
                 {
                     value: "extra-large",
-                    label: "Extra-Large"
+                    label: "Extra Large"
                 }
 
             ];
-
-
-            let selectedSize =
-                submission.size ||
-                "";
 
 
             sizes.forEach(
@@ -1750,34 +1649,29 @@
 
 
                     option.className =
-                        "size-option";
+                        "ripple-size-option";
 
 
-                    const radio =
+                    const input =
                         document.createElement(
                             "input"
                         );
 
 
-                    radio.type =
+                    input.type =
                         "radio";
 
 
-                    radio.name =
-                        `size-${submission.id}`;
+                    input.name =
+                        `ripple-size-${submission.id}`;
 
 
-                    radio.value =
+                    input.value =
                         size.value;
 
 
-                    radio.id =
-                        `size-${size.value}-${submission.id}`;
-
-
-                    radio.checked =
-                        submission.size ===
-                        size.value;
+                    input.id =
+                        `ripple-size-${submission.id}-${size.value}`;
 
 
                     const label =
@@ -1787,33 +1681,15 @@
 
 
                     label.htmlFor =
-                        radio.id;
+                        input.id;
 
 
                     label.textContent =
                         size.label;
 
 
-                    radio.addEventListener(
-                        "change",
-                        () => {
-
-                            if (
-                                radio.checked
-                            ) {
-
-                                selectedSize =
-                                    radio.value;
-
-                                approveButton.disabled =
-                                    false;
-                            }
-                        }
-                    );
-
-
                     option.appendChild(
-                        radio
+                        input
                     );
 
 
@@ -1825,6 +1701,7 @@
                     sizeOptions.appendChild(
                         option
                     );
+
                 }
             );
 
@@ -1834,22 +1711,22 @@
             );
 
 
-            const sizeHelp =
+            const sizeRequired =
                 document.createElement(
-                    "div"
+                    "span"
                 );
 
 
-            sizeHelp.className =
-                "size-help";
+            sizeRequired.className =
+                "size-required-message";
 
 
-            sizeHelp.textContent =
-                "Select the visual size you want this Impact Ripple to have. Approval is only available after a size is selected.";
+            sizeRequired.textContent =
+                "Select a size before approving this ripple.";
 
 
             sizeSection.appendChild(
-                sizeHelp
+                sizeRequired
             );
 
 
@@ -1886,30 +1763,11 @@
 
 
             /*
-             * IMPORTANT:
-             *
-             * If the database already has a valid size,
-             * approval is immediately available.
-             *
-             * If size is blank, approval stays disabled.
+             * Approve starts disabled.
              */
 
             approveButton.disabled =
-                !selectedSize;
-
-
-            approveButton.addEventListener(
-                "click",
-                () => {
-
-                    updateSubmissionStatus(
-                        submission.id,
-                        "approved",
-                        selectedSize,
-                        card
-                    );
-                }
-            );
+                true;
 
 
             const rejectButton =
@@ -1930,6 +1788,92 @@
                 "✕ Reject";
 
 
+            /* ---------------------------------------------
+               ENABLE APPROVE WHEN SIZE SELECTED
+            --------------------------------------------- */
+
+            const radioButtons =
+                sizeOptions.querySelectorAll(
+                    'input[type="radio"]'
+                );
+
+
+            radioButtons.forEach(
+                radio => {
+
+                    radio.addEventListener(
+                        "change",
+                        () => {
+
+                            const selected =
+                                sizeOptions.querySelector(
+                                    'input[type="radio"]:checked'
+                                );
+
+
+                            if (selected) {
+
+                                approveButton.disabled =
+                                    false;
+
+                                sizeRequired.classList.add(
+                                    "hidden"
+                                );
+
+                            } else {
+
+                                approveButton.disabled =
+                                    true;
+
+                                sizeRequired.classList.remove(
+                                    "hidden"
+                                );
+                            }
+                        }
+                    );
+                }
+            );
+
+
+            /* ---------------------------------------------
+               APPROVE
+            --------------------------------------------- */
+
+            approveButton.addEventListener(
+                "click",
+                () => {
+
+                    const selectedSize =
+                        sizeOptions.querySelector(
+                            'input[type="radio"]:checked'
+                        );
+
+
+                    if (!selectedSize) {
+
+                        sizeRequired.classList.remove(
+                            "hidden"
+                        );
+
+                        return;
+                    }
+
+
+                    updateSubmissionStatus(
+                        submission.id,
+                        "approved",
+                        selectedSize.value,
+                        card
+                    );
+
+                }
+            );
+
+
+            /* ---------------------------------------------
+               REJECT
+            --------------------------------------------- */
+
             rejectButton.addEventListener(
                 "click",
                 () => {
@@ -1940,6 +1884,7 @@
                         null,
                         card
                     );
+
                 }
             );
 
@@ -1955,7 +1900,7 @@
 
 
             /* ---------------------------------------------
-               ASSEMBLE CARD
+               CARD ASSEMBLY
             --------------------------------------------- */
 
             card.appendChild(
@@ -2089,6 +2034,12 @@
             card
         ) {
 
+            const actionText =
+                newStatus === "approved"
+                    ? "approve"
+                    : "reject";
+
+
             /*
              * Approval requires a size.
              */
@@ -2100,18 +2051,12 @@
 
                 showStatus(
                     dashboardStatus,
-                    "Please choose a ripple size before approving this submission.",
+                    "Please select a ripple size before approving.",
                     "error"
                 );
 
                 return;
             }
-
-
-            const actionText =
-                newStatus === "approved"
-                    ? "approve"
-                    : "reject";
 
 
             const confirmed =
@@ -2143,6 +2088,19 @@
                 }
             );
 
+
+            /*
+             * Build the database update.
+             *
+             * When approved:
+             *     status = approved
+             *     size   = selected size
+             *
+             * When rejected:
+             *     status = rejected
+             *
+             * The size is left untouched on rejection.
+             */
 
             let updateData;
 
@@ -2208,7 +2166,7 @@
 
                 showStatus(
                     dashboardStatus,
-                    `Unable to ${actionText} submission.`,
+                    `Unable to ${actionText} submission. ${error.message || ""}`,
                     "error"
                 );
 
@@ -2219,21 +2177,22 @@
             showStatus(
                 dashboardStatus,
                 newStatus === "approved"
-                    ? `Ripple approved as ${formatSize(selectedSize)}.`
+                    ? `Ripple approved as ${formatRippleSize(selectedSize)}.`
                     : "Ripple rejected.",
                 "success"
             );
 
 
             /*
-             * Remove the card immediately.
+             * Remove the submission from
+             * the pending list.
              */
 
             card.remove();
 
 
             /*
-             * Update count.
+             * Update pending count.
              */
 
             const currentCount =
@@ -2255,7 +2214,8 @@
 
 
             /*
-             * Show empty state.
+             * Show empty state when
+             * no pending submissions remain.
              */
 
             if (
@@ -2282,10 +2242,10 @@
 
 
         /* =================================================
-           FORMAT SIZE
+           FORMAT RIPPLE SIZE
         ================================================= */
 
-        function formatSize(
+        function formatRippleSize(
             size
         ) {
 
@@ -2301,10 +2261,10 @@
                     return "Large";
 
                 case "extra-large":
-                    return "Extra-Large";
+                    return "Extra Large";
 
                 default:
-                    return "Unknown";
+                    return size;
             }
         }
 
@@ -2318,6 +2278,7 @@
             async () => {
 
                 await loadPendingSubmissions();
+
             }
         );
 
@@ -2347,18 +2308,6 @@
                 }
 
 
-                lastLoadedSubmissionIds =
-                    new Set();
-
-
-                submissionsContainer.innerHTML =
-                    "";
-
-
-                pendingCount.textContent =
-                    "0";
-
-
                 showLogin();
 
                 clearStatus(
@@ -2374,7 +2323,7 @@
 
         supabaseClient.auth
             .onAuthStateChange(
-                (
+                async (
                     event,
                     session
                 ) => {
@@ -2383,26 +2332,12 @@
 
                         showDashboard();
 
-                        /*
-                         * We intentionally do not await
-                         * the load directly inside the auth
-                         * callback. This prevents multiple
-                         * auth events from creating duplicate
-                         * dashboard loads.
-                         */
-
-                        setTimeout(
-                            () => {
-
-                                loadPendingSubmissions();
-
-                            },
-                            0
-                        );
+                        await loadPendingSubmissions();
 
                     } else {
 
                         showLogin();
+
                     }
                 }
             );
@@ -2445,32 +2380,12 @@
             } else {
 
                 showLogin();
+
             }
         }
 
 
         initialize();
-
-
-        /* =================================================
-           INITIALIZATION COMPLETE
-        ================================================= */
-
-        console.log(
-            "The Ripple Well Admin initialized."
-        );
-
-        console.log(
-            "Submission size selection: active"
-        );
-
-        console.log(
-            "Approval requires size: active"
-        );
-
-        console.log(
-            "Duplicate card protection: active"
-        );
 
     </script>
 
