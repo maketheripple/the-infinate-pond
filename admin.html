@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        The Ripple Well — Admin
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #020b10 0%,
+                    #03151d 45%,
+                    #021016 100%
+                );
+
+            color: #dff8ff;
+
+            min-height: 100vh;
+
+            padding: 40px 20px;
+        }
+
+
+        .admin-container {
+
+            width: 100%;
+            max-width: 1000px;
+
+            margin: 0 auto;
+        }
+
+
+        .admin-header {
+
+            text-align: center;
+
+            margin-bottom: 40px;
+        }
+
+
+        .admin-header h1 {
+
+            margin: 0 0 10px;
+
+            font-size: 32px;
+
+            font-weight: 400;
+
+            letter-spacing: 2px;
+        }
+
+
+        .admin-header p {
+
+            margin: 0;
+
+            color:
+                rgba(
+                    210,
+                    240,
+                    248,
+                    0.62
+                );
+
+            font-size: 14px;
+        }
+
+
+        /* =================================================
+           LOGIN
+        ================================================= */
+
+        #login-section {
+
+            max-width: 420px;
+
+            margin: 80px auto 0;
+
+            padding: 35px;
+
+            background:
+                rgba(
+                    5,
+                    30,
+                    40,
+                    0.72
+                );
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.18
+                );
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.35
+                );
+        }
+
+
+        #login-section h2 {
+
+            margin-top: 0;
+
+            font-weight: 400;
+
+            text-align: center;
+        }
+
+
+        .form-group {
+
+            margin-bottom: 18px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            color:
+                rgba(
+                    220,
+                    245,
+                    250,
+                    0.72
+                );
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border-radius: 7px;
+
+            border:
+                1px solid
+                rgba(
+                    140,
+                    220,
+                    240,
+                    0.22
+                );
+
+            background:
+                rgba(
+                    0,
+                    15,
+                    22,
+                    0.75
+                );
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+
+        input:focus {
+
+            border-color:
+                rgba(
+                    150,
+                    230,
+                    245,
+                    0.6
+                );
+        }
+
+
+        button {
+
+            cursor: pointer;
+
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 12px 20px;
+
+            font-size: 14px;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .login-button {
+
+            width: 100%;
+
+            background:
+                rgba(
+                    85,
+                    185,
+                    210,
+                    0.8
+                );
+
+            color: #031016;
+
+            font-weight: 600;
+        }
+
+
+        .login-button:hover {
+
+            background:
+                rgba(
+                    120,
+                    215,
+                    235,
+                    0.95
+                );
+        }
+
+
+        /* =================================================
+           DASHBOARD
+        ================================================= */
+
+        #dashboard-section {
+
+            display: none;
+        }
+
+
+        .dashboard-toolbar {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+            padding: 15px 18px;
+
+            background:
+                rgba(
+                    5,
+                    30,
+                    40,
+                    0.55
+                );
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.14
+                );
+
+            border-radius: 10px;
+        }
+
+
+        .pending-count {
+
+            font-size: 14px;
+
+            color:
+                rgba(
+                    220,
+                    245,
+                    250,
+                    0.72
+                );
+        }
+
+
+        .pending-count strong {
+
+            color: #bdeef8;
+
+            font-size: 18px;
+        }
+
+
+        .toolbar-buttons {
+
+            display: flex;
+
+            gap: 8px;
+        }
+
+
+        .refresh-button {
+
+            background:
+                rgba(
+                    80,
+                    170,
+                    195,
+                    0.2
+                );
+
+            color: #cceff7;
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.2
+                );
+        }
+
+
+        .refresh-button:hover {
+
+            background:
+                rgba(
+                    80,
+                    170,
+                    195,
+                    0.35
+                );
+        }
+
+
+        .logout-button {
+
+            background:
+                rgba(
+                    150,
+                    80,
+                    80,
+                    0.18
+                );
+
+            color:
+                #f0caca;
+
+            border:
+                1px solid
+                rgba(
+                    210,
+                    130,
+                    130,
+                    0.2
+                );
+        }
+
+
+        .logout-button:hover {
+
+            background:
+                rgba(
+                    150,
+                    80,
+                    80,
+                    0.32
+                );
+        }
+
+
+        /* =================================================
+           SUBMISSIONS
+        ================================================= */
+
+        #submissions-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+        }
+
+
+        .submission-card {
+
+            background:
+                rgba(
+                    5,
+                    29,
+                    38,
+                    0.72
+                );
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.15
+                );
+
+            border-radius: 12px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.2
+                );
+        }
+
+
+        .submission-message {
+
+            font-size: 18px;
+
+            line-height: 1.6;
+
+            color: #e3f8fc;
+
+            margin-bottom: 22px;
+
+            white-space: pre-wrap;
+        }
+
+
+        .submission-meta {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        150px,
+                        1fr
+                    )
+                );
+
+            gap: 12px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .meta-item {
+
+            padding: 10px 12px;
+
+            background:
+                rgba(
+                    0,
+                    15,
+                    22,
+                    0.35
+                );
+
+            border-radius: 7px;
+        }
+
+
+        .meta-label {
+
+            display: block;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            color:
+                rgba(
+                    190,
+                    225,
+                    235,
+                    0.45
+                );
+
+            margin-bottom: 4px;
+        }
+
+
+        .meta-value {
+
+            display: block;
+
+            font-size: 13px;
+
+            color:
+                rgba(
+                    225,
+                    247,
+                    250,
+                    0.82
+                );
+
+            word-break: break-word;
+        }
+
+
+        .submission-actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            padding-top: 5px;
+        }
+
+
+        .approve-button {
+
+            background:
+                rgba(
+                    70,
+                    175,
+                    125,
+                    0.72
+                );
+
+            color: white;
+
+            flex: 1;
+        }
+
+
+        .approve-button:hover {
+
+            background:
+                rgba(
+                    70,
+                    190,
+                    135,
+                    0.92
+                );
+        }
+
+
+        .reject-button {
+
+            background:
+                rgba(
+                    170,
+                    75,
+                    75,
+                    0.68
+                );
+
+            color: white;
+
+            flex: 1;
+        }
+
+
+        .reject-button:hover {
+
+            background:
+                rgba(
+                    190,
+                    85,
+                    85,
+                    0.9
+                );
+        }
+
+
+        /* =================================================
+           EMPTY / STATUS
+        ================================================= */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 70px 20px;
+
+            color:
+                rgba(
+                    210,
+                    240,
+                    248,
+                    0.55
+                );
+        }
+
+
+        .empty-state h2 {
+
+            font-weight: 400;
+
+            margin-bottom: 8px;
+        }
+
+
+        .status-message {
+
+            margin-bottom: 20px;
+
+            padding: 12px 15px;
+
+            border-radius: 7px;
+
+            display: none;
+
+            font-size: 13px;
+        }
+
+
+        .status-error {
+
+            display: block;
+
+            background:
+                rgba(
+                    160,
+                    60,
+                    60,
+                    0.18
+                );
+
+            border:
+                1px solid
+                rgba(
+                    210,
+                    110,
+                    110,
+                    0.2
+                );
+
+            color:
+                #f1caca;
+        }
+
+
+        .status-success {
+
+            display: block;
+
+            background:
+                rgba(
+                    60,
+                    150,
+                    105,
+                    0.18
+                );
+
+            border:
+                1px solid
+                rgba(
+                    100,
+                    190,
+                    145,
+                    0.2
+                );
+
+            color:
+                #c9f1dc;
+        }
+
+
+        /* =================================================
+           MOBILE
+        ================================================= */
+
+        @media (
+            max-width: 600px
+        ) {
+
+            body {
+                padding: 25px 12px;
+            }
+
+
+            .admin-header h1 {
+                font-size: 25px;
+            }
+
+
+            .dashboard-toolbar {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .toolbar-buttons {
+
+                width: 100%;
+            }
+
+
+            .toolbar-buttons button {
+
+                flex: 1;
+            }
+
+
+            .submission-actions {
+
+                flex-direction: column;
+            }
+
+
+            .submission-card {
+
+                padding: 18px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="admin-container">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================= -->
+
+        <header class="admin-header">
+
+            <h1>
+                The Ripple Well
+            </h1>
+
+            <p>
+                Private Submission Review
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             LOGIN SECTION
+        ================================================= -->
+
+        <section id="login-section">
+
+            <h2>
+                Administrator Login
+            </h2>
+
+
+            <div
+                id="login-status"
+                class="status-message"
+            ></div>
+
+
+            <form id="login-form">
+
+
+                <div class="form-group">
+
+                    <label for="login-email">
+                        Email
+                    </label>
+
+                    <input
+                        id="login-email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="login-password">
+                        Password
+                    </label>
+
+                    <input
+                        id="login-password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    class="login-button"
+                    type="submit"
+                >
+                    Sign In
+                </button>
+
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================================
+             DASHBOARD SECTION
+        ================================================= -->
+
+        <section id="dashboard-section">
+
+
+            <div
+                id="dashboard-status"
+                class="status-message"
+            ></div>
+
+
+            <div class="dashboard-toolbar">
+
+
+                <div class="pending-count">
+
+                    Pending Ripples:
+
+                    <strong
+                        id="pending-count"
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="toolbar-buttons">
+
+                    <button
+                        id="refresh-button"
+                        class="refresh-button"
+                        type="button"
+                    >
+                        Refresh
+                    </button>
+
+
+                    <button
+                        id="logout-button"
+                        class="logout-button"
+                        type="button"
+                    >
+                        Sign Out
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+            <div id="submissions-container">
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUPABASE
+    ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        "use strict";
+
+
+        /* =================================================
+           SUPABASE CONFIGURATION
+        ================================================= */
+
+        const SUPABASE_URL =
+            "https://vazgkkrrjgoowwywamot.supabase.co";
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Paste your COMPLETE Supabase publishable key
+         * between the quotation marks below.
+         *
+         * Get it from:
+         *
+         * Supabase
+         * → Project Settings
+         * → API
+         *
+         * Use the PUBLISHABLE key.
+         *
+         * Do NOT use a service_role key here.
+         */
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        /* =================================================
+           ELEMENTS
+        ================================================= */
+
+        const loginSection =
+            document.getElementById(
+                "login-section"
+            );
+
+
+        const dashboardSection =
+            document.getElementById(
+                "dashboard-section"
+            );
+
+
+        const loginForm =
+            document.getElementById(
+                "login-form"
+            );
+
+
+        const loginStatus =
+            document.getElementById(
+                "login-status"
+            );
+
+
+        const dashboardStatus =
+            document.getElementById(
+                "dashboard-status"
+            );
+
+
+        const submissionsContainer =
+            document.getElementById(
+                "submissions-container"
+            );
+
+
+        const pendingCount =
+            document.getElementById(
+                "pending-count"
+            );
+
+
+        const refreshButton =
+            document.getElementById(
+                "refresh-button"
+            );
+
+
+        const logoutButton =
+            document.getElementById(
+                "logout-button"
+            );
+
+
+        /* =================================================
+           STATUS MESSAGE
+        ================================================= */
+
+        function showStatus(
+            element,
+            message,
+            type
+        ) {
+
+            element.textContent =
+                message;
+
+            element.className =
+                "status-message";
+
+            if (type === "error") {
+
+                element.classList.add(
+                    "status-error"
+                );
+
+            }
+
+            if (type === "success") {
+
+                element.classList.add(
+                    "status-success"
+                );
+            }
+        }
+
+
+        function clearStatus(element) {
+
+            element.textContent = "";
+
+            element.className =
+                "status-message";
+        }
+
+
+        /* =================================================
+           SHOW LOGIN
+        ================================================= */
+
+        function showLogin() {
+
+            loginSection.style.display =
+                "block";
+
+            dashboardSection.style.display =
+                "none";
+        }
+
+
+        /* =================================================
+           SHOW DASHBOARD
+        ================================================= */
+
+        function showDashboard() {
+
+            loginSection.style.display =
+                "none";
+
+            dashboardSection.style.display =
+                "block";
+        }
+
+
+        /* =================================================
+           LOGIN
+        ================================================= */
+
+        loginForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                clearStatus(
+                    loginStatus
+                );
+
+
+                const email =
+                    document
+                        .getElementById(
+                            "login-email"
+                        )
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .getElementById(
+                            "login-password"
+                        )
+                        .value;
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth
+                        .signInWithPassword({
+                            email,
+                            password
+                        });
+
+
+                if (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    showStatus(
+                        loginStatus,
+                        "Login failed. Please check your email and password.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                console.log(
+                    "Administrator signed in:",
+                    data.user.email
+                );
+
+
+                loginForm.reset();
+
+
+                showDashboard();
+
+                await loadPendingSubmissions();
+            }
+        );
+
+
+        /* =================================================
+           LOAD PENDING SUBMISSIONS
+        ================================================= */
+
+        async function loadPendingSubmissions() {
+
+            clearStatus(
+                dashboardStatus
+            );
+
+
+            submissionsContainer.innerHTML =
+                "";
+
+
+            const {
+                data: submissions,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .select(
+                        "id, created_at, message, name, region, country, status"
+                    )
+                    .eq(
+                        "status",
+                        "pending"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not load submissions:",
+                    error
+                );
+
+
+                showStatus(
+                    dashboardStatus,
+                    "Unable to load submissions. Please check your database policies.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            pendingCount.textContent =
+                submissions.length;
+
+
+            if (
+                submissions.length === 0
+            ) {
+
+                submissionsContainer.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <h2>
+                            No Pending Ripples
+                        </h2>
+
+                        <p>
+                            There are currently no submissions waiting for review.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            submissions.forEach(
+                submission => {
+
+                    createSubmissionCard(
+                        submission
+                    );
+
+                }
+            );
+        }
+
+
+        /* =================================================
+           CREATE SUBMISSION CARD
+        ================================================= */
+
+        function createSubmissionCard(
+            submission
+        ) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "submission-card";
+
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+
+            message.className =
+                "submission-message";
+
+
+            message.textContent =
+                `“${submission.message || ""}”`;
+
+
+            /* ---------------------------------------------
+               META
+            --------------------------------------------- */
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+
+            meta.className =
+                "submission-meta";
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Name",
+                    submission.name ||
+                        "Anonymous"
+                )
+            );
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Region",
+                    submission.region ||
+                        "—"
+                )
+            );
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Country",
+                    submission.country ||
+                        "—"
+                )
+            );
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Submitted",
+                    formatDate(
+                        submission.created_at
+                    )
+                )
+            );
+
+
+            /* ---------------------------------------------
+               ACTIONS
+            --------------------------------------------- */
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "submission-actions";
+
+
+            const approveButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            approveButton.type =
+                "button";
+
+
+            approveButton.className =
+                "approve-button";
+
+
+            approveButton.textContent =
+                "✓ Approve";
+
+
+            approveButton.addEventListener(
+                "click",
+                () => {
+
+                    updateSubmissionStatus(
+                        submission.id,
+                        "approved",
+                        card
+                    );
+
+                }
+            );
+
+
+            const rejectButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            rejectButton.type =
+                "button";
+
+
+            rejectButton.className =
+                "reject-button";
+
+
+            rejectButton.textContent =
+                "✕ Reject";
+
+
+            rejectButton.addEventListener(
+                "click",
+                () => {
+
+                    updateSubmissionStatus(
+                        submission.id,
+                        "rejected",
+                        card
+                    );
+
+                }
+            );
+
+
+            actions.appendChild(
+                approveButton
+            );
+
+
+            actions.appendChild(
+                rejectButton
+            );
+
+
+            card.appendChild(
+                message
+            );
+
+
+            card.appendChild(
+                meta
+            );
+
+
+            card.appendChild(
+                actions
+            );
+
+
+            submissionsContainer.appendChild(
+                card
+            );
+        }
+
+
+        /* =================================================
+           META ITEM
+        ================================================= */
+
+        function createMetaItem(
+            label,
+            value
+        ) {
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+
+            wrapper.className =
+                "meta-item";
+
+
+            const labelElement =
+                document.createElement(
+                    "span"
+                );
+
+
+            labelElement.className =
+                "meta-label";
+
+
+            labelElement.textContent =
+                label;
+
+
+            const valueElement =
+                document.createElement(
+                    "span"
+                );
+
+
+            valueElement.className =
+                "meta-value";
+
+
+            valueElement.textContent =
+                value;
+
+
+            wrapper.appendChild(
+                labelElement
+            );
+
+
+            wrapper.appendChild(
+                valueElement
+            );
+
+
+            return wrapper;
+        }
+
+
+        /* =================================================
+           FORMAT DATE
+        ================================================= */
+
+        function formatDate(
+            dateString
+        ) {
+
+            if (!dateString) {
+
+                return "—";
+            }
+
+
+            const date =
+                new Date(
+                    dateString
+                );
+
+
+            return date.toLocaleString(
+                undefined,
+                {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit"
+                }
+            );
+        }
+
+
+        /* =================================================
+           UPDATE SUBMISSION STATUS
+        ================================================= */
+
+        async function updateSubmissionStatus(
+            submissionId,
+            newStatus,
+            card
+        ) {
+
+            const actionText =
+                newStatus === "approved"
+                    ? "approve"
+                    : "reject";
+
+
+            const confirmed =
+                window.confirm(
+                    `Are you sure you want to ${actionText} this submission?`
+                );
+
+
+            if (!confirmed) {
+
+                return;
+            }
+
+
+            const buttons =
+                card.querySelectorAll(
+                    "button"
+                );
+
+
+            buttons.forEach(
+                button => {
+
+                    button.disabled =
+                        true;
+
+                    button.style.opacity =
+                        "0.5";
+                }
+            );
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .update({
+                        status:
+                            newStatus
+                    })
+                    .eq(
+                        "id",
+                        submissionId
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not update submission:",
+                    error
+                );
+
+
+                buttons.forEach(
+                    button => {
+
+                        button.disabled =
+                            false;
+
+                        button.style.opacity =
+                            "1";
+                    }
+                );
+
+
+                showStatus(
+                    dashboardStatus,
+                    `Unable to ${actionText} submission.`,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showStatus(
+                dashboardStatus,
+                newStatus === "approved"
+                    ? "Ripple approved."
+                    : "Ripple rejected.",
+                "success"
+            );
+
+
+            /*
+             * Remove the submission from the
+             * pending list immediately.
+             */
+
+            card.remove();
+
+
+            /*
+             * Update the visible count.
+             */
+
+            const currentCount =
+                parseInt(
+                    pendingCount.textContent,
+                    10
+                ) || 0;
+
+
+            const newCount =
+                Math.max(
+                    0,
+                    currentCount - 1
+                );
+
+
+            pendingCount.textContent =
+                newCount;
+
+
+            /*
+             * If the list is now empty,
+             * display the empty state.
+             */
+
+            if (
+                newCount === 0
+            ) {
+
+                submissionsContainer.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <h2>
+                            No Pending Ripples
+                        </h2>
+
+                        <p>
+                            There are currently no submissions waiting for review.
+                        </p>
+
+                    </div>
+
+                `;
+            }
+        }
+
+
+        /* =================================================
+           REFRESH
+        ================================================= */
+
+        refreshButton.addEventListener(
+            "click",
+            async () => {
+
+                await loadPendingSubmissions();
+
+            }
+        );
+
+
+        /* =================================================
+           LOGOUT
+        ================================================= */
+
+        logoutButton.addEventListener(
+            "click",
+            async () => {
+
+                const {
+                    error
+                } =
+                    await supabaseClient.auth
+                        .signOut();
+
+
+                if (error) {
+
+                    console.error(
+                        error
+                    );
+
+                    return;
+                }
+
+
+                showLogin();
+
+                clearStatus(
+                    loginStatus
+                );
+            }
+        );
+
+
+        /* =================================================
+           AUTH STATE
+        ================================================= */
+
+        supabaseClient.auth
+            .onAuthStateChange(
+                async (
+                    event,
+                    session
+                ) => {
+
+                    if (session) {
+
+                        showDashboard();
+
+                        await loadPendingSubmissions();
+
+                    } else {
+
+                        showLogin();
+
+                    }
+                }
+            );
+
+
+        /* =================================================
+           INITIAL SESSION CHECK
+        ================================================= */
+
+        async function initialize() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth
+                    .getSession();
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                showLogin();
+
+                return;
+            }
+
+
+            if (
+                data.session
+            ) {
+
+                showDashboard();
+
+                await loadPendingSubmissions();
+
+            } else {
+
+                showLogin();
+
+            }
+        }
+
+
+        initialize();
+
+    </script>
+
+
+</body>
+
+</html>
