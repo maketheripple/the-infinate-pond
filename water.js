@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.1
+   VERSION 2.2
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -13,12 +13,11 @@
    3. DEPTH
       Floating Impact Ripples live beneath the surface.
 
-   CLICK RIPPLE SCALE UPDATE
-   - Click ripples reduced to 25% of previous size.
-   - Associated WebGL ripple travel reduced to 25%.
-   - Ripple highlight reduced proportionally.
-   - Reflection disturbance remains centered on click
-     but uses a smaller visual reaction.
+   CLICK RIPPLE SCALE
+   - Click ripple visual footprint = 25% of previous size.
+   - WebGL ripple travel distance = 25%.
+   - Ripple highlight intensity reduced proportionally.
+   - Reflection disturbance remains centered on click.
    - Impact Ripples are unchanged.
 
    IMPORTANT:
@@ -123,6 +122,12 @@
 
         height =
             Math.max(1, rect.height);
+
+        dpr =
+            Math.min(
+                window.devicePixelRatio || 1,
+                2
+            );
 
         canvas.width =
             Math.floor(width * dpr);
@@ -414,19 +419,18 @@
 
 
         /* -------------------------------------------------
-           CLICK RIPPLE FUNCTION
+           CLICK RIPPLE
 
-           25% SCALE UPDATE
+           25% SIZE
 
-           Previous travel radius:
+           Original travel radius:
                age * 0.32
 
            New travel radius:
                age * 0.08
 
-           This reduces the ripple's maximum travel
-           distance to approximately 25% of the previous
-           visual size.
+           Therefore the click ripple travels only
+           approximately 25% as far as before.
         ------------------------------------------------- */
 
         float ripple(
@@ -447,9 +451,7 @@
 
 
             /*
-             * CLICK RIPPLE SIZE
-             *
-             * 0.08 is 25% of the original 0.32.
+             * 0.08 = 25% of the previous 0.32.
              */
 
             float radius =
@@ -458,8 +460,8 @@
 
 
             /*
-             * The ring remains proportionally crisp
-             * while occupying a much smaller area.
+             * Keep the ring proportionally crisp
+             * while reducing its overall footprint.
              */
 
             float wave =
@@ -496,9 +498,9 @@
         }
 
 
-        /* -------------------------------------------------
+        /* =================================================
            MAIN
-        ------------------------------------------------- */
+        ================================================= */
 
         void main() {
 
@@ -664,10 +666,8 @@
 
             /*
              * CLICK RIPPLE CONTRIBUTION
-             *
-             * Reduced from 0.16 to 0.04,
-             * matching the 25% scale of the ripple
-             * reaction.
+
+             * Reduced to 25% of the former response.
              */
 
             moonReflection +=
@@ -743,10 +743,10 @@
 
 
             /* ---------------------------------------------
-               RIPPLE HIGHLIGHTS
+               CLICK RIPPLE HIGHLIGHTS
 
-               Reduced from the original contribution
-               to keep the smaller ripple subtle.
+               Subtle because the ripple itself is now
+               much smaller.
             --------------------------------------------- */
 
             color +=
@@ -978,10 +978,11 @@
 
     /* =====================================================
        REFLECTION DISTURBANCE
-       
-       The disturbance remains centered on the click,
-       but the visual CSS reaction is intentionally
-       limited to 25% of the previous footprint.
+
+       The disturbance remains centered on the click.
+
+       --ripple-scale is explicitly set to 0.25 so
+       compatible CSS can reduce the reflection reaction.
     ===================================================== */
 
     let reflectionTimeout = null;
@@ -1016,15 +1017,6 @@
                 percentY
             );
 
-
-        /*
-         * Tell the reflection layer that this is
-         * a reduced-size ripple event.
-         *
-         * If the CSS uses these variables, the
-         * disturbance can be scaled without changing
-         * its position.
-         */
 
         reflectionDistortion.style
             .setProperty(
@@ -1066,10 +1058,14 @@
     /* =====================================================
        CREATE VISIBLE CLICK RIPPLE
 
-       The visible HTML ripple is reduced to 25% of
-       the original footprint.
+       IMPORTANT:
 
-       The clickable location itself is NOT reduced.
+       The click target remains the full water surface.
+
+       Only the visual ripple itself is reduced to 25%.
+
+       We explicitly set width and height here so the
+       reduction does not depend entirely on CSS.
     ===================================================== */
 
     function createVisibleRipple(
@@ -1093,9 +1089,7 @@
 
 
         /*
-         * These CSS variables allow the existing
-         * click-ripple stylesheet to scale its visual
-         * footprint without changing the interaction.
+         * Explicit 25% scaling variables.
          */
 
         ripple.style.setProperty(
@@ -1107,6 +1101,23 @@
         ripple.style.setProperty(
             "--click-ripple-size",
             "25%"
+        );
+
+
+        /*
+         * Additional variables for CSS implementations
+         * that calculate their footprint from a base size.
+         */
+
+        ripple.style.setProperty(
+            "--ripple-size-multiplier",
+            "0.25"
+        );
+
+
+        ripple.style.setProperty(
+            "--ripple-visual-scale",
+            "0.25"
         );
 
 
@@ -1141,6 +1152,10 @@
         const rect =
             waterWindow.getBoundingClientRect();
 
+
+        /*
+         * Keep the click location unchanged.
+         */
 
         const x =
             (
@@ -1196,6 +1211,10 @@
 
     /* =====================================================
        POINTER INTERACTION
+
+       Water clicks create ONLY the animated ripple.
+
+       They do NOT open the submission modal.
     ===================================================== */
 
     canvas.addEventListener(
@@ -1289,6 +1308,14 @@
 
 
     if (stars) {
+
+        /*
+         * Prevent duplicate stars if this script is
+         * accidentally initialized more than once.
+         */
+
+        stars.innerHTML = "";
+
 
         const starCount =
             window.innerWidth < 700
@@ -1599,12 +1626,11 @@
 
     /* =====================================================
        IMPACT RIPPLE DATA
-       
-       SIZE CONTROLS:
-       - Visible ripple scale
-       - Ripple travel distance
-       - Ripple duration
-       - Ripple opacity
+
+       Impact Ripples are intentionally NOT reduced.
+
+       These are the persistent/depth-layer ripples and
+       remain at their existing visual scale.
     ===================================================== */
 
     const impactRippleData = [
@@ -1679,9 +1705,12 @@
 
     /* =====================================================
        IMPACT RIPPLE STYLE
-       
-       The clickable object itself has NO visible border,
-       background, or permanent outline.
+
+       Impact Ripples have NO permanent visible border,
+       background, or outline.
+
+       They remain independent of the 25% click-ripple
+       change.
     ===================================================== */
 
     const impactRippleStyle =
@@ -2204,7 +2233,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.0 initialized."
+        "The Ripple Well v2.2 initialized."
     );
 
     console.log(
@@ -2220,7 +2249,11 @@
     );
 
     console.log(
+        "Click Ripple Scale: 25%"
+    );
+
+    console.log(
         "Impact Ripple Emission: active"
     );
 
-})(); 
+})();
