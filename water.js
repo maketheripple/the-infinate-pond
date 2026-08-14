@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 3.0
+   VERSION 2.4
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -11,14 +11,14 @@
       Header reflection reacts to water interaction.
 
    3. DEPTH
-      Approved Impact Ripples live beneath the surface.
+      Floating Impact Ripples live beneath the surface.
 
    CLICK RIPPLE SCALE
    - Click ripple visual footprint = 25% of previous size.
    - WebGL ripple travel distance = 25%.
    - Ripple highlight intensity reduced proportionally.
    - Reflection disturbance remains centered on click.
-   - Impact Ripple sizes are controlled separately.
+   - Impact Ripples are unchanged.
 
    SUBMISSIONS
    - "Make a Ripple" opens the submission window.
@@ -26,13 +26,15 @@
    - New submissions receive status = "pending".
    - Water clicks do NOT open the submission window.
 
-   IMPACT RIPPLES
-   - Only approved submissions appear.
-   - Size is read from the Supabase "size" column.
-   - Small = 70%
-   - Medium = 100%
-   - Large = 135%
-   - Extra Large = 175%
+   IMPACT RIPPLE DATABASE CONNECTION
+   - Approved submissions are loaded from Supabase.
+   - Only status = "approved" submissions are displayed.
+   - Database size controls Impact Ripple size.
+   - Supported sizes:
+       small
+       medium
+       large
+       extra-large
 
 ========================================================= */
 
@@ -309,6 +311,10 @@
         uniform float u_rippleTime2;
 
 
+        /* -------------------------------------------------
+           HASH / NOISE
+        ------------------------------------------------- */
+
         float hash(vec2 p) {
 
             p =
@@ -391,6 +397,10 @@
         }
 
 
+        /* -------------------------------------------------
+           FRACTAL ORGANIC MOTION
+        ------------------------------------------------- */
+
         float fbm(vec2 p) {
 
             float value = 0.0;
@@ -416,11 +426,9 @@
         }
 
 
-        /* =================================================
+        /* -------------------------------------------------
            CLICK RIPPLE
-
-           25% OF ORIGINAL SIZE
-        ================================================= */
+        ------------------------------------------------- */
 
         float ripple(
             vec2 uv,
@@ -478,6 +486,10 @@
         }
 
 
+        /* =================================================
+           MAIN
+        ================================================= */
+
         void main() {
 
             vec2 uv =
@@ -494,7 +506,7 @@
 
 
             /* ---------------------------------------------
-               ORGANIC WATER
+               ORGANIC WATER MOVEMENT
             --------------------------------------------- */
 
             vec2 flowUV =
@@ -667,6 +679,10 @@
                 );
 
 
+            /* ---------------------------------------------
+               NATURAL WATER VARIATION
+            --------------------------------------------- */
+
             color +=
                 water *
                 vec3(
@@ -685,6 +701,10 @@
                 );
 
 
+            /* ---------------------------------------------
+               MOONLIGHT COLOR
+            --------------------------------------------- */
+
             color +=
                 moonReflection *
                 vec3(
@@ -693,6 +713,10 @@
                     0.88
                 );
 
+
+            /* ---------------------------------------------
+               CLICK RIPPLE HIGHLIGHTS
+            --------------------------------------------- */
 
             color +=
                 abs(
@@ -705,6 +729,10 @@
                     0.115
                 );
 
+
+            /* ---------------------------------------------
+               DEPTH DARKENING
+            --------------------------------------------- */
 
             float depth =
                 smoothstep(
@@ -721,6 +749,10 @@
                     depth * 0.62
                 );
 
+
+            /* ---------------------------------------------
+               TOP SURFACE GLOW
+            --------------------------------------------- */
 
             float surfaceGlow =
                 smoothstep(
@@ -774,7 +806,6 @@
     const positionBuffer =
         gl.createBuffer();
 
-
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
         positionBuffer
@@ -827,7 +858,6 @@
             program,
             "u_resolution"
         );
-
 
     const uTime =
         gl.getUniformLocation(
@@ -890,7 +920,6 @@
 
     const ripples = [];
 
-
     for (
         let i = 0;
         i < MAX_RIPPLES;
@@ -898,13 +927,9 @@
     ) {
 
         ripples.push({
-
             x: -10,
-
             y: -10,
-
             time: -100
-
         });
     }
 
@@ -938,7 +963,6 @@
 
         const percentX =
             `${x * 100}%`;
-
 
         const percentY =
             `${y * 100}%`;
@@ -1014,7 +1038,6 @@
 
         ripple.style.left =
             `${x * 100}%`;
-
 
         ripple.style.top =
             `${y * 100}%`;
@@ -1103,9 +1126,7 @@
         ripples[rippleIndex] = {
 
             x,
-
             y,
-
             time: now
         };
 
@@ -1272,30 +1293,24 @@
             star.style.width =
                 `${size}px`;
 
-
             star.style.height =
                 `${size}px`;
-
 
             star.style.left =
                 `${Math.random() * 100}%`;
 
-
             star.style.top =
                 `${Math.random() * 72}%`;
-
 
             star.style.setProperty(
                 "--opacity",
                 opacity
             );
 
-
             star.style.setProperty(
                 "--glow",
                 `${glow}px`
             );
-
 
             star.style.setProperty(
                 "--duration",
@@ -1322,7 +1337,6 @@
 
         modal.classList.add("open");
 
-
         modal.setAttribute(
             "aria-hidden",
             "false"
@@ -1341,7 +1355,6 @@
 
 
         modal.classList.remove("open");
-
 
         modal.setAttribute(
             "aria-hidden",
@@ -1474,7 +1487,6 @@
     const SUPABASE_URL =
         "https://vazgkkrrjgoowwywamot.supabase.co";
 
-
     const SUPABASE_KEY =
         "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
 
@@ -1570,9 +1582,7 @@
 
 
         return {
-
             region,
-
             country
         };
     }
@@ -1803,35 +1813,196 @@
 
 
     /* =====================================================
-       IMPACT RIPPLE SIZE
+       IMPACT RIPPLE DATA
+       
+       These existing sample ripples remain for now.
+       Database ripples are added separately below.
     ===================================================== */
 
-    function getImpactRippleScale(
-        size
+    const impactRippleData = [
+
+        {
+            x: 0.17,
+            y: 0.37,
+            depth: "far",
+            floatTime: "13s",
+            rotation: -8,
+            size: 0.78,
+            rippleScale: 0.82,
+            rippleTime: "7.8s",
+            source: "sample"
+        },
+
+        {
+            x: 0.36,
+            y: 0.53,
+            depth: "mid",
+            floatTime: "16s",
+            rotation: 6,
+            size: 0.92,
+            rippleScale: 1.00,
+            rippleTime: "7.0s",
+            source: "sample"
+        },
+
+        {
+            x: 0.62,
+            y: 0.39,
+            depth: "near",
+            floatTime: "14s",
+            rotation: -5,
+            size: 1.12,
+            rippleScale: 1.18,
+            rippleTime: "6.3s",
+            source: "sample"
+        },
+
+        {
+            x: 0.80,
+            y: 0.58,
+            depth: "far",
+            floatTime: "18s",
+            rotation: 11,
+            size: 0.74,
+            rippleScale: 0.76,
+            rippleTime: "8.2s",
+            source: "sample"
+        },
+
+        {
+            x: 0.25,
+            y: 0.72,
+            depth: "mid",
+            floatTime: "15s",
+            rotation: -12,
+            size: 0.96,
+            rippleScale: 1.04,
+            rippleTime: "7.1s",
+            source: "sample"
+        },
+
+        {
+            x: 0.71,
+            y: 0.78,
+            depth: "near",
+            floatTime: "17s",
+            rotation: 7,
+            size: 1.16,
+            rippleScale: 1.24,
+            rippleTime: "6.0s",
+            source: "sample"
+        }
+    ];
+
+
+    /* =====================================================
+       DATABASE SIZE → VISUAL SIZE
+    ===================================================== */
+
+    function getImpactSize(
+        databaseSize
     ) {
 
-        switch (
-            String(size || "")
-                .toLowerCase()
+        const normalized =
+            String(
+                databaseSize || "medium"
+            )
                 .trim()
-        ) {
+                .toLowerCase();
+
+
+        switch (normalized) {
 
             case "small":
 
-                return 0.70;
+                return 0.72;
+
+
+            case "medium":
+
+                return 0.95;
 
 
             case "large":
 
-                return 1.35;
+                return 1.22;
 
 
             case "extra-large":
 
-                return 1.75;
+                return 1.52;
+
+
+            case "extra_large":
+
+                return 1.52;
+
+
+            case "extralarge":
+
+                return 1.52;
+
+
+            default:
+
+                console.warn(
+                    "Unknown ripple size:",
+                    databaseSize,
+                    "Using medium."
+                );
+
+                return 0.95;
+        }
+    }
+
+
+    /* =====================================================
+       DATABASE SIZE → RIPPLE SCALE
+    ===================================================== */
+
+    function getImpactRippleScale(
+        databaseSize
+    ) {
+
+        const normalized =
+            String(
+                databaseSize || "medium"
+            )
+                .trim()
+                .toLowerCase();
+
+
+        switch (normalized) {
+
+            case "small":
+
+                return 0.78;
 
 
             case "medium":
+
+                return 1.00;
+
+
+            case "large":
+
+                return 1.28;
+
+
+            case "extra-large":
+
+                return 1.58;
+
+
+            case "extra_large":
+
+                return 1.58;
+
+
+            case "extralarge":
+
+                return 1.58;
+
 
             default:
 
@@ -1841,105 +2012,266 @@
 
 
     /* =====================================================
-       STABLE NUMBER FROM STRING
-       
-       This gives every approved submission a repeatable
-       number based on its database ID.
+       LOAD APPROVED RIPPLE SUBMISSIONS
     ===================================================== */
 
-    function stringHash(
-        value
-    ) {
+    async function loadApprovedRipples() {
 
-        let hash = 0;
+        if (!impactLayer) {
 
+            console.warn(
+                "The Ripple Well: Impact Ripple layer was not found."
+            );
 
-        const text =
-            String(value || "");
-
-
-        for (
-            let i = 0;
-            i < text.length;
-            i++
-        ) {
-
-            hash =
-                (
-                    (
-                        hash << 5
-                    ) -
-                    hash
-                ) +
-                text.charCodeAt(i);
-
-
-            hash |= 0;
+            return [];
         }
 
 
-        return Math.abs(hash);
+        try {
+
+            const endpoint =
+                `${SUPABASE_URL}/rest/v1/ripple_submissions` +
+                `?select=id,created_at,message,name,region,country,status,size` +
+                `&status=eq.approved` +
+                `&order=created_at.asc`;
+
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+
+                        method: "GET",
+
+                        headers: {
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                const errorText =
+                    await response.text();
+
+
+                console.error(
+                    "The Ripple Well could not load approved ripples:",
+                    response.status,
+                    errorText
+                );
+
+
+                return [];
+            }
+
+
+            const submissions =
+                await response.json();
+
+
+            if (!Array.isArray(submissions)) {
+
+                console.error(
+                    "Unexpected Supabase ripple response:",
+                    submissions
+                );
+
+                return [];
+            }
+
+
+            console.log(
+                `The Ripple Well: ${submissions.length} approved ripple(s) loaded.`
+            );
+
+
+            return submissions;
+
+
+        } catch (error) {
+
+            console.error(
+                "The Ripple Well: failed to load approved ripples.",
+                error
+            );
+
+
+            return [];
+        }
     }
 
 
     /* =====================================================
-       STABLE POSITION
-
-       The same submission ID always produces the same
-       position.
+       CREATE DATABASE IMPACT RIPPLE DATA
     ===================================================== */
 
-    function getStablePosition(
-        id,
-        index
+    function convertSubmissionToImpactRipple(
+        submission,
+        index,
+        total
     ) {
 
-        const hash =
-            stringHash(
-                `${id}-${index}`
+        /*
+         * Arrange database ripples around the pond
+         * rather than stacking them on top of each other.
+         *
+         * This is temporary positioning logic.
+         * Later we can build a more organic placement
+         * system that remembers the actual position.
+         */
+
+        const goldenAngle =
+            Math.PI *
+            (
+                3 -
+                Math.sqrt(5)
             );
 
 
-        const hash2 =
-            stringHash(
-                `${id}-position`
+        const angle =
+            index *
+            goldenAngle;
+
+
+        const radius =
+            0.18 +
+            (
+                (
+                    index %
+                    4
+                ) *
+                0.10
             );
+
+
+        let x =
+            0.5 +
+            Math.cos(angle) *
+            radius;
+
+
+        let y =
+            0.54 +
+            Math.sin(angle) *
+            radius *
+            0.58;
 
 
         /*
-         * Keep ripples away from the very top and bottom
-         * edges of the water.
+         * Keep the ripple safely inside
+         * the visible pond area.
          */
 
-        const x =
-            0.10 +
-            (
-                (hash % 800) /
-                1000
+        x =
+            Math.max(
+                0.08,
+                Math.min(
+                    0.92,
+                    x
+                )
             );
 
 
-        const y =
-            0.28 +
-            (
-                (hash2 % 520) /
-                1000
+        y =
+            Math.max(
+                0.22,
+                Math.min(
+                    0.86,
+                    y
+                )
             );
+
+
+        const size =
+            getImpactSize(
+                submission.size
+            );
+
+
+        const rippleScale =
+            getImpactRippleScale(
+                submission.size
+            );
+
+
+        const depthOptions = [
+            "far",
+            "mid",
+            "near"
+        ];
+
+
+        const depth =
+            depthOptions[
+                index %
+                depthOptions.length
+            ];
 
 
         return {
 
-            x:
-                Math.min(
-                    0.90,
-                    x
-                ),
+            x,
 
-            y:
-                Math.min(
-                    0.80,
-                    y
-                )
+            y,
+
+            depth,
+
+            floatTime:
+                `${13 + (index % 6)}s`,
+
+            rotation:
+                -12 +
+                (
+                    index *
+                    7
+                ) %
+                25,
+
+            size,
+
+            rippleScale,
+
+            rippleTime:
+                `${6.4 + (index % 4) * 0.6}s`,
+
+            source:
+                "database",
+
+            id:
+                submission.id,
+
+            message:
+                submission.message ||
+                "",
+
+            name:
+                submission.name ||
+                "",
+
+            region:
+                submission.region ||
+                "",
+
+            country:
+                submission.country ||
+                "",
+
+            status:
+                submission.status,
+
+            databaseSize:
+                submission.size ||
+                "medium"
         };
     }
 
@@ -1956,6 +2288,16 @@
 
         .impact-ripple {
 
+            position: absolute;
+
+            width: 150px;
+
+            height: 100px;
+
+            transform:
+                translate(-50%, -50%)
+                scale(var(--scale, 1));
+
             background: transparent !important;
 
             border: none !important;
@@ -1968,14 +2310,14 @@
 
             filter: none;
 
+            cursor: pointer;
+
             animation:
                 organicFloat
                 var(--float-time)
                 ease-in-out
                 infinite
                 alternate;
-
-            cursor: pointer;
         }
 
 
@@ -2071,6 +2413,40 @@
                 var(--ripple-time, 7s)
                 ease-out
                 infinite;
+        }
+
+
+        @keyframes organicFloat {
+
+            0% {
+
+                transform:
+                    translate(-50%, -50%)
+                    scale(
+                        var(--scale, 1)
+                    )
+                    rotate(
+                        var(--rotation, 0deg)
+                    );
+            }
+
+
+            100% {
+
+                transform:
+                    translate(
+                        calc(-50% + 3px),
+                        calc(-50% - 2px)
+                    )
+                    scale(
+                        var(--scale, 1.01)
+                    )
+                    rotate(
+                        calc(
+                            var(--rotation, 0deg) + 1.5deg
+                        )
+                    );
+            }
         }
 
 
@@ -2220,25 +2596,6 @@
                 rgba(145, 224, 241, 0.20);
         }
 
-
-        /* ---------------------------------------------
-           ACCESSIBLE FOCUS
-        --------------------------------------------- */
-
-        .impact-ripple:focus {
-
-            outline:
-                1px solid
-                rgba(
-                    165,
-                    230,
-                    242,
-                    0.55
-                );
-
-            outline-offset: 4px;
-        }
-
     `;
 
 
@@ -2248,11 +2605,11 @@
 
 
     /* =====================================================
-       CREATE IMPACT RIPPLE
+       CREATE IMPACT RIPPLE ELEMENT
     ===================================================== */
 
-    function createImpactRipple(
-        submission,
+    function createImpactRippleElement(
+        data,
         index
     ) {
 
@@ -2261,124 +2618,59 @@
 
 
         ripple.className =
-            "impact-ripple";
-
-
-        ripple.dataset.id =
-            submission.id;
+            `impact-ripple depth-${data.depth}`;
 
 
         ripple.dataset.index =
             index;
 
 
-        /*
-         * Stable location.
-         */
-
-        const position =
-            getStablePosition(
-                submission.id,
-                index
-            );
-
-
         ripple.style.left =
-            `${position.x * 100}%`;
+            `${data.x * 100}%`;
 
 
         ripple.style.top =
-            `${position.y * 100}%`;
-
-
-        /*
-         * Size selected in admin.
-         */
-
-        const rippleScale =
-            getImpactRippleScale(
-                submission.size
-            );
-
-
-        /*
-         * Slightly different floating behavior
-         * for each ripple.
-         */
-
-        const hash =
-            stringHash(
-                submission.id
-            );
-
-
-        const rotation =
-            (
-                (hash % 240) -
-                120
-            ) /
-            10;
-
-
-        const floatSeconds =
-            13 +
-            (
-                hash %
-                7
-            );
-
-
-        const rippleSeconds =
-            6.3 +
-            (
-                (hash % 22) /
-                10
-            );
-
-
-        /*
-         * Larger ripples receive a slightly stronger
-         * visual presence.
-         */
-
-        const rippleOpacity =
-            rippleScale >= 1.7
-                ? 0.48
-                : rippleScale >= 1.3
-                    ? 0.40
-                    : rippleScale >= 1.0
-                        ? 0.34
-                        : 0.27;
+            `${data.y * 100}%`;
 
 
         ripple.style.setProperty(
             "--rotation",
-            `${rotation}deg`
+            `${data.rotation}deg`
         );
 
 
         ripple.style.setProperty(
             "--secondary-rotation",
-            `${-rotation * 0.55}deg`
+            `${-data.rotation * 0.55}deg`
         );
 
 
         ripple.style.setProperty(
             "--float-time",
-            `${floatSeconds}s`
+            data.floatTime
         );
 
 
         ripple.style.setProperty(
             "--ripple-scale",
-            rippleScale
+            data.rippleScale
         );
 
 
         ripple.style.setProperty(
             "--ripple-time",
-            `${rippleSeconds}s`
+            data.rippleTime
         );
+
+
+        const rippleOpacity =
+            data.size >= 1.45
+                ? 0.46
+                : data.size >= 1.15
+                    ? 0.42
+                    : data.size >= 0.90
+                        ? 0.34
+                        : 0.27;
 
 
         ripple.style.setProperty(
@@ -2389,67 +2681,42 @@
 
         ripple.style.setProperty(
             "--ripple-rotation",
-            `${rotation * 0.35}deg`
+            `${data.rotation * 0.35}deg`
         );
 
 
         ripple.style.setProperty(
             "--ripple-secondary-rotation",
-            `${-rotation * 0.25}deg`
+            `${-data.rotation * 0.25}deg`
         );
 
-
-        /*
-         * CSS custom property used by existing site CSS
-         * for the overall Impact Ripple footprint.
-         */
 
         ripple.style.setProperty(
             "--scale",
-            rippleScale
-        );
-
-
-        ripple.style.setProperty(
-            "--impact-ripple-scale",
-            rippleScale
+            data.size
         );
 
 
         /*
-         * Make the element itself scale according to
-         * the selected Impact Ripple size.
-         *
-         * The existing animation handles movement.
+         * Database ripples carry their actual
+         * submitted message with them.
          */
 
-        ripple.style.transform =
-            `translate(-50%, -50%) scale(${rippleScale})`;
+        if (
+            data.source ===
+            "database"
+        ) {
 
+            ripple.dataset.message =
+                data.message || "";
 
-        /*
-         * Keyboard accessibility.
-         */
+            ripple.dataset.name =
+                data.name || "";
 
-        ripple.tabIndex =
-            0;
+            ripple.dataset.size =
+                data.databaseSize || "medium";
+        }
 
-
-        ripple.setAttribute(
-            "role",
-            "button"
-        );
-
-
-        ripple.setAttribute(
-            "aria-label",
-            "Open Impact Ripple"
-        );
-
-
-        /*
-         * Open the approved submission.
-         */
 
         ripple.addEventListener(
             "click",
@@ -2458,29 +2725,19 @@
                 event.stopPropagation();
 
 
-                openImpactRipple(
-                    submission
-                );
-            }
-        );
-
-
-        ripple.addEventListener(
-            "keydown",
-            event => {
-
                 if (
-                    event.key === "Enter" ||
-                    event.key === " "
+                    data.source ===
+                    "database"
                 ) {
 
-                    event.preventDefault();
+                    openDatabaseImpactRipple(
+                        data
+                    );
 
-                    event.stopPropagation();
-
+                } else {
 
                     openImpactRipple(
-                        submission
+                        index
                     );
                 }
             }
@@ -2490,128 +2747,104 @@
         impactLayer.appendChild(
             ripple
         );
+
+
+        return ripple;
     }
 
 
     /* =====================================================
-       LOAD APPROVED IMPACT RIPPLES
+       CREATE SAMPLE IMPACT RIPPLES
     ===================================================== */
 
-    async function loadApprovedImpactRipples() {
+    function createSampleImpactRipples() {
 
-        if (!impactLayer) {
+        if (!impactLayer)
+            return;
 
-            console.warn(
-                "The Ripple Well: Impact Ripple layer was not found."
+
+        impactRippleData.forEach(
+            (data, index) => {
+
+                createImpactRippleElement(
+                    data,
+                    index
+                );
+            }
+        );
+    }
+
+
+    /* =====================================================
+       CREATE DATABASE IMPACT RIPPLES
+    ===================================================== */
+
+    async function createDatabaseImpactRipples() {
+
+        if (!impactLayer)
+            return;
+
+
+        const submissions =
+            await loadApprovedRipples();
+
+
+        if (
+            submissions.length ===
+            0
+        ) {
+
+            console.log(
+                "The Ripple Well: no approved database ripples to display."
             );
 
             return;
         }
 
 
-        try {
+        /*
+         * Offset the database ripple indexes
+         * from the sample ripple indexes.
+         */
 
-            const response =
-                await fetch(
-                    `${SUPABASE_URL}/rest/v1/ripple_submissions?select=id,created_at,message,name,region,country,status,size&status=eq.approved&order=created_at.asc`,
-                    {
-
-                        method: "GET",
-
-                        headers: {
-
-                            "apikey":
-                                SUPABASE_KEY,
-
-                            "Authorization":
-                                `Bearer ${SUPABASE_KEY}`,
-
-                            "Accept":
-                                "application/json"
-                        }
-                    }
-                );
+        const startingIndex =
+            impactRippleData.length;
 
 
-            if (!response.ok) {
+        submissions.forEach(
+            (
+                submission,
+                index
+            ) => {
 
-                const errorText =
-                    await response.text();
-
-
-                console.error(
-                    "Could not load approved Impact Ripples:",
-                    response.status,
-                    errorText
-                );
-
-
-                return;
-            }
-
-
-            const submissions =
-                await response.json();
-
-
-            /*
-             * Remove any old/static Impact Ripples.
-             */
-
-            impactLayer.innerHTML =
-                "";
-
-
-            if (
-                !Array.isArray(
-                    submissions
-                ) ||
-                submissions.length === 0
-            ) {
-
-                console.log(
-                    "The Ripple Well: No approved Impact Ripples found."
-                );
-
-                return;
-            }
-
-
-            submissions.forEach(
-                (
-                    submission,
-                    index
-                ) => {
-
-                    createImpactRipple(
+                const data =
+                    convertSubmissionToImpactRipple(
                         submission,
-                        index
+                        index,
+                        submissions.length
                     );
-                }
-            );
 
 
-            console.log(
-                `The Ripple Well: ${submissions.length} approved Impact Ripple(s) loaded.`
-            );
+                createImpactRippleElement(
+                    data,
+                    startingIndex + index
+                );
+            }
+        );
 
 
-        } catch (error) {
-
-            console.error(
-                "The Ripple Well: Failed to load approved Impact Ripples.",
-                error
-            );
-        }
+        console.log(
+            "The Ripple Well: database Impact Ripples created."
+        );
     }
 
 
     /* =====================================================
-       IMPACT RIPPLE OPEN
+       SAMPLE IMPACT RIPPLE OPEN
     ===================================================== */
 
     function openImpactRipple(
-        submission
+        index
     ) {
 
         const quote =
@@ -2619,6 +2852,101 @@
                 "impact-quote"
             );
 
+        const details =
+            document.getElementById(
+                "impact-details"
+            );
+
+
+        if (!quote || !details)
+            return;
+
+
+        const sampleMessages = [
+
+            {
+                quote:
+                    "You are never as alone as you think you are.",
+
+                details:
+                    "A message left in The Ripple Well to remind someone that there is always another ripple nearby."
+            },
+
+            {
+                quote:
+                    "Even the smallest ripple can reach someone.",
+
+                details:
+                    "A reminder that kindness does not have to be enormous to matter."
+            },
+
+            {
+                quote:
+                    "Keep going. Your story isn't finished.",
+
+                details:
+                    "A message of encouragement from one visitor to another."
+            },
+
+            {
+                quote:
+                    "You matter. More than you know.",
+
+                details:
+                    "A simple reminder waiting beneath the surface."
+            },
+
+            {
+                quote:
+                    "Someone out there is glad you are here.",
+
+                details:
+                    "A message of hope left for whoever needs to find it."
+            },
+
+            {
+                quote:
+                    "Make the ripple you wish someone had made for you.",
+
+                details:
+                    "A reminder that every act of kindness has somewhere to go."
+            }
+        ];
+
+
+        const selected =
+            sampleMessages[
+                index %
+                sampleMessages.length
+            ];
+
+
+        quote.textContent =
+            `“${selected.quote}”`;
+
+
+        details.textContent =
+            selected.details;
+
+
+        openModal(
+            impactModal
+        );
+    }
+
+
+    /* =====================================================
+       DATABASE IMPACT RIPPLE OPEN
+    ===================================================== */
+
+    function openDatabaseImpactRipple(
+        data
+    ) {
+
+        const quote =
+            document.getElementById(
+                "impact-quote"
+            );
 
         const details =
             document.getElementById(
@@ -2631,30 +2959,27 @@
 
 
         const message =
-            submission.message ||
-            "A ripple left behind by someone who wanted to make a difference.";
+            data.message ||
+            "A ripple has been left behind.";
 
 
         quote.textContent =
             `“${message}”`;
 
 
-        let detailsText =
-            "A message left in The Ripple Well to remind someone that they are not alone.";
+        let detailText =
+            "A message left in The Ripple Well.";
 
 
-        if (
-            submission.name &&
-            submission.name.trim()
-        ) {
+        if (data.name) {
 
-            detailsText =
-                `A message left by ${submission.name.trim()} in The Ripple Well.`;
+            detailText =
+                `A message left by ${data.name}.`;
         }
 
 
         details.textContent =
-            detailsText;
+            detailText;
 
 
         openModal(
@@ -2664,10 +2989,18 @@
 
 
     /* =====================================================
-       LOAD APPROVED RIPPLES
+       CREATE EXISTING + DATABASE RIPPLES
     ===================================================== */
 
-    loadApprovedImpactRipples();
+    createSampleImpactRipples();
+
+
+    /*
+     * Load approved database ripples after the
+     * initial page rendering has started.
+     */
+
+    createDatabaseImpactRipples();
 
 
     /* =====================================================
@@ -2693,43 +3026,35 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v3.0 initialized."
+        "The Ripple Well v2.4 initialized."
     );
-
 
     console.log(
         "Surface Layer: active"
     );
 
-
     console.log(
         "Reflection Layer: active"
     );
-
 
     console.log(
         "Depth Layer: active"
     );
 
-
     console.log(
         "Click Ripple Scale: 25%"
     );
-
 
     console.log(
         "Supabase Submission: active"
     );
 
-
     console.log(
-        "Approved Impact Ripple Loading: active"
+        "Supabase Approved Ripple Loading: active"
     );
 
-
     console.log(
-        "Impact Ripple Size System: active"
+        "Impact Ripple Emission: active"
     );
-
 
 })();
