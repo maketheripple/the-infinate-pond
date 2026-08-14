@@ -550,6 +550,194 @@
         }
 
 
+        /* =================================================
+           RIPPLE SIZE SELECTOR
+        ================================================= */
+
+        .ripple-size-section {
+
+            margin-bottom: 22px;
+
+            padding:
+                15px 16px;
+
+            background:
+                rgba(
+                    0,
+                    15,
+                    22,
+                    0.32
+                );
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.10
+                );
+
+            border-radius: 9px;
+        }
+
+
+        .ripple-size-title {
+
+            display: block;
+
+            margin-bottom: 12px;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            color:
+                rgba(
+                    200,
+                    235,
+                    242,
+                    0.62
+                );
+        }
+
+
+        .ripple-size-options {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    1fr
+                );
+
+            gap: 8px;
+        }
+
+
+        .ripple-size-option {
+
+            position: relative;
+        }
+
+
+        .ripple-size-option input {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        .ripple-size-option label {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 8px 10px;
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.16
+                );
+
+            border-radius: 7px;
+
+            background:
+                rgba(
+                    0,
+                    15,
+                    22,
+                    0.28
+                );
+
+            color:
+                rgba(
+                    220,
+                    245,
+                    250,
+                    0.68
+                );
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .ripple-size-option label:hover {
+
+            background:
+                rgba(
+                    80,
+                    170,
+                    195,
+                    0.14
+                );
+
+            border-color:
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.30
+                );
+        }
+
+
+        .ripple-size-option input:checked + label {
+
+            background:
+                rgba(
+                    75,
+                    175,
+                    205,
+                    0.22
+                );
+
+            border-color:
+                rgba(
+                    145,
+                    225,
+                    245,
+                    0.58
+                );
+
+            color:
+                #dff8ff;
+
+            box-shadow:
+                0 0 12px
+                rgba(
+                    90,
+                    205,
+                    230,
+                    0.12
+                );
+        }
+
+
+        /* =================================================
+           SUBMISSION ACTIONS
+        ================================================= */
+
         .submission-actions {
 
             display: flex;
@@ -758,6 +946,16 @@
 
                 padding: 18px;
             }
+
+
+            .ripple-size-options {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+            }
         }
 
     </style>
@@ -938,23 +1136,6 @@
         const SUPABASE_URL =
             "https://vazgkkrrjgoowwywamot.supabase.co";
 
-
-        /*
-         * IMPORTANT:
-         *
-         * Paste your COMPLETE Supabase publishable key
-         * between the quotation marks below.
-         *
-         * Get it from:
-         *
-         * Supabase
-         * → Project Settings
-         * → API
-         *
-         * Use the PUBLISHABLE key.
-         *
-         * Do NOT use a service_role key here.
-         */
 
         const SUPABASE_PUBLISHABLE_KEY =
             "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
@@ -1196,7 +1377,7 @@
                         "ripple_submissions"
                     )
                     .select(
-                        "id, created_at, message, name, region, country, status"
+                        "id, created_at, message, name, region, country, status, ripple_size"
                     )
                     .eq(
                         "status",
@@ -1352,6 +1533,163 @@
 
 
             /* ---------------------------------------------
+               RIPPLE SIZE
+            --------------------------------------------- */
+
+            const sizeSection =
+                document.createElement(
+                    "div"
+                );
+
+
+            sizeSection.className =
+                "ripple-size-section";
+
+
+            const sizeTitle =
+                document.createElement(
+                    "span"
+                );
+
+
+            sizeTitle.className =
+                "ripple-size-title";
+
+
+            sizeTitle.textContent =
+                "Impact Ripple Size";
+
+
+            sizeSection.appendChild(
+                sizeTitle
+            );
+
+
+            const sizeOptions =
+                document.createElement(
+                    "div"
+                );
+
+
+            sizeOptions.className =
+                "ripple-size-options";
+
+
+            const sizes = [
+
+                {
+                    value: "small",
+                    label: "Small"
+                },
+
+                {
+                    value: "medium",
+                    label: "Medium"
+                },
+
+                {
+                    value: "large",
+                    label: "Large"
+                },
+
+                {
+                    value: "extra-large",
+                    label: "Extra-Large"
+                }
+            ];
+
+
+            const savedSize =
+                sizes.some(
+                    size =>
+                        size.value ===
+                        submission.ripple_size
+                )
+                    ? submission.ripple_size
+                    : "medium";
+
+
+            sizes.forEach(
+                size => {
+
+                    const option =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    option.className =
+                        "ripple-size-option";
+
+
+                    const input =
+                        document.createElement(
+                            "input"
+                        );
+
+
+                    const inputId =
+                        `ripple-size-${submission.id}-${size.value}`;
+
+
+                    input.type =
+                        "radio";
+
+
+                    input.name =
+                        `ripple-size-${submission.id}`;
+
+
+                    input.id =
+                        inputId;
+
+
+                    input.value =
+                        size.value;
+
+
+                    input.checked =
+                        size.value ===
+                        savedSize;
+
+
+                    const label =
+                        document.createElement(
+                            "label"
+                        );
+
+
+                    label.htmlFor =
+                        inputId;
+
+
+                    label.textContent =
+                        size.label;
+
+
+                    option.appendChild(
+                        input
+                    );
+
+
+                    option.appendChild(
+                        label
+                    );
+
+
+                    sizeOptions.appendChild(
+                        option
+                    );
+                }
+            );
+
+
+            sizeSection.appendChild(
+                sizeOptions
+            );
+
+
+            /* ---------------------------------------------
                ACTIONS
             --------------------------------------------- */
 
@@ -1387,9 +1725,24 @@
                 "click",
                 () => {
 
+                    const selectedSize =
+                        card.querySelector(
+                            'input[name="ripple-size-' +
+                            submission.id +
+                            '"]:checked'
+                        );
+
+
+                    const rippleSize =
+                        selectedSize
+                            ? selectedSize.value
+                            : "medium";
+
+
                     updateSubmissionStatus(
                         submission.id,
                         "approved",
+                        rippleSize,
                         card
                     );
 
@@ -1422,6 +1775,7 @@
                     updateSubmissionStatus(
                         submission.id,
                         "rejected",
+                        null,
                         card
                     );
 
@@ -1446,6 +1800,11 @@
 
             card.appendChild(
                 meta
+            );
+
+
+            card.appendChild(
+                sizeSection
             );
 
 
@@ -1561,6 +1920,7 @@
         async function updateSubmissionStatus(
             submissionId,
             newStatus,
+            rippleSize,
             card
         ) {
 
@@ -1572,7 +1932,9 @@
 
             const confirmed =
                 window.confirm(
-                    `Are you sure you want to ${actionText} this submission?`
+                    newStatus === "approved"
+                        ? `Are you sure you want to approve this submission as a ${rippleSize} Impact Ripple?`
+                        : "Are you sure you want to reject this submission?"
                 );
 
 
@@ -1600,6 +1962,28 @@
             );
 
 
+            let updateData = {
+
+                status:
+                    newStatus
+            };
+
+
+            /*
+             * Only save ripple_size when
+             * approving the submission.
+             */
+
+            if (
+                newStatus ===
+                "approved"
+            ) {
+
+                updateData.ripple_size =
+                    rippleSize || "medium";
+            }
+
+
             const {
                 error
             } =
@@ -1607,10 +1991,9 @@
                     .from(
                         "ripple_submissions"
                     )
-                    .update({
-                        status:
-                            newStatus
-                    })
+                    .update(
+                        updateData
+                    )
                     .eq(
                         "id",
                         submissionId
@@ -1650,23 +2033,14 @@
             showStatus(
                 dashboardStatus,
                 newStatus === "approved"
-                    ? "Ripple approved."
+                    ? `Ripple approved as ${rippleSize}.`
                     : "Ripple rejected.",
                 "success"
             );
 
 
-            /*
-             * Remove the submission from the
-             * pending list immediately.
-             */
-
             card.remove();
 
-
-            /*
-             * Update the visible count.
-             */
 
             const currentCount =
                 parseInt(
@@ -1685,11 +2059,6 @@
             pendingCount.textContent =
                 newCount;
 
-
-            /*
-             * If the list is now empty,
-             * display the empty state.
-             */
 
             if (
                 newCount === 0
