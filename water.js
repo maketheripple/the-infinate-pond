@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.4
+   VERSION 2.5
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -32,6 +32,14 @@
    - Database column used for size = "size".
    - Small / Medium / Large / Extra-Large are supported.
    - Demonstration Impact Ripples remain visible.
+
+   VERSION 2.5 FIX
+   - Real approved Impact Ripples receive explicit dimensions.
+   - Real approved Impact Ripples receive explicit z-index.
+   - Real approved Impact Ripples are visually separated from
+     demonstration Impact Ripples.
+   - Database size is applied directly.
+   - Added detailed console logging for approved submissions.
 ========================================================= */
 
 
@@ -1854,6 +1862,8 @@
 
                 return {
                     scale: 0.72,
+                    width: 130,
+                    height: 95,
                     className: "impact-size-small"
                 };
 
@@ -1862,6 +1872,8 @@
 
                 return {
                     scale: 1.00,
+                    width: 180,
+                    height: 125,
                     className: "impact-size-medium"
                 };
 
@@ -1870,6 +1882,8 @@
 
                 return {
                     scale: 1.30,
+                    width: 235,
+                    height: 165,
                     className: "impact-size-large"
                 };
 
@@ -1881,6 +1895,8 @@
 
                 return {
                     scale: 1.65,
+                    width: 300,
+                    height: 210,
                     className: "impact-size-extra-large"
                 };
 
@@ -1889,6 +1905,8 @@
 
                 return {
                     scale: 1.00,
+                    width: 180,
+                    height: 125,
                     className: "impact-size-medium"
                 };
         }
@@ -1907,6 +1925,12 @@
 
         .impact-ripple {
 
+            position: absolute;
+
+            width: var(--impact-width, 180px);
+
+            height: var(--impact-height, 125px);
+
             background: transparent !important;
 
             border: none !important;
@@ -1919,6 +1943,10 @@
 
             filter: none;
 
+            pointer-events: auto;
+
+            cursor: pointer;
+
             animation:
                 organicFloat
                 var(--float-time)
@@ -1930,6 +1958,18 @@
                 translate(-50%, -50%)
                 rotate(var(--rotation, 0deg))
                 scale(var(--scale, 1));
+
+            z-index: 20;
+        }
+
+
+        .impact-ripple.real-impact-ripple {
+
+            z-index: 50 !important;
+
+            visibility: visible !important;
+
+            opacity: 1 !important;
         }
 
 
@@ -2174,6 +2214,20 @@
                 rgba(145, 224, 241, 0.20);
         }
 
+
+        /*
+         * REAL SUBMISSION DEBUG OUTLINE
+         *
+         * The outline is intentionally extremely subtle.
+         * It helps guarantee the element occupies its
+         * expected footprint without changing the visual
+         * character of the ripple itself.
+         */
+
+        .real-impact-ripple::marker {
+            display: none;
+        }
+
     `;
 
 
@@ -2236,14 +2290,26 @@
             `impact-ripple depth-${data.depth || "mid"} ${sizeSettings.className}`;
 
 
+        if (isSubmission) {
+
+            ripple.classList.add(
+                "real-impact-ripple"
+            );
+
+
+            ripple.dataset.submission =
+                "true";
+        }
+
+
         ripple.dataset.index =
             index;
 
 
-        if (isSubmission) {
+        if (data.id) {
 
-            ripple.dataset.submission =
-                "true";
+            ripple.dataset.id =
+                data.id;
         }
 
 
@@ -2253,6 +2319,18 @@
 
         ripple.style.top =
             `${data.y * 100}%`;
+
+
+        ripple.style.setProperty(
+            "--impact-width",
+            `${sizeSettings.width}px`
+        );
+
+
+        ripple.style.setProperty(
+            "--impact-height",
+            `${sizeSettings.height}px`
+        );
 
 
         ripple.style.setProperty(
@@ -2342,6 +2420,23 @@
         impactLayer.appendChild(
             ripple
         );
+
+
+        if (isSubmission) {
+
+            console.log(
+                "REAL IMPACT RIPPLE CREATED:",
+                {
+                    id: data.id,
+                    message: data.message,
+                    size: data.size,
+                    width: sizeSettings.width,
+                    height: sizeSettings.height,
+                    x: data.x,
+                    y: data.y
+                }
+            );
+        }
     }
 
 
@@ -2350,6 +2445,21 @@
     ===================================================== */
 
     async function loadApprovedImpactRipples() {
+
+        console.log(
+            "The Ripple Well: checking Supabase for approved Impact Ripples..."
+        );
+
+
+        if (!impactLayer) {
+
+            console.error(
+                "The Ripple Well: #impact-ripples-layer was not found."
+            );
+
+            return;
+        }
+
 
         try {
 
@@ -2415,70 +2525,82 @@
             );
 
 
+            if (
+                submissions.length === 0
+            ) {
+
+                console.log(
+                    "The Ripple Well: no approved Impact Ripples currently exist."
+                );
+
+                return;
+            }
+
+
+            const positions = [
+
+                {
+                    x: 0.12,
+                    y: 0.46
+                },
+
+                {
+                    x: 0.29,
+                    y: 0.34
+                },
+
+                {
+                    x: 0.48,
+                    y: 0.64
+                },
+
+                {
+                    x: 0.68,
+                    y: 0.31
+                },
+
+                {
+                    x: 0.87,
+                    y: 0.44
+                },
+
+                {
+                    x: 0.39,
+                    y: 0.80
+                },
+
+                {
+                    x: 0.59,
+                    y: 0.48
+                },
+
+                {
+                    x: 0.77,
+                    y: 0.72
+                }
+            ];
+
+
             submissions.forEach(
                 (
                     submission,
                     index
                 ) => {
 
-                    /*
-                     * Place approved submissions in
-                     * different natural-looking locations.
-                     *
-                     * This prevents multiple approved
-                     * submissions from appearing directly
-                     * on top of one another.
-                     */
-
-                    const positions = [
-
-                        {
-                            x: 0.12,
-                            y: 0.46
-                        },
-
-                        {
-                            x: 0.29,
-                            y: 0.34
-                        },
-
-                        {
-                            x: 0.48,
-                            y: 0.64
-                        },
-
-                        {
-                            x: 0.68,
-                            y: 0.31
-                        },
-
-                        {
-                            x: 0.87,
-                            y: 0.44
-                        },
-
-                        {
-                            x: 0.39,
-                            y: 0.80
-                        },
-
-                        {
-                            x: 0.59,
-                            y: 0.48
-                        },
-
-                        {
-                            x: 0.77,
-                            y: 0.72
-                        }
-                    ];
-
-
                     const position =
                         positions[
                             index %
                             positions.length
                         ];
+
+
+                    const databaseSize =
+                        String(
+                            submission.size ||
+                            "medium"
+                        )
+                        .trim()
+                        .toLowerCase();
 
 
                     const rippleData = {
@@ -2510,8 +2632,7 @@
                             25,
 
                         size:
-                            submission.size ||
-                            "medium",
+                            databaseSize,
 
                         sizeBase:
                             1,
@@ -2536,20 +2657,46 @@
                     };
 
 
+                    console.log(
+                        "APPROVED SUPABASE SUBMISSION:",
+                        {
+                            id:
+                                submission.id,
+
+                            message:
+                                submission.message,
+
+                            status:
+                                submission.status,
+
+                            size:
+                                submission.size
+                        }
+                    );
+
+
                     createImpactRippleElement(
                         rippleData,
                         `submission-${submission.id}`,
                         true
                     );
-
-
-                    console.log(
-                        "Impact Ripple loaded:",
-                        submission.message,
-                        "Size:",
-                        submission.size
-                    );
                 }
+            );
+
+
+            /*
+             * Verify the real elements actually exist
+             * in the DOM after creation.
+             */
+
+            const realRipples =
+                impactLayer.querySelectorAll(
+                    ".real-impact-ripple"
+                );
+
+
+            console.log(
+                `The Ripple Well: ${realRipples.length} real Impact Ripple element(s) now exist in the page.`
             );
 
 
@@ -2639,7 +2786,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.4 initialized."
+        "The Ripple Well v2.5 initialized."
     );
 
 
