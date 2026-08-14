@@ -15,7 +15,7 @@
 
         /* =====================================================
            THE RIPPLE WELL
-           VERSION 2.1
+           VERSION 2.2
 
            THREE-LAYER WATER EXPERIENCE
 
@@ -25,6 +25,9 @@
 
            IMPACT RIPPLES NOW CREATE THEIR OWN
            SUBTLE SURROUNDING WATER DISTURBANCE.
+
+           MAKE YOUR RIPPLE SUBMISSION
+           OPTIONAL LOCATION INFORMATION
         ===================================================== */
 
         * {
@@ -1517,6 +1520,84 @@
         }
 
 
+        /* =====================================================
+           LOCATION INTRO
+        ===================================================== */
+
+        .location-intro {
+
+            margin:
+                26px 0 4px;
+
+            padding-top: 19px;
+
+            border-top:
+                1px solid
+                rgba(141, 207, 226, 0.14);
+
+            color:
+                rgba(220, 245, 251, 0.82);
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            letter-spacing: 0.03em;
+        }
+
+
+        .location-intro strong {
+
+            display: block;
+
+            margin-bottom: 3px;
+
+            font-weight: 400;
+
+            color:
+                rgba(232, 250, 255, 0.90);
+        }
+
+
+        .location-note {
+
+            margin:
+                0 0 4px;
+
+            color:
+                rgba(178, 221, 234, 0.58);
+
+            font-size: 13px;
+
+            line-height: 1.55;
+
+            font-style: italic;
+        }
+
+
+        .location-note::first-letter {
+            color:
+                rgba(168, 227, 244, 0.82);
+        }
+
+
+        .location-fields {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 14px;
+        }
+
+
+        .location-fields .field-group {
+
+            min-width: 0;
+        }
+
+
         .modal label {
 
             display: block;
@@ -1531,6 +1612,34 @@
             letter-spacing: 0.08em;
 
             text-transform: uppercase;
+        }
+
+
+        .location-fields label {
+
+            margin-top: 12px;
+        }
+
+
+        .optional-label {
+
+            color:
+                rgba(220, 245, 251, 0.68);
+        }
+
+
+        .optional-label span {
+
+            margin-left: 5px;
+
+            font-size: 10px;
+
+            letter-spacing: 0.05em;
+
+            text-transform: none;
+
+            color:
+                rgba(170, 219, 232, 0.46);
         }
 
 
@@ -1800,6 +1909,13 @@
                 padding:
                     27px 22px;
             }
+
+            .location-fields {
+                grid-template-columns:
+                    1fr;
+                gap: 0;
+            }
+
         }
 
     </style>
@@ -1941,7 +2057,7 @@
 
 
     <!-- =====================================================
-         MAKE A RIPPLE MODAL
+         MAKE YOUR RIPPLE MODAL
     ====================================================== -->
 
     <div
@@ -1967,10 +2083,14 @@
             </button>
 
             <h2 id="make-ripple-title">
-                Make a Ripple
+                Make Your Ripple
             </h2>
 
             <p class="modal-intro">
+
+                Every ripple starts somewhere.
+
+                <br><br>
 
                 Share a message of hope,
                 encouragement, support, kindness,
@@ -1986,7 +2106,12 @@
 
             </p>
 
+
             <form id="ripple-form">
+
+                <!-- =================================================
+                     MESSAGE
+                ================================================== -->
 
                 <label for="ripple-message">
                     Your Ripple
@@ -2000,8 +2125,17 @@
                     placeholder="What would you like someone to find in The Ripple Well?"
                 ></textarea>
 
-                <label for="ripple-name">
-                    Name or Display Name (Optional)
+
+                <!-- =================================================
+                     NAME
+                ================================================== -->
+
+                <label
+                    for="ripple-name"
+                    class="optional-label"
+                >
+                    Name or Display Name
+                    <span>Optional</span>
                 </label>
 
                 <input
@@ -2011,6 +2145,74 @@
                     maxlength="80"
                     placeholder="How would you like to be identified?"
                 >
+
+
+                <!-- =================================================
+                     LOCATION
+                ================================================== -->
+
+                <div class="location-intro">
+
+                    <strong>
+                        Where is your ripple coming from?
+                    </strong>
+
+                </div>
+
+                <p class="location-note">
+                    Optional — we'd love to know how far our ripples are reaching.
+                </p>
+
+
+                <div class="location-fields">
+
+                    <div class="field-group">
+
+                        <label
+                            for="ripple-region"
+                            class="optional-label"
+                        >
+                            Province / State
+                            <span>Optional</span>
+                        </label>
+
+                        <input
+                            id="ripple-region"
+                            name="region"
+                            type="text"
+                            maxlength="80"
+                            placeholder="Province or State"
+                        >
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label
+                            for="ripple-country"
+                            class="optional-label"
+                        >
+                            Country
+                            <span>Optional</span>
+                        </label>
+
+                        <input
+                            id="ripple-country"
+                            name="country"
+                            type="text"
+                            maxlength="80"
+                            placeholder="Country"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ACTIONS
+                ================================================== -->
 
                 <div class="modal-actions">
 
@@ -2026,7 +2228,7 @@
                         class="modal-button submit"
                         type="submit"
                     >
-                        Submit Ripple
+                        Send My Ripple
                     </button>
 
                 </div>
