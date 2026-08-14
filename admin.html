@@ -236,6 +236,14 @@
         }
 
 
+        button:disabled {
+
+            cursor: not-allowed;
+
+            opacity: 0.45;
+        }
+
+
         .login-button {
 
             width: 100%;
@@ -551,22 +559,23 @@
 
 
         /* =================================================
-           RIPPLE SIZE SELECTOR
+           RIPPLE SIZE SELECTION
         ================================================= */
 
-        .ripple-size-section {
+        .size-selection {
+
+            margin-top: 8px;
 
             margin-bottom: 22px;
 
-            padding:
-                15px 16px;
+            padding: 16px;
 
             background:
                 rgba(
                     0,
                     15,
                     22,
-                    0.32
+                    0.30
                 );
 
             border:
@@ -582,7 +591,7 @@
         }
 
 
-        .ripple-size-title {
+        .size-selection-title {
 
             display: block;
 
@@ -592,19 +601,19 @@
 
             text-transform: uppercase;
 
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
 
             color:
                 rgba(
-                    200,
-                    235,
-                    242,
-                    0.62
+                    210,
+                    240,
+                    248,
+                    0.58
                 );
         }
 
 
-        .ripple-size-options {
+        .size-options {
 
             display: grid;
 
@@ -618,13 +627,13 @@
         }
 
 
-        .ripple-size-option {
+        .size-option {
 
             position: relative;
         }
 
 
-        .ripple-size-option input {
+        .size-option input {
 
             position: absolute;
 
@@ -634,7 +643,7 @@
         }
 
 
-        .ripple-size-option label {
+        .size-option label {
 
             display: flex;
 
@@ -652,7 +661,7 @@
                     130,
                     215,
                     235,
-                    0.16
+                    0.18
                 );
 
             border-radius: 7px;
@@ -662,7 +671,7 @@
                     0,
                     15,
                     22,
-                    0.28
+                    0.42
                 );
 
             color:
@@ -682,46 +691,49 @@
         }
 
 
-        .ripple-size-option label:hover {
-
-            background:
-                rgba(
-                    80,
-                    170,
-                    195,
-                    0.14
-                );
+        .size-option label:hover {
 
             border-color:
                 rgba(
-                    130,
-                    215,
-                    235,
-                    0.30
-                );
-        }
-
-
-        .ripple-size-option input:checked + label {
-
-            background:
-                rgba(
-                    75,
-                    175,
-                    205,
-                    0.22
-                );
-
-            border-color:
-                rgba(
-                    145,
+                    140,
                     225,
-                    245,
-                    0.58
+                    240,
+                    0.42
+                );
+
+            background:
+                rgba(
+                    30,
+                    75,
+                    88,
+                    0.35
                 );
 
             color:
-                #dff8ff;
+                #e5fbff;
+        }
+
+
+        .size-option input:checked + label {
+
+            border-color:
+                rgba(
+                    120,
+                    220,
+                    240,
+                    0.75
+                );
+
+            background:
+                rgba(
+                    60,
+                    150,
+                    175,
+                    0.28
+                );
+
+            color:
+                #e8fbff;
 
             box-shadow:
                 0 0 12px
@@ -734,8 +746,39 @@
         }
 
 
+        .size-option input:focus-visible + label {
+
+            outline:
+                2px solid
+                rgba(
+                    150,
+                    230,
+                    245,
+                    0.65
+                );
+
+            outline-offset: 2px;
+        }
+
+
+        .size-help {
+
+            margin-top: 10px;
+
+            font-size: 11px;
+
+            color:
+                rgba(
+                    190,
+                    225,
+                    235,
+                    0.42
+                );
+        }
+
+
         /* =================================================
-           SUBMISSION ACTIONS
+           ACTIONS
         ================================================= */
 
         .submission-actions {
@@ -764,7 +807,7 @@
         }
 
 
-        .approve-button:hover {
+        .approve-button:not(:disabled):hover {
 
             background:
                 rgba(
@@ -948,7 +991,7 @@
             }
 
 
-            .ripple-size-options {
+            .size-options {
 
                 grid-template-columns:
                     repeat(
@@ -1207,6 +1250,22 @@
 
 
         /* =================================================
+           LOAD CONTROL
+
+           Prevents the same submissions from being loaded
+           multiple times at once.
+
+           This fixes the duplicate-card problem caused by
+           the initial session check and auth listener both
+           loading the dashboard.
+        ================================================= */
+
+        let isLoadingSubmissions = false;
+
+        let dashboardLoadVersion = 0;
+
+
+        /* =================================================
            STATUS MESSAGE
         ================================================= */
 
@@ -1222,13 +1281,14 @@
             element.className =
                 "status-message";
 
+
             if (type === "error") {
 
                 element.classList.add(
                     "status-error"
                 );
-
             }
+
 
             if (type === "success") {
 
@@ -1239,9 +1299,12 @@
         }
 
 
-        function clearStatus(element) {
+        function clearStatus(
+            element
+        ) {
 
-            element.textContent = "";
+            element.textContent =
+                "";
 
             element.className =
                 "status-message";
@@ -1359,10 +1422,34 @@
 
         async function loadPendingSubmissions() {
 
+            /*
+             * If a load is already happening, do not start
+             * another one.
+             */
+
+            if (isLoadingSubmissions) {
+
+                return;
+            }
+
+
+            isLoadingSubmissions =
+                true;
+
+
+            const thisLoad =
+                ++dashboardLoadVersion;
+
+
             clearStatus(
                 dashboardStatus
             );
 
+
+            /*
+             * Completely clear the current list before
+             * rendering the new results.
+             */
 
             submissionsContainer.innerHTML =
                 "";
@@ -1377,7 +1464,7 @@
                         "ripple_submissions"
                     )
                     .select(
-                        "id, created_at, message, name, region, country, status, ripple_size"
+                        "id, created_at, message, name, region, country, status, size"
                     )
                     .eq(
                         "status",
@@ -1389,6 +1476,24 @@
                             ascending: true
                         }
                     );
+
+
+            isLoadingSubmissions =
+                false;
+
+
+            /*
+             * Ignore an old request if a newer dashboard
+             * load has already started.
+             */
+
+            if (
+                thisLoad !==
+                dashboardLoadVersion
+            ) {
+
+                return;
+            }
 
 
             if (error) {
@@ -1437,13 +1542,37 @@
             }
 
 
+            /*
+             * Use a Set so that even if the database query
+             * somehow contains duplicate IDs, only one card
+             * can be displayed for each submission.
+             */
+
+            const renderedIds =
+                new Set();
+
+
             submissions.forEach(
                 submission => {
+
+                    if (
+                        renderedIds.has(
+                            submission.id
+                        )
+                    ) {
+
+                        return;
+                    }
+
+
+                    renderedIds.add(
+                        submission.id
+                    );
+
 
                     createSubmissionCard(
                         submission
                     );
-
                 }
             );
         }
@@ -1466,6 +1595,14 @@
             card.className =
                 "submission-card";
 
+
+            card.dataset.submissionId =
+                submission.id;
+
+
+            /* ---------------------------------------------
+               MESSAGE
+            --------------------------------------------- */
 
             const message =
                 document.createElement(
@@ -1533,17 +1670,17 @@
 
 
             /* ---------------------------------------------
-               RIPPLE SIZE
+               SIZE SELECTION
             --------------------------------------------- */
 
-            const sizeSection =
+            const sizeSelection =
                 document.createElement(
                     "div"
                 );
 
 
-            sizeSection.className =
-                "ripple-size-section";
+            sizeSelection.className =
+                "size-selection";
 
 
             const sizeTitle =
@@ -1553,14 +1690,14 @@
 
 
             sizeTitle.className =
-                "ripple-size-title";
+                "size-selection-title";
 
 
             sizeTitle.textContent =
-                "Impact Ripple Size";
+                "Choose Impact Ripple Size";
 
 
-            sizeSection.appendChild(
+            sizeSelection.appendChild(
                 sizeTitle
             );
 
@@ -1572,7 +1709,7 @@
 
 
             sizeOptions.className =
-                "ripple-size-options";
+                "size-options";
 
 
             const sizes = [
@@ -1596,21 +1733,12 @@
                     value: "extra-large",
                     label: "Extra-Large"
                 }
+
             ];
 
 
-            const savedSize =
-                sizes.some(
-                    size =>
-                        size.value ===
-                        submission.ripple_size
-                )
-                    ? submission.ripple_size
-                    : "medium";
-
-
             sizes.forEach(
-                size => {
+                (size, index) => {
 
                     const option =
                         document.createElement(
@@ -1619,7 +1747,7 @@
 
 
                     option.className =
-                        "ripple-size-option";
+                        "size-option";
 
 
                     const input =
@@ -1629,7 +1757,7 @@
 
 
                     const inputId =
-                        `ripple-size-${submission.id}-${size.value}`;
+                        `size-${submission.id}-${size.value}`;
 
 
                     input.type =
@@ -1640,17 +1768,27 @@
                         `ripple-size-${submission.id}`;
 
 
-                    input.id =
-                        inputId;
-
-
                     input.value =
                         size.value;
 
 
-                    input.checked =
-                        size.value ===
-                        savedSize;
+                    input.id =
+                        inputId;
+
+
+                    /*
+                     * If this submission already has a size
+                     * saved, restore that selection.
+                     */
+
+                    if (
+                        submission.size ===
+                        size.value
+                    ) {
+
+                        input.checked =
+                            true;
+                    }
 
 
                     const label =
@@ -1684,8 +1822,27 @@
             );
 
 
-            sizeSection.appendChild(
+            sizeSelection.appendChild(
                 sizeOptions
+            );
+
+
+            const sizeHelp =
+                document.createElement(
+                    "div"
+                );
+
+
+            sizeHelp.className =
+                "size-help";
+
+
+            sizeHelp.textContent =
+                "Select the size before approving this ripple.";
+
+
+            sizeSelection.appendChild(
+                sizeHelp
             );
 
 
@@ -1721,28 +1878,42 @@
                 "✓ Approve";
 
 
+            /*
+             * Approval is disabled until a size is selected.
+             */
+
+            approveButton.disabled =
+                !getSelectedSize(
+                    card
+                );
+
+
             approveButton.addEventListener(
                 "click",
                 () => {
 
                     const selectedSize =
-                        card.querySelector(
-                            'input[name="ripple-size-' +
-                            submission.id +
-                            '"]:checked'
+                        getSelectedSize(
+                            card
                         );
 
 
-                    const rippleSize =
-                        selectedSize
-                            ? selectedSize.value
-                            : "medium";
+                    if (!selectedSize) {
+
+                        showStatus(
+                            dashboardStatus,
+                            "Please select a ripple size before approving.",
+                            "error"
+                        );
+
+                        return;
+                    }
 
 
                     updateSubmissionStatus(
                         submission.id,
                         "approved",
-                        rippleSize,
+                        selectedSize,
                         card
                     );
 
@@ -1793,6 +1964,36 @@
             );
 
 
+            /*
+             * Enable the Approve button as soon as the
+             * administrator chooses a size.
+             */
+
+            sizeOptions
+                .querySelectorAll(
+                    'input[type="radio"]'
+                )
+                .forEach(
+                    radio => {
+
+                        radio.addEventListener(
+                            "change",
+                            () => {
+
+                                approveButton.disabled =
+                                    !getSelectedSize(
+                                        card
+                                    );
+                            }
+                        );
+                    }
+                );
+
+
+            /* ---------------------------------------------
+               ASSEMBLE CARD
+            --------------------------------------------- */
+
             card.appendChild(
                 message
             );
@@ -1804,7 +2005,7 @@
 
 
             card.appendChild(
-                sizeSection
+                sizeSelection
             );
 
 
@@ -1816,6 +2017,26 @@
             submissionsContainer.appendChild(
                 card
             );
+        }
+
+
+        /* =================================================
+           GET SELECTED SIZE
+        ================================================= */
+
+        function getSelectedSize(
+            card
+        ) {
+
+            const selected =
+                card.querySelector(
+                    'input[name^="ripple-size-"]:checked'
+                );
+
+
+            return selected
+                ? selected.value
+                : null;
         }
 
 
@@ -1920,7 +2141,7 @@
         async function updateSubmissionStatus(
             submissionId,
             newStatus,
-            rippleSize,
+            selectedSize,
             card
         ) {
 
@@ -1930,10 +2151,29 @@
                     : "reject";
 
 
+            /*
+             * Approval must have a size.
+             */
+
+            if (
+                newStatus === "approved" &&
+                !selectedSize
+            ) {
+
+                showStatus(
+                    dashboardStatus,
+                    "Please select a ripple size before approving.",
+                    "error"
+                );
+
+                return;
+            }
+
+
             const confirmed =
                 window.confirm(
                     newStatus === "approved"
-                        ? `Are you sure you want to approve this submission as a ${rippleSize} Impact Ripple?`
+                        ? `Approve this submission as a ${selectedSize} Impact Ripple?`
                         : "Are you sure you want to reject this submission?"
                 );
 
@@ -1962,26 +2202,25 @@
             );
 
 
-            let updateData = {
-
-                status:
-                    newStatus
-            };
-
-
             /*
-             * Only save ripple_size when
-             * approving the submission.
+             * Only save the size when approving.
+             *
+             * Rejected submissions do not need a size.
              */
 
-            if (
-                newStatus ===
-                "approved"
-            ) {
+            const updateData =
+                newStatus === "approved"
+                    ? {
+                        status:
+                            "approved",
 
-                updateData.ripple_size =
-                    rippleSize || "medium";
-            }
+                        size:
+                            selectedSize
+                    }
+                    : {
+                        status:
+                            "rejected"
+                    };
 
 
             const {
@@ -2020,6 +2259,25 @@
                 );
 
 
+                /*
+                 * Restore the correct approval state.
+                 */
+
+                const approveButton =
+                    card.querySelector(
+                        ".approve-button"
+                    );
+
+
+                if (approveButton) {
+
+                    approveButton.disabled =
+                        !getSelectedSize(
+                            card
+                        );
+                }
+
+
                 showStatus(
                     dashboardStatus,
                     `Unable to ${actionText} submission.`,
@@ -2033,14 +2291,22 @@
             showStatus(
                 dashboardStatus,
                 newStatus === "approved"
-                    ? `Ripple approved as ${rippleSize}.`
+                    ? `Ripple approved as ${selectedSize}.`
                     : "Ripple rejected.",
                 "success"
             );
 
 
+            /*
+             * Remove the submission from the pending list.
+             */
+
             card.remove();
 
+
+            /*
+             * Update the visible count.
+             */
 
             const currentCount =
                 parseInt(
@@ -2059,6 +2325,11 @@
             pendingCount.textContent =
                 newCount;
 
+
+            /*
+             * If the list is now empty,
+             * display the empty state.
+             */
 
             if (
                 newCount === 0
@@ -2122,6 +2393,10 @@
                 }
 
 
+                /*
+                 * Explicitly return to login.
+                 */
+
                 showLogin();
 
                 clearStatus(
@@ -2133,6 +2408,16 @@
 
         /* =================================================
            AUTH STATE
+
+           IMPORTANT:
+           We do NOT load submissions directly here for
+           INITIAL_SESSION.
+
+           The initialize() function handles the initial
+           session check.
+
+           This prevents the dashboard from being loaded
+           multiple times on page refresh.
         ================================================= */
 
         supabaseClient.auth
@@ -2141,6 +2426,20 @@
                     event,
                     session
                 ) => {
+
+                    /*
+                     * Ignore INITIAL_SESSION because
+                     * initialize() handles it.
+                     */
+
+                    if (
+                        event ===
+                        "INITIAL_SESSION"
+                    ) {
+
+                        return;
+                    }
+
 
                     if (session) {
 
@@ -2159,6 +2458,9 @@
 
         /* =================================================
            INITIAL SESSION CHECK
+
+           This is the ONE place responsible for the
+           initial dashboard load.
         ================================================= */
 
         async function initialize() {
@@ -2198,6 +2500,10 @@
             }
         }
 
+
+        /* =================================================
+           START ADMIN PAGE
+        ================================================= */
 
         initialize();
 
