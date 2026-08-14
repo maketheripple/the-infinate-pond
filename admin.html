@@ -342,28 +342,6 @@
         }
 
 
-        .approved-count {
-
-            font-size: 14px;
-
-            color:
-                rgba(
-                    220,
-                    245,
-                    250,
-                    0.72
-                );
-        }
-
-
-        .approved-count strong {
-
-            color: #bdeef8;
-
-            font-size: 18px;
-        }
-
-
         .toolbar-buttons {
 
             display: flex;
@@ -449,7 +427,7 @@
 
         .admin-section {
 
-            margin-top: 42px;
+            margin-top: 35px;
         }
 
 
@@ -460,13 +438,11 @@
             justify-content:
                 space-between;
 
-            align-items: baseline;
+            align-items: center;
 
-            gap: 15px;
+            margin-bottom: 15px;
 
-            margin-bottom: 18px;
-
-            padding-bottom: 12px;
+            padding-bottom: 10px;
 
             border-bottom:
                 1px solid
@@ -483,7 +459,7 @@
 
             margin: 0;
 
-            font-size: 21px;
+            font-size: 20px;
 
             font-weight: 400;
 
@@ -491,9 +467,7 @@
         }
 
 
-        .section-header p {
-
-            margin: 0;
+        .section-header span {
 
             font-size: 12px;
 
@@ -502,7 +476,7 @@
                     210,
                     240,
                     248,
-                    0.45
+                    0.48
                 );
         }
 
@@ -930,7 +904,7 @@
 
             flex-direction: column;
 
-            gap: 18px;
+            gap: 15px;
         }
 
 
@@ -941,29 +915,29 @@
                     5,
                     29,
                     38,
-                    0.62
+                    0.58
                 );
 
             border:
                 1px solid
                 rgba(
-                    100,
+                    110,
                     205,
                     225,
-                    0.14
+                    0.13
                 );
 
-            border-radius: 12px;
+            border-radius: 11px;
 
-            padding: 22px;
+            padding: 20px;
 
             box-shadow:
-                0 12px 35px
+                0 10px 30px
                 rgba(
                     0,
                     0,
                     0,
-                    0.18
+                    0.16
                 );
         }
 
@@ -974,9 +948,15 @@
 
             line-height: 1.55;
 
-            color: #e3f8fc;
+            color:
+                rgba(
+                    225,
+                    248,
+                    252,
+                    0.9
+                );
 
-            margin-bottom: 20px;
+            margin-bottom: 17px;
 
             white-space: pre-wrap;
         }
@@ -996,197 +976,74 @@
                 );
 
             gap: 10px;
-
-            margin-bottom: 18px;
         }
 
 
         .approved-ripple-size {
 
-            margin-bottom: 18px;
+            display: inline-flex;
 
-            padding: 14px;
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
 
             background:
                 rgba(
-                    0,
-                    15,
-                    22,
-                    0.32
+                    75,
+                    175,
+                    195,
+                    0.16
                 );
 
             border:
                 1px solid
                 rgba(
-                    130,
+                    120,
                     215,
-                    235,
-                    0.10
+                    230,
+                    0.18
                 );
 
-            border-radius: 8px;
-        }
-
-
-        .approved-ripple-size-title {
-
-            display: block;
-
-            margin-bottom: 10px;
+            color:
+                rgba(
+                    215,
+                    245,
+                    250,
+                    0.78
+                );
 
             font-size: 11px;
 
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-            letter-spacing: 1px;
+
+        .approved-empty-state {
+
+            text-align: center;
+
+            padding: 45px 20px;
 
             color:
                 rgba(
                     210,
                     240,
                     248,
-                    0.55
-                );
-        }
-
-
-        .approved-size-controls {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-        }
-
-
-        .approved-size-select {
-
-            flex: 1;
-
-            padding: 10px 12px;
-
-            border:
-                1px solid
-                rgba(
-                    130,
-                    215,
-                    235,
-                    0.20
-                );
-
-            border-radius: 7px;
-
-            background:
-                rgba(
-                    0,
-                    15,
-                    22,
-                    0.75
-                );
-
-            color:
-                #dff8ff;
-
-            font-size: 13px;
-
-            outline: none;
-        }
-
-
-        .approved-size-select:focus {
-
-            border-color:
-                rgba(
-                    150,
-                    230,
-                    245,
-                    0.6
-                );
-        }
-
-
-        .save-size-button {
-
-            background:
-                rgba(
-                    75,
-                    155,
-                    180,
-                    0.30
-                );
-
-            color:
-                #d9f6fc;
-
-            border:
-                1px solid
-                rgba(
-                    130,
-                    215,
-                    235,
-                    0.20
-                );
-        }
-
-
-        .save-size-button:hover {
-
-            background:
-                rgba(
-                    75,
-                    175,
-                    200,
                     0.45
                 );
         }
 
 
-        .approved-ripple-actions {
+        .approved-empty-state h3 {
 
-            display: flex;
+            margin:
+                0 0 7px;
 
-            justify-content: flex-end;
-
-            gap: 10px;
-
-            padding-top: 4px;
-        }
-
-
-        .remove-ripple-button {
-
-            background:
-                rgba(
-                    150,
-                    75,
-                    75,
-                    0.18
-                );
-
-            color:
-                #efcaca;
-
-            border:
-                1px solid
-                rgba(
-                    210,
-                    130,
-                    130,
-                    0.20
-                );
-        }
-
-
-        .remove-ripple-button:hover {
-
-            background:
-                rgba(
-                    175,
-                    80,
-                    80,
-                    0.34
-                );
+            font-weight: 400;
         }
 
 
@@ -1215,12 +1072,6 @@
             font-weight: 400;
 
             margin-bottom: 8px;
-        }
-
-
-        .empty-state p {
-
-            margin: 0;
         }
 
 
@@ -1340,12 +1191,6 @@
             }
 
 
-            .approved-ripple-card {
-
-                padding: 18px;
-            }
-
-
             .ripple-size-options {
 
                 grid-template-columns:
@@ -1356,32 +1201,15 @@
             }
 
 
-            .approved-size-controls {
-
-                flex-direction: column;
-
-                align-items: stretch;
-            }
-
-
-            .approved-ripple-actions {
-
-                justify-content: stretch;
-            }
-
-
-            .remove-ripple-button {
-
-                width: 100%;
-            }
-
-
             .section-header {
 
-                flex-direction: column;
+                align-items: flex-start;
 
-                gap: 5px;
+                gap: 10px;
+
+                flex-direction: column;
             }
+
         }
 
     </style>
@@ -1478,7 +1306,7 @@
 
 
         <!-- =================================================
-             DASHBOARD
+             DASHBOARD SECTION
         ================================================= -->
 
         <section id="dashboard-section">
@@ -1490,41 +1318,18 @@
             ></div>
 
 
-            <!-- =================================================
-                 TOOLBAR
-            ================================================= -->
-
             <div class="dashboard-toolbar">
 
 
-                <div>
+                <div class="pending-count">
 
-                    <div class="pending-count">
+                    Pending Ripples:
 
-                        Pending Ripples:
-
-                        <strong
-                            id="pending-count"
-                        >
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div
-                        class="approved-count"
+                    <strong
+                        id="pending-count"
                     >
-
-                        Impact Ripples:
-
-                        <strong
-                            id="approved-count"
-                        >
-                            0
-                        </strong>
-
-                    </div>
+                        0
+                    </strong>
 
                 </div>
 
@@ -1555,39 +1360,34 @@
 
 
             <!-- =================================================
-                 PENDING SECTION
+                 PENDING SUBMISSIONS
             ================================================= -->
 
             <section class="admin-section">
 
-
                 <div class="section-header">
 
                     <h2>
-                        Pending Ripples
+                        Pending Impact Ripples
                     </h2>
 
-                    <p>
-                        Submissions waiting for approval
-                    </p>
+                    <span>
+                        Review and approve new submissions
+                    </span>
 
                 </div>
 
 
-                <div id="submissions-container">
-
-                </div>
-
+                <div id="submissions-container"></div>
 
             </section>
 
 
             <!-- =================================================
-                 APPROVED SECTION
+                 APPROVED IMPACT RIPPLES
             ================================================= -->
 
             <section class="admin-section">
-
 
                 <div class="section-header">
 
@@ -1595,17 +1395,16 @@
                         Approved Impact Ripples
                     </h2>
 
-                    <p>
-                        Ripples currently living in The Ripple Well
-                    </p>
+                    <span>
+                        Currently approved for the Ripple Well
+                    </span>
 
                 </div>
 
 
-                <div id="approved-ripples-container">
-
-                </div>
-
+                <div
+                    id="approved-ripples-container"
+                ></div>
 
             </section>
 
@@ -1638,7 +1437,7 @@
 
 
         const SUPABASE_PUBLISHABLE_KEY =
-            "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
+            "sb_publishable_gf0dG7JmbBlm6jR07qYkIQ_YZN301F-";
 
 
         const supabaseClient =
@@ -1700,12 +1499,6 @@
             );
 
 
-        const approvedCount =
-            document.getElementById(
-                "approved-count"
-            );
-
-
         const refreshButton =
             document.getElementById(
                 "refresh-button"
@@ -1716,6 +1509,23 @@
             document.getElementById(
                 "logout-button"
             );
+
+
+        /*
+         * Prevent multiple simultaneous
+         * dashboard loads.
+         */
+
+        let dashboardLoading = false;
+
+
+        /*
+         * Prevent initialization and the
+         * auth listener from loading the
+         * dashboard twice.
+         */
+
+        let initialized = false;
 
 
         /* =================================================
@@ -1793,6 +1603,50 @@
 
 
         /* =================================================
+           LOAD DASHBOARD
+        ================================================= */
+
+        async function loadDashboard() {
+
+            /*
+             * Do not allow two dashboard
+             * loads to happen at the same time.
+             */
+
+            if (dashboardLoading) {
+
+                return;
+            }
+
+
+            dashboardLoading =
+                true;
+
+
+            try {
+
+                showDashboard();
+
+
+                await Promise.all([
+
+                    loadPendingSubmissions(),
+
+                    loadApprovedRipples()
+
+                ]);
+
+            }
+
+            finally {
+
+                dashboardLoading =
+                    false;
+            }
+        }
+
+
+        /* =================================================
            LOGIN
         ================================================= */
 
@@ -1862,28 +1716,9 @@
                 loginForm.reset();
 
 
-                showDashboard();
-
-
                 await loadDashboard();
             }
         );
-
-
-        /* =================================================
-           LOAD DASHBOARD
-        ================================================= */
-
-        async function loadDashboard() {
-
-            await Promise.all([
-
-                loadPendingSubmissions(),
-
-                loadApprovedRipples()
-
-            ]);
-        }
 
 
         /* =================================================
@@ -1896,6 +1731,11 @@
                 dashboardStatus
             );
 
+
+            /*
+             * Always clear the pending
+             * container before rebuilding it.
+             */
 
             submissionsContainer.innerHTML =
                 "";
@@ -1934,7 +1774,7 @@
 
                 showStatus(
                     dashboardStatus,
-                    "Unable to load pending submissions. Please check your database policies.",
+                    "Unable to load submissions. Please check your database policies.",
                     "error"
                 );
 
@@ -1983,97 +1823,6 @@
 
 
         /* =================================================
-           LOAD APPROVED IMPACT RIPPLES
-        ================================================= */
-
-        async function loadApprovedRipples() {
-
-            approvedRipplesContainer.innerHTML =
-                "";
-
-
-            const {
-                data: ripples,
-                error
-            } =
-                await supabaseClient
-                    .from(
-                        "ripple_submissions"
-                    )
-                    .select(
-                        "id, created_at, message, name, region, country, status, size"
-                    )
-                    .eq(
-                        "status",
-                        "approved"
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending: true
-                        }
-                    );
-
-
-            if (error) {
-
-                console.error(
-                    "Could not load approved ripples:",
-                    error
-                );
-
-
-                showStatus(
-                    dashboardStatus,
-                    "Unable to load approved Impact Ripples. Please check your database policies.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            approvedCount.textContent =
-                ripples.length;
-
-
-            if (
-                ripples.length === 0
-            ) {
-
-                approvedRipplesContainer.innerHTML = `
-
-                    <div class="empty-state">
-
-                        <h2>
-                            No Impact Ripples Yet
-                        </h2>
-
-                        <p>
-                            Approved ripples will appear here.
-                        </p>
-
-                    </div>
-
-                `;
-
-                return;
-            }
-
-
-            ripples.forEach(
-                ripple => {
-
-                    createApprovedRippleCard(
-                        ripple
-                    );
-
-                }
-            );
-        }
-
-
-        /* =================================================
            CREATE SUBMISSION CARD
         ================================================= */
 
@@ -2091,10 +1840,6 @@
                 "submission-card";
 
 
-            /* ---------------------------------------------
-               MESSAGE
-            --------------------------------------------- */
-
             const message =
                 document.createElement(
                     "div"
@@ -2108,10 +1853,6 @@
             message.textContent =
                 `“${submission.message || ""}”`;
 
-
-            /* ---------------------------------------------
-               META
-            --------------------------------------------- */
 
             const meta =
                 document.createElement(
@@ -2159,10 +1900,6 @@
                 )
             );
 
-
-            /* ---------------------------------------------
-               SIZE SELECTOR
-            --------------------------------------------- */
 
             const sizeSection =
                 document.createElement(
@@ -2319,10 +2056,6 @@
             );
 
 
-            /* ---------------------------------------------
-               ACTIONS
-            --------------------------------------------- */
-
             const actions =
                 document.createElement(
                     "div"
@@ -2373,10 +2106,6 @@
                 "✕ Reject";
 
 
-            /* ---------------------------------------------
-               ENABLE APPROVE WHEN SIZE SELECTED
-            --------------------------------------------- */
-
             const radioButtons =
                 sizeOptions.querySelectorAll(
                     'input[type="radio"]'
@@ -2405,24 +2134,14 @@
                                     "hidden"
                                 );
 
-                            } else {
-
-                                approveButton.disabled =
-                                    true;
-
-                                sizeRequired.classList.remove(
-                                    "hidden"
-                                );
                             }
+
                         }
                     );
+
                 }
             );
 
-
-            /* ---------------------------------------------
-               APPROVE
-            --------------------------------------------- */
 
             approveButton.addEventListener(
                 "click",
@@ -2455,10 +2174,6 @@
             );
 
 
-            /* ---------------------------------------------
-               REJECT
-            --------------------------------------------- */
-
             rejectButton.addEventListener(
                 "click",
                 () => {
@@ -2483,10 +2198,6 @@
                 rejectButton
             );
 
-
-            /* ---------------------------------------------
-               CARD ASSEMBLY
-            --------------------------------------------- */
 
             card.appendChild(
                 message
@@ -2515,6 +2226,140 @@
 
 
         /* =================================================
+           LOAD APPROVED IMPACT RIPPLES
+        ================================================= */
+
+        async function loadApprovedRipples() {
+
+            /*
+             * THIS IS IMPORTANT:
+             *
+             * Completely clear the container
+             * before rendering the database results.
+             *
+             * This prevents duplicate cards when
+             * Refresh, login, or initialization
+             * causes this function to run again.
+             */
+
+            approvedRipplesContainer.innerHTML =
+                "";
+
+
+            const {
+                data: ripples,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .select(
+                        "id, created_at, message, name, region, country, status, size"
+                    )
+                    .eq(
+                        "status",
+                        "approved"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not load approved ripples:",
+                    error
+                );
+
+
+                approvedRipplesContainer.innerHTML = `
+
+                    <div class="approved-empty-state">
+
+                        <h3>
+                            Unable to Load Approved Ripples
+                        </h3>
+
+                        <p>
+                            Please check the database policies.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            /*
+             * Extra safety:
+             *
+             * If duplicate rows somehow come
+             * back from the query, only render
+             * each database ID once.
+             */
+
+            const uniqueRipples =
+                Array.from(
+                    new Map(
+                        ripples.map(
+                            ripple => [
+                                ripple.id,
+                                ripple
+                            ]
+                        )
+                    ).values()
+                );
+
+
+            if (
+                uniqueRipples.length === 0
+            ) {
+
+                approvedRipplesContainer.innerHTML = `
+
+                    <div class="approved-empty-state">
+
+                        <h3>
+                            No Approved Impact Ripples
+                        </h3>
+
+                        <p>
+                            Approved ripples will appear here.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            /*
+             * Render each approved ripple
+             * exactly once.
+             */
+
+            uniqueRipples.forEach(
+                ripple => {
+
+                    createApprovedRippleCard(
+                        ripple
+                    );
+
+                }
+            );
+        }
+
+
+        /* =================================================
            CREATE APPROVED RIPPLE CARD
         ================================================= */
 
@@ -2532,9 +2377,17 @@
                 "approved-ripple-card";
 
 
-            /* ---------------------------------------------
-               MESSAGE
-            --------------------------------------------- */
+            /*
+             * Give the card a unique DOM ID.
+             *
+             * This also makes it impossible for
+             * the same record to accidentally
+             * create multiple identifiable cards.
+             */
+
+            card.id =
+                `approved-ripple-${ripple.id}`;
+
 
             const message =
                 document.createElement(
@@ -2550,10 +2403,6 @@
                 `“${ripple.message || ""}”`;
 
 
-            /* ---------------------------------------------
-               META
-            --------------------------------------------- */
-
             const meta =
                 document.createElement(
                     "div"
@@ -2564,256 +2413,87 @@
                 "approved-ripple-meta";
 
 
-            meta.appendChild(
+            const nameItem =
                 createMetaItem(
                     "Name",
                     ripple.name ||
                         "Anonymous"
-                )
-            );
+                );
 
 
-            meta.appendChild(
+            const regionItem =
                 createMetaItem(
                     "Region",
                     ripple.region ||
                         "—"
-                )
-            );
+                );
 
 
-            meta.appendChild(
+            const countryItem =
                 createMetaItem(
                     "Country",
                     ripple.country ||
                         "—"
-                )
-            );
+                );
 
 
-            meta.appendChild(
+            const submittedItem =
                 createMetaItem(
                     "Submitted",
                     formatDate(
                         ripple.created_at
                     )
-                )
+                );
+
+
+            meta.appendChild(
+                nameItem
             );
 
 
-            /* ---------------------------------------------
-               SIZE CONTROL
-            --------------------------------------------- */
+            meta.appendChild(
+                regionItem
+            );
 
-            const sizeSection =
+
+            meta.appendChild(
+                countryItem
+            );
+
+
+            meta.appendChild(
+                submittedItem
+            );
+
+
+            const sizeWrapper =
                 document.createElement(
                     "div"
                 );
 
 
-            sizeSection.className =
-                "approved-ripple-size";
+            sizeWrapper.style.marginTop =
+                "15px";
 
 
-            const sizeTitle =
+            const sizeBadge =
                 document.createElement(
                     "span"
                 );
 
 
-            sizeTitle.className =
-                "approved-ripple-size-title";
+            sizeBadge.className =
+                "approved-ripple-size";
 
 
-            sizeTitle.textContent =
-                "Impact Ripple Size";
+            sizeBadge.textContent =
+                `Ripple Size: ${formatRippleSize(ripple.size)}`;
 
 
-            sizeSection.appendChild(
-                sizeTitle
+            sizeWrapper.appendChild(
+                sizeBadge
             );
 
-
-            const controls =
-                document.createElement(
-                    "div"
-                );
-
-
-            controls.className =
-                "approved-size-controls";
-
-
-            const select =
-                document.createElement(
-                    "select"
-                );
-
-
-            select.className =
-                "approved-size-select";
-
-
-            const sizes = [
-
-                {
-                    value: "small",
-                    label: "Small"
-                },
-
-                {
-                    value: "medium",
-                    label: "Medium"
-                },
-
-                {
-                    value: "large",
-                    label: "Large"
-                },
-
-                {
-                    value: "extra-large",
-                    label: "Extra Large"
-                }
-
-            ];
-
-
-            sizes.forEach(
-                size => {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        size.value;
-
-
-                    option.textContent =
-                        size.label;
-
-
-                    if (
-                        ripple.size ===
-                        size.value
-                    ) {
-
-                        option.selected =
-                            true;
-                    }
-
-
-                    select.appendChild(
-                        option
-                    );
-                }
-            );
-
-
-            const saveButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            saveButton.type =
-                "button";
-
-
-            saveButton.className =
-                "save-size-button";
-
-
-            saveButton.textContent =
-                "Save Size";
-
-
-            saveButton.addEventListener(
-                "click",
-                async () => {
-
-                    await updateApprovedRippleSize(
-                        ripple.id,
-                        select.value,
-                        saveButton
-                    );
-
-                }
-            );
-
-
-            controls.appendChild(
-                select
-            );
-
-
-            controls.appendChild(
-                saveButton
-            );
-
-
-            sizeSection.appendChild(
-                controls
-            );
-
-
-            /* ---------------------------------------------
-               REMOVE ACTION
-            --------------------------------------------- */
-
-            const actions =
-                document.createElement(
-                    "div"
-                );
-
-
-            actions.className =
-                "approved-ripple-actions";
-
-
-            const removeButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            removeButton.type =
-                "button";
-
-
-            removeButton.className =
-                "remove-ripple-button";
-
-
-            removeButton.textContent =
-                "Remove from Well";
-
-
-            removeButton.addEventListener(
-                "click",
-                async () => {
-
-                    await removeApprovedRipple(
-                        ripple.id,
-                        card,
-                        removeButton
-                    );
-
-                }
-            );
-
-
-            actions.appendChild(
-                removeButton
-            );
-
-
-            /* ---------------------------------------------
-               CARD ASSEMBLY
-            --------------------------------------------- */
 
             card.appendChild(
                 message
@@ -2826,260 +2506,13 @@
 
 
             card.appendChild(
-                sizeSection
-            );
-
-
-            card.appendChild(
-                actions
+                sizeWrapper
             );
 
 
             approvedRipplesContainer.appendChild(
                 card
             );
-        }
-
-
-        /* =================================================
-           UPDATE APPROVED RIPPLE SIZE
-        ================================================= */
-
-        async function updateApprovedRippleSize(
-            rippleId,
-            newSize,
-            button
-        ) {
-
-            const confirmed =
-                window.confirm(
-                    `Change this Impact Ripple to ${formatRippleSize(newSize)}?`
-                );
-
-
-            if (!confirmed) {
-
-                return;
-            }
-
-
-            button.disabled =
-                true;
-
-
-            const originalText =
-                button.textContent;
-
-
-            button.textContent =
-                "Saving...";
-
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from(
-                        "ripple_submissions"
-                    )
-                    .update({
-                        size:
-                            newSize
-                    })
-                    .eq(
-                        "id",
-                        rippleId
-                    )
-                    .eq(
-                        "status",
-                        "approved"
-                    );
-
-
-            if (error) {
-
-                console.error(
-                    "Could not update ripple size:",
-                    error
-                );
-
-
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    originalText;
-
-
-                showStatus(
-                    dashboardStatus,
-                    `Unable to update ripple size. ${error.message || ""}`,
-                    "error"
-                );
-
-                return;
-            }
-
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "Saved";
-
-
-            showStatus(
-                dashboardStatus,
-                `Impact Ripple size changed to ${formatRippleSize(newSize)}.`,
-                "success"
-            );
-
-
-            setTimeout(
-                () => {
-
-                    button.textContent =
-                        originalText;
-
-                },
-                1500
-            );
-        }
-
-
-        /* =================================================
-           REMOVE APPROVED RIPPLE
-        ================================================= */
-
-        async function removeApprovedRipple(
-            rippleId,
-            card,
-            button
-        ) {
-
-            const confirmed =
-                window.confirm(
-                    "Are you sure you want to remove this Impact Ripple from The Ripple Well?"
-                );
-
-
-            if (!confirmed) {
-
-                return;
-            }
-
-
-            button.disabled =
-                true;
-
-
-            button.textContent =
-                "Removing...";
-
-
-            /*
-             * We move the ripple out of the
-             * approved state.
-             *
-             * The existing database workflow
-             * already uses "rejected" as the
-             * non-public state.
-             */
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from(
-                        "ripple_submissions"
-                    )
-                    .update({
-                        status:
-                            "rejected"
-                    })
-                    .eq(
-                        "id",
-                        rippleId
-                    )
-                    .eq(
-                        "status",
-                        "approved"
-                    );
-
-
-            if (error) {
-
-                console.error(
-                    "Could not remove approved ripple:",
-                    error
-                );
-
-
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    "Remove from Well";
-
-
-                showStatus(
-                    dashboardStatus,
-                    `Unable to remove Impact Ripple. ${error.message || ""}`,
-                    "error"
-                );
-
-                return;
-            }
-
-
-            showStatus(
-                dashboardStatus,
-                "Impact Ripple removed from The Ripple Well.",
-                "success"
-            );
-
-
-            card.remove();
-
-
-            const currentCount =
-                parseInt(
-                    approvedCount.textContent,
-                    10
-                ) || 0;
-
-
-            const newCount =
-                Math.max(
-                    0,
-                    currentCount - 1
-                );
-
-
-            approvedCount.textContent =
-                newCount;
-
-
-            if (
-                newCount === 0
-            ) {
-
-                approvedRipplesContainer.innerHTML = `
-
-                    <div class="empty-state">
-
-                        <h2>
-                            No Impact Ripples Yet
-                        </h2>
-
-                        <p>
-                            Approved ripples will appear here.
-                        </p>
-
-                    </div>
-
-                `;
-            }
         }
 
 
@@ -3253,14 +2686,18 @@
 
                     size:
                         selectedSize
+
                 };
 
-            } else {
+            }
+
+            else {
 
                 updateData = {
 
                     status:
                         "rejected"
+
                 };
             }
 
@@ -3297,6 +2734,7 @@
 
                         button.style.opacity =
                             "1";
+
                     }
                 );
 
@@ -3320,8 +2758,16 @@
             );
 
 
+            /*
+             * Remove the pending card.
+             */
+
             card.remove();
 
+
+            /*
+             * Update pending count.
+             */
 
             const currentCount =
                 parseInt(
@@ -3364,18 +2810,15 @@
 
 
             /*
-             * If approved, immediately add it
-             * to the Approved Impact Ripples
-             * section without requiring a
-             * page refresh.
+             * Reload the approved section.
+             *
+             * Because loadApprovedRipples()
+             * clears the container first,
+             * the newly approved ripple will
+             * appear exactly once.
              */
 
-            if (
-                newStatus === "approved"
-            ) {
-
-                await loadApprovedRipples();
-            }
+            await loadApprovedRipples();
         }
 
 
@@ -3402,7 +2845,8 @@
                     return "Extra Large";
 
                 default:
-                    return size;
+                    return size ||
+                        "Not Set";
             }
         }
 
@@ -3446,7 +2890,12 @@
                 }
 
 
+                initialized =
+                    false;
+
+
                 showLogin();
+
 
                 clearStatus(
                     loginStatus
@@ -3461,22 +2910,47 @@
 
         supabaseClient.auth
             .onAuthStateChange(
-                async (
+                (
                     event,
                     session
                 ) => {
 
-                    if (session) {
+                    /*
+                     * Do not load the dashboard
+                     * here when initialize() or
+                     * the login handler is already
+                     * doing it.
+                     *
+                     * This was the source of the
+                     * repeated loading problem.
+                     */
 
-                        showDashboard();
+                    if (!session) {
 
-                        await loadDashboard();
+                        initialized =
+                            false;
 
-                    } else {
+                        showLogin();
+
+                        return;
+                    }
+
+
+                    /*
+                     * Only react to an auth event
+                     * if initialization has already
+                     * completed and we genuinely
+                     * need to respond to it.
+                     */
+
+                    if (
+                        event === "SIGNED_OUT"
+                    ) {
 
                         showLogin();
 
                     }
+
                 }
             );
 
@@ -3511,17 +2985,27 @@
                 data.session
             ) {
 
-                showDashboard();
+                initialized =
+                    true;
 
                 await loadDashboard();
 
-            } else {
+            }
+
+            else {
+
+                initialized =
+                    false;
 
                 showLogin();
 
             }
         }
 
+
+        /* =================================================
+           START
+        ================================================= */
 
         initialize();
 
