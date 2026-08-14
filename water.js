@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.2
+   VERSION 2.3
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -20,10 +20,12 @@
    - Reflection disturbance remains centered on click.
    - Impact Ripples are unchanged.
 
-   IMPORTANT:
-   - Clicking water creates a ripple.
-   - Clicking water does NOT open the submission window.
-   - "Make a Ripple" button opens the submission window.
+   SUBMISSIONS
+   - "Make a Ripple" opens the submission window.
+   - Submissions are sent to Supabase.
+   - New submissions receive status = "pending".
+   - Water clicks do NOT open the submission window.
+
 ========================================================= */
 
 
@@ -450,19 +452,10 @@
                 );
 
 
-            /*
-             * 0.08 = 25% of the previous 0.32.
-             */
-
             float radius =
                 age *
                 0.08;
 
-
-            /*
-             * Keep the ring proportionally crisp
-             * while reducing its overall footprint.
-             */
 
             float wave =
                 sin(
@@ -508,11 +501,6 @@
                 gl_FragCoord.xy /
                 u_resolution.xy;
 
-
-            /*
-             * Correct aspect ratio so the water behaves
-             * naturally on wide screens.
-             */
 
             vec2 aspectUV =
                 uv;
@@ -647,11 +635,6 @@
                 );
 
 
-            /*
-             * Reflection becomes more fragmented lower
-             * into the water.
-             */
-
             float reflectionFade =
                 smoothstep(
                     0.0,
@@ -663,12 +646,6 @@
             moonReflection *=
                 reflectionFade;
 
-
-            /*
-             * CLICK RIPPLE CONTRIBUTION
-
-             * Reduced to 25% of the former response.
-             */
 
             moonReflection +=
                 rippleValue *
@@ -744,9 +721,6 @@
 
             /* ---------------------------------------------
                CLICK RIPPLE HIGHLIGHTS
-
-               Subtle because the ripple itself is now
-               much smaller.
             --------------------------------------------- */
 
             color +=
@@ -978,11 +952,6 @@
 
     /* =====================================================
        REFLECTION DISTURBANCE
-
-       The disturbance remains centered on the click.
-
-       --ripple-scale is explicitly set to 0.25 so
-       compatible CSS can reduce the reflection reaction.
     ===================================================== */
 
     let reflectionTimeout = null;
@@ -1057,15 +1026,6 @@
 
     /* =====================================================
        CREATE VISIBLE CLICK RIPPLE
-
-       IMPORTANT:
-
-       The click target remains the full water surface.
-
-       Only the visual ripple itself is reduced to 25%.
-
-       We explicitly set width and height here so the
-       reduction does not depend entirely on CSS.
     ===================================================== */
 
     function createVisibleRipple(
@@ -1088,10 +1048,6 @@
             `${y * 100}%`;
 
 
-        /*
-         * Explicit 25% scaling variables.
-         */
-
         ripple.style.setProperty(
             "--click-ripple-scale",
             "0.25"
@@ -1103,11 +1059,6 @@
             "25%"
         );
 
-
-        /*
-         * Additional variables for CSS implementations
-         * that calculate their footprint from a base size.
-         */
 
         ripple.style.setProperty(
             "--ripple-size-multiplier",
@@ -1152,10 +1103,6 @@
         const rect =
             waterWindow.getBoundingClientRect();
 
-
-        /*
-         * Keep the click location unchanged.
-         */
 
         const x =
             (
@@ -1211,10 +1158,6 @@
 
     /* =====================================================
        POINTER INTERACTION
-
-       Water clicks create ONLY the animated ripple.
-
-       They do NOT open the submission modal.
     ===================================================== */
 
     canvas.addEventListener(
@@ -1308,11 +1251,6 @@
 
 
     if (stars) {
-
-        /*
-         * Prevent duplicate stars if this script is
-         * accidentally initialized more than once.
-         */
 
         stars.innerHTML = "";
 
@@ -1548,6 +1486,235 @@
 
 
     /* =====================================================
+       SUPABASE CONFIGURATION
+    =====================================================
+
+       Public browser configuration.
+
+       The publishable key is safe to use in the browser
+       when Row Level Security is correctly configured.
+
+       Table:
+           ripple_submissions
+
+       New submissions:
+           status = "pending"
+
+    ===================================================== */
+
+    const SUPABASE_URL =
+        "https://vazgkkrrjgoowwywamot.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
+
+
+    /* =====================================================
+       VISITOR LOCATION
+
+       We intentionally do NOT attempt to guess a province
+       from the browser.
+
+       Country is derived from the browser locale only.
+
+       Region remains blank for now.
+    ===================================================== */
+
+    function getVisitorLocation() {
+
+        let region = "";
+
+        let country = "";
+
+
+        try {
+
+            const language =
+                navigator.language ||
+                "";
+
+
+            const parts =
+                language.split("-");
+
+
+            if (parts.length >= 2) {
+
+                const countryCode =
+                    parts[
+                        parts.length - 1
+                    ].toUpperCase();
+
+
+                const countryNames = {
+
+                    CA: "Canada",
+
+                    US: "United States",
+
+                    GB: "United Kingdom",
+
+                    AU: "Australia",
+
+                    NZ: "New Zealand",
+
+                    IE: "Ireland",
+
+                    FR: "France",
+
+                    DE: "Germany",
+
+                    ES: "Spain",
+
+                    IT: "Italy",
+
+                    NL: "Netherlands",
+
+                    BE: "Belgium",
+
+                    SE: "Sweden",
+
+                    NO: "Norway",
+
+                    DK: "Denmark",
+
+                    FI: "Finland",
+
+                    IN: "India",
+
+                    JP: "Japan",
+
+                    CN: "China",
+
+                    KR: "South Korea"
+                };
+
+
+                country =
+                    countryNames[
+                        countryCode
+                    ] ||
+                    countryCode;
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Could not determine visitor locale.",
+                error
+            );
+        }
+
+
+        return {
+            region,
+            country
+        };
+    }
+
+
+    /* =====================================================
+       SUBMIT RIPPLE TO SUPABASE
+    ===================================================== */
+
+    async function submitRippleToSupabase(
+        message,
+        name
+    ) {
+
+        const location =
+            getVisitorLocation();
+
+
+        const submission = {
+
+            message:
+                message.trim(),
+
+            name:
+                name
+                    ? name.trim()
+                    : "",
+
+            region:
+                location.region,
+
+            country:
+                location.country,
+
+            status:
+                "pending"
+        };
+
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/ripple_submissions`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${SUPABASE_KEY}`,
+
+                        "Prefer":
+                            "return=minimal"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            submission
+                        )
+                }
+            );
+
+
+        if (!response.ok) {
+
+            let errorDetails =
+                "Unknown Supabase error.";
+
+
+            try {
+
+                errorDetails =
+                    await response.text();
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not read Supabase error.",
+                    error
+                );
+            }
+
+
+            console.error(
+                "Ripple submission failed:",
+                response.status,
+                errorDetails
+            );
+
+
+            throw new Error(
+                `Supabase submission failed (${response.status}).`
+            );
+        }
+
+
+        return true;
+    }
+
+
+    /* =====================================================
        SUBMISSION FORM
     ===================================================== */
 
@@ -1555,7 +1722,7 @@
 
         rippleForm.addEventListener(
             "submit",
-            event => {
+            async event => {
 
                 event.preventDefault();
 
@@ -1583,42 +1750,103 @@
                 }
 
 
-                console.log(
-                    "Ripple submitted:",
-                    {
-                        message:
-                            message.value.trim(),
+                /*
+                 * Prevent duplicate submissions while
+                 * the request is being sent.
+                 */
 
-                        name:
-                            name
-                                ? name.value.trim()
-                                : ""
-                    }
-                );
+                const submitButton =
+                    rippleForm.querySelector(
+                        'button[type="submit"]'
+                    );
 
 
-                message.value = "";
+                const originalButtonText =
+                    submitButton
+                        ? submitButton.textContent
+                        : "";
 
-                if (name) {
-                    name.value = "";
+
+                if (submitButton) {
+
+                    submitButton.disabled =
+                        true;
+
+                    submitButton.textContent =
+                        "Sending...";
                 }
 
 
-                closeModal(
-                    makeRippleModal
-                );
+                try {
+
+                    await submitRippleToSupabase(
+                        message.value,
+                        name
+                            ? name.value
+                            : ""
+                    );
 
 
-                setTimeout(
-                    () => {
+                    /*
+                     * Only clear the form after
+                     * Supabase confirms success.
+                     */
 
-                        alert(
-                            "Thank you for making a ripple. Your message has been submitted for review."
-                        );
+                    message.value = "";
 
-                    },
-                    250
-                );
+
+                    if (name) {
+
+                        name.value = "";
+                    }
+
+
+                    closeModal(
+                        makeRippleModal
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            alert(
+                                "Thank you for making a ripple. Your message has been submitted for review."
+                            );
+
+                        },
+                        250
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "The Ripple Well submission error:",
+                        error
+                    );
+
+
+                    /*
+                     * Keep the user's message in the form
+                     * if the submission fails.
+                     */
+
+                    alert(
+                        "We couldn't submit your ripple right now. Please try again in a moment."
+                    );
+
+
+                } finally {
+
+                    if (submitButton) {
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            originalButtonText;
+                    }
+                }
             }
         );
     }
@@ -1705,12 +1933,6 @@
 
     /* =====================================================
        IMPACT RIPPLE STYLE
-
-       Impact Ripples have NO permanent visible border,
-       background, or outline.
-
-       They remain independent of the 25% click-ripple
-       change.
     ===================================================== */
 
     const impactRippleStyle =
@@ -2233,7 +2455,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.2 initialized."
+        "The Ripple Well v2.3 initialized."
     );
 
     console.log(
@@ -2250,6 +2472,10 @@
 
     console.log(
         "Click Ripple Scale: 25%"
+    );
+
+    console.log(
+        "Supabase Submission: active"
     );
 
     console.log(
