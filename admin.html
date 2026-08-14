@@ -342,6 +342,28 @@
         }
 
 
+        .approved-count {
+
+            font-size: 14px;
+
+            color:
+                rgba(
+                    220,
+                    245,
+                    250,
+                    0.72
+                );
+        }
+
+
+        .approved-count strong {
+
+            color: #bdeef8;
+
+            font-size: 18px;
+        }
+
+
         .toolbar-buttons {
 
             display: flex;
@@ -417,6 +439,70 @@
                     80,
                     80,
                     0.32
+                );
+        }
+
+
+        /* =================================================
+           SECTION HEADERS
+        ================================================= */
+
+        .admin-section {
+
+            margin-top: 42px;
+        }
+
+
+        .section-header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: baseline;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+
+            padding-bottom: 12px;
+
+            border-bottom:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.12
+                );
+        }
+
+
+        .section-header h2 {
+
+            margin: 0;
+
+            font-size: 21px;
+
+            font-weight: 400;
+
+            letter-spacing: 1px;
+        }
+
+
+        .section-header p {
+
+            margin: 0;
+
+            font-size: 12px;
+
+            color:
+                rgba(
+                    210,
+                    240,
+                    248,
+                    0.45
                 );
         }
 
@@ -835,6 +921,276 @@
 
 
         /* =================================================
+           APPROVED IMPACT RIPPLES
+        ================================================= */
+
+        #approved-ripples-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+        }
+
+
+        .approved-ripple-card {
+
+            background:
+                rgba(
+                    5,
+                    29,
+                    38,
+                    0.62
+                );
+
+            border:
+                1px solid
+                rgba(
+                    100,
+                    205,
+                    225,
+                    0.14
+                );
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.18
+                );
+        }
+
+
+        .approved-ripple-message {
+
+            font-size: 17px;
+
+            line-height: 1.55;
+
+            color: #e3f8fc;
+
+            margin-bottom: 20px;
+
+            white-space: pre-wrap;
+        }
+
+
+        .approved-ripple-meta {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        140px,
+                        1fr
+                    )
+                );
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .approved-ripple-size {
+
+            margin-bottom: 18px;
+
+            padding: 14px;
+
+            background:
+                rgba(
+                    0,
+                    15,
+                    22,
+                    0.32
+                );
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.10
+                );
+
+            border-radius: 8px;
+        }
+
+
+        .approved-ripple-size-title {
+
+            display: block;
+
+            margin-bottom: 10px;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            color:
+                rgba(
+                    210,
+                    240,
+                    248,
+                    0.55
+                );
+        }
+
+
+        .approved-size-controls {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .approved-size-select {
+
+            flex: 1;
+
+            padding: 10px 12px;
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.20
+                );
+
+            border-radius: 7px;
+
+            background:
+                rgba(
+                    0,
+                    15,
+                    22,
+                    0.75
+                );
+
+            color:
+                #dff8ff;
+
+            font-size: 13px;
+
+            outline: none;
+        }
+
+
+        .approved-size-select:focus {
+
+            border-color:
+                rgba(
+                    150,
+                    230,
+                    245,
+                    0.6
+                );
+        }
+
+
+        .save-size-button {
+
+            background:
+                rgba(
+                    75,
+                    155,
+                    180,
+                    0.30
+                );
+
+            color:
+                #d9f6fc;
+
+            border:
+                1px solid
+                rgba(
+                    130,
+                    215,
+                    235,
+                    0.20
+                );
+        }
+
+
+        .save-size-button:hover {
+
+            background:
+                rgba(
+                    75,
+                    175,
+                    200,
+                    0.45
+                );
+        }
+
+
+        .approved-ripple-actions {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            padding-top: 4px;
+        }
+
+
+        .remove-ripple-button {
+
+            background:
+                rgba(
+                    150,
+                    75,
+                    75,
+                    0.18
+                );
+
+            color:
+                #efcaca;
+
+            border:
+                1px solid
+                rgba(
+                    210,
+                    130,
+                    130,
+                    0.20
+                );
+        }
+
+
+        .remove-ripple-button:hover {
+
+            background:
+                rgba(
+                    175,
+                    80,
+                    80,
+                    0.34
+                );
+        }
+
+
+        /* =================================================
            EMPTY / STATUS
         ================================================= */
 
@@ -859,6 +1215,12 @@
             font-weight: 400;
 
             margin-bottom: 8px;
+        }
+
+
+        .empty-state p {
+
+            margin: 0;
         }
 
 
@@ -978,6 +1340,12 @@
             }
 
 
+            .approved-ripple-card {
+
+                padding: 18px;
+            }
+
+
             .ripple-size-options {
 
                 grid-template-columns:
@@ -985,6 +1353,34 @@
                         2,
                         1fr
                     );
+            }
+
+
+            .approved-size-controls {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .approved-ripple-actions {
+
+                justify-content: stretch;
+            }
+
+
+            .remove-ripple-button {
+
+                width: 100%;
+            }
+
+
+            .section-header {
+
+                flex-direction: column;
+
+                gap: 5px;
             }
         }
 
@@ -1082,7 +1478,7 @@
 
 
         <!-- =================================================
-             DASHBOARD SECTION
+             DASHBOARD
         ================================================= -->
 
         <section id="dashboard-section">
@@ -1094,18 +1490,41 @@
             ></div>
 
 
+            <!-- =================================================
+                 TOOLBAR
+            ================================================= -->
+
             <div class="dashboard-toolbar">
 
 
-                <div class="pending-count">
+                <div>
 
-                    Pending Ripples:
+                    <div class="pending-count">
 
-                    <strong
-                        id="pending-count"
+                        Pending Ripples:
+
+                        <strong
+                            id="pending-count"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        class="approved-count"
                     >
-                        0
-                    </strong>
+
+                        Impact Ripples:
+
+                        <strong
+                            id="approved-count"
+                        >
+                            0
+                        </strong>
+
+                    </div>
 
                 </div>
 
@@ -1135,9 +1554,60 @@
             </div>
 
 
-            <div id="submissions-container">
+            <!-- =================================================
+                 PENDING SECTION
+            ================================================= -->
 
-            </div>
+            <section class="admin-section">
+
+
+                <div class="section-header">
+
+                    <h2>
+                        Pending Ripples
+                    </h2>
+
+                    <p>
+                        Submissions waiting for approval
+                    </p>
+
+                </div>
+
+
+                <div id="submissions-container">
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 APPROVED SECTION
+            ================================================= -->
+
+            <section class="admin-section">
+
+
+                <div class="section-header">
+
+                    <h2>
+                        Approved Impact Ripples
+                    </h2>
+
+                    <p>
+                        Ripples currently living in The Ripple Well
+                    </p>
+
+                </div>
+
+
+                <div id="approved-ripples-container">
+
+                </div>
+
+
+            </section>
 
 
         </section>
@@ -1218,9 +1688,21 @@
             );
 
 
+        const approvedRipplesContainer =
+            document.getElementById(
+                "approved-ripples-container"
+            );
+
+
         const pendingCount =
             document.getElementById(
                 "pending-count"
+            );
+
+
+        const approvedCount =
+            document.getElementById(
+                "approved-count"
             );
 
 
@@ -1383,9 +1865,25 @@
                 showDashboard();
 
 
-                await loadPendingSubmissions();
+                await loadDashboard();
             }
         );
+
+
+        /* =================================================
+           LOAD DASHBOARD
+        ================================================= */
+
+        async function loadDashboard() {
+
+            await Promise.all([
+
+                loadPendingSubmissions(),
+
+                loadApprovedRipples()
+
+            ]);
+        }
 
 
         /* =================================================
@@ -1436,7 +1934,7 @@
 
                 showStatus(
                     dashboardStatus,
-                    "Unable to load submissions. Please check your database policies.",
+                    "Unable to load pending submissions. Please check your database policies.",
                     "error"
                 );
 
@@ -1477,6 +1975,97 @@
 
                     createSubmissionCard(
                         submission
+                    );
+
+                }
+            );
+        }
+
+
+        /* =================================================
+           LOAD APPROVED IMPACT RIPPLES
+        ================================================= */
+
+        async function loadApprovedRipples() {
+
+            approvedRipplesContainer.innerHTML =
+                "";
+
+
+            const {
+                data: ripples,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .select(
+                        "id, created_at, message, name, region, country, status, size"
+                    )
+                    .eq(
+                        "status",
+                        "approved"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not load approved ripples:",
+                    error
+                );
+
+
+                showStatus(
+                    dashboardStatus,
+                    "Unable to load approved Impact Ripples. Please check your database policies.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            approvedCount.textContent =
+                ripples.length;
+
+
+            if (
+                ripples.length === 0
+            ) {
+
+                approvedRipplesContainer.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <h2>
+                            No Impact Ripples Yet
+                        </h2>
+
+                        <p>
+                            Approved ripples will appear here.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            ripples.forEach(
+                ripple => {
+
+                    createApprovedRippleCard(
+                        ripple
                     );
 
                 }
@@ -1762,10 +2351,6 @@
                 "✓ Approve";
 
 
-            /*
-             * Approve starts disabled.
-             */
-
             approveButton.disabled =
                 true;
 
@@ -1930,6 +2515,575 @@
 
 
         /* =================================================
+           CREATE APPROVED RIPPLE CARD
+        ================================================= */
+
+        function createApprovedRippleCard(
+            ripple
+        ) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "approved-ripple-card";
+
+
+            /* ---------------------------------------------
+               MESSAGE
+            --------------------------------------------- */
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+
+            message.className =
+                "approved-ripple-message";
+
+
+            message.textContent =
+                `“${ripple.message || ""}”`;
+
+
+            /* ---------------------------------------------
+               META
+            --------------------------------------------- */
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+
+            meta.className =
+                "approved-ripple-meta";
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Name",
+                    ripple.name ||
+                        "Anonymous"
+                )
+            );
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Region",
+                    ripple.region ||
+                        "—"
+                )
+            );
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Country",
+                    ripple.country ||
+                        "—"
+                )
+            );
+
+
+            meta.appendChild(
+                createMetaItem(
+                    "Submitted",
+                    formatDate(
+                        ripple.created_at
+                    )
+                )
+            );
+
+
+            /* ---------------------------------------------
+               SIZE CONTROL
+            --------------------------------------------- */
+
+            const sizeSection =
+                document.createElement(
+                    "div"
+                );
+
+
+            sizeSection.className =
+                "approved-ripple-size";
+
+
+            const sizeTitle =
+                document.createElement(
+                    "span"
+                );
+
+
+            sizeTitle.className =
+                "approved-ripple-size-title";
+
+
+            sizeTitle.textContent =
+                "Impact Ripple Size";
+
+
+            sizeSection.appendChild(
+                sizeTitle
+            );
+
+
+            const controls =
+                document.createElement(
+                    "div"
+                );
+
+
+            controls.className =
+                "approved-size-controls";
+
+
+            const select =
+                document.createElement(
+                    "select"
+                );
+
+
+            select.className =
+                "approved-size-select";
+
+
+            const sizes = [
+
+                {
+                    value: "small",
+                    label: "Small"
+                },
+
+                {
+                    value: "medium",
+                    label: "Medium"
+                },
+
+                {
+                    value: "large",
+                    label: "Large"
+                },
+
+                {
+                    value: "extra-large",
+                    label: "Extra Large"
+                }
+
+            ];
+
+
+            sizes.forEach(
+                size => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        size.value;
+
+
+                    option.textContent =
+                        size.label;
+
+
+                    if (
+                        ripple.size ===
+                        size.value
+                    ) {
+
+                        option.selected =
+                            true;
+                    }
+
+
+                    select.appendChild(
+                        option
+                    );
+                }
+            );
+
+
+            const saveButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            saveButton.type =
+                "button";
+
+
+            saveButton.className =
+                "save-size-button";
+
+
+            saveButton.textContent =
+                "Save Size";
+
+
+            saveButton.addEventListener(
+                "click",
+                async () => {
+
+                    await updateApprovedRippleSize(
+                        ripple.id,
+                        select.value,
+                        saveButton
+                    );
+
+                }
+            );
+
+
+            controls.appendChild(
+                select
+            );
+
+
+            controls.appendChild(
+                saveButton
+            );
+
+
+            sizeSection.appendChild(
+                controls
+            );
+
+
+            /* ---------------------------------------------
+               REMOVE ACTION
+            --------------------------------------------- */
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "approved-ripple-actions";
+
+
+            const removeButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            removeButton.type =
+                "button";
+
+
+            removeButton.className =
+                "remove-ripple-button";
+
+
+            removeButton.textContent =
+                "Remove from Well";
+
+
+            removeButton.addEventListener(
+                "click",
+                async () => {
+
+                    await removeApprovedRipple(
+                        ripple.id,
+                        card,
+                        removeButton
+                    );
+
+                }
+            );
+
+
+            actions.appendChild(
+                removeButton
+            );
+
+
+            /* ---------------------------------------------
+               CARD ASSEMBLY
+            --------------------------------------------- */
+
+            card.appendChild(
+                message
+            );
+
+
+            card.appendChild(
+                meta
+            );
+
+
+            card.appendChild(
+                sizeSection
+            );
+
+
+            card.appendChild(
+                actions
+            );
+
+
+            approvedRipplesContainer.appendChild(
+                card
+            );
+        }
+
+
+        /* =================================================
+           UPDATE APPROVED RIPPLE SIZE
+        ================================================= */
+
+        async function updateApprovedRippleSize(
+            rippleId,
+            newSize,
+            button
+        ) {
+
+            const confirmed =
+                window.confirm(
+                    `Change this Impact Ripple to ${formatRippleSize(newSize)}?`
+                );
+
+
+            if (!confirmed) {
+
+                return;
+            }
+
+
+            button.disabled =
+                true;
+
+
+            const originalText =
+                button.textContent;
+
+
+            button.textContent =
+                "Saving...";
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .update({
+                        size:
+                            newSize
+                    })
+                    .eq(
+                        "id",
+                        rippleId
+                    )
+                    .eq(
+                        "status",
+                        "approved"
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not update ripple size:",
+                    error
+                );
+
+
+                button.disabled =
+                    false;
+
+                button.textContent =
+                    originalText;
+
+
+                showStatus(
+                    dashboardStatus,
+                    `Unable to update ripple size. ${error.message || ""}`,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "Saved";
+
+
+            showStatus(
+                dashboardStatus,
+                `Impact Ripple size changed to ${formatRippleSize(newSize)}.`,
+                "success"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    button.textContent =
+                        originalText;
+
+                },
+                1500
+            );
+        }
+
+
+        /* =================================================
+           REMOVE APPROVED RIPPLE
+        ================================================= */
+
+        async function removeApprovedRipple(
+            rippleId,
+            card,
+            button
+        ) {
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to remove this Impact Ripple from The Ripple Well?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+            }
+
+
+            button.disabled =
+                true;
+
+
+            button.textContent =
+                "Removing...";
+
+
+            /*
+             * We move the ripple out of the
+             * approved state.
+             *
+             * The existing database workflow
+             * already uses "rejected" as the
+             * non-public state.
+             */
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "ripple_submissions"
+                    )
+                    .update({
+                        status:
+                            "rejected"
+                    })
+                    .eq(
+                        "id",
+                        rippleId
+                    )
+                    .eq(
+                        "status",
+                        "approved"
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Could not remove approved ripple:",
+                    error
+                );
+
+
+                button.disabled =
+                    false;
+
+                button.textContent =
+                    "Remove from Well";
+
+
+                showStatus(
+                    dashboardStatus,
+                    `Unable to remove Impact Ripple. ${error.message || ""}`,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showStatus(
+                dashboardStatus,
+                "Impact Ripple removed from The Ripple Well.",
+                "success"
+            );
+
+
+            card.remove();
+
+
+            const currentCount =
+                parseInt(
+                    approvedCount.textContent,
+                    10
+                ) || 0;
+
+
+            const newCount =
+                Math.max(
+                    0,
+                    currentCount - 1
+                );
+
+
+            approvedCount.textContent =
+                newCount;
+
+
+            if (
+                newCount === 0
+            ) {
+
+                approvedRipplesContainer.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <h2>
+                            No Impact Ripples Yet
+                        </h2>
+
+                        <p>
+                            Approved ripples will appear here.
+                        </p>
+
+                    </div>
+
+                `;
+            }
+        }
+
+
+        /* =================================================
            META ITEM
         ================================================= */
 
@@ -2040,10 +3194,6 @@
                     : "reject";
 
 
-            /*
-             * Approval requires a size.
-             */
-
             if (
                 newStatus === "approved" &&
                 !selectedSize
@@ -2088,19 +3238,6 @@
                 }
             );
 
-
-            /*
-             * Build the database update.
-             *
-             * When approved:
-             *     status = approved
-             *     size   = selected size
-             *
-             * When rejected:
-             *     status = rejected
-             *
-             * The size is left untouched on rejection.
-             */
 
             let updateData;
 
@@ -2183,17 +3320,8 @@
             );
 
 
-            /*
-             * Remove the submission from
-             * the pending list.
-             */
-
             card.remove();
 
-
-            /*
-             * Update pending count.
-             */
 
             const currentCount =
                 parseInt(
@@ -2212,11 +3340,6 @@
             pendingCount.textContent =
                 newCount;
 
-
-            /*
-             * Show empty state when
-             * no pending submissions remain.
-             */
 
             if (
                 newCount === 0
@@ -2237,6 +3360,21 @@
                     </div>
 
                 `;
+            }
+
+
+            /*
+             * If approved, immediately add it
+             * to the Approved Impact Ripples
+             * section without requiring a
+             * page refresh.
+             */
+
+            if (
+                newStatus === "approved"
+            ) {
+
+                await loadApprovedRipples();
             }
         }
 
@@ -2277,7 +3415,7 @@
             "click",
             async () => {
 
-                await loadPendingSubmissions();
+                await loadDashboard();
 
             }
         );
@@ -2332,7 +3470,7 @@
 
                         showDashboard();
 
-                        await loadPendingSubmissions();
+                        await loadDashboard();
 
                     } else {
 
@@ -2375,7 +3513,7 @@
 
                 showDashboard();
 
-                await loadPendingSubmissions();
+                await loadDashboard();
 
             } else {
 
