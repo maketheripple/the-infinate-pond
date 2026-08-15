@@ -77,19 +77,24 @@
         ===================================================== */
 
         :root {
+
             /*
-             * The approved artwork is now a shorter, normal website
-             * hero.  It scrolls away naturally as the visitor enters
-             * The Ripple Well.
+             * Top Banner.png is 1717 x 916.
+             * The water line begins at approximately y = 714.
+             * This ratio preserves the artwork's natural crop
+             * when the banner scales with the viewport width.
              */
-            --sky-height: clamp(430px, 58vh, 650px);
+            --banner-waterline-ratio: 0.4158;
+            --sky-height:
+                calc(100vw * var(--banner-waterline-ratio));
         }
+
 
         #sky-banner {
 
-            position: relative;
+            position: fixed;
 
-            z-index: 10;
+            z-index: 1000;
 
             top: 0;
             left: 0;
@@ -114,12 +119,9 @@
             inset: 0;
 
             width: 100%;
-            height: 100%;
+            height: auto;
 
             display: block;
-
-            object-fit: cover;
-            object-position: center 43%;
 
             pointer-events: none;
 
@@ -153,8 +155,8 @@
 
             min-height: 300vh;
 
-            /* The Well follows the banner naturally in normal page flow. */
-            margin-top: 0;
+            /* The Well begins exactly where the fixed horizon ends. */
+            margin-top: var(--sky-height);
 
             background:
                 linear-gradient(
@@ -2151,124 +2153,291 @@
     
 
         /* =====================================================
-           SHORTER NORMAL-SCROLL HERO
+           VERSION 3.0 — IMAGE WATER FOUNDATION
+
+           The approved water image is now the actual surface.
+           WebGL no longer creates the water itself; water.js only
+           draws small transparent click ripples above the image.
         ===================================================== */
 
-        @media (max-width: 900px) {
-            :root {
-                --sky-height: clamp(360px, 52vh, 520px);
+        html,
+        body {
+            background: #020204;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        :root {
+            --water-bottom: #020204;
+            --banner-waterline-ratio: 0.4158;
+        }
+
+        /* The sky banner scrolls normally like a conventional site. */
+        #sky-banner {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 100%;
+            height: calc(100vw * var(--banner-waterline-ratio));
+            max-height: none;
+            min-height: 0;
+            overflow: hidden;
+            background: #020b15;
+            box-shadow: none;
+        }
+
+        #sky-banner-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            max-width: none;
+            display: block;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* The Well is ordinary document flow. */
+        #ripple-well {
+            position: relative;
+            margin-top: 0;
+            min-height: 0;
+            background: var(--water-bottom);
+        }
+
+        /* =====================================================
+           ACTUAL WATER SURFACE
+        ===================================================== */
+
+        #water-window {
+            position: relative;
+            top: auto;
+            width: 100%;
+            height: auto;
+            min-height: 0;
+            overflow: hidden;
+            background: var(--water-bottom);
+            line-height: 0;
+        }
+
+        #water-surface-image {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Transparent interaction layer — this is the ONLY place
+           where water clicks are possible. */
+        #water-canvas {
+            position: absolute;
+            z-index: 5;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+            touch-action: manipulation;
+            background: transparent;
+        }
+
+        /* The old generated water/reflection/depth systems are not
+           part of this design iteration. */
+        #surface-layer,
+        #reflection-layer,
+        #depth-layer,
+        #depth-message,
+        #impact-ripples-layer,
+        #recent-impact-ripples,
+        #reflection-distortion {
+            display: none !important;
+        }
+
+        /* The lower page continues seamlessly from the bottom of the
+           water image instead of introducing another gradient. */
+        #well-depth-content {
+            min-height: 100vh;
+            background: var(--water-bottom);
+        }
+
+        #message-from-well {
+            background: var(--water-bottom);
+            color: #eefaff;
+        }
+
+        /* Keep the stationary control bar above the water interaction
+           canvas and above all normal page content. */
+        #well-interaction-bar {
+            position: fixed;
+            z-index: 1200;
+            bottom: 0;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            #sky-banner {
+                position: relative;
+                height: calc(100vw * var(--banner-waterline-ratio));
+                min-height: 0;
+                max-height: none;
+            }
+
+            #sky-banner-image {
+                width: 100%;
+                height: auto;
+                left: 0;
+                transform: none;
+            }
+
+            #water-window {
+                height: auto;
+            }
+
+            #well-interaction-bar {
+                min-height: 118px;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 58px 48px;
+                gap: 6px 10px;
+                padding: 7px 12px;
+            }
+
+            #well-instruction {
+                gap: 10px;
+                font-size: 11px;
+            }
+
+            #mouse-icon {
+                width: 24px;
+                height: 38px;
+            }
+
+            #impact-count-card {
+                min-width: 0;
+                min-height: 58px;
+                padding: 7px 10px;
+                gap: 6px;
+            }
+
+            #impact-count-icon {
+                display: none;
+            }
+
+            #impact-count {
+                font-size: 22px;
+            }
+
+            #impact-count-label {
+                font-size: 9px;
+            }
+
+            #make-ripple-button {
+                position: static;
+                grid-column: 1 / -1;
+                width: 100%;
+                min-width: 0;
+                min-height: 42px;
+                padding: 7px 14px;
+                font-size: 13px;
+            }
+
+            #make-ripple-button-icon {
+                width: 31px;
+                transform: scale(0.82);
+                transform-origin: right center;
+            }
+
+            #message-from-well {
+                padding-bottom: 135px;
             }
         }
 
-        @media (max-width: 600px) {
-            :root {
-                --sky-height: clamp(330px, 55vh, 460px);
-            }
-        }
-</style>
+    </style>
 </head>
-
-
 <body>
 
-
     <!-- =====================================================
-         FIXED NIGHT SKY / BRANDING
+         TOP BANNER
+
+         This image contains everything above the waterline.
+         It scrolls normally with the page.
     ====================================================== -->
 
     <header id="sky-banner" aria-label="The Ripple Well">
-
         <img
             id="sky-banner-image"
             src="images/Top Banner.png"
             alt="The Ripple Well — Make the Ripple"
             draggable="false"
         >
-
     </header>
 
 
     <!-- =====================================================
-         THE RIPPLE WELL
+         THE RIPPLE WELL — WATER SURFACE
+
+         Water(1).png is the actual visual surface.
+         The transparent canvas above it is interaction only.
     ====================================================== -->
 
     <main id="ripple-well">
 
-        <section id="water-window">
+        <section id="water-window" aria-label="The Ripple Well water">
 
-            <!-- SURFACE -->
+            <img
+                id="water-surface-image"
+                src="images/Water(1).png"
+                alt="Moonlit water fading into the depths of The Ripple Well"
+                draggable="false"
+            >
 
-            <div id="surface-layer">
-
-                <div class="surface-wave"></div>
-                <div class="surface-wave"></div>
-                <div class="surface-wave"></div>
-                <div class="surface-wave"></div>
-
-            </div>
-
-
-            <!-- WATER -->
-
-            <canvas id="water-canvas"></canvas>
-
-
-            <!-- REFLECTION -->
-
-            <div id="reflection-layer">
-
-                <div id="reflection-content">
-
-                    <div id="reflection-logo-wrap">
-
-                        <div id="reflection-logo-glow"></div>
-
-                        <img
-                            id="reflection-logo"
-                            src="images/Make the Ripple Large Logo.png"
-                            alt=""
-                            aria-hidden="true"
-                        >
-
-                    </div>
-
-                    <div id="reflection-presents">
-                        Presents
-                    </div>
-
-                    <div id="reflection-title">
-                        The Ripple Well
-                    </div>
-
-                    <div id="reflection-tagline">
-                        Every Ripple Starts Small
-                    </div>
-
-                    <div id="reflection-ripples"></div>
-
-                </div>
-
-                <div id="reflection-distortion"></div>
-
-            </div>
-
-
-            <!-- DEPTH -->
-
-            <div id="depth-layer">
-
-                <div id="depth-haze"></div>
-
-                <div id="impact-ripples-layer"></div>
-
-            </div>
-
-
-            <div id="depth-message">
-                Explore the Ripples beneath the surface
-            </div>
+            <canvas
+                id="water-canvas"
+                aria-hidden="true"
+            ></canvas>
 
         </section>
+
+
+        <!-- The water image ends here. Everything below continues in
+             the exact near-black colour of its lower edge. -->
+
+        <div id="well-depth-content">
+
+            <section id="message-from-well">
+
+                <h2>A Message From The Well</h2>
+
+                <div class="message-divider" aria-hidden="true">
+                    <span></span>
+                    <b>◆</b>
+                    <span></span>
+                </div>
+
+                <p>
+                    This is a space for the waves of kindness,<br>
+                    strength, and hope to echo across time.
+                </p>
+
+                <p>
+                    <strong>Leave your ripple.</strong>
+                    Be part of something<br>
+                    that will never fade.
+                </p>
+
+            </section>
+
+        </div>
 
     </main>
 
@@ -2276,14 +2445,12 @@
     <!-- =====================================================
          FIXED LOWER INTERACTION BANNER
 
-         The banner stays stationary while the Well scrolls.
-         It is deliberately outside the image-based top banner.
+         This remains stationary while the page scrolls.
     ====================================================== -->
 
     <aside id="well-interaction-bar" aria-label="Ripple Well controls">
 
         <div id="well-instruction">
-
             <div id="mouse-icon" aria-hidden="true">
                 <span></span>
             </div>
@@ -2292,12 +2459,10 @@
                 Click anywhere on the pond<br>
                 to make a ripple.
             </div>
-
         </div>
 
 
         <div id="impact-count-card" aria-live="polite">
-
             <div id="impact-count-icon" aria-hidden="true">
                 <span></span>
             </div>
@@ -2306,7 +2471,6 @@
                 <div id="impact-count">0</div>
                 <div id="impact-count-label">Impact Ripples</div>
             </div>
-
         </div>
 
 
@@ -2321,34 +2485,6 @@
         </button>
 
     </aside>
-
-
-    <!-- =====================================================
-         MESSAGE FROM THE WELL
-    ====================================================== -->
-
-    <section id="message-from-well">
-
-        <h2>A Message From The Well</h2>
-
-        <div class="message-divider" aria-hidden="true">
-            <span></span>
-            <b>◆</b>
-            <span></span>
-        </div>
-
-        <p>
-            This is a space for the waves of kindness,<br>
-            strength, and hope to echo across time.
-        </p>
-
-        <p>
-            <strong>Leave your ripple.</strong>
-            Be part of something<br>
-            that will never fade.
-        </p>
-
-    </section>
 
 
     <!-- =====================================================
@@ -2373,40 +2509,27 @@
                 type="button"
                 aria-label="Close"
                 data-close-modal
-            >
-                ×
-            </button>
+            >×</button>
 
-            <h2 id="make-ripple-title">
-                Make Your Ripple
-            </h2>
+            <h2 id="make-ripple-title">Make Your Ripple</h2>
 
             <p class="modal-intro">
-
                 Every ripple starts somewhere.
-
                 <br><br>
-
                 Share a message of hope,
                 encouragement, support, kindness,
                 or something you want another person
                 to discover when they visit
                 The Ripple Well.
-
                 <br><br>
-
                 Your submission will be reviewed
                 before it can become an
                 <strong>Impact Ripple</strong>.
-
             </p>
-
 
             <form id="ripple-form">
 
-                <label for="ripple-message">
-                    Your Ripple
-                </label>
+                <label for="ripple-message">Your Ripple</label>
 
                 <textarea
                     id="ripple-message"
@@ -2416,11 +2539,7 @@
                     placeholder="What would you like someone to find in The Ripple Well?"
                 ></textarea>
 
-
-                <label
-                    for="ripple-name"
-                    class="optional-label"
-                >
+                <label for="ripple-name" class="optional-label">
                     Name or Display Name
                     <span>Optional</span>
                 </label>
@@ -2433,28 +2552,18 @@
                     placeholder="How would you like to be identified?"
                 >
 
-
                 <div class="location-intro">
-
-                    <strong>
-                        Where is your ripple coming from?
-                    </strong>
-
+                    <strong>Where is your ripple coming from?</strong>
                 </div>
 
                 <p class="location-note">
                     Optional — we'd love to know how far our ripples are reaching.
                 </p>
 
-
                 <div class="location-fields">
 
                     <div class="field-group">
-
-                        <label
-                            for="ripple-region"
-                            class="optional-label"
-                        >
+                        <label for="ripple-region" class="optional-label">
                             Province / State
                             <span>Optional</span>
                         </label>
@@ -2466,16 +2575,10 @@
                             maxlength="80"
                             placeholder="Province or State"
                         >
-
                     </div>
 
-
                     <div class="field-group">
-
-                        <label
-                            for="ripple-country"
-                            class="optional-label"
-                        >
+                        <label for="ripple-country" class="optional-label">
                             Country
                             <span>Optional</span>
                         </label>
@@ -2487,40 +2590,34 @@
                             maxlength="80"
                             placeholder="Country"
                         >
-
                     </div>
 
                 </div>
 
-
                 <div class="modal-actions">
-
                     <button
                         class="modal-button cancel"
                         type="button"
                         data-close-modal
-                    >
-                        Maybe Later
-                    </button>
+                    >Maybe Later</button>
 
                     <button
                         class="modal-button submit"
                         type="submit"
-                    >
-                        Send My Ripple
-                    </button>
-
+                    >Send My Ripple</button>
                 </div>
 
             </form>
 
         </div>
-
     </div>
 
 
     <!-- =====================================================
          IMPACT RIPPLE MESSAGE MODAL
+
+         Retained for the next design phase. No Impact Ripples are
+         rendered in this version, so this modal remains dormant.
     ====================================================== -->
 
     <div
@@ -2528,7 +2625,6 @@
         class="modal-overlay"
         aria-hidden="true"
     >
-
         <div
             class="modal"
             id="impact-message"
@@ -2536,64 +2632,22 @@
             aria-modal="true"
             aria-labelledby="impact-title"
         >
-
             <button
                 class="modal-close"
                 type="button"
                 aria-label="Close"
                 data-close-modal
-            >
-                ×
-            </button>
+            >×</button>
 
-            <h2 id="impact-title">
-                A Message From The Well
-            </h2>
+            <h2 id="impact-title">A Message From The Well</h2>
 
-            <div
-                class="quote"
-                id="impact-quote"
-            ></div>
+            <div class="quote" id="impact-quote"></div>
+            <div class="details" id="impact-details"></div>
 
-            <div
-                class="details"
-                id="impact-details"
-            ></div>
-
-            <div class="impact-type">
-                Impact Ripple
-            </div>
-
+            <div class="impact-type">Impact Ripple</div>
         </div>
-
     </div>
 
-
-    <script>
-        /* Keep the lower-banner count synchronized with the live
-           Impact Ripple layer created by water.js. */
-        (function () {
-
-            const countEl =
-                document.getElementById("impact-count");
-
-            const layer =
-                document.getElementById("impact-ripples-layer");
-
-            if (!countEl || !layer) return;
-
-            const updateCount = () => {
-                countEl.textContent =
-                    layer.querySelectorAll(".impact-ripple").length;
-            };
-
-            updateCount();
-
-            new MutationObserver(updateCount)
-                .observe(layer, { childList: true });
-
-        })();
-    </script>
 
     <script src="water.js"></script>
 
