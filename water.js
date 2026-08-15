@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.6
+   VERSION 2.7
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -12,6 +12,20 @@
 
    3. DEPTH
       Approved Impact Ripples loaded from Supabase.
+
+   IMPACT RIPPLE DESIGN
+   - Four approved database sizes:
+       Small
+       Medium
+       Large
+       Extra-Large
+   - Natural irregular placement.
+   - Deterministic positioning prevents ripples from
+     jumping around between page loads.
+   - Individual rotation, float, ring timing and opacity.
+   - Organic elliptical ripple forms.
+   - Recent approved ripples appear as subtle
+     lower-banner glimpses.
 
    CLICK RIPPLE SCALE
    - Click ripple visual footprint = 25% of previous size.
@@ -32,7 +46,6 @@
    - Approved submissions are loaded from Supabase.
    - Only approved submissions become Impact Ripples.
    - Database column used for size = "size".
-   - Small / Medium / Large / Extra-Large are supported.
    - Demonstration Impact Ripples have been removed.
 ========================================================= */
 
@@ -60,6 +73,9 @@
 
     const impactLayer =
         document.getElementById("impact-ripples-layer");
+
+    const recentImpactLayer =
+        document.getElementById("recent-impact-ripples");
 
     const makeRippleButton =
         document.getElementById("make-ripple-button");
@@ -432,9 +448,14 @@
                 );
 
 
+            /*
+             * The original travel distance was reduced
+             * to 25%.
+             */
+
             float radius =
                 age *
-                0.08;
+                0.02;
 
 
             float wave =
@@ -669,15 +690,20 @@
                 );
 
 
+            /*
+             * Ripple highlight intensity is reduced
+             * proportionally with the smaller travel.
+             */
+
             color +=
                 abs(
                     rippleValue
                 )
                 *
                 vec3(
-                    0.04,
-                    0.095,
-                    0.115
+                    0.01,
+                    0.024,
+                    0.029
                 );
 
 
@@ -1775,24 +1801,30 @@
             case "small":
 
                 return {
-                    scale: 0.72,
-                    className: "impact-size-small"
+                    scale: 1,
+                    className: "impact-size-small",
+                    opacity: 0.28,
+                    ringScale: 0.78
                 };
 
 
             case "medium":
 
                 return {
-                    scale: 1.00,
-                    className: "impact-size-medium"
+                    scale: 1,
+                    className: "impact-size-medium",
+                    opacity: 0.34,
+                    ringScale: 1.00
                 };
 
 
             case "large":
 
                 return {
-                    scale: 1.30,
-                    className: "impact-size-large"
+                    scale: 1,
+                    className: "impact-size-large",
+                    opacity: 0.39,
+                    ringScale: 1.16
                 };
 
 
@@ -1802,306 +1834,287 @@
             case "xlarge":
 
                 return {
-                    scale: 1.65,
-                    className: "impact-size-extra-large"
+                    scale: 1,
+                    className: "impact-size-extra-large",
+                    opacity: 0.44,
+                    ringScale: 1.32
                 };
 
 
             default:
 
                 return {
-                    scale: 1.00,
-                    className: "impact-size-medium"
+                    scale: 1,
+                    className: "impact-size-medium",
+                    opacity: 0.34,
+                    ringScale: 1.00
                 };
         }
     }
 
 
     /* =====================================================
-       IMPACT RIPPLE STYLE
+       DETERMINISTIC RANDOM HELPERS
     ===================================================== */
 
-    const impactRippleStyle =
-        document.createElement("style");
+    /*
+     * We want the pond to feel random without having
+     * Impact Ripples jump to new locations every refresh.
+     *
+     * These functions create stable pseudo-random values
+     * from the submission index / ID.
+     */
+
+    function seededNumber(seed) {
+
+        let value = 0;
 
 
-    impactRippleStyle.textContent = `
+        const text =
+            String(seed);
 
-        .impact-ripple {
 
-            background: transparent !important;
+        for (
+            let i = 0;
+            i < text.length;
+            i++
+        ) {
 
-            border: none !important;
-
-            box-shadow: none !important;
-
-            overflow: visible;
-
-            opacity: 1;
-
-            filter: none;
-
-            animation:
-                organicFloat
-                var(--float-time)
-                ease-in-out
-                infinite
-                alternate;
-
-            transform:
-                translate(-50%, -50%)
-                rotate(var(--rotation, 0deg))
-                scale(var(--scale, 1));
+            value =
+                (
+                    (
+                        value * 31
+                    ) +
+                    text.charCodeAt(i)
+                ) %
+                2147483647;
         }
 
 
-        .impact-ripple::before {
-
-            content: "";
-
-            position: absolute;
-
-            left: 50%;
-            top: 50%;
-
-            width: 58%;
-            height: 42%;
-
-            transform:
-                translate(-50%, -50%)
-                rotate(var(--ripple-rotation, 0deg))
-                scale(0.45);
-
-            transform-origin: center;
-
-            border:
-                1px solid
-                rgba(151, 226, 243, 0.34);
-
-            border-radius:
-                50%;
-
-            background:
-                transparent;
-
-            box-shadow:
-                0 0 5px
-                rgba(101, 203, 229, 0.11);
-
-            opacity: 0;
-
-            pointer-events: none;
-
-            animation:
-                impactRippleWave
-                var(--ripple-time, 7s)
-                ease-out
-                infinite;
-        }
+        value =
+            (
+                value * 16807
+            ) %
+            2147483647;
 
 
-        .impact-ripple::after {
-
-            content: "";
-
-            position: absolute;
-
-            left: 50%;
-            top: 50%;
-
-            width: 76%;
-            height: 52%;
-
-            transform:
-                translate(-50%, -50%)
-                rotate(var(--ripple-secondary-rotation, 0deg))
-                scale(0.40);
-
-            border-radius:
-                48%
-                52%
-                55%
-                45%
-                /
-                53%
-                47%
-                51%
-                49%;
-
-            border:
-                1px solid
-                rgba(120, 212, 235, 0.11);
-
-            background:
-                transparent;
-
-            filter:
-                blur(1.4px);
-
-            opacity: 0;
-
-            pointer-events: none;
-
-            animation:
-                impactRippleDistortion
-                var(--ripple-time, 7s)
-                ease-out
-                infinite;
-        }
+        return (
+            value - 1
+        ) /
+        2147483646;
+    }
 
 
-        @keyframes impactRippleWave {
+    function seededRange(
+        seed,
+        minimum,
+        maximum
+    ) {
 
-            0% {
+        return (
+            minimum +
+            (
+                seededNumber(seed) *
+                (
+                    maximum -
+                    minimum
+                )
+            )
+        );
+    }
 
-                transform:
-                    translate(-50%, -50%)
-                    rotate(var(--ripple-rotation, 0deg))
-                    scale(0.42);
 
-                opacity: 0;
+    /* =====================================================
+       NATURAL IMPACT RIPPLE POSITIONS
+    ===================================================== */
+
+    function createNaturalPositions(
+        count
+    ) {
+
+        const positions = [];
+
+
+        /*
+         * Keep the central upper portion relatively open
+         * because this is where the reflection and moonlight
+         * are most important.
+         *
+         * Also avoid placing ripples too close to the very
+         * bottom where the interaction message lives.
+         */
+
+        const safeZones = [
+
+            {
+                minX: 0.08,
+                maxX: 0.31,
+                minY: 0.24,
+                maxY: 0.63
+            },
+
+            {
+                minX: 0.33,
+                maxX: 0.66,
+                minY: 0.36,
+                maxY: 0.82
+            },
+
+            {
+                minX: 0.69,
+                maxX: 0.92,
+                minY: 0.22,
+                maxY: 0.67
+            },
+
+            {
+                minX: 0.12,
+                maxX: 0.86,
+                minY: 0.68,
+                maxY: 0.86
             }
+        ];
 
 
-            8% {
+        for (
+            let i = 0;
+            i < count;
+            i++
+        ) {
 
-                opacity:
-                    var(--ripple-opacity, 0.34);
-            }
-
-
-            45% {
-
-                opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.72
-                    );
-            }
+            let accepted = null;
 
 
-            78% {
+            /*
+             * Try several candidates so the placement
+             * remains irregular while avoiding obvious
+             * stacking.
+             */
 
-                opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.26
-                    );
-            }
+            for (
+                let attempt = 0;
+                attempt < 24;
+                attempt++
+            ) {
 
-
-            100% {
-
-                transform:
-                    translate(-50%, -50%)
-                    rotate(
-                        calc(
-                            var(--ripple-rotation, 0deg) + 5deg
+                const zone =
+                    safeZones[
+                        Math.floor(
+                            seededNumber(
+                                `${i}-zone-${attempt}`
+                            ) *
+                            safeZones.length
                         )
-                    )
-                    scale(
-                        var(--ripple-scale, 1)
+                    ];
+
+
+                const x =
+                    seededRange(
+                        `${i}-x-${attempt}`,
+                        zone.minX,
+                        zone.maxX
                     );
 
-                opacity: 0;
+
+                const y =
+                    seededRange(
+                        `${i}-y-${attempt}`,
+                        zone.minY,
+                        zone.maxY
+                    );
+
+
+                const candidate = {
+                    x,
+                    y
+                };
+
+
+                let tooClose = false;
+
+
+                for (
+                    const existing
+                    of positions
+                ) {
+
+                    const dx =
+                        candidate.x -
+                        existing.x;
+
+
+                    const dy =
+                        (
+                            candidate.y -
+                            existing.y
+                        ) *
+                        0.72;
+
+
+                    const distance =
+                        Math.sqrt(
+                            dx * dx +
+                            dy * dy
+                        );
+
+
+                    if (
+                        distance <
+                        0.14
+                    ) {
+
+                        tooClose = true;
+
+                        break;
+                    }
+                }
+
+
+                if (!tooClose) {
+
+                    accepted =
+                        candidate;
+
+                    break;
+                }
             }
-        }
 
 
-        @keyframes impactRippleDistortion {
+            /*
+             * If the pond becomes crowded, accept a
+             * candidate anyway rather than hiding the
+             * approved submission.
+             */
 
-            0% {
+            if (!accepted) {
 
-                transform:
-                    translate(-50%, -50%)
-                    rotate(
-                        var(
-                            --ripple-secondary-rotation,
-                            0deg
+                accepted = {
+
+                    x:
+                        seededRange(
+                            `${i}-fallback-x`,
+                            0.10,
+                            0.90
+                        ),
+
+                    y:
+                        seededRange(
+                            `${i}-fallback-y`,
+                            0.28,
+                            0.84
                         )
-                    )
-                    scale(0.40);
-
-                opacity: 0;
+                };
             }
 
 
-            15% {
-
-                opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.24
-                    );
-            }
-
-
-            55% {
-
-                opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.13
-                    );
-            }
-
-
-            100% {
-
-                transform:
-                    translate(-50%, -50%)
-                    rotate(
-                        calc(
-                            var(
-                                --ripple-secondary-rotation,
-                                0deg
-                            ) - 4deg
-                        )
-                    )
-                    scale(
-                        calc(
-                            var(--ripple-scale, 1) * 1.08
-                        )
-                    );
-
-                opacity: 0;
-            }
+            positions.push(
+                accepted
+            );
         }
 
 
-        .impact-ripple:hover {
-
-            background: transparent !important;
-
-            border: none !important;
-
-            box-shadow: none !important;
-
-            filter: none;
-
-            opacity: 1;
-        }
-
-
-        .impact-ripple:hover::before {
-
-            border-color:
-                rgba(170, 235, 249, 0.52);
-
-            box-shadow:
-                0 0 9px
-                rgba(110, 215, 240, 0.24);
-        }
-
-
-        .impact-ripple:hover::after {
-
-            border-color:
-                rgba(145, 224, 241, 0.20);
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        impactRippleStyle
-    );
+        return positions;
+    }
 
 
     /* =====================================================
@@ -2172,8 +2185,8 @@
         ripple.style.setProperty(
             "--ripple-scale",
             (
-                (data.rippleScale || 1) *
-                sizeSettings.scale
+                data.rippleScale ||
+                sizeSettings.ringScale
             )
         );
 
@@ -2184,40 +2197,46 @@
         );
 
 
-        const rippleOpacity =
-            sizeSettings.scale >= 1.6
-                ? 0.45
-                : sizeSettings.scale >= 1.3
-                    ? 0.40
-                    : sizeSettings.scale >= 1
-                        ? 0.34
-                        : 0.27;
-
-
         ripple.style.setProperty(
             "--ripple-opacity",
-            rippleOpacity
+            data.rippleOpacity ||
+            sizeSettings.opacity
         );
 
 
         ripple.style.setProperty(
             "--ripple-rotation",
-            `${(data.rotation || 0) * 0.35}deg`
+            `${data.rippleRotation || 0}deg`
         );
 
 
         ripple.style.setProperty(
             "--ripple-secondary-rotation",
-            `${-(data.rotation || 0) * 0.25}deg`
+            `${data.secondaryRippleRotation || 0}deg`
         );
 
 
         ripple.style.setProperty(
             "--scale",
-            (
-                (data.sizeBase || 1) *
-                sizeSettings.scale
-            )
+            "1"
+        );
+
+
+        /*
+         * A tiny individual distortion scale makes the
+         * rings less uniform without changing the
+         * approved database size itself.
+         */
+
+        ripple.style.setProperty(
+            "--organic-ring-scale-x",
+            data.ringScaleX || 1
+        );
+
+
+        ripple.style.setProperty(
+            "--organic-ring-scale-y",
+            data.ringScaleY || 1
         );
 
 
@@ -2242,6 +2261,136 @@
 
 
     /* =====================================================
+       RECENT BANNER RIPPLE
+    ===================================================== */
+
+    function createRecentBannerRipple(
+        data,
+        index
+    ) {
+
+        if (!recentImpactLayer)
+            return;
+
+
+        const ripple =
+            document.createElement("div");
+
+
+        ripple.className =
+            "recent-impact-ripple";
+
+
+        const sizeSettings =
+            getSizeSettings(
+                data.size
+            );
+
+
+        const sizeMap = {
+
+            "impact-size-small": {
+                width: 27,
+                height: 12
+            },
+
+            "impact-size-medium": {
+                width: 38,
+                height: 16
+            },
+
+            "impact-size-large": {
+                width: 52,
+                height: 21
+            },
+
+            "impact-size-extra-large": {
+                width: 66,
+                height: 26
+            }
+        };
+
+
+        const dimensions =
+            sizeMap[
+                sizeSettings.className
+            ] ||
+            sizeMap[
+                "impact-size-medium"
+            ];
+
+
+        const left =
+            seededRange(
+                `${data.id}-recent-left`,
+                3,
+                97
+            );
+
+
+        const opacity =
+            seededRange(
+                `${data.id}-recent-opacity`,
+                0.22,
+                0.48
+            );
+
+
+        const rotation =
+            seededRange(
+                `${data.id}-recent-rotation`,
+                -14,
+                14
+            );
+
+
+        ripple.style.left =
+            `${left}%`;
+
+
+        ripple.style.setProperty(
+            "--recent-width",
+            `${dimensions.width}px`
+        );
+
+
+        ripple.style.setProperty(
+            "--recent-height",
+            `${dimensions.height}px`
+        );
+
+
+        ripple.style.setProperty(
+            "--recent-opacity",
+            opacity
+        );
+
+
+        ripple.style.setProperty(
+            "--recent-rotation",
+            `${rotation}deg`
+        );
+
+
+        ripple.style.setProperty(
+            "--recent-inner-rotation",
+            `${rotation * -0.55}deg`
+        );
+
+
+        ripple.style.setProperty(
+            "--recent-duration",
+            `${8 + (index % 5)}s`
+        );
+
+
+        recentImpactLayer.appendChild(
+            ripple
+        );
+    }
+
+
+    /* =====================================================
        SUPABASE APPROVED IMPACT RIPPLES
     ===================================================== */
 
@@ -2253,14 +2402,14 @@
 
         try {
 
-            /*
-             * Start with an empty Impact Ripple layer.
-             *
-             * This guarantees that the public pond
-             * contains ONLY approved submissions.
-             */
-
             impactLayer.innerHTML = "";
+
+
+            if (recentImpactLayer) {
+
+                recentImpactLayer.innerHTML =
+                    "";
+            }
 
 
             const response =
@@ -2326,55 +2475,14 @@
 
 
             /*
-             * Natural positions for approved
-             * Impact Ripples.
-             *
-             * As more submissions are approved,
-             * positions cycle through the list.
+             * Natural positions are generated once from
+             * the number of approved submissions.
              */
 
-            const positions = [
-
-                {
-                    x: 0.12,
-                    y: 0.46
-                },
-
-                {
-                    x: 0.29,
-                    y: 0.34
-                },
-
-                {
-                    x: 0.48,
-                    y: 0.64
-                },
-
-                {
-                    x: 0.68,
-                    y: 0.31
-                },
-
-                {
-                    x: 0.87,
-                    y: 0.44
-                },
-
-                {
-                    x: 0.39,
-                    y: 0.80
-                },
-
-                {
-                    x: 0.59,
-                    y: 0.48
-                },
-
-                {
-                    x: 0.77,
-                    y: 0.72
-                }
-            ];
+            const positions =
+                createNaturalPositions(
+                    submissions.length
+                );
 
 
             submissions.forEach(
@@ -2384,10 +2492,44 @@
                 ) => {
 
                     const position =
-                        positions[
-                            index %
-                            positions.length
-                        ];
+                        positions[index];
+
+
+                    const rotation =
+                        seededRange(
+                            `${submission.id}-rotation`,
+                            -18,
+                            18
+                        );
+
+
+                    const depthValue =
+                        seededNumber(
+                            `${submission.id}-depth`
+                        );
+
+
+                    let depth;
+
+
+                    if (
+                        depthValue <
+                        0.33
+                    ) {
+
+                        depth = "far";
+
+                    } else if (
+                        depthValue <
+                        0.68
+                    ) {
+
+                        depth = "mid";
+
+                    } else {
+
+                        depth = "near";
+                    }
 
 
                     const rippleData = {
@@ -2401,22 +2543,16 @@
                         y:
                             position.y,
 
-                        depth:
-                            index % 3 === 0
-                                ? "far"
-                                : index % 3 === 1
-                                    ? "mid"
-                                    : "near",
+                        depth,
 
                         floatTime:
-                            `${14 + (index % 5)}s`,
+                            `${13 + seededRange(
+                                `${submission.id}-float`,
+                                0,
+                                6
+                            ).toFixed(1)}s`,
 
-                        rotation:
-                            -12 +
-                            (
-                                index * 7
-                            ) %
-                            25,
+                        rotation,
 
                         size:
                             submission.size ||
@@ -2426,10 +2562,61 @@
                             1,
 
                         rippleScale:
-                            1,
+                            seededRange(
+                                `${submission.id}-ring-scale`,
+                                0.88,
+                                1.18
+                            ),
 
                         rippleTime:
-                            `${6.5 + (index % 3) * 0.7}s`,
+                            `${(
+                                6.2 +
+                                seededRange(
+                                    `${submission.id}-ripple-time`,
+                                    0,
+                                    2.4
+                                )
+                            ).toFixed(1)}s`,
+
+                        rippleOpacity:
+                            getSizeSettings(
+                                submission.size
+                            ).opacity *
+                            seededRange(
+                                `${submission.id}-opacity`,
+                                0.82,
+                                1.08
+                            ),
+
+                        rippleRotation:
+                            rotation *
+                            seededRange(
+                                `${submission.id}-ring-rotation`,
+                                0.45,
+                                0.95
+                            ),
+
+                        secondaryRippleRotation:
+                            rotation *
+                            seededRange(
+                                `${submission.id}-secondary-rotation`,
+                                -0.65,
+                                -0.25
+                            ),
+
+                        ringScaleX:
+                            seededRange(
+                                `${submission.id}-ring-x`,
+                                0.92,
+                                1.08
+                            ),
+
+                        ringScaleY:
+                            seededRange(
+                                `${submission.id}-ring-y`,
+                                0.88,
+                                1.06
+                            ),
 
                         message:
                             submission.message ||
@@ -2452,13 +2639,37 @@
                     );
 
 
+                    /*
+                     * Only a small number of recent ripples
+                     * are shown in the banner.
+                     *
+                     * The most recent approved ripples are
+                     * intentionally sampled rather than
+                     * displaying the entire database.
+                     */
+
+                    if (
+                        index >=
+                        Math.max(
+                            0,
+                            submissions.length - 7
+                        )
+                    ) {
+
+                        createRecentBannerRipple(
+                            rippleData,
+                            index
+                        );
+                    }
+
+
                     console.log(
                         "Approved Impact Ripple loaded:",
                         submission.message,
                         "Size:",
                         submission.size,
-                        "ID:",
-                        submission.id
+                        "Position:",
+                        position
                     );
                 }
             );
@@ -2543,7 +2754,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.6 initialized."
+        "The Ripple Well v2.7 initialized."
     );
 
 
@@ -2559,6 +2770,21 @@
 
     console.log(
         "Depth Layer: active"
+    );
+
+
+    console.log(
+        "Organic Impact Ripple Placement: active"
+    );
+
+
+    console.log(
+        "Four Impact Ripple Sizes: active"
+    );
+
+
+    console.log(
+        "Recent Banner Ripples: active"
     );
 
 
