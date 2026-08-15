@@ -477,7 +477,8 @@
         #well-instruction {
             position: absolute;
             left: 5.2vw;
-            bottom: 13px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -526,8 +527,9 @@
 
         #make-ripple-button {
             position: absolute;
-            top: 12px;
+            top: 50%;
             right: 5.2vw;
+            transform: translateY(-50%);
             min-width: 190px;
             min-height: 46px;
             display: inline-flex;
@@ -549,7 +551,7 @@
             border-color: #70efff;
             background: rgba(8, 42, 55, 0.76);
             box-shadow: 0 0 10px rgba(74, 225, 246, 0.42), 0 0 25px rgba(31, 157, 192, 0.22);
-            transform: translateY(-1px);
+            transform: translateY(calc(-50% - 1px));
         }
 
         #make-ripple-button-icon {
@@ -1270,7 +1272,9 @@
 
             #well-instruction {
                 left: 12px;
-                bottom: 11px;
+                top: 50%;
+                bottom: auto;
+                transform: translateY(-50%);
                 gap: 8px;
                 font-size: 9px;
             }
@@ -1292,8 +1296,9 @@
             }
 
             #make-ripple-button {
-                top: 9px;
+                top: 50%;
                 right: 12px;
+                transform: translateY(-50%);
                 min-width: 130px;
                 min-height: 38px;
                 padding: 6px 10px;
