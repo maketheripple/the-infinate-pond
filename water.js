@@ -1,14 +1,14 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 3.2 — IMPACT RIPPLE PULSE SYSTEM
+   VERSION 3.1 — IMPACT RIPPLE PULSE SYSTEM
 
    - Water.png remains the visual water surface.
-   - The transparent click canvas covers the entire Well.
+   - The transparent click canvas covers the entire Well,
+     including the dark section below the water image.
    - Approved Impact Ripples load from Supabase.
    - Each Impact Ripple pulses on its own randomized cycle.
    - Each pulse glows, expands into rings, then fades.
    - Impact Ripples remain clickable and open their quote.
-   - Impact Ripple sizes increased by 75%.
    - Clicking an Impact Ripple does not create a normal click ripple.
 ========================================================= */
 
@@ -22,6 +22,9 @@
 
     const rippleWell =
         document.getElementById("ripple-well");
+
+    const waterWindow =
+        document.getElementById("water-window");
 
     const waterImage =
         document.getElementById("water-surface-image");
@@ -79,7 +82,7 @@
         "https://vazgkkrrjgoowwywamot.supabase.co";
 
     const SUPABASE_KEY =
-        "sb_publishable_gf0D7JmbBlm6jR07qYkIQ_YZN301F-";
+        "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
 
 
     /* =====================================================
@@ -107,8 +110,12 @@
 
 
     /*
-     * Move the click canvas into the full Ripple Well
-     * so clicking continues to work below Water.png.
+     * The current HTML places the canvas inside the
+     * water-image section.
+     *
+     * We move it into the full Ripple Well here so that
+     * click ripples continue working below the image,
+     * inside the dark/deep portion as well.
      */
 
     rippleWell.appendChild(
@@ -1559,24 +1566,6 @@
     }
 
 
-    /* =====================================================
-       IMPACT RIPPLE SIZE SETTINGS
-       
-       ALL FOUR SIZES ARE NOW 75% LARGER.
-       
-       Small:
-       88  × 48  → 154 × 84
-
-       Medium:
-       120 × 66  → 210 × 116
-
-       Large:
-       150 × 82  → 263 × 144
-
-       X-Large:
-       190 × 104 → 333 × 182
-    ===================================================== */
-
     function getSize(
         size
     ) {
@@ -1595,29 +1584,13 @@
                 return {
 
                     width:
-                        154,
+                        88,
 
                     height:
-                        84,
+                        48,
 
                     opacity:
                         .68
-
-                };
-
-
-            case "medium":
-
-                return {
-
-                    width:
-                        210,
-
-                    height:
-                        116,
-
-                    opacity:
-                        .74
 
                 };
 
@@ -1627,10 +1600,10 @@
                 return {
 
                     width:
-                        263,
+                        150,
 
                     height:
-                        144,
+                        82,
 
                     opacity:
                         .78
@@ -1649,10 +1622,10 @@
                 return {
 
                     width:
-                        333,
+                        190,
 
                     height:
-                        182,
+                        104,
 
                     opacity:
                         .86
@@ -1665,10 +1638,10 @@
                 return {
 
                     width:
-                        210,
+                        120,
 
                     height:
-                        116,
+                        66,
 
                     opacity:
                         .74
@@ -1851,8 +1824,8 @@
         /*
          * Initial appearances are staggered.
          *
-         * After each pulse, the next pulse occurs
-         * somewhere between 6 and 13 seconds later.
+         * After each pulse, the next pulse occurs somewhere
+         * between 6 and 13 seconds later.
          */
 
         const delay =
@@ -2169,8 +2142,7 @@
 
 
         /*
-         * Stop the click from reaching the
-         * full-Well click canvas.
+         * Stop the click from reaching the full-Well canvas.
          */
 
         element.addEventListener(
@@ -2855,7 +2827,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v3.2 initialized."
+        "The Ripple Well v3.1 initialized."
     );
 
 
@@ -2871,11 +2843,6 @@
 
     console.log(
         "Impact Ripple pulse system: active"
-    );
-
-
-    console.log(
-        "Impact Ripple sizes: +75%"
     );
 
 
