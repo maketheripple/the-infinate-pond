@@ -1,2655 +1,2859 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+/* =========================================================
+   THE RIPPLE WELL
+   VERSION 3.1 — IMPACT RIPPLE PULSE SYSTEM
 
-    <title>The Ripple Well — Make the Ripple</title>
+   - Water.png remains the visual water surface.
+   - The transparent click canvas covers the entire Well,
+     including the dark section below the water image.
+   - Approved Impact Ripples load from Supabase.
+   - Each Impact Ripple pulses on its own randomized cycle.
+   - Each pulse glows, expands into rings, then fades.
+   - Impact Ripples remain clickable and open their quote.
+   - Clicking an Impact Ripple does not create a normal click ripple.
+========================================================= */
 
-    <meta
-        name="description"
-        content="The Ripple Well — a living collection of messages of hope, encouragement, support and kindness from Make the Ripple."
-    >
+(() => {
+    "use strict";
 
-    <style>
 
-        /* =====================================================
-           THE RIPPLE WELL
-           VERSION 2.7 — DESIGN FOUNDATION
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
 
-           THREE-LAYER WATER EXPERIENCE
+    const rippleWell =
+        document.getElementById("ripple-well");
 
-           1. SURFACE LAYER
-           2. REFLECTION LAYER
-           3. DEPTH LAYER
+    const waterWindow =
+        document.getElementById("water-window");
 
-           IMPACT RIPPLES
-           - Organic elliptical forms
-           - Four database-controlled sizes
-           - Natural, irregular placement
-           - Individual movement and distortion
-           - Recent Impact Ripples subtly appear in the
-             lower edge of the night-sky banner
+    const waterImage =
+        document.getElementById("water-surface-image");
 
-           THE POND REMAINS THE PRIMARY INTERACTION SPACE.
-        ===================================================== */
+    const canvas =
+        document.getElementById("water-canvas");
 
-        * {
-            box-sizing: border-box;
+    const makeRippleButton =
+        document.getElementById("make-ripple-button");
+
+    const makeRippleModal =
+        document.getElementById("make-ripple-modal");
+
+    const impactModal =
+        document.getElementById("impact-modal");
+
+    const rippleForm =
+        document.getElementById("ripple-form");
+
+    const impactCount =
+        document.getElementById("impact-count");
+
+    const impactQuote =
+        document.getElementById("impact-quote");
+
+    const impactDetails =
+        document.getElementById("impact-details");
+
+    const closeButtons =
+        document.querySelectorAll(
+            "[data-close-modal]"
+        );
+
+
+    if (
+        !rippleWell ||
+        !waterImage ||
+        !canvas
+    ) {
+
+        console.error(
+            "The Ripple Well: required elements were not found."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       SUPABASE
+    ===================================================== */
+
+    const SUPABASE_URL =
+        "https://vazgkkrrjgoowwywamot.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_gf0gD7JmbBlm6jR07qYkIQ_YZN301F-";
+
+
+    /* =====================================================
+       FULL-WELL CLICK RIPPLE CANVAS
+    ===================================================== */
+
+    const ctx =
+        canvas.getContext(
+            "2d",
+            {
+                alpha: true
+            }
+        );
+
+
+    if (!ctx) {
+
+        console.error(
+            "The Ripple Well: 2D canvas is unavailable."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * The current HTML places the canvas inside the
+     * water-image section.
+     *
+     * We move it into the full Ripple Well here so that
+     * click ripples continue working below the image,
+     * inside the dark/deep portion as well.
+     */
+
+    rippleWell.appendChild(
+        canvas
+    );
+
+
+    canvas.style.position =
+        "absolute";
+
+    canvas.style.inset =
+        "0";
+
+    canvas.style.width =
+        "100%";
+
+    canvas.style.height =
+        "100%";
+
+    canvas.style.zIndex =
+        "30";
+
+    canvas.style.pointerEvents =
+        "auto";
+
+    canvas.style.background =
+        "transparent";
+
+
+    let width = 1;
+    let height = 1;
+    let dpr = 1;
+
+
+    const clickRipples = [];
+
+
+    const CLICK_DURATION =
+        2200;
+
+
+    const MAX_CLICK_RIPPLES =
+        12;
+
+
+    function resizeCanvas() {
+
+        const rect =
+            rippleWell.getBoundingClientRect();
+
+
+        width =
+            Math.max(
+                1,
+                rect.width
+            );
+
+
+        height =
+            Math.max(
+                1,
+                rect.height
+            );
+
+
+        dpr =
+            Math.min(
+                window.devicePixelRatio || 1,
+                2
+            );
+
+
+        canvas.width =
+            Math.round(
+                width * dpr
+            );
+
+
+        canvas.height =
+            Math.round(
+                height * dpr
+            );
+
+
+        canvas.style.width =
+            `${width}px`;
+
+
+        canvas.style.height =
+            `${height}px`;
+
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
+
+    }
+
+
+    window.addEventListener(
+        "resize",
+        resizeCanvas,
+        {
+            passive: true
+        }
+    );
+
+
+    if (
+        typeof ResizeObserver !==
+        "undefined"
+    ) {
+
+        const observer =
+            new ResizeObserver(
+                resizeCanvas
+            );
+
+
+        observer.observe(
+            rippleWell
+        );
+
+    }
+
+
+    resizeCanvas();
+
+
+    /* =====================================================
+       CREATE NORMAL CLICK RIPPLE
+    ===================================================== */
+
+    function addClickRipple(
+        clientX,
+        clientY
+    ) {
+
+        const rect =
+            rippleWell.getBoundingClientRect();
+
+
+        if (
+            clientX < rect.left ||
+            clientX > rect.right ||
+            clientY < rect.top ||
+            clientY > rect.bottom
+        ) {
+
+            return;
+
         }
 
-        html {
-            margin: 0;
-            padding: 0;
-            background: #02070d;
-            scroll-behavior: smooth;
 
-            /* Visual height of the complete sky + mountain horizon. */
-            --sky-height: clamp(520px, 45vh, 700px);
+        clickRipples.push({
+
+            x:
+                clientX -
+                rect.left,
+
+            y:
+                clientY -
+                rect.top,
+
+            started:
+                performance.now(),
+
+            rotation:
+                (
+                    Math.random() -
+                    0.5
+                ) * 0.18,
+
+            phase:
+                Math.random() *
+                Math.PI *
+                2
+
+        });
+
+
+        if (
+            clickRipples.length >
+            MAX_CLICK_RIPPLES
+        ) {
+
+            clickRipples.shift();
+
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: #02070d;
-            color: #eefaff;
-            font-family: Georgia, "Times New Roman", serif;
-            overflow-x: hidden;
+    }
+
+
+    /* =====================================================
+       POINTER INTERACTION
+    ===================================================== */
+
+    canvas.addEventListener(
+        "pointerdown",
+        event => {
+
+            if (
+                event.pointerType ===
+                "mouse" &&
+                event.button !== 0
+            ) {
+
+                return;
+
+            }
+
+
+            addClickRipple(
+                event.clientX,
+                event.clientY
+            );
+
+        },
+        {
+            passive: true
         }
-
-        button,
-        input,
-        textarea {
-            font: inherit;
-        }
+    );
 
 
-        /* =====================================================
-           IMAGE-BASED TOP BANNER
+    /* =====================================================
+       DRAW NORMAL CLICK RIPPLE
+    ===================================================== */
 
-           The approved Top Banner.png contains everything above
-           the water line: stars, moon, Make the Ripple branding,
-           The Ripple Well title, and the layered blue mountains.
+    function drawClickRipple(
+        ripple,
+        now
+    ) {
 
-           The lower edge is deliberately cropped at the actual
-           water line so the live WebGL water begins immediately
-           beneath the artwork.
-        ===================================================== */
-
-        :root {
-
-            /*
-             * Top Banner.png is 1717 x 916.
-             * The water line begins at approximately y = 714.
-             * This ratio preserves the artwork's natural crop
-             * when the banner scales with the viewport width.
-             */
-            --banner-waterline-ratio: 0.4158;
-            --sky-height:
-                calc(100vw * var(--banner-waterline-ratio));
-        }
+        const progress =
+            Math.min(
+                1,
+                (
+                    now -
+                    ripple.started
+                ) /
+                CLICK_DURATION
+            );
 
 
-        #sky-banner {
+        if (
+            progress >= 1
+        ) {
 
-            position: fixed;
+            return false;
 
-            z-index: 1000;
-
-            top: 0;
-            left: 0;
-
-            width: 100%;
-            height: var(--sky-height);
-
-            overflow: hidden;
-
-            background: #020b15;
-
-            box-shadow:
-                0 14px 35px
-                rgba(0, 0, 0, 0.48);
-        }
-
-
-        #sky-banner-image {
-
-            position: absolute;
-
-            inset: 0;
-
-            width: 100%;
-            height: auto;
-
-            display: block;
-
-            pointer-events: none;
-
-            user-select: none;
-        }
-
-
-        /*
-         * The generated banner already contains its own stars,
-         * mountains, logo, moon and typography.  These legacy
-         * generated layers stay disabled so they cannot duplicate
-         * anything in the approved artwork.
-         */
-
-        #stars,
-        #mountain-layers,
-        #branding,
-        #recent-impact-ripples {
-            display: none !important;
         }
 
 
-        /* =====================================================
-           RIPPLE WELL
-        ===================================================== */
+        const fade =
+            Math.pow(
+                1 -
+                progress,
+                1.35
+            );
 
 
-        #ripple-well {
+        const radiusX =
+            Math.min(
+                54,
+                width *
+                0.075
+            );
 
-            position: relative;
 
-            min-height: 300vh;
+        const radiusY =
+            radiusX *
+            0.54;
 
-            /* The Well begins exactly where the fixed horizon ends. */
-            margin-top: var(--sky-height);
 
-            background:
-                linear-gradient(
-                    to bottom,
-                    #061721 0%,
-                    #04131d 18%,
-                    #031019 45%,
-                    #020c14 72%,
-                    #01080e 100%
+        ctx.save();
+
+
+        ctx.translate(
+            ripple.x,
+            ripple.y
+        );
+
+
+        ctx.rotate(
+            ripple.rotation
+        );
+
+
+        const rings = [
+
+            {
+                scale: 0.46,
+                alpha: 0.54,
+                width: 1.0,
+                delay: 0.00
+            },
+
+            {
+                scale: 0.72,
+                alpha: 0.36,
+                width: 0.9,
+                delay: 0.06
+            },
+
+            {
+                scale: 1.00,
+                alpha: 0.22,
+                width: 0.8,
+                delay: 0.12
+            }
+
+        ];
+
+
+        for (
+            const ring of rings
+        ) {
+
+            const p =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        (
+                            progress -
+                            ring.delay
+                        ) /
+                        (
+                            1 -
+                            ring.delay
+                        )
+                    )
                 );
-        }
 
 
-        /* =====================================================
-           WATER WINDOW
-        ===================================================== */
-
-        #water-window {
-
-            position: sticky;
-
-            z-index: 2;
-
-            top: 0;
-
-            width: 100%;
-            height: 100vh;
-
-            overflow: hidden;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    #071d29 0%,
-                    #041721 38%,
-                    #020e16 100%
+            const rx =
+                radiusX *
+                ring.scale *
+                (
+                    0.16 +
+                    p *
+                    0.84
                 );
-        }
 
 
-        /* =====================================================
-           LAYER 1 — SURFACE
-        ===================================================== */
+            const ry =
+                radiusY *
+                ring.scale *
+                (
+                    0.16 +
+                    p *
+                    0.84
+                );
 
-        #surface-layer {
 
-            position: absolute;
+            const wobble =
+                Math.sin(
+                    ripple.phase +
+                    p *
+                    4.2
+                ) *
+                0.025;
 
-            z-index: 1;
 
-            inset: 0;
+            ctx.beginPath();
 
-            overflow: hidden;
 
-            pointer-events: none;
-
-            background:
-                radial-gradient(
-                    ellipse at 50% -8%,
-                    rgba(174, 231, 247, 0.17),
-                    transparent 36%
+            ctx.ellipse(
+                0,
+                0,
+                rx,
+                ry *
+                (
+                    1 +
+                    wobble
                 ),
+                0,
+                0,
+                Math.PI *
+                2
+            );
 
-                linear-gradient(
-                    to bottom,
-                    rgba(39, 112, 137, 0.24),
-                    rgba(3, 24, 34, 0.08) 42%,
-                    rgba(1, 11, 17, 0.46) 100%
+
+            ctx.strokeStyle =
+                `rgba(177, 231, 246, ${
+                    ring.alpha *
+                    fade
+                })`;
+
+
+            ctx.lineWidth =
+                ring.width;
+
+
+            ctx.stroke();
+
+        }
+
+
+        const centerFade =
+            Math.max(
+                0,
+                1 -
+                progress *
+                5
+            );
+
+
+        if (
+            centerFade >
+            0
+        ) {
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+                0,
+                0,
+                2.2 +
+                progress *
+                2.2,
+                0,
+                Math.PI *
+                2
+            );
+
+
+            ctx.fillStyle =
+                `rgba(202, 241, 250, ${
+                    0.32 *
+                    centerFade
+                })`;
+
+
+            ctx.fill();
+
+        }
+
+
+        ctx.restore();
+
+
+        return true;
+
+    }
+
+
+    /* =====================================================
+       NORMAL CLICK RIPPLE ANIMATION
+    ===================================================== */
+
+    function renderClickRipples() {
+
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        const now =
+            performance.now();
+
+
+        for (
+            let i =
+                clickRipples.length - 1;
+
+            i >= 0;
+
+            i--
+        ) {
+
+            if (
+                !drawClickRipple(
+                    clickRipples[i],
+                    now
+                )
+            ) {
+
+                clickRipples.splice(
+                    i,
+                    1
                 );
-        }
 
-
-        .surface-wave {
-
-            position: absolute;
-
-            left: -15%;
-
-            width: 130%;
-
-            height: 95px;
-
-            border-top:
-                1px solid
-                rgba(144, 219, 237, 0.075);
-
-            border-radius: 50%;
-
-            filter: blur(1.2px);
-
-            opacity: 0.75;
-
-            animation:
-                surfaceDrift
-                var(--wave-speed)
-                ease-in-out
-                infinite
-                alternate;
-        }
-
-
-        .surface-wave:nth-child(1) {
-            top: 8%;
-            --wave-speed: 11s;
-        }
-
-        .surface-wave:nth-child(2) {
-            top: 16%;
-            --wave-speed: 14s;
-            opacity: 0.45;
-        }
-
-        .surface-wave:nth-child(3) {
-            top: 25%;
-            --wave-speed: 17s;
-            opacity: 0.30;
-        }
-
-        .surface-wave:nth-child(4) {
-            top: 34%;
-            --wave-speed: 13s;
-            opacity: 0.22;
-        }
-
-
-        @keyframes surfaceDrift {
-
-            from {
-                transform:
-                    translateX(-2%)
-                    scaleX(0.99);
             }
 
-            to {
-                transform:
-                    translateX(2%)
-                    scaleX(1.015);
+        }
+
+
+        requestAnimationFrame(
+            renderClickRipples
+        );
+
+    }
+
+
+    renderClickRipples();
+
+
+    /* =====================================================
+       MODALS
+    ===================================================== */
+
+    function openModal(
+        modal
+    ) {
+
+        if (!modal) {
+            return;
+        }
+
+
+        modal.classList.add(
+            "open"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+
+    }
+
+
+    function closeModal(
+        modal
+    ) {
+
+        if (!modal) {
+            return;
+        }
+
+
+        modal.classList.remove(
+            "open"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        if (
+            !document.querySelector(
+                ".modal-overlay.open"
+            )
+        ) {
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       MAKE A RIPPLE BUTTON
+    ===================================================== */
+
+    if (
+        makeRippleButton
+    ) {
+
+        makeRippleButton.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                openModal(
+                    makeRippleModal
+                );
+
             }
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE BUTTONS
+    ===================================================== */
+
+    closeButtons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    closeModal(
+                        button.closest(
+                            ".modal-overlay"
+                        )
+                    );
+
+                }
+            );
+
         }
+    );
 
 
-        /* =====================================================
-           WATER CANVAS
-        ===================================================== */
+    /* =====================================================
+       CLICK OUTSIDE MODAL
+    ===================================================== */
 
-        #water-canvas {
+    document
+        .querySelectorAll(
+            ".modal-overlay"
+        )
+        .forEach(
+            overlay => {
 
-            position: absolute;
+                overlay.addEventListener(
+                    "click",
+                    event => {
 
-            z-index: 3;
+                        if (
+                            event.target ===
+                            overlay
+                        ) {
 
-            inset: 0;
+                            closeModal(
+                                overlay
+                            );
 
-            width: 100%;
-            height: 100%;
+                        }
 
-            display: block;
-
-            cursor: crosshair;
-        }
-
-
-        /* =====================================================
-           LAYER 2 — REFLECTION
-        ===================================================== */
-
-        #reflection-layer {
-
-            position: absolute;
-
-            z-index: 6;
-
-            top: 0;
-            left: 0;
-
-            width: 100%;
-
-            height: 285px;
-
-            overflow: hidden;
-
-            pointer-events: none;
-
-            opacity: 0.74;
-
-            mask-image:
-                linear-gradient(
-                    to bottom,
-                    rgba(0,0,0,1) 0%,
-                    rgba(0,0,0,0.92) 35%,
-                    rgba(0,0,0,0.40) 75%,
-                    transparent 100%
+                    }
                 );
 
-            -webkit-mask-image:
-                linear-gradient(
-                    to bottom,
-                    rgba(0,0,0,1) 0%,
-                    rgba(0,0,0,0.92) 35%,
-                    rgba(0,0,0,0.40) 75%,
-                    transparent 100%
-                );
-        }
+            }
+        );
 
 
-        #reflection-content {
+    /* =====================================================
+       ESCAPE KEY
+    ===================================================== */
 
-            position: absolute;
+    document.addEventListener(
+        "keydown",
+        event => {
 
-            top: -8px;
-            left: 50%;
+            if (
+                event.key !==
+                "Escape"
+            ) {
 
-            width: min(720px, 96vw);
+                return;
 
-            height: 390px;
-
-            transform:
-                translateX(-50%)
-                scaleY(-0.58);
-
-            transform-origin: top center;
-
-            opacity: 0.68;
-
-            filter:
-                blur(1.1px);
-
-            text-align: center;
-        }
-
-
-        #reflection-logo-wrap {
-
-            position: absolute;
-
-            top: 18px;
-
-            left: 50%;
-
-            width: 270px;
-            height: 150px;
-
-            transform:
-                translateX(-50%);
-
-            display: flex;
-
-            justify-content: center;
-            align-items: center;
-        }
-
-
-        #reflection-logo-glow {
-
-            position: absolute;
-
-            width: 250px;
-            height: 135px;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    ellipse,
-                    rgba(177, 231, 246, 0.26),
-                    rgba(74, 168, 197, 0.10) 38%,
-                    transparent 72%
-                );
-
-            filter: blur(13px);
-        }
-
-
-        #reflection-logo {
-
-            position: relative;
-
-            width: 240px;
-
-            height: auto;
-
-            opacity: 0.58;
-
-            filter:
-                blur(0.8px)
-                drop-shadow(
-                    0 0 9px
-                    rgba(126, 213, 236, 0.34)
-                );
-        }
-
-
-        #reflection-presents {
-
-            position: absolute;
-
-            top: 250px;
-
-            left: 0;
-
-            width: 100%;
-
-            color:
-                rgba(183, 229, 242, 0.42);
-
-            font-size: 18px;
-
-            letter-spacing: 0.24em;
-
-            text-transform: uppercase;
-        }
-
-
-        #reflection-title {
-
-            position: absolute;
-
-            top: 278px;
-
-            left: 0;
-
-            width: 100%;
-
-            color:
-                rgba(189, 233, 246, 0.48);
-
-            font-size:
-                clamp(38px, 5vw, 62px);
-
-            letter-spacing: 0.04em;
-
-            font-weight: 400;
-        }
-
-
-        #reflection-tagline {
-
-            position: absolute;
-
-            top: 352px;
-
-            left: 0;
-
-            width: 100%;
-
-            color:
-                rgba(170, 221, 235, 0.34);
-
-            font-size:
-                clamp(14px, 2vw, 19px);
-
-            letter-spacing: 0.20em;
-        }
-
-
-        #reflection-ripples {
-
-            position: absolute;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            background:
-                repeating-linear-gradient(
-                    to bottom,
-                    transparent 0px,
-                    transparent 12px,
-                    rgba(180, 232, 246, 0.035) 13px,
-                    transparent 15px,
-                    transparent 25px
-                );
-
-            mix-blend-mode: screen;
-
-            animation:
-                reflectionWaver
-                9s
-                ease-in-out
-                infinite
-                alternate;
-        }
-
-
-        @keyframes reflectionWaver {
-
-            from {
-                transform:
-                    translateX(-3px)
-                    skewX(-0.3deg);
             }
 
-            to {
-                transform:
-                    translateX(4px)
-                    skewX(0.3deg);
-            }
-        }
 
-
-        #reflection-distortion {
-
-            position: absolute;
-
-            z-index: 8;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            opacity: 0;
-
-            background:
-                radial-gradient(
-                    ellipse at var(--ripple-x) var(--ripple-y),
-                    rgba(196, 239, 249, 0.20),
-                    rgba(94, 192, 218, 0.07) 12%,
-                    transparent 32%
+            document
+                .querySelectorAll(
+                    ".modal-overlay.open"
+                )
+                .forEach(
+                    closeModal
                 );
 
-            transition:
-                opacity 0.25s ease;
+        }
+    );
+
+
+    /* =====================================================
+       IMPACT RIPPLE STYLES
+    ===================================================== */
+
+    const impactStyle =
+        document.createElement(
+            "style"
+        );
+
+
+    impactStyle.id =
+        "impact-ripple-runtime-styles";
+
+
+    impactStyle.textContent = `
+
+        #dynamic-impact-ripples {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            z-index:
+                40;
+
+            pointer-events:
+                none;
+
+            overflow:
+                hidden;
+
         }
 
 
-        #reflection-distortion.active {
-            opacity: 1;
-        }
+        .runtime-impact-ripple {
 
-
-        /* =====================================================
-           LAYER 3 — DEPTH
-        ===================================================== */
-
-        #depth-layer {
-
-            position: absolute;
-
-            z-index: 12;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            overflow: hidden;
-        }
-
-
-        #depth-haze {
-
-            position: absolute;
-
-            inset: 0;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    transparent 0%,
-                    rgba(0, 7, 12, 0.04) 22%,
-                    rgba(0, 7, 12, 0.22) 62%,
-                    rgba(0, 5, 9, 0.54) 100%
-                );
-
-            pointer-events: none;
-        }
-
-
-        /* =====================================================
-           IMPACT RIPPLE OBJECTS
-        ===================================================== */
-
-        #impact-ripples-layer {
-
-            position: absolute;
-
-            z-index: 15;
-
-            inset: 0;
-
-            pointer-events: none;
-        }
-
-
-        /* =====================================================
-           IMPACT RIPPLE
-           BASE
-
-           The actual visual is generated from irregular
-           elliptical rings. It is deliberately NOT a
-           perfect circle.
-        ===================================================== */
-
-        .impact-ripple {
-
-            position: absolute;
-
-            width: 184px;
-            height: 102px;
-
-            pointer-events: auto;
-
-            cursor: pointer;
+            position:
+                absolute;
 
             transform:
                 translate(-50%, -50%)
-                rotate(var(--rotation))
-                scale(var(--scale, 1));
+                rotate(var(--rotation));
 
-            border-radius:
-                58% 42%
-                67% 33%
-                /
-                48% 62%
-                38% 52%;
+            width:
+                var(--width);
 
-            background: transparent;
+            height:
+                var(--height);
 
-            border: none;
-
-            opacity: 1;
-
-            filter: none;
-
-            animation:
-                organicFloat
-                var(--float-time)
-                ease-in-out
-                infinite
-                alternate;
-
-            transition:
-                transform 0.55s ease,
-                opacity 0.45s ease,
-                filter 0.45s ease;
-        }
-
-
-        /* =====================================================
-           PRIMARY ORGANIC RING
-        ===================================================== */
-
-        .impact-ripple::before {
-
-            content: "";
-
-            position: absolute;
-
-            left: 50%;
-            top: 50%;
-
-            width: 58%;
-            height: 42%;
-
-            transform:
-                translate(-50%, -50%)
-                rotate(var(--ripple-rotation, 0deg))
-                scale(0.42);
-
-            transform-origin: center;
+            padding:
+                0;
 
             border:
-                1px solid
-                rgba(151, 226, 243, 0.34);
+                0;
+
+            background:
+                transparent;
+
+            appearance:
+                none;
+
+            pointer-events:
+                auto;
+
+            cursor:
+                pointer;
+
+            opacity:
+                var(--base-opacity);
+
+            filter:
+                drop-shadow(
+                    0 0 3px
+                    rgba(
+                        108,
+                        211,
+                        236,
+                        0.08
+                    )
+                );
+
+            transition:
+                filter .25s ease,
+                opacity .25s ease;
+
+        }
+
+
+        .runtime-impact-ripple:hover {
+
+            opacity:
+                1;
+
+            filter:
+                drop-shadow(
+                    0 0 10px
+                    rgba(
+                        108,
+                        221,
+                        244,
+                        0.34
+                    )
+                );
+
+        }
+
+
+        .runtime-impact-ripple span {
+
+            position:
+                absolute;
+
+            left:
+                50%;
+
+            top:
+                50%;
+
+            pointer-events:
+                none;
+
+        }
+
+
+        .impact-glow {
+
+            width:
+                25%;
+
+            height:
+                40%;
+
+            transform:
+                translate(-50%, -50%);
 
             border-radius:
                 50%;
 
-            background: transparent;
+            background:
+                radial-gradient(
+                    ellipse,
+                    rgba(
+                        210,
+                        248,
+                        255,
+                        .96
+                    ) 0%,
 
-            box-shadow:
-                0 0 5px
-                rgba(101, 203, 229, 0.11);
+                    rgba(
+                        101,
+                        211,
+                        239,
+                        .58
+                    ) 25%,
 
-            opacity: 0;
+                    rgba(
+                        45,
+                        157,
+                        196,
+                        .20
+                    ) 50%,
 
-            pointer-events: none;
+                    transparent 76%
+                );
 
-            animation:
-                impactRippleWave
-                var(--ripple-time, 7s)
-                ease-out
-                infinite;
+            filter:
+                blur(4px);
+
+            opacity:
+                0;
+
         }
 
 
-        /* =====================================================
-           SECONDARY DISTORTION RING
-        ===================================================== */
+        .impact-core {
 
-        .impact-ripple::after {
+            width:
+                7%;
 
-            content: "";
+            height:
+                18%;
 
-            position: absolute;
+            transform:
+                translate(-50%, -50%);
 
-            left: 50%;
-            top: 50%;
+            border-radius:
+                50%;
 
-            width: 76%;
-            height: 52%;
+            background:
+                rgba(
+                    220,
+                    250,
+                    255,
+                    .95
+                );
+
+            box-shadow:
+
+                0 0 4px
+                rgba(
+                    220,
+                    250,
+                    255,
+                    .95
+                ),
+
+                0 0 12px
+                rgba(
+                    86,
+                    211,
+                    239,
+                    .60
+                ),
+
+                0 0 24px
+                rgba(
+                    62,
+                    186,
+                    219,
+                    .24
+                );
+
+            opacity:
+                .14;
+
+        }
+
+
+        .impact-ring {
+
+            width:
+                28%;
+
+            height:
+                23%;
 
             transform:
                 translate(-50%, -50%)
-                rotate(var(--ripple-secondary-rotation, 0deg))
-                scale(0.40);
-
-            border-radius:
-                48%
-                52%
-                55%
-                45%
-                /
-                53%
-                47%
-                51%
-                49%;
+                scale(.10);
 
             border:
                 1px solid
-                rgba(120, 212, 235, 0.11);
+                rgba(
+                    168,
+                    234,
+                    248,
+                    .74
+                );
 
-            background: transparent;
+            border-radius:
+                50%;
 
-            filter:
-                blur(1.4px);
+            box-shadow:
+                0 0 5px
+                rgba(
+                    92,
+                    206,
+                    233,
+                    .22
+                );
 
-            opacity: 0;
+            opacity:
+                0;
 
-            pointer-events: none;
-
-            animation:
-                impactRippleDistortion
-                var(--ripple-time, 7s)
-                ease-out
-                infinite;
         }
 
 
-        /* =====================================================
-           PRIMARY RING ANIMATION
-        ===================================================== */
+        .ring-two {
 
-        @keyframes impactRippleWave {
+            width:
+                45%;
+
+            height:
+                36%;
+
+            border-color:
+                rgba(
+                    128,
+                    222,
+                    243,
+                    .48
+                );
+
+            filter:
+                blur(.25px);
+
+        }
+
+
+        .ring-three {
+
+            width:
+                66%;
+
+            height:
+                51%;
+
+            border-color:
+                rgba(
+                    107,
+                    211,
+                    237,
+                    .29
+                );
+
+            filter:
+                blur(.65px);
+
+        }
+
+
+        .runtime-impact-ripple.pulsing
+        .impact-glow {
+
+            animation:
+                impactGlowPulse
+                var(--pulse-duration)
+                ease-out
+                forwards;
+
+        }
+
+
+        .runtime-impact-ripple.pulsing
+        .impact-core {
+
+            animation:
+                impactCorePulse
+                var(--pulse-duration)
+                ease-out
+                forwards;
+
+        }
+
+
+        .runtime-impact-ripple.pulsing
+        .ring-one {
+
+            animation:
+                impactRingPulse
+                var(--pulse-duration)
+                ease-out
+                forwards;
+
+        }
+
+
+        .runtime-impact-ripple.pulsing
+        .ring-two {
+
+            animation:
+                impactRingPulseTwo
+                var(--pulse-duration)
+                ease-out
+                forwards;
+
+        }
+
+
+        .runtime-impact-ripple.pulsing
+        .ring-three {
+
+            animation:
+                impactRingPulseThree
+                var(--pulse-duration)
+                ease-out
+                forwards;
+
+        }
+
+
+        @keyframes impactGlowPulse {
 
             0% {
 
+                opacity:
+                    0;
+
                 transform:
-                    translate(-50%, -50%)
-                    rotate(var(--ripple-rotation, 0deg))
-                    scale(0.42);
+                    translate(-50%,-50%)
+                    scale(.55);
 
-                opacity: 0;
             }
 
 
-            8% {
+            13% {
 
                 opacity:
-                    var(--ripple-opacity, 0.34);
+                    .92;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1);
+
             }
 
 
-            45% {
+            32% {
 
                 opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.72
-                    );
+                    .56;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.16);
+
+            }
+
+
+            65% {
+
+                opacity:
+                    .18;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.35);
+
+            }
+
+
+            100% {
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.55);
+
+            }
+
+        }
+
+
+        @keyframes impactCorePulse {
+
+            0% {
+
+                opacity:
+                    .10;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.70);
+
+            }
+
+
+            10% {
+
+                opacity:
+                    1;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.15);
+
+            }
+
+
+            26% {
+
+                opacity:
+                    .55;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.92);
+
+            }
+
+
+            50% {
+
+                opacity:
+                    .20;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.70);
+
+            }
+
+
+            100% {
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.45);
+
+            }
+
+        }
+
+
+        @keyframes impactRingPulse {
+
+            0% {
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.12);
+
+            }
+
+
+            10% {
+
+                opacity:
+                    .92;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.26);
+
+            }
+
+
+            42% {
+
+                opacity:
+                    .58;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.72);
+
+            }
+
+
+            72% {
+
+                opacity:
+                    .20;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.02);
+
+            }
+
+
+            100% {
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.18);
+
+            }
+
+        }
+
+
+        @keyframes impactRingPulseTwo {
+
+            0% {
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.08);
+
+            }
+
+
+            17% {
+
+                opacity:
+                    .44;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.24);
+
+            }
+
+
+            48% {
+
+                opacity:
+                    .30;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.68);
+
             }
 
 
             78% {
 
                 opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.26
-                    );
+                    .11;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.03);
+
             }
 
 
             100% {
 
-                transform:
-                    translate(-50%, -50%)
-                    rotate(
-                        calc(
-                            var(--ripple-rotation, 0deg) + 5deg
-                        )
-                    )
-                    scale(
-                        var(--ripple-scale, 1)
-                    );
+                opacity:
+                    0;
 
-                opacity: 0;
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.16);
+
             }
+
         }
 
 
-        /* =====================================================
-           SECONDARY RING ANIMATION
-        ===================================================== */
-
-        @keyframes impactRippleDistortion {
+        @keyframes impactRingPulseThree {
 
             0% {
 
-                transform:
-                    translate(-50%, -50%)
-                    rotate(
-                        var(
-                            --ripple-secondary-rotation,
-                            0deg
-                        )
-                    )
-                    scale(0.40);
+                opacity:
+                    0;
 
-                opacity: 0;
+                transform:
+                    translate(-50%,-50%)
+                    scale(.06);
+
             }
 
 
-            15% {
+            24% {
 
                 opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.24
-                    );
+                    .24;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(.22);
+
             }
 
 
             55% {
 
                 opacity:
-                    calc(
-                        var(--ripple-opacity, 0.34) * 0.13
-                    );
-            }
-
-
-            100% {
+                    .18;
 
                 transform:
-                    translate(-50%, -50%)
-                    rotate(
-                        calc(
-                            var(
-                                --ripple-secondary-rotation,
-                                0deg
-                            ) - 4deg
-                        )
-                    )
-                    scale(
-                        calc(
-                            var(--ripple-scale, 1) * 1.08
-                        )
+                    translate(-50%,-50%)
+                    scale(.70);
+
+            }
+
+
+            82% {
+
+                opacity:
+                    .07;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.02);
+
+            }
+
+
+            100% {
+
+                opacity:
+                    0;
+
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.14);
+
+            }
+
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        impactStyle
+    );
+
+
+    /* =====================================================
+       IMPACT RIPPLE DATA / PLACEMENT
+    ===================================================== */
+
+    const impactRipples = [];
+
+
+    let impactLayer =
+        null;
+
+
+    function seededNumber(
+        value
+    ) {
+
+        const text =
+            String(
+                value ||
+                "impact"
+            );
+
+
+        let hash =
+            2166136261;
+
+
+        for (
+            let i = 0;
+            i < text.length;
+            i++
+        ) {
+
+            hash ^=
+                text.charCodeAt(
+                    i
+                );
+
+
+            hash +=
+                (
+                    hash << 1
+                ) +
+                (
+                    hash << 4
+                ) +
+                (
+                    hash << 7
+                ) +
+                (
+                    hash << 8
+                ) +
+                (
+                    hash << 24
+                );
+
+        }
+
+
+        return (
+            (hash >>> 0) %
+            100000
+        ) / 100000;
+
+    }
+
+
+    function getSize(
+        size
+    ) {
+
+        switch (
+            String(
+                size ||
+                "medium"
+            )
+            .trim()
+            .toLowerCase()
+        ) {
+
+            case "small":
+
+                return {
+
+                    width:
+                        88,
+
+                    height:
+                        48,
+
+                    opacity:
+                        .68
+
+                };
+
+
+            case "large":
+
+                return {
+
+                    width:
+                        150,
+
+                    height:
+                        82,
+
+                    opacity:
+                        .78
+
+                };
+
+
+            case "extra-large":
+
+            case "extra large":
+
+            case "x-large":
+
+            case "xlarge":
+
+                return {
+
+                    width:
+                        190,
+
+                    height:
+                        104,
+
+                    opacity:
+                        .86
+
+                };
+
+
+            default:
+
+                return {
+
+                    width:
+                        120,
+
+                    height:
+                        66,
+
+                    opacity:
+                        .74
+
+                };
+
+        }
+
+    }
+
+
+    function getImpactPosition(
+        data,
+        index
+    ) {
+
+        const waterRect =
+            waterImage.getBoundingClientRect();
+
+
+        const wellRect =
+            rippleWell.getBoundingClientRect();
+
+
+        const xSeed =
+            seededNumber(
+                `${data.id}-${index}-x`
+            );
+
+
+        const ySeed =
+            seededNumber(
+                `${data.id}-${index}-y`
+            );
+
+
+        return {
+
+            x:
+
+                waterRect.left -
+                wellRect.left +
+                waterRect.width *
+                (
+                    .08 +
+                    xSeed *
+                    .84
+                ),
+
+
+            y:
+
+                waterRect.top -
+                wellRect.top +
+                waterRect.height *
+                (
+                    .16 +
+                    ySeed *
+                    .70
+                )
+
+        };
+
+    }
+
+
+    function repositionImpactRipples() {
+
+        impactRipples.forEach(
+            (
+                item,
+                index
+            ) => {
+
+                const pos =
+                    getImpactPosition(
+                        item.data,
+                        index
                     );
 
-                opacity: 0;
+
+                item.element.style.left =
+                    `${pos.x}px`;
+
+
+                item.element.style.top =
+                    `${pos.y}px`;
+
             }
+        );
+
+    }
+
+
+    window.addEventListener(
+        "resize",
+        repositionImpactRipples,
+        {
+            passive: true
+        }
+    );
+
+
+    /* =====================================================
+       IMPACT RIPPLE PULSE SCHEDULING
+    ===================================================== */
+
+    function pulseImpact(
+        item
+    ) {
+
+        if (
+            !item.element
+        ) {
+
+            return;
+
         }
 
 
-        /* =====================================================
-           ORGANIC FLOAT
-        ===================================================== */
+        item.element.classList.remove(
+            "pulsing"
+        );
 
-        @keyframes organicFloat {
 
-            0% {
-                margin-top: -7px;
-                margin-left: -5px;
-            }
+        /*
+         * Force the browser to restart the animation.
+         */
 
-            50% {
-                margin-top: 3px;
-                margin-left: 6px;
-            }
+        void item.element.offsetWidth;
 
-            100% {
-                margin-top: 9px;
-                margin-left: -3px;
-            }
+
+        item.element.style.setProperty(
+            "--pulse-duration",
+            `${item.duration}ms`
+        );
+
+
+        item.element.classList.add(
+            "pulsing"
+        );
+
+
+        clearTimeout(
+            item.activeTimer
+        );
+
+
+        item.activeTimer =
+            setTimeout(
+                () => {
+
+                    item.element.classList.remove(
+                        "pulsing"
+                    );
+
+                },
+                item.duration +
+                100
+            );
+
+
+        scheduleImpact(
+            item
+        );
+
+    }
+
+
+    function scheduleImpact(
+        item,
+        initial = false
+    ) {
+
+        clearTimeout(
+            item.timer
+        );
+
+
+        /*
+         * Initial appearances are staggered.
+         *
+         * After each pulse, the next pulse occurs somewhere
+         * between 6 and 13 seconds later.
+         */
+
+        const delay =
+            initial
+
+                ? item.initialDelay
+
+                : 6000 +
+                  Math.random() *
+                  7000;
+
+
+        item.timer =
+            setTimeout(
+                () => {
+
+                    pulseImpact(
+                        item
+                    );
+
+                },
+                delay
+            );
+
+    }
+
+
+    /* =====================================================
+       IMPACT RIPPLE QUOTE MODAL
+    ===================================================== */
+
+    function openImpactMessage(
+        data
+    ) {
+
+        if (
+            !impactModal
+        ) {
+
+            return;
+
         }
 
 
-        /* =====================================================
-           HOVER
+        if (
+            impactQuote
+        ) {
 
-           Hover should reveal the ripple without turning it
-           into a conventional button.
-        ===================================================== */
+            impactQuote.textContent =
+                data.message ||
+                "A ripple of hope from The Well.";
 
-        .impact-ripple:hover {
+        }
 
-            filter:
-                drop-shadow(
-                    0 0 9px
-                    rgba(107, 216, 242, 0.30)
+
+        if (
+            impactDetails
+        ) {
+
+            const name =
+                data.name &&
+                String(
+                    data.name
+                ).trim()
+
+                    ? String(
+                        data.name
+                    ).trim()
+
+                    : "Anonymous";
+
+
+            const location =
+                [
+                    data.region,
+                    data.country
+                ]
+
+                .filter(
+                    value =>
+                        value &&
+                        String(
+                            value
+                        ).trim()
+                )
+
+                .map(
+                    value =>
+                        String(
+                            value
+                        ).trim()
+                )
+
+                .join(
+                    ", "
                 );
 
-            opacity: 1;
+
+            impactDetails.textContent =
+                location
+
+                    ? `— ${name}\n${location}`
+
+                    : `— ${name}`;
+
+
+            impactDetails.style.whiteSpace =
+                "pre-line";
+
         }
 
 
-        .impact-ripple:hover::before {
+        openModal(
+            impactModal
+        );
 
-            border-color:
-                rgba(170, 235, 249, 0.52);
+    }
 
-            box-shadow:
-                0 0 9px
-                rgba(110, 215, 240, 0.24);
+
+    /* =====================================================
+       CREATE ONE IMPACT RIPPLE
+    ===================================================== */
+
+    function createImpactRipple(
+        data,
+        index
+    ) {
+
+        if (
+            !impactLayer
+        ) {
+
+            return;
+
         }
 
 
-        .impact-ripple:hover::after {
-
-            border-color:
-                rgba(145, 224, 241, 0.20);
-        }
-
-
-        /* =====================================================
-           IMPACT SIZE CLASSES
-
-           The database still controls which class is used.
-           The sizes are intentionally clearly different.
-        ===================================================== */
-
-        .impact-size-small {
-            width: 126px;
-            height: 70px;
-        }
-
-        .impact-size-medium {
-            width: 105px;
-            height: 58px;
-        }
-
-        .impact-size-large {
-            width: 240px;
-            height: 133px;
-        }
-
-        .impact-size-extra-large {
-            width: 303px;
-            height: 168px;
-        }
+        const size =
+            getSize(
+                data.size
+            );
 
 
-        /* =====================================================
-           DEPTH MARKERS
-
-           Depth changes visibility more subtly than size.
-           The physical size comes from the approved size.
-        ===================================================== */
-
-        .depth-far {
-            opacity: 0.56;
-        }
+        const pos =
+            getImpactPosition(
+                data,
+                index
+            );
 
 
-        .depth-mid {
-            opacity: 0.76;
-        }
+        const element =
+            document.createElement(
+                "button"
+            );
 
 
-        .depth-near {
-            opacity: 0.94;
-        }
+        element.type =
+            "button";
 
 
-        /* =====================================================
-           DEPTH MESSAGE
-        ===================================================== */
-
-        #depth-message {
-
-            position: absolute;
-
-            z-index: 20;
-
-            left: 50%;
-            bottom: 45px;
-
-            transform:
-                translateX(-50%);
-
-            width:
-                min(600px, 82%);
-
-            text-align: center;
-
-            color:
-                rgba(198, 234, 245, 0.42);
-
-            font-size: 14px;
-
-            letter-spacing: 0.15em;
-
-            text-transform: uppercase;
-
-            pointer-events: none;
-
-            text-shadow:
-                0 0 9px
-                rgba(80, 180, 210, 0.22);
-        }
+        element.className =
+            "runtime-impact-ripple";
 
 
-        /* =====================================================
-           CLICK RIPPLE VISUALS
-           25% OF PREVIOUS VISUAL FOOTPRINT
-        ===================================================== */
-
-        .click-ripple {
-
-            position: absolute;
-
-            z-index: 25;
-
-            width: 20px;
-            height: 20px;
-
-            margin-left: -10px;
-            margin-top: -10px;
-
-            border:
-                1px solid
-                rgba(185, 237, 249, 0.72);
-
-            border-radius: 50%;
-
-            pointer-events: none;
-
-            animation:
-                clickRipple
-                2.2s
-                ease-out
-                forwards;
-        }
+        element.setAttribute(
+            "aria-label",
+            "Open Impact Ripple message"
+        );
 
 
-        .click-ripple::after {
-
-            content: "";
-
-            position: absolute;
-
-            inset: 5px;
-
-            border:
-                1px solid
-                rgba(161, 226, 241, 0.42);
-
-            border-radius: 50%;
-        }
+        element.style.left =
+            `${pos.x}px`;
 
 
-        @keyframes clickRipple {
+        element.style.top =
+            `${pos.y}px`;
 
-            0% {
 
-                width: 20px;
-                height: 20px;
+        element.style.setProperty(
+            "--width",
+            `${size.width}px`
+        );
 
-                margin-left: -10px;
-                margin-top: -10px;
 
-                opacity: 0.82;
+        element.style.setProperty(
+            "--height",
+            `${size.height}px`
+        );
+
+
+        element.style.setProperty(
+            "--base-opacity",
+            size.opacity
+        );
+
+
+        element.style.setProperty(
+            "--rotation",
+            `${
+
+                -14 +
+
+                seededNumber(
+                    `${data.id}-rotation`
+                ) *
+                28
+
+            }deg`
+        );
+
+
+        const glow =
+            document.createElement(
+                "span"
+            );
+
+
+        glow.className =
+            "impact-glow";
+
+
+        const core =
+            document.createElement(
+                "span"
+            );
+
+
+        core.className =
+            "impact-core";
+
+
+        const ringOne =
+            document.createElement(
+                "span"
+            );
+
+
+        ringOne.className =
+            "impact-ring ring-one";
+
+
+        const ringTwo =
+            document.createElement(
+                "span"
+            );
+
+
+        ringTwo.className =
+            "impact-ring ring-two";
+
+
+        const ringThree =
+            document.createElement(
+                "span"
+            );
+
+
+        ringThree.className =
+            "impact-ring ring-three";
+
+
+        element.append(
+            glow,
+            core,
+            ringOne,
+            ringTwo,
+            ringThree
+        );
+
+
+        impactLayer.appendChild(
+            element
+        );
+
+
+        const item = {
+
+            data,
+
+            element,
+
+            duration:
+
+                2300 +
+
+                Math.round(
+                    seededNumber(
+                        `${data.id}-duration`
+                    ) *
+                    900
+                ),
+
+
+            initialDelay:
+
+                1200 +
+
+                Math.round(
+                    seededNumber(
+                        `${data.id}-delay`
+                    ) *
+                    6500
+                ),
+
+
+            timer:
+                null,
+
+
+            activeTimer:
+                null
+
+        };
+
+
+        /*
+         * Stop the click from reaching the full-Well canvas.
+         */
+
+        element.addEventListener(
+            "pointerdown",
+            event => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
             }
-
-            100% {
-
-                width: 189px;
-                height: 105px;
-
-                margin-left: -54px;
-                margin-top: -30px;
-
-                opacity: 0;
-            }
-        }
+        );
 
 
-        /* =====================================================
-           MODALS
-        ===================================================== */
+        element.addEventListener(
+            "click",
+            event => {
 
-        .modal-overlay {
+                event.preventDefault();
 
-            position: fixed;
-
-            z-index: 2000;
-
-            inset: 0;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-
-            background:
-                rgba(0, 5, 9, 0.78);
-
-            backdrop-filter:
-                blur(8px);
-
-            opacity: 0;
-
-            visibility: hidden;
-
-            transition:
-                opacity 0.3s ease,
-                visibility 0.3s ease;
-        }
+                event.stopPropagation();
 
 
-        .modal-overlay.open {
-
-            opacity: 1;
-
-            visibility: visible;
-        }
-
-
-        .modal {
-
-            position: relative;
-
-            width:
-                min(570px, 100%);
-
-            max-height: 90vh;
-
-            overflow-y: auto;
-
-            padding: 34px;
-
-            border:
-                1px solid
-                rgba(158, 226, 244, 0.38);
-
-            border-radius: 18px;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(7, 28, 40, 0.97),
-                    rgba(2, 13, 21, 0.98)
+                openImpactMessage(
+                    data
                 );
 
-            box-shadow:
+            }
+        );
 
-                0 0 40px
-                rgba(56, 166, 201, 0.18),
 
-                0 20px 70px
-                rgba(0, 0, 0, 0.6);
+        impactRipples.push(
+            item
+        );
 
-            transform:
-                translateY(18px)
-                scale(0.98);
 
-            transition:
-                transform 0.35s ease;
+        scheduleImpact(
+            item,
+            true
+        );
+
+    }
+
+
+    /* =====================================================
+       WAIT FOR WATER IMAGE
+    ===================================================== */
+
+    function waitForWaterImage() {
+
+        if (
+            waterImage.complete &&
+            waterImage.naturalWidth >
+            0
+        ) {
+
+            return Promise.resolve();
+
         }
 
 
-        .modal-overlay.open .modal {
-
-            transform:
-                translateY(0)
-                scale(1);
-        }
-
-
-        .modal-close {
-
-            position: absolute;
-
-            top: 13px;
-            right: 17px;
-
-            border: 0;
-
-            background: transparent;
-
-            color:
-                rgba(218, 247, 255, 0.7);
-
-            font-size: 28px;
-
-            cursor: pointer;
-        }
-
-
-        .modal-close:hover {
-            color: #ffffff;
-        }
-
-
-        .modal h2 {
-
-            margin:
-                0 0 9px;
-
-            font-size: 30px;
-
-            font-weight: 400;
-
-            color: #effbff;
-
-            text-shadow:
-                0 0 10px
-                rgba(151, 221, 242, 0.35);
-        }
-
-
-        .modal-intro {
-
-            margin:
-                0 0 25px;
-
-            color:
-                rgba(211, 237, 245, 0.75);
-
-            line-height: 1.65;
-        }
-
-
-        /* =====================================================
-           LOCATION INTRO
-        ===================================================== */
-
-        .location-intro {
-
-            margin:
-                26px 0 4px;
-
-            padding-top: 19px;
-
-            border-top:
-                1px solid
-                rgba(141, 207, 226, 0.14);
-
-            color:
-                rgba(220, 245, 251, 0.82);
-
-            font-size: 14px;
-
-            line-height: 1.5;
-
-            letter-spacing: 0.03em;
-        }
-
-
-        .location-intro strong {
-
-            display: block;
-
-            margin-bottom: 3px;
-
-            font-weight: 400;
-
-            color:
-                rgba(232, 250, 255, 0.90);
-        }
-
-
-        .location-note {
-
-            margin:
-                0 0 4px;
-
-            color:
-                rgba(178, 221, 234, 0.58);
-
-            font-size: 13px;
-
-            line-height: 1.55;
-
-            font-style: italic;
-        }
-
-
-        .location-note::first-letter {
-            color:
-                rgba(168, 227, 244, 0.82);
-        }
-
-
-        .location-fields {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 14px;
-        }
-
-
-        .location-fields .field-group {
-
-            min-width: 0;
-        }
-
-
-        .modal label {
-
-            display: block;
-
-            margin: 17px 0 7px;
-
-            color:
-                rgba(220, 245, 251, 0.82);
-
-            font-size: 13px;
-
-            letter-spacing: 0.08em;
-
-            text-transform: uppercase;
-        }
-
-
-        .location-fields label {
-
-            margin-top: 12px;
-        }
-
-
-        .optional-label {
-
-            color:
-                rgba(220, 245, 251, 0.68);
-        }
-
-
-        .optional-label span {
-
-            margin-left: 5px;
-
-            font-size: 10px;
-
-            letter-spacing: 0.05em;
-
-            text-transform: none;
-
-            color:
-                rgba(170, 219, 232, 0.46);
-        }
-
-
-        .modal input,
-        .modal textarea {
-
-            width: 100%;
-
-            border:
-                1px solid
-                rgba(141, 207, 226, 0.28);
-
-            border-radius: 9px;
-
-            padding: 12px 13px;
-
-            background:
-                rgba(0, 10, 16, 0.58);
-
-            color: #effaff;
-
-            outline: none;
-
-            transition:
-                border-color 0.25s ease,
-                box-shadow 0.25s ease;
-        }
-
-
-        .modal input:focus,
-        .modal textarea:focus {
-
-            border-color:
-                rgba(170, 231, 246, 0.75);
-
-            box-shadow:
-                0 0 10px
-                rgba(76, 184, 218, 0.15);
-        }
-
-
-        .modal textarea {
-
-            min-height: 135px;
-
-            resize: vertical;
-        }
-
-
-        .modal-actions {
-
-            display: flex;
-
-            justify-content: flex-end;
-
-            gap: 10px;
-
-            margin-top: 25px;
-        }
-
-
-        .modal-button {
-
-            padding:
-                11px 18px;
-
-            border-radius: 25px;
-
-            cursor: pointer;
-        }
-
-
-        .modal-button.cancel {
-
-            border:
-                1px solid
-                rgba(177, 220, 232, 0.25);
-
-            background: transparent;
-
-            color:
-                rgba(221, 242, 248, 0.7);
-        }
-
-
-        .modal-button.submit {
-
-            border:
-                1px solid
-                rgba(177, 232, 246, 0.65);
-
-            background:
-                rgba(65, 153, 181, 0.18);
-
-            color: #f0fbff;
-
-            box-shadow:
-                0 0 12px
-                rgba(79, 182, 214, 0.12);
-        }
-
-
-        .modal-button.submit:hover {
-
-            background:
-                rgba(78, 174, 205, 0.28);
-
-            box-shadow:
-                0 0 18px
-                rgba(82, 195, 226, 0.25);
-        }
-
-
-        /* =====================================================
-           IMPACT RIPPLE MESSAGE
-        ===================================================== */
-
-        #impact-message {
-            text-align: center;
-        }
-
-
-        #impact-message h2 {
-
-            margin:
-                0 0 24px;
-
-            padding-bottom:
-                15px;
-
-            border-bottom:
-                1px solid
-                rgba(141, 207, 226, 0.22);
-
-            font-size: 10px;
-
-            line-height: 1.2;
-
-            letter-spacing: 0.16em;
-
-            text-transform: uppercase;
-
-            color:
-                rgba(150, 220, 239, 0.68);
-
-            font-weight: 400;
-        }
-
-
-        #impact-message .quote {
-
-            margin:
-                0 0 24px;
-
-            font-size:
-                clamp(23px, 4vw, 34px);
-
-            line-height: 1.35;
-
-            color: #edfaff;
-
-            text-shadow:
-                0 0 13px
-                rgba(133, 218, 242, 0.22);
-
-            font-style: italic;
-        }
-
-
-        #impact-message .details {
-
-            color:
-                rgba(205, 234, 243, 0.65);
-
-            line-height: 1.65;
-
-            text-align: right;
-        }
-
-
-        #impact-message .impact-type {
-
-            margin-top:
-                24px;
-
-            padding-top:
-                15px;
-
-            border-top:
-                1px solid
-                rgba(141, 207, 226, 0.22);
-
-            font-size: 10px;
-
-            line-height: 1.2;
-
-            letter-spacing: 0.16em;
-
-            text-transform: uppercase;
-
-            color:
-                rgba(150, 220, 239, 0.68);
-
-            font-weight: 400;
-        }
-
-
-        /* =====================================================
-           FIXED LOWER INTERACTION BANNER
-        ===================================================== */
-
-        #well-interaction-bar {
-
-            position: fixed;
-
-            z-index: 1200;
-
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            min-height: 106px;
-
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 36px;
-
-            padding: 14px 5.2vw;
-
-            border-top:
-                1px solid
-                rgba(158, 219, 236, 0.28);
-
-            border-bottom:
-                1px solid
-                rgba(158, 219, 236, 0.18);
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    rgba(2, 15, 24, 0.94),
-                    rgba(1, 10, 17, 0.97)
+        return new Promise(
+            resolve => {
+
+                waterImage.addEventListener(
+                    "load",
+                    resolve,
+                    {
+                        once: true
+                    }
                 );
 
-            box-shadow:
-                0 -10px 30px
-                rgba(0, 0, 0, 0.28);
 
-            backdrop-filter: blur(8px);
-        }
-
-
-        #well-instruction {
-
-            justify-self: start;
-
-            display: flex;
-            align-items: center;
-            gap: 20px;
-
-            color: rgba(239, 250, 255, 0.92);
-
-            font-size: 15px;
-            line-height: 1.55;
-        }
-
-
-        #mouse-icon {
-
-            position: relative;
-
-            width: 30px;
-            height: 47px;
-
-            flex: 0 0 auto;
-
-            border:
-                1.5px solid
-                rgba(239, 250, 255, 0.94);
-
-            border-radius: 17px;
-        }
-
-
-        #mouse-icon::before {
-
-            content: "";
-
-            position: absolute;
-
-            left: 50%;
-            top: 0;
-
-            width: 1px;
-            height: 16px;
-
-            background:
-                rgba(239, 250, 255, 0.75);
-
-            transform: translateX(-50%);
-        }
-
-
-        #mouse-icon span {
-
-            position: absolute;
-
-            left: 50%;
-            top: 7px;
-
-            width: 4px;
-            height: 7px;
-
-            border-radius: 3px;
-
-            background: #eefaff;
-
-            transform: translateX(-50%);
-        }
-
-
-        #impact-count-card {
-
-            justify-self: center;
-
-            min-width: 246px;
-
-            min-height: 78px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-
-            padding: 10px 22px;
-
-            border:
-                1px solid
-                rgba(58, 181, 216, 0.48);
-
-            border-radius: 18px;
-
-            background:
-                rgba(3, 22, 34, 0.62);
-
-            box-shadow:
-                inset 0 0 24px
-                rgba(20, 116, 150, 0.08);
-        }
-
-
-        #impact-count-icon,
-        #make-ripple-button-icon {
-
-            position: relative;
-
-            width: 44px;
-            height: 30px;
-
-            flex: 0 0 auto;
-        }
-
-
-        #impact-count-icon::before,
-        #impact-count-icon::after,
-        #make-ripple-button-icon::before,
-        #make-ripple-button-icon::after {
-
-            content: "";
-
-            position: absolute;
-
-            left: 50%;
-            top: 50%;
-
-            border:
-                1.5px solid
-                rgba(54, 226, 246, 0.9);
-
-            border-radius: 50%;
-
-            transform: translate(-50%, -50%);
-        }
-
-
-        #impact-count-icon::before,
-        #make-ripple-button-icon::before {
-            width: 20px;
-            height: 9px;
-        }
-
-
-        #impact-count-icon::after,
-        #make-ripple-button-icon::after {
-            width: 31px;
-            height: 15px;
-            opacity: 0.62;
-        }
-
-
-        #impact-count-icon span,
-        #make-ripple-button-icon span {
-
-            position: absolute;
-
-            left: 50%;
-            top: 2px;
-
-            width: 5px;
-            height: 9px;
-
-            border-radius: 50% 50% 55% 55%;
-
-            background: #43e6fa;
-
-            transform: translateX(-50%);
-
-            box-shadow:
-                0 0 9px
-                rgba(67, 230, 250, 0.85);
-        }
-
-
-        #impact-count {
-
-            font-size: 28px;
-            line-height: 1;
-
-            color: #eefaff;
-        }
-
-
-        #impact-count-label {
-
-            margin-top: 5px;
-
-            font-size: 12px;
-            letter-spacing: 0.04em;
-
-            color: #35d8ee;
-        }
-
-
-        #make-ripple-button {
-
-            justify-self: end;
-
-            min-width: 235px;
-
-            min-height: 58px;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-
-            padding: 12px 24px;
-
-            border:
-                1px solid
-                rgba(54, 226, 246, 0.86);
-
-            border-radius: 13px;
-
-            background:
-                rgba(3, 22, 34, 0.62);
-
-            color: #eefaff;
-
-            font-size: 17px;
-            letter-spacing: 0.01em;
-
-            cursor: pointer;
-
-            transition:
-                border-color 0.3s ease,
-                box-shadow 0.3s ease,
-                background 0.3s ease,
-                transform 0.25s ease;
-        }
-
-
-        #make-ripple-button:hover {
-
-            border-color: #70efff;
-
-            background:
-                rgba(8, 42, 55, 0.76);
-
-            box-shadow:
-                0 0 10px
-                rgba(74, 225, 246, 0.42),
-                0 0 25px
-                rgba(31, 157, 192, 0.22);
-
-            transform: translateY(-1px);
-        }
-
-
-        /* =====================================================
-           MESSAGE FROM THE WELL
-        ===================================================== */
-
-        #message-from-well {
-
-            position: relative;
-
-            z-index: 3;
-
-            min-height: 310px;
-
-            padding:
-                58px 20px
-                calc(58px + 120px);
-
-            text-align: center;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    #03121d 0%,
-                    #020c15 100%
+                waterImage.addEventListener(
+                    "error",
+                    resolve,
+                    {
+                        once: true
+                    }
                 );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       LOAD APPROVED IMPACT RIPPLES
+    ===================================================== */
+
+    async function loadApprovedImpactRipples() {
+
+        await waitForWaterImage();
+
+
+        if (
+            !impactLayer
+        ) {
+
+            impactLayer =
+                document.createElement(
+                    "div"
+                );
+
+
+            impactLayer.id =
+                "dynamic-impact-ripples";
+
+
+            rippleWell.appendChild(
+                impactLayer
+            );
+
         }
 
 
-        #message-from-well h2 {
-
-            margin: 0;
-
-            font-size: clamp(17px, 2vw, 23px);
-            font-weight: 400;
-
-            letter-spacing: 0.38em;
-            text-transform: uppercase;
-
-            color: #3ed8ed;
-        }
+        impactLayer.innerHTML =
+            "";
 
 
-        .message-divider {
+        impactRipples.forEach(
+            item => {
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-
-            margin: 14px auto 18px;
-        }
+                clearTimeout(
+                    item.timer
+                );
 
 
-        .message-divider span {
+                clearTimeout(
+                    item.activeTimer
+                );
 
-            width: 54px;
-            height: 1px;
-
-            background:
-                rgba(224, 248, 255, 0.55);
-        }
+            }
+        );
 
 
-        .message-divider b {
-
-            color: #e9fbff;
-            font-size: 10px;
-            font-weight: 400;
-        }
+        impactRipples.length =
+            0;
 
 
-        #message-from-well p {
+        try {
 
-            margin: 0 auto 15px;
+            const response =
+                await fetch(
 
-            max-width: 720px;
+                    `${SUPABASE_URL}/rest/v1/ripple_submissions?select=id,created_at,message,name,region,country,status,size&status=eq.approved&order=created_at.asc`,
 
-            font-size: clamp(17px, 2vw, 21px);
-            line-height: 1.85;
+                    {
 
-            color:
-                rgba(239, 250, 255, 0.88);
-        }
+                        method:
+                            "GET",
+
+                        headers: {
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Accept":
+                                "application/json"
+
+                        }
+
+                    }
+
+                );
 
 
-        #message-from-well strong {
-            color: #3ed8ed;
-            font-weight: 400;
-        }
+            if (
+                !response.ok
+            ) {
+
+                console.warn(
+                    "The Ripple Well: could not load approved Impact Ripples."
+                );
 
 
-        /* =====================================================
-           MOBILE
-        ===================================================== */
+                return;
 
-        @media (max-width: 700px) {
-
-            #sky-banner {
-                position: relative;
-                height: 58vw;
-                min-height: 280px;
-                max-height: 520px;
             }
 
-            #sky-banner-image {
-                width: auto;
-                height: 100%;
-                left: 50%;
-                right: auto;
-                transform: translateX(-50%);
-                max-width: none;
+
+            const submissions =
+                await response.json();
+
+
+            if (
+                !Array.isArray(
+                    submissions
+                )
+            ) {
+
+                return;
+
             }
 
-            #ripple-well {
-                margin-top: 0;
+
+            if (
+                impactCount
+            ) {
+
+                impactCount.textContent =
+                    submissions
+                        .length
+                        .toLocaleString();
+
             }
 
-            #well-interaction-bar {
-                min-height: 118px;
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: 58px 48px;
-                gap: 6px 10px;
-                padding: 7px 12px;
-            }
 
-            #well-instruction {
-                gap: 10px;
-                font-size: 11px;
-            }
+            submissions.forEach(
+                (
+                    submission,
+                    index
+                ) => {
 
-            #mouse-icon {
-                width: 24px;
-                height: 38px;
-            }
+                    createImpactRipple(
+                        submission,
+                        index
+                    );
 
-            #impact-count-card {
-                min-width: 0;
-                min-height: 58px;
-                padding: 7px 10px;
-                gap: 6px;
-            }
+                }
+            );
 
-            #impact-count-icon {
-                display: none;
-            }
 
-            #impact-count {
-                font-size: 22px;
-            }
+            repositionImpactRipples();
 
-            #impact-count-label {
-                font-size: 9px;
-            }
 
-            #make-ripple-button {
-                position: static;
-                grid-column: 1 / -1;
-                width: 100%;
-                min-width: 0;
-                min-height: 42px;
-                padding: 7px 14px;
-                font-size: 13px;
-            }
+            console.log(
+                `The Ripple Well: ${submissions.length} approved Impact Ripple(s) loaded.`
+            );
 
-            #make-ripple-button-icon {
-                width: 31px;
-                transform: scale(0.82);
-                transform-origin: right center;
-            }
 
-            #message-from-well {
-                padding-bottom: 135px;
-            }
+        } catch (
+            error
+        ) {
 
-            #reflection-layer {
-                height: 230px;
-            }
-
-            #reflection-content {
-                width: 100%;
-                transform:
-                    translateX(-50%)
-                    scaleY(-0.50);
-            }
-
-            #reflection-logo {
-                width: 145px;
-            }
-
-            #reflection-logo-wrap {
-                width: 160px;
-                height: 100px;
-            }
-
-            #reflection-presents {
-                top: 182px;
-                font-size: 13px;
-            }
-
-            #reflection-title {
-                top: 208px;
-                font-size: 36px;
-            }
-
-            #reflection-tagline {
-                top: 265px;
-                font-size: 12px;
-            }
-
-            .impact-size-small {
-                width: 102px;
-                height: 58px;
-            }
-
-            .impact-size-medium {
-                width: 144px;
-                height: 82px;
-            }
-
-            .impact-size-large {
-                width: 108px;
-                height: 60px;
-            }
-
-            .impact-size-extra-large {
-                width: 238px;
-                height: 133px;
-            }
-
-            .modal {
-                padding:
-                    27px 22px;
-            }
-
-            .location-fields {
-                grid-template-columns:
-                    1fr;
-                gap: 0;
-            }
+            console.warn(
+                "The Ripple Well: approved Impact Ripples unavailable.",
+                error
+            );
 
         }
 
-    
+    }
 
-        /* =====================================================
-           VERSION 3.0 — IMAGE WATER FOUNDATION
 
-           The approved water image is now the actual surface.
-           WebGL no longer creates the water itself; water.js only
-           draws small transparent click ripples above the image.
-        ===================================================== */
+    loadApprovedImpactRipples();
 
-        html,
-        body {
-            background: #020204;
-        }
 
-        body {
-            min-height: 100vh;
-        }
+    /* =====================================================
+       VISITOR COUNTRY
+    ===================================================== */
 
-        :root {
-            --water-bottom: #020204;
-            --banner-waterline-ratio: 0.4158;
-        }
+    function getVisitorCountry() {
 
-        /* The sky banner scrolls normally like a conventional site. */
-        #sky-banner {
-            position: relative;
-            top: auto;
-            left: auto;
-            width: 100%;
-            height: calc(100vw * var(--banner-waterline-ratio));
-            max-height: none;
-            min-height: 0;
-            overflow: hidden;
-            background: #020b15;
-            box-shadow: none;
-        }
+        try {
 
-        #sky-banner-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-            max-width: none;
-            display: block;
-            pointer-events: none;
-            user-select: none;
-        }
+            const parts =
+                (
+                    navigator.language ||
+                    ""
+                )
+                .split("-");
 
-        /* The Well is ordinary document flow. */
-        #ripple-well {
-            position: relative;
-            margin-top: 0;
-            min-height: 0;
-            background: var(--water-bottom);
-        }
 
-        /* =====================================================
-           ACTUAL WATER SURFACE
-        ===================================================== */
+            if (
+                parts.length <
+                2
+            ) {
 
-        #water-window {
-            position: relative;
-            top: auto;
-            width: 100%;
-            height: auto;
-            min-height: 0;
-            overflow: hidden;
-            background: var(--water-bottom);
-            line-height: 0;
-        }
+                return "";
 
-        #water-surface-image {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            height: auto;
-            display: block;
-            margin: 0;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
-
-        /* Transparent interaction layer — this is the ONLY place
-           where water clicks are possible. */
-        #water-canvas {
-            position: absolute;
-            z-index: 5;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: crosshair;
-            touch-action: manipulation;
-            background: transparent;
-        }
-
-        /* The old generated water/reflection/depth systems are not
-           part of this design iteration. */
-        #surface-layer,
-        #reflection-layer,
-        #depth-layer,
-        #depth-message,
-        #impact-ripples-layer,
-        #recent-impact-ripples,
-        #reflection-distortion {
-            display: none !important;
-        }
-
-        /* The lower page continues seamlessly from the bottom of the
-           water image instead of introducing another gradient. */
-        #well-depth-content {
-            min-height: 100vh;
-            background: var(--water-bottom);
-        }
-
-        #message-from-well {
-            background: var(--water-bottom);
-            color: #eefaff;
-        }
-
-        /* Keep the stationary control bar above the water interaction
-           canvas and above all normal page content. */
-        #well-interaction-bar {
-            position: fixed;
-            z-index: 1200;
-            bottom: 0;
-        }
-
-        /* =====================================================
-           MOBILE
-        ===================================================== */
-
-        @media (max-width: 700px) {
-
-            #sky-banner {
-                position: relative;
-                height: calc(100vw * var(--banner-waterline-ratio));
-                min-height: 0;
-                max-height: none;
             }
 
-            #sky-banner-image {
-                width: 100%;
-                height: auto;
-                left: 0;
-                transform: none;
-            }
 
-            #water-window {
-                height: auto;
-            }
+            const code =
+                parts[
+                    parts.length -
+                    1
+                ]
+                .toUpperCase();
 
-            #well-interaction-bar {
-                min-height: 118px;
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: 58px 48px;
-                gap: 6px 10px;
-                padding: 7px 12px;
-            }
 
-            #well-instruction {
-                gap: 10px;
-                font-size: 11px;
-            }
+            const names = {
 
-            #mouse-icon {
-                width: 24px;
-                height: 38px;
-            }
+                CA:
+                    "Canada",
 
-            #impact-count-card {
-                min-width: 0;
-                min-height: 58px;
-                padding: 7px 10px;
-                gap: 6px;
-            }
+                US:
+                    "United States",
 
-            #impact-count-icon {
-                display: none;
-            }
+                GB:
+                    "United Kingdom",
 
-            #impact-count {
-                font-size: 22px;
-            }
+                AU:
+                    "Australia",
 
-            #impact-count-label {
-                font-size: 9px;
-            }
+                NZ:
+                    "New Zealand",
 
-            #make-ripple-button {
-                position: static;
-                grid-column: 1 / -1;
-                width: 100%;
-                min-width: 0;
-                min-height: 42px;
-                padding: 7px 14px;
-                font-size: 13px;
-            }
+                IE:
+                    "Ireland",
 
-            #make-ripple-button-icon {
-                width: 31px;
-                transform: scale(0.82);
-                transform-origin: right center;
-            }
+                FR:
+                    "France",
 
-            #message-from-well {
-                padding-bottom: 135px;
-            }
+                DE:
+                    "Germany",
+
+                ES:
+                    "Spain",
+
+                IT:
+                    "Italy",
+
+                NL:
+                    "Netherlands",
+
+                BE:
+                    "Belgium",
+
+                SE:
+                    "Sweden",
+
+                NO:
+                    "Norway",
+
+                DK:
+                    "Denmark",
+
+                FI:
+                    "Finland",
+
+                IN:
+                    "India",
+
+                JP:
+                    "Japan",
+
+                CN:
+                    "China",
+
+                KR:
+                    "South Korea"
+
+            };
+
+
+            return (
+                names[code] ||
+                code
+            );
+
+
+        } catch (
+            error
+        ) {
+
+            console.warn(
+                "Could not determine visitor locale.",
+                error
+            );
+
+
+            return "";
+
         }
 
-    </style>
-</head>
-<body>
+    }
 
-    <!-- =====================================================
-         TOP BANNER
 
-         This image contains everything above the waterline.
-         It scrolls normally with the page.
-    ====================================================== -->
+    /* =====================================================
+       SUBMISSION
+    ===================================================== */
 
-    <header id="sky-banner" aria-label="The Ripple Well">
-        <img
-            id="sky-banner-image"
-            src="images/Top Banner.png"
-            alt="The Ripple Well — Make the Ripple"
-            draggable="false"
-        >
-    </header>
+    async function submitRippleToSupabase(
+        message,
+        name,
+        region,
+        country
+    ) {
 
+        const submission = {
 
-    <!-- =====================================================
-         THE RIPPLE WELL — WATER SURFACE
+            message:
+                message.trim(),
 
-         Water(1).png is the actual visual surface.
-         The transparent canvas above it is interaction only.
-    ====================================================== -->
+            name:
+                name
+                    ? name.trim()
+                    : "",
 
-    <main id="ripple-well">
+            region:
+                region
+                    ? region.trim()
+                    : "",
 
-        <section id="water-window" aria-label="The Ripple Well water">
+            country:
 
-            <img
-                id="water-surface-image"
-                src="images/Water(1).png"
-                alt="Moonlit water fading into the depths of The Ripple Well"
-                draggable="false"
-            >
+                country &&
+                country.trim()
 
-            <canvas
-                id="water-canvas"
-                aria-hidden="true"
-            ></canvas>
+                    ? country.trim()
 
-        </section>
+                    : getVisitorCountry(),
 
+            status:
+                "pending"
 
-        <!-- The water image ends here. Everything below continues in
-             the exact near-black colour of its lower edge. -->
+        };
 
-        <div id="well-depth-content">
 
-            <section id="message-from-well">
+        const response =
+            await fetch(
 
-                <h2>A Message From The Well</h2>
+                `${SUPABASE_URL}/rest/v1/ripple_submissions`,
 
-                <div class="message-divider" aria-hidden="true">
-                    <span></span>
-                    <b>◆</b>
-                    <span></span>
-                </div>
+                {
 
-                <p>
-                    This is a space for the waves of kindness,<br>
-                    strength, and hope to echo across time.
-                </p>
+                    method:
+                        "POST",
 
-                <p>
-                    <strong>Leave your ripple.</strong>
-                    Be part of something<br>
-                    that will never fade.
-                </p>
+                    headers: {
 
-            </section>
+                        "Content-Type":
+                            "application/json",
 
-        </div>
+                        "apikey":
+                            SUPABASE_KEY,
 
-    </main>
+                        "Authorization":
+                            `Bearer ${SUPABASE_KEY}`,
 
+                        "Prefer":
+                            "return=minimal"
 
-    <!-- =====================================================
-         FIXED LOWER INTERACTION BANNER
+                    },
 
-         This remains stationary while the page scrolls.
-    ====================================================== -->
-
-    <aside id="well-interaction-bar" aria-label="Ripple Well controls">
-
-        <div id="well-instruction">
-            <div id="mouse-icon" aria-hidden="true">
-                <span></span>
-            </div>
-
-            <div>
-                Click anywhere on the pond<br>
-                to make a ripple.
-            </div>
-        </div>
-
-
-        <div id="impact-count-card" aria-live="polite">
-            <div id="impact-count-icon" aria-hidden="true">
-                <span></span>
-            </div>
-
-            <div>
-                <div id="impact-count">0</div>
-                <div id="impact-count-label">Impact Ripples</div>
-            </div>
-        </div>
-
-
-        <button
-            id="make-ripple-button"
-            type="button"
-        >
-            <span id="make-ripple-button-icon" aria-hidden="true">
-                <span></span>
-            </span>
-            Make a Ripple
-        </button>
-
-    </aside>
-
-
-    <!-- =====================================================
-         MAKE YOUR RIPPLE MODAL
-    ====================================================== -->
-
-    <div
-        id="make-ripple-modal"
-        class="modal-overlay"
-        aria-hidden="true"
-    >
-
-        <div
-            class="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="make-ripple-title"
-        >
-
-            <button
-                class="modal-close"
-                type="button"
-                aria-label="Close"
-                data-close-modal
-            >×</button>
-
-            <h2 id="make-ripple-title">Make Your Ripple</h2>
-
-            <p class="modal-intro">
-                Every ripple starts somewhere.
-                <br><br>
-                Share a message of hope,
-                encouragement, support, kindness,
-                or something you want another person
-                to discover when they visit
-                The Ripple Well.
-                <br><br>
-                Your submission will be reviewed
-                before it can become an
-                <strong>Impact Ripple</strong>.
-            </p>
-
-            <form id="ripple-form">
-
-                <label for="ripple-message">Your Ripple</label>
-
-                <textarea
-                    id="ripple-message"
-                    name="message"
-                    maxlength="500"
-                    required
-                    placeholder="What would you like someone to find in The Ripple Well?"
-                ></textarea>
-
-                <label for="ripple-name" class="optional-label">
-                    Name or Display Name
-                    <span>Optional</span>
-                </label>
-
-                <input
-                    id="ripple-name"
-                    name="name"
-                    type="text"
-                    maxlength="80"
-                    placeholder="How would you like to be identified?"
-                >
-
-                <div class="location-intro">
-                    <strong>Where is your ripple coming from?</strong>
-                </div>
-
-                <p class="location-note">
-                    Optional — we'd love to know how far our ripples are reaching.
-                </p>
-
-                <div class="location-fields">
-
-                    <div class="field-group">
-                        <label for="ripple-region" class="optional-label">
-                            Province / State
-                            <span>Optional</span>
-                        </label>
-
-                        <input
-                            id="ripple-region"
-                            name="region"
-                            type="text"
-                            maxlength="80"
-                            placeholder="Province or State"
-                        >
-                    </div>
-
-                    <div class="field-group">
-                        <label for="ripple-country" class="optional-label">
-                            Country
-                            <span>Optional</span>
-                        </label>
-
-                        <input
-                            id="ripple-country"
-                            name="country"
-                            type="text"
-                            maxlength="80"
-                            placeholder="Country"
-                        >
-                    </div>
-
-                </div>
-
-                <div class="modal-actions">
-                    <button
-                        class="modal-button cancel"
-                        type="button"
-                        data-close-modal
-                    >Maybe Later</button>
-
-                    <button
-                        class="modal-button submit"
-                        type="submit"
-                    >Send My Ripple</button>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-
-
-    <!-- =====================================================
-         IMPACT RIPPLE MESSAGE MODAL
-
-         Retained for the next design phase. No Impact Ripples are
-         rendered in this version, so this modal remains dormant.
-    ====================================================== -->
-
-    <div
-        id="impact-modal"
-        class="modal-overlay"
-        aria-hidden="true"
-    >
-        <div
-            class="modal"
-            id="impact-message"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="impact-title"
-        >
-            <button
-                class="modal-close"
-                type="button"
-                aria-label="Close"
-                data-close-modal
-            >×</button>
-
-            <h2 id="impact-title">A Message From The Well</h2>
-
-            <div class="quote" id="impact-quote"></div>
-            <div class="details" id="impact-details"></div>
-
-            <div class="impact-type">Impact Ripple</div>
-        </div>
-    </div>
-
-
-    <script src="water.js"></script>
-
-</body>
-</html>
+                    body:
+                        JSON.stringify(
+                            submission
+                        )
+
+                }
+
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            let details =
+                "Unknown Supabase error.";
+
+
+            try {
+
+                details =
+                    await response.text();
+
+            } catch (
+                error
+            ) {
+
+                console.warn(
+                    "Could not read Supabase error.",
+                    error
+                );
+
+            }
+
+
+            console.error(
+                "Ripple submission failed:",
+                response.status,
+                details
+            );
+
+
+            throw new Error(
+                `Supabase submission failed (${response.status}).`
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SUBMISSION FORM
+    ===================================================== */
+
+    if (
+        rippleForm
+    ) {
+
+        rippleForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const message =
+                    document.getElementById(
+                        "ripple-message"
+                    );
+
+
+                const name =
+                    document.getElementById(
+                        "ripple-name"
+                    );
+
+
+                const region =
+                    document.getElementById(
+                        "ripple-region"
+                    );
+
+
+                const country =
+                    document.getElementById(
+                        "ripple-country"
+                    );
+
+
+                if (
+                    !message ||
+                    !message.value.trim()
+                ) {
+
+                    return;
+
+                }
+
+
+                const submitButton =
+                    rippleForm.querySelector(
+                        'button[type="submit"]'
+                    );
+
+
+                const originalText =
+                    submitButton
+
+                        ? submitButton.textContent
+
+                        : "";
+
+
+                if (
+                    submitButton
+                ) {
+
+                    submitButton.disabled =
+                        true;
+
+
+                    submitButton.textContent =
+                        "Sending...";
+
+                }
+
+
+                try {
+
+                    await submitRippleToSupabase(
+
+                        message.value,
+
+                        name
+                            ? name.value
+                            : "",
+
+                        region
+                            ? region.value
+                            : "",
+
+                        country
+                            ? country.value
+                            : ""
+
+                    );
+
+
+                    message.value =
+                        "";
+
+
+                    if (
+                        name
+                    ) {
+
+                        name.value =
+                            "";
+
+                    }
+
+
+                    if (
+                        region
+                    ) {
+
+                        region.value =
+                            "";
+
+                    }
+
+
+                    if (
+                        country
+                    ) {
+
+                        country.value =
+                            "";
+
+                    }
+
+
+                    closeModal(
+                        makeRippleModal
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            alert(
+                                "Thank you for making a ripple. Your message has been submitted for review."
+                            );
+
+                        },
+                        250
+                    );
+
+
+                } catch (
+                    error
+                ) {
+
+                    console.error(
+                        "The Ripple Well submission error:",
+                        error
+                    );
+
+
+                    alert(
+                        "We couldn't submit your ripple right now. Please try again in a moment."
+                    );
+
+
+                } finally {
+
+                    if (
+                        submitButton
+                    ) {
+
+                        submitButton.disabled =
+                            false;
+
+
+                        submitButton.textContent =
+                            originalText;
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       INITIALIZATION
+    ===================================================== */
+
+    console.log(
+        "The Ripple Well v3.1 initialized."
+    );
+
+
+    console.log(
+        "Water image surface: active"
+    );
+
+
+    console.log(
+        "Full Well click ripples: active"
+    );
+
+
+    console.log(
+        "Impact Ripple pulse system: active"
+    );
+
+
+    console.log(
+        "Impact Ripple quote modal: active"
+    );
+
+
+    console.log(
+        "Supabase submission: active"
+    );
+
+
+})();
