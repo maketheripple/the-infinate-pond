@@ -15,7 +15,7 @@
 
         /* =========================================================
            THE RIPPLE WELL
-           VERSION 3.0 — IMAGE WATER FOUNDATION
+           VERSION 3.1 — IMAGE WATER + FULL WELL INTERACTION
 
            PAGE STRUCTURE
 
@@ -24,21 +24,25 @@
               Normal website scrolling.
 
            2. WATER SURFACE
-              Water.png
+              water.png
               The actual visible water.
 
-           3. RIPPLE CANVAS
-              Transparent canvas positioned ONLY over the
-              Water.png image.
+           3. DEEP WELL
+              Dark continuation below water.png.
 
-           4. DEEP WELL
-              Page continues in #020204 after the image ends.
+           4. RIPPLE CANVAS
+              Transparent canvas covering the entire Ripple Well.
+              This means the water image AND the darkening depth
+              beneath it remain clickable.
 
-           5. FIXED LOWER BANNER
-              Remains stationary while the page scrolls.
+           5. MESSAGE FROM THE WELL
+              Outside the interactive Well.
+
+           6. FIXED LOWER BANNER
+              Remains stationary while scrolling.
 
            IMPACT RIPPLES
-           Temporarily removed from the water visual.
+           Temporarily removed from the visual water layer.
 
         ========================================================= */
 
@@ -93,17 +97,6 @@
 
         /* =========================================================
            TOP BANNER
-
-           This is now a normal scrolling website banner.
-
-           It contains:
-           - stars
-           - moon
-           - Make the Ripple branding
-           - The Ripple Well
-           - mountains
-           - waterline
-
         ========================================================= */
 
         #sky-banner {
@@ -137,22 +130,26 @@
             pointer-events: none;
 
             user-select: none;
+
+            -webkit-user-drag: none;
         }
 
 
         /* =========================================================
            THE RIPPLE WELL
 
-           The background is deliberately the same deep colour
-           used at the bottom of Water.png.
+           IMPORTANT:
+           This entire area is the interactive water area.
 
-           This means that when the image ends, the transition
-           should visually disappear into the darkness.
+           The visible water is the image.
+           The darker area below it represents increasing depth.
         ========================================================= */
 
         #ripple-well {
 
             position: relative;
+
+            z-index: 2;
 
             width: 100%;
 
@@ -167,15 +164,7 @@
         /* =========================================================
            WATER SURFACE
 
-           IMPORTANT:
-
-           This section gets its height from the actual image.
-
-           It is NOT sticky.
-           It is NOT 100vh.
-           It does NOT generate water.
-
-           The image itself is the water.
+           The image determines the natural height of this section.
         ========================================================= */
 
         #water-window {
@@ -225,45 +214,12 @@
 
 
         /* =========================================================
-           TRANSPARENT RIPPLE CANVAS
-
-           This is deliberately positioned ONLY over the water
-           image.
-
-           It does not cover the rest of the page.
-        ========================================================= */
-
-        #water-canvas {
-
-            position: absolute;
-
-            z-index: 3;
-
-            top: 0;
-
-            left: 0;
-
-            width: 100%;
-
-            height: 100%;
-
-            display: block;
-
-            background: transparent;
-
-            cursor: crosshair;
-
-            pointer-events: auto;
-        }
-
-
-        /* =========================================================
            DEEP WELL
 
-           This begins immediately after Water.png.
+           This section begins after water.png.
 
-           The colour is intentionally #020204 so that the bottom
-           of the supplied water artwork can transition into it.
+           The page continues in the same deep colour as the
+           bottom of the image.
         ========================================================= */
 
         #deep-well {
@@ -285,10 +241,10 @@
         /* =========================================================
            SUBTLE DEPTH GRADIENT
 
-           This doesn't create the water.
+           The actual water appearance still comes from water.png.
 
-           It simply lets the darkness continue naturally after
-           the supplied image ends.
+           This simply keeps the darkness continuing naturally
+           below the image.
         ========================================================= */
 
         #deep-well::before {
@@ -319,6 +275,45 @@
 
 
         /* =========================================================
+           FULL WELL RIPPLE CANVAS
+
+           IMPORTANT:
+
+           This canvas is now positioned over the ENTIRE
+           #ripple-well.
+
+           It is transparent, so the water image remains visible.
+
+           It is also below the fixed interaction banner because
+           the banner has a higher z-index.
+
+        ========================================================= */
+
+        #water-canvas {
+
+            position: absolute;
+
+            z-index: 20;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+
+            background: transparent;
+
+            cursor: crosshair;
+
+            pointer-events: auto;
+        }
+
+
+        /* =========================================================
            MESSAGE FROM THE WELL
         ========================================================= */
 
@@ -326,7 +321,7 @@
 
             position: relative;
 
-            z-index: 3;
+            z-index: 30;
 
             min-height: 310px;
 
@@ -431,17 +426,6 @@
 
         /* =========================================================
            FIXED LOWER INTERACTION BANNER
-
-           This remains stationary while the visitor scrolls.
-
-           LEFT:
-           Click instruction
-
-           CENTER:
-           Impact Ripple count
-
-           RIGHT:
-           Make a Ripple
         ========================================================= */
 
         #well-interaction-bar {
@@ -1399,9 +1383,6 @@
 
         /* =========================================================
            IMPACT RIPPLE MESSAGE MODAL
-
-           Kept intact so the modal infrastructure remains ready
-           when Impact Ripples are brought back later.
         ========================================================= */
 
         #impact-message {
@@ -1668,8 +1649,6 @@
 
     <!-- =========================================================
          TOP BANNER
-
-         Normal scrolling image.
     ========================================================== -->
 
     <header
@@ -1690,17 +1669,15 @@
 
     <!-- =========================================================
          THE RIPPLE WELL
+
+         The entire area is now the interactive Well.
     ========================================================== -->
 
     <main id="ripple-well">
 
 
         <!-- =====================================================
-             ACTUAL WATER SURFACE
-
-             Water.png is the water.
-
-             The canvas sits over it only for click interaction.
+             VISIBLE WATER SURFACE
         ====================================================== -->
 
         <section
@@ -1710,25 +1687,17 @@
 
             <img
                 id="water-surface-image"
-                src="images/Water.png"
+                src="images/water.png"
                 alt=""
                 draggable="false"
             >
-
-            <canvas
-                id="water-canvas"
-                aria-hidden="true"
-            ></canvas>
 
         </section>
 
 
 
         <!-- =====================================================
-             DARKNESS BELOW THE IMAGE
-
-             The page continues in the same deep colour as the
-             bottom of Water.png.
+             DARK DEPTH BELOW WATER IMAGE
         ====================================================== -->
 
         <section
@@ -1738,14 +1707,26 @@
         </section>
 
 
+
+        <!-- =====================================================
+             FULL-WELL RIPPLE CANVAS
+
+             This is intentionally AFTER the water and deep-well
+             sections so it can cover the entire Ripple Well.
+        ====================================================== -->
+
+        <canvas
+            id="water-canvas"
+            aria-hidden="true"
+        ></canvas>
+
+
     </main>
 
 
 
     <!-- =========================================================
          MESSAGE FROM THE WELL
-
-         This sits below the deep-water area.
     ========================================================== -->
 
     <section id="message-from-well">
@@ -2089,8 +2070,7 @@
     <!-- =========================================================
          IMPACT RIPPLE MESSAGE MODAL
 
-         Temporarily unused because Impact Ripples are disabled,
-         but retained for the next phase.
+         Retained for later when Impact Ripples are restored.
     ========================================================== -->
 
     <div
