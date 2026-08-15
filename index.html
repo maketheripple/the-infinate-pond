@@ -15,35 +15,23 @@
 
         /* =========================================================
            THE RIPPLE WELL
-           VERSION 3.1 — IMAGE WATER + FULL WELL INTERACTION
+           VERSION 3.2 — IMAGE WATER + FULL WELL INTERACTION
 
-           PAGE STRUCTURE
+           WATER
+           - images/water.png is the visible water surface.
+           - The dark section continues below the image.
+           - The entire Ripple Well remains clickable.
 
-           1. TOP BANNER
-              Top Banner.png
-              Normal website scrolling.
-
-           2. WATER SURFACE
-              water.png
-              The actual visible water.
-
-           3. DEEP WELL
-              Dark continuation below water.png.
-
-           4. RIPPLE CANVAS
-              Transparent canvas covering the entire Ripple Well.
-              This means the water image AND the darkening depth
-              beneath it remain clickable.
-
-           5. MESSAGE FROM THE WELL
-              Outside the interactive Well.
-
-           6. FIXED LOWER BANNER
-              Remains stationary while scrolling.
+           RIPPLE CANVAS
+           - Transparent.
+           - Covers the entire Ripple Well.
+           - Does not replace or obscure water.png.
 
            IMPACT RIPPLES
-           Temporarily removed from the visual water layer.
+           - Temporarily disabled visually.
 
+           LOWER BANNER
+           - Fixed to the bottom of the browser window.
         ========================================================= */
 
 
@@ -55,23 +43,17 @@
             box-sizing: border-box;
         }
 
-
         html {
             margin: 0;
             padding: 0;
-
             background: #020204;
-
             scroll-behavior: smooth;
         }
-
 
         body {
             margin: 0;
             padding: 0;
-
             background: #020204;
-
             color: #eefaff;
 
             font-family:
@@ -82,13 +64,11 @@
             overflow-x: hidden;
         }
 
-
         button,
         input,
         textarea {
             font: inherit;
         }
-
 
         img {
             max-width: 100%;
@@ -100,9 +80,7 @@
         ========================================================= */
 
         #sky-banner {
-
             position: relative;
-
             z-index: 10;
 
             width: 100%;
@@ -116,19 +94,15 @@
                 rgba(0, 0, 0, 0.48);
         }
 
-
         #sky-banner-image {
-
             display: block;
 
             width: 100%;
-
             height: auto;
 
             min-height: 1px;
 
             pointer-events: none;
-
             user-select: none;
 
             -webkit-user-drag: none;
@@ -138,40 +112,31 @@
         /* =========================================================
            THE RIPPLE WELL
 
-           IMPORTANT:
-           This entire area is the interactive water area.
-
-           The visible water is the image.
-           The darker area below it represents increasing depth.
+           This entire area is interactive.
         ========================================================= */
 
         #ripple-well {
-
             position: relative;
-
             z-index: 2;
 
             width: 100%;
-
             min-height: 300vh;
 
             margin: 0;
 
             background: #020204;
+
+            overflow: hidden;
         }
 
 
         /* =========================================================
            WATER SURFACE
-
-           The image determines the natural height of this section.
         ========================================================= */
 
         #water-window {
-
             position: relative;
-
-            z-index: 2;
+            z-index: 1;
 
             width: 100%;
 
@@ -182,25 +147,16 @@
             line-height: 0;
         }
 
-
-        /* =========================================================
-           ACTUAL WATER IMAGE
-        ========================================================= */
-
         #water-surface-image {
-
             position: relative;
-
             z-index: 1;
 
             display: block;
 
             width: 100%;
-
             height: auto;
 
             margin: 0;
-
             padding: 0;
 
             object-fit: contain;
@@ -216,16 +172,11 @@
         /* =========================================================
            DEEP WELL
 
-           This section begins after water.png.
-
-           The page continues in the same deep colour as the
-           bottom of the image.
+           This continues after water.png.
         ========================================================= */
 
         #deep-well {
-
             position: relative;
-
             z-index: 1;
 
             width: 100%;
@@ -237,28 +188,15 @@
             background: #020204;
         }
 
-
-        /* =========================================================
-           SUBTLE DEPTH GRADIENT
-
-           The actual water appearance still comes from water.png.
-
-           This simply keeps the darkness continuing naturally
-           below the image.
-        ========================================================= */
-
         #deep-well::before {
-
             content: "";
 
             position: absolute;
 
             top: 0;
-
             left: 0;
 
             width: 100%;
-
             height: 100%;
 
             pointer-events: none;
@@ -275,41 +213,42 @@
 
 
         /* =========================================================
-           FULL WELL RIPPLE CANVAS
+           FULL-WELL RIPPLE CANVAS
 
-           IMPORTANT:
+           The canvas is transparent.
 
-           This canvas is now positioned over the ENTIRE
-           #ripple-well.
+           It sits above the water only so that its ripple strokes
+           are visible.
 
-           It is transparent, so the water image remains visible.
-
-           It is also below the fixed interaction banner because
-           the banner has a higher z-index.
-
+           Its transparent areas reveal everything underneath.
         ========================================================= */
 
         #water-canvas {
-
             position: absolute;
 
             z-index: 20;
 
             top: 0;
-
             left: 0;
 
             width: 100%;
-
             height: 100%;
 
             display: block;
 
-            background: transparent;
+            background: transparent !important;
+
+            opacity: 1;
+
+            pointer-events: auto;
 
             cursor: crosshair;
 
-            pointer-events: auto;
+            /*
+             * Ensures the canvas does not establish a visual
+             * background over the image.
+             */
+            mix-blend-mode: normal;
         }
 
 
@@ -318,9 +257,7 @@
         ========================================================= */
 
         #message-from-well {
-
             position: relative;
-
             z-index: 30;
 
             min-height: 310px;
@@ -331,13 +268,10 @@
 
             text-align: center;
 
-            background:
-                #020204;
+            background: #020204;
         }
 
-
         #message-from-well h2 {
-
             margin: 0;
 
             font-size:
@@ -352,13 +286,10 @@
             color: #3ed8ed;
         }
 
-
         .message-divider {
-
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             gap: 14px;
@@ -367,11 +298,8 @@
                 14px auto 18px;
         }
 
-
         .message-divider span {
-
             width: 54px;
-
             height: 1px;
 
             background:
@@ -383,9 +311,7 @@
                 );
         }
 
-
         .message-divider b {
-
             color: #e9fbff;
 
             font-size: 10px;
@@ -393,9 +319,7 @@
             font-weight: 400;
         }
 
-
         #message-from-well p {
-
             margin:
                 0 auto 15px;
 
@@ -415,11 +339,8 @@
                 );
         }
 
-
         #message-from-well strong {
-
             color: #3ed8ed;
-
             font-weight: 400;
         }
 
@@ -429,15 +350,12 @@
         ========================================================= */
 
         #well-interaction-bar {
-
             position: fixed;
 
             z-index: 1200;
 
             left: 0;
-
             right: 0;
-
             bottom: 0;
 
             min-height: 106px;
@@ -508,7 +426,6 @@
         ========================================================= */
 
         #well-instruction {
-
             justify-self: start;
 
             display: flex;
@@ -530,13 +447,10 @@
             line-height: 1.55;
         }
 
-
         #mouse-icon {
-
             position: relative;
 
             width: 30px;
-
             height: 47px;
 
             flex: 0 0 auto;
@@ -553,19 +467,15 @@
             border-radius: 17px;
         }
 
-
         #mouse-icon::before {
-
             content: "";
 
             position: absolute;
 
             left: 50%;
-
             top: 0;
 
             width: 1px;
-
             height: 16px;
 
             background:
@@ -580,17 +490,13 @@
                 translateX(-50%);
         }
 
-
         #mouse-icon span {
-
             position: absolute;
 
             left: 50%;
-
             top: 7px;
 
             width: 4px;
-
             height: 7px;
 
             border-radius: 3px;
@@ -607,17 +513,14 @@
         ========================================================= */
 
         #impact-count-card {
-
             justify-self: center;
 
             min-width: 246px;
-
             min-height: 78px;
 
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             gap: 14px;
@@ -654,31 +557,25 @@
                 );
         }
 
-
         #impact-count-icon,
         #make-ripple-button-icon {
-
             position: relative;
 
             width: 44px;
-
             height: 30px;
 
             flex: 0 0 auto;
         }
 
-
         #impact-count-icon::before,
         #impact-count-icon::after,
         #make-ripple-button-icon::before,
         #make-ripple-button-icon::after {
-
             content: "";
 
             position: absolute;
 
             left: 50%;
-
             top: 50%;
 
             border:
@@ -699,38 +596,28 @@
                 );
         }
 
-
         #impact-count-icon::before,
         #make-ripple-button-icon::before {
-
             width: 20px;
-
             height: 9px;
         }
 
-
         #impact-count-icon::after,
         #make-ripple-button-icon::after {
-
             width: 31px;
-
             height: 15px;
 
             opacity: 0.62;
         }
 
-
         #impact-count-icon span,
         #make-ripple-button-icon span {
-
             position: absolute;
 
             left: 50%;
-
             top: 2px;
 
             width: 5px;
-
             height: 9px;
 
             border-radius:
@@ -751,9 +638,7 @@
                 );
         }
 
-
         #impact-count {
-
             font-size: 28px;
 
             line-height: 1;
@@ -761,9 +646,7 @@
             color: #eefaff;
         }
 
-
         #impact-count-label {
-
             margin-top: 5px;
 
             font-size: 12px;
@@ -779,17 +662,14 @@
         ========================================================= */
 
         #make-ripple-button {
-
             justify-self: end;
 
             min-width: 235px;
-
             min-height: 58px;
 
             display: inline-flex;
 
             align-items: center;
-
             justify-content: center;
 
             gap: 12px;
@@ -831,9 +711,7 @@
                 transform 0.25s ease;
         }
 
-
         #make-ripple-button:hover {
-
             border-color: #70efff;
 
             background:
@@ -870,7 +748,6 @@
         ========================================================= */
 
         .modal-overlay {
-
             position: fixed;
 
             z-index: 2000;
@@ -880,7 +757,6 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             padding: 20px;
@@ -897,7 +773,6 @@
                 blur(8px);
 
             opacity: 0;
-
             visibility: hidden;
 
             transition:
@@ -905,17 +780,12 @@
                 visibility 0.3s ease;
         }
 
-
         .modal-overlay.open {
-
             opacity: 1;
-
             visibility: visible;
         }
 
-
         .modal {
-
             position: relative;
 
             width:
@@ -982,21 +852,16 @@
                 transform 0.35s ease;
         }
 
-
         .modal-overlay.open .modal {
-
             transform:
                 translateY(0)
                 scale(1);
         }
 
-
         .modal-close {
-
             position: absolute;
 
             top: 13px;
-
             right: 17px;
 
             border: 0;
@@ -1016,15 +881,11 @@
             cursor: pointer;
         }
 
-
         .modal-close:hover {
-
             color: #ffffff;
         }
 
-
         .modal h2 {
-
             margin:
                 0 0 9px;
 
@@ -1044,9 +905,7 @@
                 );
         }
 
-
         .modal-intro {
-
             margin:
                 0 0 25px;
 
@@ -1067,7 +926,6 @@
         ========================================================= */
 
         .location-intro {
-
             margin:
                 26px 0 4px;
 
@@ -1097,9 +955,7 @@
             letter-spacing: 0.03em;
         }
 
-
         .location-intro strong {
-
             display: block;
 
             margin-bottom: 3px;
@@ -1115,9 +971,7 @@
                 );
         }
 
-
         .location-note {
-
             margin:
                 0 0 4px;
 
@@ -1136,9 +990,7 @@
             font-style: italic;
         }
 
-
         .location-fields {
-
             display: grid;
 
             grid-template-columns:
@@ -1147,15 +999,11 @@
             gap: 14px;
         }
 
-
         .location-fields .field-group {
-
             min-width: 0;
         }
 
-
         .modal label {
-
             display: block;
 
             margin:
@@ -1176,15 +1024,11 @@
             text-transform: uppercase;
         }
 
-
         .location-fields label {
-
             margin-top: 12px;
         }
 
-
         .optional-label {
-
             color:
                 rgba(
                     220,
@@ -1194,9 +1038,7 @@
                 );
         }
 
-
         .optional-label span {
-
             margin-left: 5px;
 
             font-size: 10px;
@@ -1214,10 +1056,8 @@
                 );
         }
 
-
         .modal input,
         .modal textarea {
-
             width: 100%;
 
             border:
@@ -1251,10 +1091,8 @@
                 box-shadow 0.25s ease;
         }
 
-
         .modal input:focus,
         .modal textarea:focus {
-
             border-color:
                 rgba(
                     170,
@@ -1273,17 +1111,13 @@
                 );
         }
 
-
         .modal textarea {
-
             min-height: 135px;
 
             resize: vertical;
         }
 
-
         .modal-actions {
-
             display: flex;
 
             justify-content: flex-end;
@@ -1293,9 +1127,7 @@
             margin-top: 25px;
         }
 
-
         .modal-button {
-
             padding:
                 11px 18px;
 
@@ -1304,9 +1136,7 @@
             cursor: pointer;
         }
 
-
         .modal-button.cancel {
-
             border:
                 1px solid
                 rgba(
@@ -1327,9 +1157,7 @@
                 );
         }
 
-
         .modal-button.submit {
-
             border:
                 1px solid
                 rgba(
@@ -1359,9 +1187,7 @@
                 );
         }
 
-
         .modal-button.submit:hover {
-
             background:
                 rgba(
                     78,
@@ -1386,13 +1212,10 @@
         ========================================================= */
 
         #impact-message {
-
             text-align: center;
         }
 
-
         #impact-message h2 {
-
             margin:
                 0 0 24px;
 
@@ -1426,9 +1249,7 @@
             font-weight: 400;
         }
 
-
         #impact-message .quote {
-
             margin:
                 0 0 24px;
 
@@ -1455,9 +1276,7 @@
             font-style: italic;
         }
 
-
         #impact-message .details {
-
             color:
                 rgba(
                     205,
@@ -1471,9 +1290,7 @@
             text-align: right;
         }
 
-
         #impact-message .impact-type {
-
             margin-top: 24px;
 
             padding-top: 15px;
@@ -1514,15 +1331,11 @@
         @media (max-width: 700px) {
 
             #sky-banner-image {
-
                 width: 100%;
-
                 height: auto;
             }
 
-
             #well-interaction-bar {
-
                 min-height: 118px;
 
                 grid-template-columns:
@@ -1538,25 +1351,18 @@
                     7px 12px;
             }
 
-
             #well-instruction {
-
                 gap: 10px;
 
                 font-size: 11px;
             }
 
-
             #mouse-icon {
-
                 width: 24px;
-
                 height: 38px;
             }
 
-
             #impact-count-card {
-
                 min-width: 0;
 
                 min-height: 58px;
@@ -1567,27 +1373,19 @@
                 gap: 6px;
             }
 
-
             #impact-count-icon {
-
                 display: none;
             }
 
-
             #impact-count {
-
                 font-size: 22px;
             }
 
-
             #impact-count-label {
-
                 font-size: 9px;
             }
 
-
             #make-ripple-button {
-
                 grid-column:
                     1 / -1;
 
@@ -1603,9 +1401,7 @@
                 font-size: 13px;
             }
 
-
             #make-ripple-button-icon {
-
                 width: 31px;
 
                 transform:
@@ -1615,30 +1411,23 @@
                     right center;
             }
 
-
             #message-from-well {
-
                 padding-bottom:
                     150px;
             }
 
-
             .modal {
-
                 padding:
                     27px 22px;
             }
 
-
             .location-fields {
-
                 grid-template-columns:
                     1fr;
 
                 gap: 0;
             }
         }
-
 
     </style>
 </head>
@@ -1669,8 +1458,6 @@
 
     <!-- =========================================================
          THE RIPPLE WELL
-
-         The entire area is now the interactive Well.
     ========================================================== -->
 
     <main id="ripple-well">
@@ -1710,9 +1497,6 @@
 
         <!-- =====================================================
              FULL-WELL RIPPLE CANVAS
-
-             This is intentionally AFTER the water and deep-well
-             sections so it can cover the entire Ripple Well.
         ====================================================== -->
 
         <canvas
@@ -1735,36 +1519,27 @@
             A Message From The Well
         </h2>
 
-
         <div
             class="message-divider"
             aria-hidden="true"
         >
-
             <span></span>
-
             <b>◆</b>
-
             <span></span>
-
         </div>
-
 
         <p>
             This is a space for the waves of kindness,<br>
             strength, and hope to echo across time.
         </p>
 
-
         <p>
-
             <strong>
                 Leave your ripple.
             </strong>
 
             Be part of something<br>
             that will never fade.
-
         </p>
 
     </section>
@@ -1780,9 +1555,6 @@
         aria-label="Ripple Well controls"
     >
 
-
-        <!-- LEFT -->
-
         <div id="well-instruction">
 
             <div
@@ -1792,20 +1564,13 @@
                 <span></span>
             </div>
 
-
             <div>
-
                 Click anywhere on the pond<br>
-
                 to make a ripple.
-
             </div>
 
         </div>
 
-
-
-        <!-- CENTER -->
 
         <div
             id="impact-count-card"
@@ -1818,7 +1583,6 @@
             >
                 <span></span>
             </div>
-
 
             <div>
 
@@ -1835,9 +1599,6 @@
         </div>
 
 
-
-        <!-- RIGHT -->
-
         <button
             id="make-ripple-button"
             type="button"
@@ -1853,7 +1614,6 @@
             Make a Ripple
 
         </button>
-
 
     </aside>
 
@@ -1876,7 +1636,6 @@
             aria-labelledby="make-ripple-title"
         >
 
-
             <button
                 class="modal-close"
                 type="button"
@@ -1886,11 +1645,9 @@
                 ×
             </button>
 
-
             <h2 id="make-ripple-title">
                 Make Your Ripple
             </h2>
-
 
             <p class="modal-intro">
 
@@ -1913,14 +1670,11 @@
             </p>
 
 
-
             <form id="ripple-form">
-
 
                 <label for="ripple-message">
                     Your Ripple
                 </label>
-
 
                 <textarea
                     id="ripple-message"
@@ -1931,20 +1685,16 @@
                 ></textarea>
 
 
-
                 <label
                     for="ripple-name"
                     class="optional-label"
                 >
-
                     Name or Display Name
 
                     <span>
                         Optional
                     </span>
-
                 </label>
-
 
                 <input
                     id="ripple-name"
@@ -1955,7 +1705,6 @@
                 >
 
 
-
                 <div class="location-intro">
 
                     <strong>
@@ -1964,17 +1713,12 @@
 
                 </div>
 
-
                 <p class="location-note">
-
                     Optional — we'd love to know how far our ripples are reaching.
-
                 </p>
 
 
-
                 <div class="location-fields">
-
 
                     <div class="field-group">
 
@@ -1982,15 +1726,12 @@
                             for="ripple-region"
                             class="optional-label"
                         >
-
                             Province / State
 
                             <span>
                                 Optional
                             </span>
-
                         </label>
-
 
                         <input
                             id="ripple-region"
@@ -2003,22 +1744,18 @@
                     </div>
 
 
-
                     <div class="field-group">
 
                         <label
                             for="ripple-country"
                             class="optional-label"
                         >
-
                             Country
 
                             <span>
                                 Optional
                             </span>
-
                         </label>
-
 
                         <input
                             id="ripple-country"
@@ -2030,13 +1767,10 @@
 
                     </div>
 
-
                 </div>
 
 
-
                 <div class="modal-actions">
-
 
                     <button
                         class="modal-button cancel"
@@ -2046,7 +1780,6 @@
                         Maybe Later
                     </button>
 
-
                     <button
                         class="modal-button submit"
                         type="submit"
@@ -2054,12 +1787,9 @@
                         Send My Ripple
                     </button>
 
-
                 </div>
 
-
             </form>
-
 
         </div>
 
@@ -2069,8 +1799,6 @@
 
     <!-- =========================================================
          IMPACT RIPPLE MESSAGE MODAL
-
-         Retained for later when Impact Ripples are restored.
     ========================================================== -->
 
     <div
@@ -2087,7 +1815,6 @@
             aria-labelledby="impact-title"
         >
 
-
             <button
                 class="modal-close"
                 type="button"
@@ -2097,28 +1824,23 @@
                 ×
             </button>
 
-
             <h2 id="impact-title">
                 A Message From The Well
             </h2>
-
 
             <div
                 class="quote"
                 id="impact-quote"
             ></div>
 
-
             <div
                 class="details"
                 id="impact-details"
             ></div>
 
-
             <div class="impact-type">
                 Impact Ripple
             </div>
-
 
         </div>
 
