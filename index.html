@@ -77,24 +77,19 @@
         ===================================================== */
 
         :root {
-
             /*
-             * Top Banner.png is 1717 x 916.
-             * The water line begins at approximately y = 714.
-             * This ratio preserves the artwork's natural crop
-             * when the banner scales with the viewport width.
+             * The approved artwork is now a shorter, normal website
+             * hero.  It scrolls away naturally as the visitor enters
+             * The Ripple Well.
              */
-            --banner-waterline-ratio: 0.4158;
-            --sky-height:
-                calc(100vw * var(--banner-waterline-ratio));
+            --sky-height: clamp(430px, 58vh, 650px);
         }
-
 
         #sky-banner {
 
-            position: fixed;
+            position: relative;
 
-            z-index: 1000;
+            z-index: 10;
 
             top: 0;
             left: 0;
@@ -119,9 +114,12 @@
             inset: 0;
 
             width: 100%;
-            height: auto;
+            height: 100%;
 
             display: block;
+
+            object-fit: cover;
+            object-position: center 43%;
 
             pointer-events: none;
 
@@ -155,8 +153,8 @@
 
             min-height: 300vh;
 
-            /* The Well begins exactly where the fixed horizon ends. */
-            margin-top: var(--sky-height);
+            /* The Well follows the banner naturally in normal page flow. */
+            margin-top: 0;
 
             background:
                 linear-gradient(
@@ -2150,7 +2148,24 @@
 
         }
 
-    </style>
+    
+
+        /* =====================================================
+           SHORTER NORMAL-SCROLL HERO
+        ===================================================== */
+
+        @media (max-width: 900px) {
+            :root {
+                --sky-height: clamp(360px, 52vh, 520px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --sky-height: clamp(330px, 55vh, 460px);
+            }
+        }
+</style>
 </head>
 
 
