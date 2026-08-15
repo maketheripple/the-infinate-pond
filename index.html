@@ -1758,152 +1758,59 @@
         ===================================================== */
 
         #impact-message {
-
             text-align: center;
         }
 
 
-        /*
-           MAIN TITLE
-        */
+        #impact-message .quote {
+
+            margin:
+                24px 0;
+
+            font-size:
+                clamp(23px, 4vw, 34px);
+
+            line-height: 1.35;
+
+            color: #edfaff;
+
+            text-shadow:
+                0 0 13px
+                rgba(133, 218, 242, 0.22);
+
+            font-style: italic;
+        }
+
+
+        #impact-message .details {
+
+            color:
+                rgba(205, 234, 243, 0.65);
+
+            line-height: 1.65;
+
+            text-align: right;
+        }
+
 
         #impact-message .impact-type {
 
             display: block;
 
-            margin:
-                0 0 22px;
+            margin-bottom: 4px;
 
-            font-size:
-                clamp(24px, 4vw, 32px);
+            font-size: 10px;
 
             line-height: 1.2;
 
-            letter-spacing: 0.04em;
-
-            text-transform: none;
-
-            color: #effbff;
-
-            text-shadow:
-                0 0 10px
-                rgba(151, 221, 242, 0.35);
-        }
-
-
-        /*
-           QUOTE
-        */
-
-        #impact-message .quote {
-
-            margin:
-                0 auto 27px;
-
-            max-width: 480px;
-
-            font-size:
-                clamp(23px, 4vw, 34px);
-
-            line-height: 1.4;
-
-            font-style: italic;
-
-            color: #edfaff;
-
-            text-align: center;
-
-            text-shadow:
-                0 0 13px
-                rgba(133, 218, 242, 0.22);
-        }
-
-
-        /*
-           ATTRIBUTION
-        */
-
-        #impact-message .details {
-
-            margin-top: 8px;
-
-            padding-top: 4px;
-
-            color:
-                rgba(205, 234, 243, 0.72);
-
-            line-height: 1.55;
-
-            text-align: right;
-        }
-
-
-        #impact-message .impact-author {
-
-            display: block;
-
-            font-size: 16px;
-
-            color:
-                rgba(226, 247, 252, 0.86);
-
-            text-align: right;
-        }
-
-
-        #impact-message .impact-author::before {
-
-            content: "- ";
-
-            color:
-                rgba(171, 221, 235, 0.70);
-        }
-
-
-        #impact-message .impact-location {
-
-            display: block;
-
-            margin-top: 2px;
-
-            font-size: 13px;
-
-            color:
-                rgba(177, 220, 232, 0.58);
-
-            text-align: right;
-        }
-
-
-        /*
-           "A MESSAGE FROM THE WELL"
-           SUBTLE FOOTER
-        */
-
-        #impact-message .impact-source {
-
-            display: block;
-
-            margin-top: 34px;
-
-            padding-top: 17px;
-
-            border-top:
-                1px solid
-                rgba(141, 207, 226, 0.13);
-
-            font-size: 11px;
-
-            line-height: 1.4;
-
-            letter-spacing: 0.10em;
+            letter-spacing: 0.16em;
 
             text-transform: uppercase;
 
             color:
-                rgba(164, 211, 225, 0.38);
+                rgba(150, 220, 239, 0.68);
 
-            text-align: center;
+            font-weight: 400;
         }
 
 
@@ -2015,48 +1922,6 @@
                 grid-template-columns:
                     1fr;
                 gap: 0;
-            }
-
-
-            /* =================================================
-               MOBILE IMPACT RIPPLE MESSAGE
-            ================================================== */
-
-            #impact-message .impact-type {
-
-                font-size: 25px;
-
-                margin-bottom: 18px;
-            }
-
-
-            #impact-message .quote {
-
-                font-size: 22px;
-
-                line-height: 1.4;
-
-                margin-bottom: 24px;
-            }
-
-
-            #impact-message .impact-author {
-
-                font-size: 15px;
-            }
-
-
-            #impact-message .impact-location {
-
-                font-size: 12px;
-            }
-
-
-            #impact-message .impact-source {
-
-                margin-top: 28px;
-
-                font-size: 10px;
             }
 
         }
@@ -2410,46 +2275,23 @@
                 ×
             </button>
 
-
-            <!-- =================================================
-                 TITLE
-            ================================================== -->
-
-            <div
-                class="impact-type"
-                id="impact-title"
-            >
+            <div class="impact-type">
                 Impact Ripple
             </div>
 
-
-            <!-- =================================================
-                 QUOTE
-            ================================================== -->
+            <h2 id="impact-title">
+                A Message From The Well
+            </h2>
 
             <div
                 class="quote"
                 id="impact-quote"
             ></div>
 
-
-            <!-- =================================================
-                 ATTRIBUTION
-            ================================================== -->
-
             <div
                 class="details"
                 id="impact-details"
             ></div>
-
-
-            <!-- =================================================
-                 FOOTER
-            ================================================== -->
-
-            <div class="impact-source">
-                A Message From The Well
-            </div>
 
         </div>
 
