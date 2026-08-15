@@ -29,7 +29,7 @@
     ===================================================== */
 
     const waterWindow =
-        document.getElementById("water-window");
+        document.getElementById("ripple-well");
 
     const waterImage =
         document.getElementById("water-surface-image");
