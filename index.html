@@ -13,75 +13,49 @@
 
     <style>
 
-        /* =========================================================
+        /* =====================================================
            THE RIPPLE WELL
-           VERSION 3.2 — IMAGE WATER + CENTERED MESSAGE BANNER
+           VERSION 2.7 — DESIGN FOUNDATION
 
-           PAGE STRUCTURE
+           THREE-LAYER WATER EXPERIENCE
 
-           1. TOP BANNER
-              Top Banner.png
-              Normal website scrolling.
-
-           2. WATER SURFACE
-              Water.png
-              The actual visible water.
-
-           3. DEEP WELL
-              Dark continuation below Water.png.
-
-           4. RIPPLE CANVAS
-              Transparent canvas covering the entire Ripple Well.
-              This means the water image AND the darkening depth
-              beneath it remain clickable.
-
-           5. MESSAGE FROM THE WELL
-              Outside the interactive Well.
-
-           6. FIXED LOWER BANNER
-              Remains stationary while scrolling.
+           1. SURFACE LAYER
+           2. REFLECTION LAYER
+           3. DEPTH LAYER
 
            IMPACT RIPPLES
-           Temporarily removed from the visual water layer.
+           - Organic elliptical forms
+           - Four database-controlled sizes
+           - Natural, irregular placement
+           - Individual movement and distortion
+           - Recent Impact Ripples subtly appear in the
+             lower edge of the night-sky banner
 
-        ========================================================= */
-
-
-        /* =========================================================
-           GLOBAL
-        ========================================================= */
+           THE POND REMAINS THE PRIMARY INTERACTION SPACE.
+        ===================================================== */
 
         * {
             box-sizing: border-box;
         }
 
-
         html {
             margin: 0;
             padding: 0;
-
-            background: #020204;
-
+            background: #02070d;
             scroll-behavior: smooth;
-        }
 
+            /* Visual height of the complete sky + mountain horizon. */
+            --sky-height: clamp(520px, 45vh, 700px);
+        }
 
         body {
             margin: 0;
             padding: 0;
-
-            background: #020204;
-
+            background: #02070d;
             color: #eefaff;
-
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
-
+            font-family: Georgia, "Times New Roman", serif;
             overflow-x: hidden;
         }
-
 
         button,
         input,
@@ -90,22 +64,43 @@
         }
 
 
-        img {
-            max-width: 100%;
+        /* =====================================================
+           IMAGE-BASED TOP BANNER
+
+           The approved Top Banner.png contains everything above
+           the water line: stars, moon, Make the Ripple branding,
+           The Ripple Well title, and the layered blue mountains.
+
+           The lower edge is deliberately cropped at the actual
+           water line so the live WebGL water begins immediately
+           beneath the artwork.
+        ===================================================== */
+
+        :root {
+
+            /*
+             * Top Banner.png is 1717 x 916.
+             * The water line begins at approximately y = 714.
+             * This ratio preserves the artwork's natural crop
+             * when the banner scales with the viewport width.
+             */
+            --banner-waterline-ratio: 0.4158;
+            --sky-height:
+                calc(100vw * var(--banner-waterline-ratio));
         }
 
 
-        /* =========================================================
-           TOP BANNER
-        ========================================================= */
-
         #sky-banner {
 
-            position: relative;
+            position: fixed;
 
-            z-index: 10;
+            z-index: 1000;
+
+            top: 0;
+            left: 0;
 
             width: 100%;
+            height: var(--sky-height);
 
             overflow: hidden;
 
@@ -119,485 +114,1036 @@
 
         #sky-banner-image {
 
-            display: block;
+            position: absolute;
+
+            inset: 0;
 
             width: 100%;
-
             height: auto;
 
-            min-height: 1px;
+            display: block;
 
             pointer-events: none;
 
             user-select: none;
-
-            -webkit-user-drag: none;
         }
 
 
-        /* =========================================================
-           THE RIPPLE WELL
+        /*
+         * The generated banner already contains its own stars,
+         * mountains, logo, moon and typography.  These legacy
+         * generated layers stay disabled so they cannot duplicate
+         * anything in the approved artwork.
+         */
 
-           IMPORTANT:
-           This entire area is the interactive water area.
+        #stars,
+        #mountain-layers,
+        #branding,
+        #recent-impact-ripples {
+            display: none !important;
+        }
 
-           The visible water is the image.
-           The darker area below it represents increasing depth.
-        ========================================================= */
+
+        /* =====================================================
+           RIPPLE WELL
+        ===================================================== */
+
 
         #ripple-well {
 
             position: relative;
 
-            z-index: 2;
-
-            width: 100%;
-
             min-height: 300vh;
 
-            margin: 0;
-
-            background: #020204;
-        }
-
-
-        /* =========================================================
-           WATER SURFACE
-
-           The image determines the natural height of this section.
-        ========================================================= */
-
-        #water-window {
-
-            position: relative;
-
-            z-index: 2;
-
-            width: 100%;
-
-            overflow: hidden;
-
-            background: #020204;
-
-            line-height: 0;
-        }
-
-
-        /* =========================================================
-           ACTUAL WATER IMAGE
-        ========================================================= */
-
-        #water-surface-image {
-
-            position: relative;
-
-            z-index: 1;
-
-            display: block;
-
-            width: 100%;
-
-            height: auto;
-
-            margin: 0;
-
-            padding: 0;
-
-            object-fit: contain;
-
-            pointer-events: none;
-
-            user-select: none;
-
-            -webkit-user-drag: none;
-        }
-
-
-        /* =========================================================
-           DEEP WELL
-
-           This section begins after Water.png.
-
-           The page continues in the same deep colour as the
-           bottom of the image.
-        ========================================================= */
-
-        #deep-well {
-
-            position: relative;
-
-            z-index: 1;
-
-            width: 100%;
-
-            min-height: 220vh;
-
-            margin: 0;
-
-            background: #020204;
-        }
-
-
-        /* =========================================================
-           SUBTLE DEPTH GRADIENT
-
-           The actual water appearance still comes from Water.png.
-
-           This simply keeps the darkness continuing naturally
-           below the image.
-        ========================================================= */
-
-        #deep-well::before {
-
-            content: "";
-
-            position: absolute;
-
-            top: 0;
-
-            left: 0;
-
-            width: 100%;
-
-            height: 100%;
-
-            pointer-events: none;
+            /* The Well begins exactly where the fixed horizon ends. */
+            margin-top: var(--sky-height);
 
             background:
                 linear-gradient(
                     to bottom,
-                    rgba(2, 2, 4, 0.00) 0%,
-                    rgba(2, 2, 4, 0.22) 28%,
-                    rgba(2, 2, 4, 0.58) 62%,
-                    rgba(2, 2, 4, 0.90) 100%
+                    #061721 0%,
+                    #04131d 18%,
+                    #031019 45%,
+                    #020c14 72%,
+                    #01080e 100%
                 );
         }
 
 
-        /* =========================================================
-           FULL WELL RIPPLE CANVAS
+        /* =====================================================
+           WATER WINDOW
+        ===================================================== */
 
-           IMPORTANT:
+        #water-window {
 
-           This canvas is now positioned over the ENTIRE
-           #ripple-well.
+            position: sticky;
 
-           It is transparent, so the water image remains visible.
+            z-index: 2;
 
-           It is also below the fixed interaction banner because
-           the banner has a higher z-index.
+            top: 0;
 
-        ========================================================= */
+            width: 100%;
+            height: 100vh;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    #071d29 0%,
+                    #041721 38%,
+                    #020e16 100%
+                );
+        }
+
+
+        /* =====================================================
+           LAYER 1 — SURFACE
+        ===================================================== */
+
+        #surface-layer {
+
+            position: absolute;
+
+            z-index: 1;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    ellipse at 50% -8%,
+                    rgba(174, 231, 247, 0.17),
+                    transparent 36%
+                ),
+
+                linear-gradient(
+                    to bottom,
+                    rgba(39, 112, 137, 0.24),
+                    rgba(3, 24, 34, 0.08) 42%,
+                    rgba(1, 11, 17, 0.46) 100%
+                );
+        }
+
+
+        .surface-wave {
+
+            position: absolute;
+
+            left: -15%;
+
+            width: 130%;
+
+            height: 95px;
+
+            border-top:
+                1px solid
+                rgba(144, 219, 237, 0.075);
+
+            border-radius: 50%;
+
+            filter: blur(1.2px);
+
+            opacity: 0.75;
+
+            animation:
+                surfaceDrift
+                var(--wave-speed)
+                ease-in-out
+                infinite
+                alternate;
+        }
+
+
+        .surface-wave:nth-child(1) {
+            top: 8%;
+            --wave-speed: 11s;
+        }
+
+        .surface-wave:nth-child(2) {
+            top: 16%;
+            --wave-speed: 14s;
+            opacity: 0.45;
+        }
+
+        .surface-wave:nth-child(3) {
+            top: 25%;
+            --wave-speed: 17s;
+            opacity: 0.30;
+        }
+
+        .surface-wave:nth-child(4) {
+            top: 34%;
+            --wave-speed: 13s;
+            opacity: 0.22;
+        }
+
+
+        @keyframes surfaceDrift {
+
+            from {
+                transform:
+                    translateX(-2%)
+                    scaleX(0.99);
+            }
+
+            to {
+                transform:
+                    translateX(2%)
+                    scaleX(1.015);
+            }
+        }
+
+
+        /* =====================================================
+           WATER CANVAS
+        ===================================================== */
 
         #water-canvas {
 
             position: absolute;
 
-            z-index: 20;
+            z-index: 3;
+
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            cursor: crosshair;
+        }
+
+
+        /* =====================================================
+           LAYER 2 — REFLECTION
+        ===================================================== */
+
+        #reflection-layer {
+
+            position: absolute;
+
+            z-index: 6;
 
             top: 0;
+            left: 0;
+
+            width: 100%;
+
+            height: 285px;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            opacity: 0.74;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,1) 0%,
+                    rgba(0,0,0,0.92) 35%,
+                    rgba(0,0,0,0.40) 75%,
+                    transparent 100%
+                );
+
+            -webkit-mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,1) 0%,
+                    rgba(0,0,0,0.92) 35%,
+                    rgba(0,0,0,0.40) 75%,
+                    transparent 100%
+                );
+        }
+
+
+        #reflection-content {
+
+            position: absolute;
+
+            top: -8px;
+            left: 50%;
+
+            width: min(720px, 96vw);
+
+            height: 390px;
+
+            transform:
+                translateX(-50%)
+                scaleY(-0.58);
+
+            transform-origin: top center;
+
+            opacity: 0.68;
+
+            filter:
+                blur(1.1px);
+
+            text-align: center;
+        }
+
+
+        #reflection-logo-wrap {
+
+            position: absolute;
+
+            top: 18px;
+
+            left: 50%;
+
+            width: 270px;
+            height: 150px;
+
+            transform:
+                translateX(-50%);
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        #reflection-logo-glow {
+
+            position: absolute;
+
+            width: 250px;
+            height: 135px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    ellipse,
+                    rgba(177, 231, 246, 0.26),
+                    rgba(74, 168, 197, 0.10) 38%,
+                    transparent 72%
+                );
+
+            filter: blur(13px);
+        }
+
+
+        #reflection-logo {
+
+            position: relative;
+
+            width: 240px;
+
+            height: auto;
+
+            opacity: 0.58;
+
+            filter:
+                blur(0.8px)
+                drop-shadow(
+                    0 0 9px
+                    rgba(126, 213, 236, 0.34)
+                );
+        }
+
+
+        #reflection-presents {
+
+            position: absolute;
+
+            top: 250px;
 
             left: 0;
 
             width: 100%;
 
-            height: 100%;
+            color:
+                rgba(183, 229, 242, 0.42);
 
-            display: block;
+            font-size: 18px;
+
+            letter-spacing: 0.24em;
+
+            text-transform: uppercase;
+        }
+
+
+        #reflection-title {
+
+            position: absolute;
+
+            top: 278px;
+
+            left: 0;
+
+            width: 100%;
+
+            color:
+                rgba(189, 233, 246, 0.48);
+
+            font-size:
+                clamp(38px, 5vw, 62px);
+
+            letter-spacing: 0.04em;
+
+            font-weight: 400;
+        }
+
+
+        #reflection-tagline {
+
+            position: absolute;
+
+            top: 352px;
+
+            left: 0;
+
+            width: 100%;
+
+            color:
+                rgba(170, 221, 235, 0.34);
+
+            font-size:
+                clamp(14px, 2vw, 19px);
+
+            letter-spacing: 0.20em;
+        }
+
+
+        #reflection-ripples {
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    transparent 0px,
+                    transparent 12px,
+                    rgba(180, 232, 246, 0.035) 13px,
+                    transparent 15px,
+                    transparent 25px
+                );
+
+            mix-blend-mode: screen;
+
+            animation:
+                reflectionWaver
+                9s
+                ease-in-out
+                infinite
+                alternate;
+        }
+
+
+        @keyframes reflectionWaver {
+
+            from {
+                transform:
+                    translateX(-3px)
+                    skewX(-0.3deg);
+            }
+
+            to {
+                transform:
+                    translateX(4px)
+                    skewX(0.3deg);
+            }
+        }
+
+
+        #reflection-distortion {
+
+            position: absolute;
+
+            z-index: 8;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            background:
+                radial-gradient(
+                    ellipse at var(--ripple-x) var(--ripple-y),
+                    rgba(196, 239, 249, 0.20),
+                    rgba(94, 192, 218, 0.07) 12%,
+                    transparent 32%
+                );
+
+            transition:
+                opacity 0.25s ease;
+        }
+
+
+        #reflection-distortion.active {
+            opacity: 1;
+        }
+
+
+        /* =====================================================
+           LAYER 3 — DEPTH
+        ===================================================== */
+
+        #depth-layer {
+
+            position: absolute;
+
+            z-index: 12;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            overflow: hidden;
+        }
+
+
+        #depth-haze {
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    rgba(0, 7, 12, 0.04) 22%,
+                    rgba(0, 7, 12, 0.22) 62%,
+                    rgba(0, 5, 9, 0.54) 100%
+                );
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           IMPACT RIPPLE OBJECTS
+        ===================================================== */
+
+        #impact-ripples-layer {
+
+            position: absolute;
+
+            z-index: 15;
+
+            inset: 0;
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           IMPACT RIPPLE
+           BASE
+
+           The actual visual is generated from irregular
+           elliptical rings. It is deliberately NOT a
+           perfect circle.
+        ===================================================== */
+
+        .impact-ripple {
+
+            position: absolute;
+
+            width: 184px;
+            height: 102px;
+
+            pointer-events: auto;
+
+            cursor: pointer;
+
+            transform:
+                translate(-50%, -50%)
+                rotate(var(--rotation))
+                scale(var(--scale, 1));
+
+            border-radius:
+                58% 42%
+                67% 33%
+                /
+                48% 62%
+                38% 52%;
 
             background: transparent;
 
-            cursor: crosshair;
+            border: none;
 
-            pointer-events: auto;
+            opacity: 1;
+
+            filter: none;
+
+            animation:
+                organicFloat
+                var(--float-time)
+                ease-in-out
+                infinite
+                alternate;
+
+            transition:
+                transform 0.55s ease,
+                opacity 0.45s ease,
+                filter 0.45s ease;
         }
 
 
-        /* =========================================================
-           MESSAGE FROM THE WELL
-        ========================================================= */
+        /* =====================================================
+           PRIMARY ORGANIC RING
+        ===================================================== */
 
-        #message-from-well {
+        .impact-ripple::before {
 
-            position: relative;
+            content: "";
 
-            z-index: 30;
+            position: absolute;
 
-            min-height: 310px;
+            left: 50%;
+            top: 50%;
 
-            padding:
-                58px 20px
-                180px;
+            width: 58%;
+            height: 42%;
+
+            transform:
+                translate(-50%, -50%)
+                rotate(var(--ripple-rotation, 0deg))
+                scale(0.42);
+
+            transform-origin: center;
+
+            border:
+                1px solid
+                rgba(151, 226, 243, 0.34);
+
+            border-radius:
+                50%;
+
+            background: transparent;
+
+            box-shadow:
+                0 0 5px
+                rgba(101, 203, 229, 0.11);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            animation:
+                impactRippleWave
+                var(--ripple-time, 7s)
+                ease-out
+                infinite;
+        }
+
+
+        /* =====================================================
+           SECONDARY DISTORTION RING
+        ===================================================== */
+
+        .impact-ripple::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 76%;
+            height: 52%;
+
+            transform:
+                translate(-50%, -50%)
+                rotate(var(--ripple-secondary-rotation, 0deg))
+                scale(0.40);
+
+            border-radius:
+                48%
+                52%
+                55%
+                45%
+                /
+                53%
+                47%
+                51%
+                49%;
+
+            border:
+                1px solid
+                rgba(120, 212, 235, 0.11);
+
+            background: transparent;
+
+            filter:
+                blur(1.4px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            animation:
+                impactRippleDistortion
+                var(--ripple-time, 7s)
+                ease-out
+                infinite;
+        }
+
+
+        /* =====================================================
+           PRIMARY RING ANIMATION
+        ===================================================== */
+
+        @keyframes impactRippleWave {
+
+            0% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(var(--ripple-rotation, 0deg))
+                    scale(0.42);
+
+                opacity: 0;
+            }
+
+
+            8% {
+
+                opacity:
+                    var(--ripple-opacity, 0.34);
+            }
+
+
+            45% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.72
+                    );
+            }
+
+
+            78% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.26
+                    );
+            }
+
+
+            100% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(
+                        calc(
+                            var(--ripple-rotation, 0deg) + 5deg
+                        )
+                    )
+                    scale(
+                        var(--ripple-scale, 1)
+                    );
+
+                opacity: 0;
+            }
+        }
+
+
+        /* =====================================================
+           SECONDARY RING ANIMATION
+        ===================================================== */
+
+        @keyframes impactRippleDistortion {
+
+            0% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(
+                        var(
+                            --ripple-secondary-rotation,
+                            0deg
+                        )
+                    )
+                    scale(0.40);
+
+                opacity: 0;
+            }
+
+
+            15% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.24
+                    );
+            }
+
+
+            55% {
+
+                opacity:
+                    calc(
+                        var(--ripple-opacity, 0.34) * 0.13
+                    );
+            }
+
+
+            100% {
+
+                transform:
+                    translate(-50%, -50%)
+                    rotate(
+                        calc(
+                            var(
+                                --ripple-secondary-rotation,
+                                0deg
+                            ) - 4deg
+                        )
+                    )
+                    scale(
+                        calc(
+                            var(--ripple-scale, 1) * 1.08
+                        )
+                    );
+
+                opacity: 0;
+            }
+        }
+
+
+        /* =====================================================
+           ORGANIC FLOAT
+        ===================================================== */
+
+        @keyframes organicFloat {
+
+            0% {
+                margin-top: -7px;
+                margin-left: -5px;
+            }
+
+            50% {
+                margin-top: 3px;
+                margin-left: 6px;
+            }
+
+            100% {
+                margin-top: 9px;
+                margin-left: -3px;
+            }
+        }
+
+
+        /* =====================================================
+           HOVER
+
+           Hover should reveal the ripple without turning it
+           into a conventional button.
+        ===================================================== */
+
+        .impact-ripple:hover {
+
+            filter:
+                drop-shadow(
+                    0 0 9px
+                    rgba(107, 216, 242, 0.30)
+                );
+
+            opacity: 1;
+        }
+
+
+        .impact-ripple:hover::before {
+
+            border-color:
+                rgba(170, 235, 249, 0.52);
+
+            box-shadow:
+                0 0 9px
+                rgba(110, 215, 240, 0.24);
+        }
+
+
+        .impact-ripple:hover::after {
+
+            border-color:
+                rgba(145, 224, 241, 0.20);
+        }
+
+
+        /* =====================================================
+           IMPACT SIZE CLASSES
+
+           The database still controls which class is used.
+           The sizes are intentionally clearly different.
+        ===================================================== */
+
+        .impact-size-small {
+            width: 126px;
+            height: 70px;
+        }
+
+        .impact-size-medium {
+            width: 105px;
+            height: 58px;
+        }
+
+        .impact-size-large {
+            width: 240px;
+            height: 133px;
+        }
+
+        .impact-size-extra-large {
+            width: 303px;
+            height: 168px;
+        }
+
+
+        /* =====================================================
+           DEPTH MARKERS
+
+           Depth changes visibility more subtly than size.
+           The physical size comes from the approved size.
+        ===================================================== */
+
+        .depth-far {
+            opacity: 0.56;
+        }
+
+
+        .depth-mid {
+            opacity: 0.76;
+        }
+
+
+        .depth-near {
+            opacity: 0.94;
+        }
+
+
+        /* =====================================================
+           DEPTH MESSAGE
+        ===================================================== */
+
+        #depth-message {
+
+            position: absolute;
+
+            z-index: 20;
+
+            left: 50%;
+            bottom: 45px;
+
+            transform:
+                translateX(-50%);
+
+            width:
+                min(600px, 82%);
 
             text-align: center;
-
-            background:
-                #020204;
-        }
-
-
-        #message-from-well h2 {
-
-            margin: 0;
-
-            font-size:
-                clamp(17px, 2vw, 23px);
-
-            font-weight: 400;
-
-            letter-spacing: 0.38em;
-
-            text-transform: uppercase;
-
-            color: #3ed8ed;
-        }
-
-
-        .message-divider {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 14px;
-
-            margin:
-                14px auto 18px;
-        }
-
-
-        .message-divider span {
-
-            width: 54px;
-
-            height: 1px;
-
-            background:
-                rgba(
-                    224,
-                    248,
-                    255,
-                    0.55
-                );
-        }
-
-
-        .message-divider b {
-
-            color: #e9fbff;
-
-            font-size: 10px;
-
-            font-weight: 400;
-        }
-
-
-        #message-from-well p {
-
-            margin:
-                0 auto 15px;
-
-            max-width: 720px;
-
-            font-size:
-                clamp(17px, 2vw, 21px);
-
-            line-height: 1.85;
 
             color:
-                rgba(
-                    239,
-                    250,
-                    255,
-                    0.88
-                );
-        }
+                rgba(198, 234, 245, 0.42);
 
+            font-size: 14px;
 
-        #message-from-well strong {
+            letter-spacing: 0.15em;
 
-            color: #3ed8ed;
-
-            font-weight: 400;
-        }
-
-
-        /* =========================================================
-           FIXED LOWER INTERACTION BANNER
-
-           The message is centered independently of the controls.
-           The Make a Ripple button sits in the top-right corner.
-        ========================================================= */
-
-        #well-interaction-bar {
-            position: fixed;
-            z-index: 1200;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            min-height: 132px;
-            padding: 14px 5.2vw 12px;
-            border-top: 1px solid rgba(158, 219, 236, 0.28);
-            border-bottom: 1px solid rgba(158, 219, 236, 0.18);
-            background: linear-gradient(
-                to bottom,
-                rgba(2, 15, 24, 0.94),
-                rgba(1, 10, 17, 0.97)
-            );
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
-            backdrop-filter: blur(8px);
-            text-align: center;
-        }
-
-        #well-message-center {
-            width: min(760px, calc(100% - 300px));
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        #well-message-center h2 {
-            margin: 0;
-            font-size: clamp(15px, 1.55vw, 20px);
-            font-weight: 400;
-            letter-spacing: 0.30em;
             text-transform: uppercase;
-            color: #3ed8ed;
+
+            pointer-events: none;
+
+            text-shadow:
+                0 0 9px
+                rgba(80, 180, 210, 0.22);
         }
 
-        #well-message-center p {
-            margin: 8px auto 0;
-            max-width: 760px;
-            font-size: clamp(12px, 1.15vw, 16px);
-            line-height: 1.45;
-            color: rgba(239, 250, 255, 0.88);
-        }
 
-        #well-instruction {
+        /* =====================================================
+           CLICK RIPPLE VISUALS
+           25% OF PREVIOUS VISUAL FOOTPRINT
+        ===================================================== */
+
+        .click-ripple {
+
             position: absolute;
-            left: 5.2vw;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: rgba(239, 250, 255, 0.72);
-            font-size: 12px;
-            line-height: 1.4;
-            text-align: left;
-        }
 
-        #mouse-icon {
-            position: relative;
-            width: 25px;
-            height: 39px;
-            flex: 0 0 auto;
-            border: 1.5px solid rgba(239, 250, 255, 0.78);
-            border-radius: 14px;
-        }
+            z-index: 25;
 
-        #mouse-icon::before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 0;
-            width: 1px;
-            height: 13px;
-            background: rgba(239, 250, 255, 0.62);
-            transform: translateX(-50%);
-        }
+            width: 20px;
+            height: 20px;
 
-        #mouse-icon span {
-            position: absolute;
-            left: 50%;
-            top: 6px;
-            width: 4px;
-            height: 7px;
-            border-radius: 3px;
-            background: #eefaff;
-            transform: translateX(-50%);
-        }
+            margin-left: -10px;
+            margin-top: -10px;
 
-        /* The old Impact Ripple counter is intentionally removed from
-           the visible banner. */
-        #impact-count-card {
-            display: none !important;
-        }
+            border:
+                1px solid
+                rgba(185, 237, 249, 0.72);
 
-        #make-ripple-button {
-            position: absolute;
-            top: 50%;
-            right: 5.2vw;
-            transform: translateY(-50%);
-            min-width: 190px;
-            min-height: 46px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 9px 18px;
-            border: 1px solid rgba(54, 226, 246, 0.86);
-            border-radius: 12px;
-            background: rgba(3, 22, 34, 0.62);
-            color: #eefaff;
-            font-size: 15px;
-            letter-spacing: 0.01em;
-            cursor: pointer;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, transform 0.25s ease;
-        }
-
-        #make-ripple-button:hover {
-            border-color: #70efff;
-            background: rgba(8, 42, 55, 0.76);
-            box-shadow: 0 0 10px rgba(74, 225, 246, 0.42), 0 0 25px rgba(31, 157, 192, 0.22);
-            transform: translateY(calc(-50% - 1px));
-        }
-
-        #make-ripple-button-icon {
-            position: relative;
-            width: 34px;
-            height: 25px;
-            flex: 0 0 auto;
-        }
-
-        #make-ripple-button-icon::before,
-        #make-ripple-button-icon::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            border: 1.5px solid rgba(54, 226, 246, 0.9);
             border-radius: 50%;
-            transform: translate(-50%, -50%);
+
+            pointer-events: none;
+
+            animation:
+                clickRipple
+                2.2s
+                ease-out
+                forwards;
         }
 
-        #make-ripple-button-icon::before {
-            width: 16px;
-            height: 7px;
-        }
 
-        #make-ripple-button-icon::after {
-            width: 25px;
-            height: 12px;
-            opacity: 0.62;
-        }
+        .click-ripple::after {
 
-        #make-ripple-button-icon span {
+            content: "";
+
             position: absolute;
-            left: 50%;
-            top: 1px;
-            width: 5px;
-            height: 8px;
+
+            inset: 5px;
+
+            border:
+                1px solid
+                rgba(161, 226, 241, 0.42);
+
             border-radius: 50%;
-            background: #43e6fa;
-            transform: translateX(-50%);
-            box-shadow: 0 0 9px rgba(67, 230, 250, 0.85);
         }
 
-        /* =========================================================
+
+        @keyframes clickRipple {
+
+            0% {
+
+                width: 20px;
+                height: 20px;
+
+                margin-left: -10px;
+                margin-top: -10px;
+
+                opacity: 0.82;
+            }
+
+            100% {
+
+                width: 189px;
+                height: 105px;
+
+                margin-left: -54px;
+                margin-top: -30px;
+
+                opacity: 0;
+            }
+        }
+
+
+        /* =====================================================
            MODALS
-        ========================================================= */
+        ===================================================== */
 
         .modal-overlay {
 
@@ -610,18 +1156,12 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             padding: 20px;
 
             background:
-                rgba(
-                    0,
-                    5,
-                    9,
-                    0.78
-                );
+                rgba(0, 5, 9, 0.78);
 
             backdrop-filter:
                 blur(8px);
@@ -649,10 +1189,7 @@
             position: relative;
 
             width:
-                min(
-                    570px,
-                    100%
-                );
+                min(570px, 100%);
 
             max-height: 90vh;
 
@@ -662,47 +1199,24 @@
 
             border:
                 1px solid
-                rgba(
-                    158,
-                    226,
-                    244,
-                    0.38
-                );
+                rgba(158, 226, 244, 0.38);
 
             border-radius: 18px;
 
             background:
                 linear-gradient(
                     145deg,
-                    rgba(
-                        7,
-                        28,
-                        40,
-                        0.97
-                    ),
-                    rgba(
-                        2,
-                        13,
-                        21,
-                        0.98
-                    )
+                    rgba(7, 28, 40, 0.97),
+                    rgba(2, 13, 21, 0.98)
                 );
 
             box-shadow:
+
                 0 0 40px
-                rgba(
-                    56,
-                    166,
-                    201,
-                    0.18
-                ),
+                rgba(56, 166, 201, 0.18),
+
                 0 20px 70px
-                rgba(
-                    0,
-                    0,
-                    0,
-                    0.6
-                );
+                rgba(0, 0, 0, 0.6);
 
             transform:
                 translateY(18px)
@@ -726,7 +1240,6 @@
             position: absolute;
 
             top: 13px;
-
             right: 17px;
 
             border: 0;
@@ -734,12 +1247,7 @@
             background: transparent;
 
             color:
-                rgba(
-                    218,
-                    247,
-                    255,
-                    0.7
-                );
+                rgba(218, 247, 255, 0.7);
 
             font-size: 28px;
 
@@ -748,7 +1256,6 @@
 
 
         .modal-close:hover {
-
             color: #ffffff;
         }
 
@@ -766,12 +1273,7 @@
 
             text-shadow:
                 0 0 10px
-                rgba(
-                    151,
-                    221,
-                    242,
-                    0.35
-                );
+                rgba(151, 221, 242, 0.35);
         }
 
 
@@ -781,20 +1283,15 @@
                 0 0 25px;
 
             color:
-                rgba(
-                    211,
-                    237,
-                    245,
-                    0.75
-                );
+                rgba(211, 237, 245, 0.75);
 
             line-height: 1.65;
         }
 
 
-        /* =========================================================
-           LOCATION
-        ========================================================= */
+        /* =====================================================
+           LOCATION INTRO
+        ===================================================== */
 
         .location-intro {
 
@@ -805,20 +1302,10 @@
 
             border-top:
                 1px solid
-                rgba(
-                    141,
-                    207,
-                    226,
-                    0.14
-                );
+                rgba(141, 207, 226, 0.14);
 
             color:
-                rgba(
-                    220,
-                    245,
-                    251,
-                    0.82
-                );
+                rgba(220, 245, 251, 0.82);
 
             font-size: 14px;
 
@@ -837,12 +1324,7 @@
             font-weight: 400;
 
             color:
-                rgba(
-                    232,
-                    250,
-                    255,
-                    0.90
-                );
+                rgba(232, 250, 255, 0.90);
         }
 
 
@@ -852,18 +1334,19 @@
                 0 0 4px;
 
             color:
-                rgba(
-                    178,
-                    221,
-                    234,
-                    0.58
-                );
+                rgba(178, 221, 234, 0.58);
 
             font-size: 13px;
 
             line-height: 1.55;
 
             font-style: italic;
+        }
+
+
+        .location-note::first-letter {
+            color:
+                rgba(168, 227, 244, 0.82);
         }
 
 
@@ -888,16 +1371,10 @@
 
             display: block;
 
-            margin:
-                17px 0 7px;
+            margin: 17px 0 7px;
 
             color:
-                rgba(
-                    220,
-                    245,
-                    251,
-                    0.82
-                );
+                rgba(220, 245, 251, 0.82);
 
             font-size: 13px;
 
@@ -916,12 +1393,7 @@
         .optional-label {
 
             color:
-                rgba(
-                    220,
-                    245,
-                    251,
-                    0.68
-                );
+                rgba(220, 245, 251, 0.68);
         }
 
 
@@ -936,12 +1408,7 @@
             text-transform: none;
 
             color:
-                rgba(
-                    170,
-                    219,
-                    232,
-                    0.46
-                );
+                rgba(170, 219, 232, 0.46);
         }
 
 
@@ -952,25 +1419,14 @@
 
             border:
                 1px solid
-                rgba(
-                    141,
-                    207,
-                    226,
-                    0.28
-                );
+                rgba(141, 207, 226, 0.28);
 
             border-radius: 9px;
 
-            padding:
-                12px 13px;
+            padding: 12px 13px;
 
             background:
-                rgba(
-                    0,
-                    10,
-                    16,
-                    0.58
-                );
+                rgba(0, 10, 16, 0.58);
 
             color: #effaff;
 
@@ -986,21 +1442,11 @@
         .modal textarea:focus {
 
             border-color:
-                rgba(
-                    170,
-                    231,
-                    246,
-                    0.75
-                );
+                rgba(170, 231, 246, 0.75);
 
             box-shadow:
                 0 0 10px
-                rgba(
-                    76,
-                    184,
-                    218,
-                    0.15
-                );
+                rgba(76, 184, 218, 0.15);
         }
 
 
@@ -1039,22 +1485,12 @@
 
             border:
                 1px solid
-                rgba(
-                    177,
-                    220,
-                    232,
-                    0.25
-                );
+                rgba(177, 220, 232, 0.25);
 
             background: transparent;
 
             color:
-                rgba(
-                    221,
-                    242,
-                    248,
-                    0.7
-                );
+                rgba(221, 242, 248, 0.7);
         }
 
 
@@ -1062,61 +1498,35 @@
 
             border:
                 1px solid
-                rgba(
-                    177,
-                    232,
-                    246,
-                    0.65
-                );
+                rgba(177, 232, 246, 0.65);
 
             background:
-                rgba(
-                    65,
-                    153,
-                    181,
-                    0.18
-                );
+                rgba(65, 153, 181, 0.18);
 
             color: #f0fbff;
 
             box-shadow:
                 0 0 12px
-                rgba(
-                    79,
-                    182,
-                    214,
-                    0.12
-                );
+                rgba(79, 182, 214, 0.12);
         }
 
 
         .modal-button.submit:hover {
 
             background:
-                rgba(
-                    78,
-                    174,
-                    205,
-                    0.28
-                );
+                rgba(78, 174, 205, 0.28);
 
             box-shadow:
                 0 0 18px
-                rgba(
-                    82,
-                    195,
-                    226,
-                    0.25
-                );
+                rgba(82, 195, 226, 0.25);
         }
 
 
-        /* =========================================================
-           IMPACT RIPPLE MESSAGE MODAL
-        ========================================================= */
+        /* =====================================================
+           IMPACT RIPPLE MESSAGE
+        ===================================================== */
 
         #impact-message {
-
             text-align: center;
         }
 
@@ -1126,16 +1536,12 @@
             margin:
                 0 0 24px;
 
-            padding-bottom: 15px;
+            padding-bottom:
+                15px;
 
             border-bottom:
                 1px solid
-                rgba(
-                    141,
-                    207,
-                    226,
-                    0.22
-                );
+                rgba(141, 207, 226, 0.22);
 
             font-size: 10px;
 
@@ -1146,12 +1552,7 @@
             text-transform: uppercase;
 
             color:
-                rgba(
-                    150,
-                    220,
-                    239,
-                    0.68
-                );
+                rgba(150, 220, 239, 0.68);
 
             font-weight: 400;
         }
@@ -1163,11 +1564,7 @@
                 0 0 24px;
 
             font-size:
-                clamp(
-                    23px,
-                    4vw,
-                    34px
-                );
+                clamp(23px, 4vw, 34px);
 
             line-height: 1.35;
 
@@ -1175,12 +1572,7 @@
 
             text-shadow:
                 0 0 13px
-                rgba(
-                    133,
-                    218,
-                    242,
-                    0.22
-                );
+                rgba(133, 218, 242, 0.22);
 
             font-style: italic;
         }
@@ -1189,12 +1581,7 @@
         #impact-message .details {
 
             color:
-                rgba(
-                    205,
-                    234,
-                    243,
-                    0.65
-                );
+                rgba(205, 234, 243, 0.65);
 
             line-height: 1.65;
 
@@ -1204,18 +1591,15 @@
 
         #impact-message .impact-type {
 
-            margin-top: 24px;
+            margin-top:
+                24px;
 
-            padding-top: 15px;
+            padding-top:
+                15px;
 
             border-top:
                 1px solid
-                rgba(
-                    141,
-                    207,
-                    226,
-                    0.22
-                );
+                rgba(141, 207, 226, 0.22);
 
             font-size: 10px;
 
@@ -1226,226 +1610,875 @@
             text-transform: uppercase;
 
             color:
-                rgba(
-                    150,
-                    220,
-                    239,
-                    0.68
-                );
+                rgba(150, 220, 239, 0.68);
 
             font-weight: 400;
         }
 
 
-        /* =========================================================
+        /* =====================================================
+           FIXED LOWER INTERACTION BANNER
+        ===================================================== */
+
+        #well-interaction-bar {
+
+            position: fixed;
+
+            z-index: 1200;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            min-height: 106px;
+
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 36px;
+
+            padding: 14px 5.2vw;
+
+            border-top:
+                1px solid
+                rgba(158, 219, 236, 0.28);
+
+            border-bottom:
+                1px solid
+                rgba(158, 219, 236, 0.18);
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(2, 15, 24, 0.94),
+                    rgba(1, 10, 17, 0.97)
+                );
+
+            box-shadow:
+                0 -10px 30px
+                rgba(0, 0, 0, 0.28);
+
+            backdrop-filter: blur(8px);
+        }
+
+
+        #well-instruction {
+
+            justify-self: start;
+
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            color: rgba(239, 250, 255, 0.92);
+
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+
+        #mouse-icon {
+
+            position: relative;
+
+            width: 30px;
+            height: 47px;
+
+            flex: 0 0 auto;
+
+            border:
+                1.5px solid
+                rgba(239, 250, 255, 0.94);
+
+            border-radius: 17px;
+        }
+
+
+        #mouse-icon::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 0;
+
+            width: 1px;
+            height: 16px;
+
+            background:
+                rgba(239, 250, 255, 0.75);
+
+            transform: translateX(-50%);
+        }
+
+
+        #mouse-icon span {
+
+            position: absolute;
+
+            left: 50%;
+            top: 7px;
+
+            width: 4px;
+            height: 7px;
+
+            border-radius: 3px;
+
+            background: #eefaff;
+
+            transform: translateX(-50%);
+        }
+
+
+        #impact-count-card {
+
+            justify-self: center;
+
+            min-width: 246px;
+
+            min-height: 78px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+
+            padding: 10px 22px;
+
+            border:
+                1px solid
+                rgba(58, 181, 216, 0.48);
+
+            border-radius: 18px;
+
+            background:
+                rgba(3, 22, 34, 0.62);
+
+            box-shadow:
+                inset 0 0 24px
+                rgba(20, 116, 150, 0.08);
+        }
+
+
+        #impact-count-icon,
+        #make-ripple-button-icon {
+
+            position: relative;
+
+            width: 44px;
+            height: 30px;
+
+            flex: 0 0 auto;
+        }
+
+
+        #impact-count-icon::before,
+        #impact-count-icon::after,
+        #make-ripple-button-icon::before,
+        #make-ripple-button-icon::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            border:
+                1.5px solid
+                rgba(54, 226, 246, 0.9);
+
+            border-radius: 50%;
+
+            transform: translate(-50%, -50%);
+        }
+
+
+        #impact-count-icon::before,
+        #make-ripple-button-icon::before {
+            width: 20px;
+            height: 9px;
+        }
+
+
+        #impact-count-icon::after,
+        #make-ripple-button-icon::after {
+            width: 31px;
+            height: 15px;
+            opacity: 0.62;
+        }
+
+
+        #impact-count-icon span,
+        #make-ripple-button-icon span {
+
+            position: absolute;
+
+            left: 50%;
+            top: 2px;
+
+            width: 5px;
+            height: 9px;
+
+            border-radius: 50% 50% 55% 55%;
+
+            background: #43e6fa;
+
+            transform: translateX(-50%);
+
+            box-shadow:
+                0 0 9px
+                rgba(67, 230, 250, 0.85);
+        }
+
+
+        #impact-count {
+
+            font-size: 28px;
+            line-height: 1;
+
+            color: #eefaff;
+        }
+
+
+        #impact-count-label {
+
+            margin-top: 5px;
+
+            font-size: 12px;
+            letter-spacing: 0.04em;
+
+            color: #35d8ee;
+        }
+
+
+        #make-ripple-button {
+
+            justify-self: end;
+
+            min-width: 235px;
+
+            min-height: 58px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+
+            padding: 12px 24px;
+
+            border:
+                1px solid
+                rgba(54, 226, 246, 0.86);
+
+            border-radius: 13px;
+
+            background:
+                rgba(3, 22, 34, 0.62);
+
+            color: #eefaff;
+
+            font-size: 17px;
+            letter-spacing: 0.01em;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease,
+                transform 0.25s ease;
+        }
+
+
+        #make-ripple-button:hover {
+
+            border-color: #70efff;
+
+            background:
+                rgba(8, 42, 55, 0.76);
+
+            box-shadow:
+                0 0 10px
+                rgba(74, 225, 246, 0.42),
+                0 0 25px
+                rgba(31, 157, 192, 0.22);
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           MESSAGE FROM THE WELL
+        ===================================================== */
+
+        #message-from-well {
+
+            position: relative;
+
+            z-index: 3;
+
+            min-height: 310px;
+
+            padding:
+                58px 20px
+                calc(58px + 120px);
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    #03121d 0%,
+                    #020c15 100%
+                );
+        }
+
+
+        #message-from-well h2 {
+
+            margin: 0;
+
+            font-size: clamp(17px, 2vw, 23px);
+            font-weight: 400;
+
+            letter-spacing: 0.38em;
+            text-transform: uppercase;
+
+            color: #3ed8ed;
+        }
+
+
+        .message-divider {
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+
+            margin: 14px auto 18px;
+        }
+
+
+        .message-divider span {
+
+            width: 54px;
+            height: 1px;
+
+            background:
+                rgba(224, 248, 255, 0.55);
+        }
+
+
+        .message-divider b {
+
+            color: #e9fbff;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+
+        #message-from-well p {
+
+            margin: 0 auto 15px;
+
+            max-width: 720px;
+
+            font-size: clamp(17px, 2vw, 21px);
+            line-height: 1.85;
+
+            color:
+                rgba(239, 250, 255, 0.88);
+        }
+
+
+        #message-from-well strong {
+            color: #3ed8ed;
+            font-weight: 400;
+        }
+
+
+        /* =====================================================
            MOBILE
-        ========================================================= */
+        ===================================================== */
 
         @media (max-width: 700px) {
 
+            #sky-banner {
+                position: relative;
+                height: 58vw;
+                min-height: 280px;
+                max-height: 520px;
+            }
+
             #sky-banner-image {
-                width: 100%;
-                height: auto;
+                width: auto;
+                height: 100%;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                max-width: none;
+            }
+
+            #ripple-well {
+                margin-top: 0;
             }
 
             #well-interaction-bar {
-                min-height: 150px;
-                padding: 10px 12px 12px;
-            }
-
-            #well-message-center {
-                width: 100%;
-                padding: 0 10px;
-            }
-
-            #well-message-center h2 {
-                font-size: 13px;
-                letter-spacing: 0.20em;
-            }
-
-            #well-message-center p {
-                max-width: 360px;
-                margin-top: 8px;
-                font-size: 11px;
-                line-height: 1.45;
+                min-height: 118px;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 58px 48px;
+                gap: 6px 10px;
+                padding: 7px 12px;
             }
 
             #well-instruction {
-                left: 12px;
-                top: 50%;
-                bottom: auto;
-                transform: translateY(-50%);
-                gap: 8px;
-                font-size: 9px;
-            }
-
-            #mouse-icon {
-                width: 20px;
-                height: 31px;
-                border-radius: 11px;
-            }
-
-            #mouse-icon::before {
-                height: 10px;
-            }
-
-            #mouse-icon span {
-                top: 5px;
-                width: 3px;
-                height: 6px;
-            }
-
-            #make-ripple-button {
-                top: 50%;
-                right: 12px;
-                transform: translateY(-50%);
-                min-width: 130px;
-                min-height: 38px;
-                padding: 6px 10px;
+                gap: 10px;
                 font-size: 11px;
             }
 
+            #mouse-icon {
+                width: 24px;
+                height: 38px;
+            }
+
+            #impact-count-card {
+                min-width: 0;
+                min-height: 58px;
+                padding: 7px 10px;
+                gap: 6px;
+            }
+
+            #impact-count-icon {
+                display: none;
+            }
+
+            #impact-count {
+                font-size: 22px;
+            }
+
+            #impact-count-label {
+                font-size: 9px;
+            }
+
+            #make-ripple-button {
+                position: static;
+                grid-column: 1 / -1;
+                width: 100%;
+                min-width: 0;
+                min-height: 42px;
+                padding: 7px 14px;
+                font-size: 13px;
+            }
+
             #make-ripple-button-icon {
-                width: 27px;
+                width: 31px;
                 transform: scale(0.82);
                 transform-origin: right center;
             }
 
+            #message-from-well {
+                padding-bottom: 135px;
+            }
+
+            #reflection-layer {
+                height: 230px;
+            }
+
+            #reflection-content {
+                width: 100%;
+                transform:
+                    translateX(-50%)
+                    scaleY(-0.50);
+            }
+
+            #reflection-logo {
+                width: 145px;
+            }
+
+            #reflection-logo-wrap {
+                width: 160px;
+                height: 100px;
+            }
+
+            #reflection-presents {
+                top: 182px;
+                font-size: 13px;
+            }
+
+            #reflection-title {
+                top: 208px;
+                font-size: 36px;
+            }
+
+            #reflection-tagline {
+                top: 265px;
+                font-size: 12px;
+            }
+
+            .impact-size-small {
+                width: 102px;
+                height: 58px;
+            }
+
+            .impact-size-medium {
+                width: 144px;
+                height: 82px;
+            }
+
+            .impact-size-large {
+                width: 108px;
+                height: 60px;
+            }
+
+            .impact-size-extra-large {
+                width: 238px;
+                height: 133px;
+            }
+
             .modal {
-                padding: 27px 22px;
+                padding:
+                    27px 22px;
             }
 
             .location-fields {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    1fr;
                 gap: 0;
+            }
+
+        }
+
+    
+
+        /* =====================================================
+           VERSION 3.0 — IMAGE WATER FOUNDATION
+
+           The approved water image is now the actual surface.
+           WebGL no longer creates the water itself; water.js only
+           draws small transparent click ripples above the image.
+        ===================================================== */
+
+        html,
+        body {
+            background: #020204;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        :root {
+            --water-bottom: #020204;
+            --banner-waterline-ratio: 0.4158;
+        }
+
+        /* The sky banner scrolls normally like a conventional site. */
+        #sky-banner {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 100%;
+            height: calc(100vw * var(--banner-waterline-ratio));
+            max-height: none;
+            min-height: 0;
+            overflow: hidden;
+            background: #020b15;
+            box-shadow: none;
+        }
+
+        #sky-banner-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            max-width: none;
+            display: block;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* The Well is ordinary document flow. */
+        #ripple-well {
+            position: relative;
+            margin-top: 0;
+            min-height: 0;
+            background: var(--water-bottom);
+        }
+
+        /* =====================================================
+           ACTUAL WATER SURFACE
+        ===================================================== */
+
+        #water-window {
+            position: relative;
+            top: auto;
+            width: 100%;
+            height: auto;
+            min-height: 0;
+            overflow: hidden;
+            background: var(--water-bottom);
+            line-height: 0;
+        }
+
+        #water-surface-image {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Transparent interaction layer — this is the ONLY place
+           where water clicks are possible. */
+        #water-canvas {
+            position: absolute;
+            z-index: 5;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+            touch-action: manipulation;
+            background: transparent;
+        }
+
+        /* The old generated water/reflection/depth systems are not
+           part of this design iteration. */
+        #surface-layer,
+        #reflection-layer,
+        #depth-layer,
+        #depth-message,
+        #impact-ripples-layer,
+        #recent-impact-ripples,
+        #reflection-distortion {
+            display: none !important;
+        }
+
+        /* The lower page continues seamlessly from the bottom of the
+           water image instead of introducing another gradient. */
+        #well-depth-content {
+            min-height: 100vh;
+            background: var(--water-bottom);
+        }
+
+        #message-from-well {
+            background: var(--water-bottom);
+            color: #eefaff;
+        }
+
+        /* Keep the stationary control bar above the water interaction
+           canvas and above all normal page content. */
+        #well-interaction-bar {
+            position: fixed;
+            z-index: 1200;
+            bottom: 0;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            #sky-banner {
+                position: relative;
+                height: calc(100vw * var(--banner-waterline-ratio));
+                min-height: 0;
+                max-height: none;
+            }
+
+            #sky-banner-image {
+                width: 100%;
+                height: auto;
+                left: 0;
+                transform: none;
+            }
+
+            #water-window {
+                height: auto;
+            }
+
+            #well-interaction-bar {
+                min-height: 118px;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 58px 48px;
+                gap: 6px 10px;
+                padding: 7px 12px;
+            }
+
+            #well-instruction {
+                gap: 10px;
+                font-size: 11px;
+            }
+
+            #mouse-icon {
+                width: 24px;
+                height: 38px;
+            }
+
+            #impact-count-card {
+                min-width: 0;
+                min-height: 58px;
+                padding: 7px 10px;
+                gap: 6px;
+            }
+
+            #impact-count-icon {
+                display: none;
+            }
+
+            #impact-count {
+                font-size: 22px;
+            }
+
+            #impact-count-label {
+                font-size: 9px;
+            }
+
+            #make-ripple-button {
+                position: static;
+                grid-column: 1 / -1;
+                width: 100%;
+                min-width: 0;
+                min-height: 42px;
+                padding: 7px 14px;
+                font-size: 13px;
+            }
+
+            #make-ripple-button-icon {
+                width: 31px;
+                transform: scale(0.82);
+                transform-origin: right center;
+            }
+
+            #message-from-well {
+                padding-bottom: 135px;
             }
         }
 
-
     </style>
 </head>
-
-
 <body>
 
-
-    <!-- =========================================================
+    <!-- =====================================================
          TOP BANNER
-    ========================================================== -->
 
-    <header
-        id="sky-banner"
-        aria-label="The Ripple Well"
-    >
+         This image contains everything above the waterline.
+         It scrolls normally with the page.
+    ====================================================== -->
 
+    <header id="sky-banner" aria-label="The Ripple Well">
         <img
             id="sky-banner-image"
             src="images/Top Banner.png"
             alt="The Ripple Well — Make the Ripple"
             draggable="false"
         >
-
     </header>
 
 
+    <!-- =====================================================
+         THE RIPPLE WELL — WATER SURFACE
 
-    <!-- =========================================================
-         THE RIPPLE WELL
-
-         The entire area is now the interactive Well.
-    ========================================================== -->
+         Water(1).png is the actual visual surface.
+         The transparent canvas above it is interaction only.
+    ====================================================== -->
 
     <main id="ripple-well">
 
-
-        <!-- =====================================================
-             VISIBLE WATER SURFACE
-        ====================================================== -->
-
-        <section
-            id="water-window"
-            aria-label="The Ripple Well water"
-        >
+        <section id="water-window" aria-label="The Ripple Well water">
 
             <img
                 id="water-surface-image"
-                src="images/Water.png"
-                alt=""
+                src="images/Water(1).png"
+                alt="Moonlit water fading into the depths of The Ripple Well"
                 draggable="false"
             >
 
+            <canvas
+                id="water-canvas"
+                aria-hidden="true"
+            ></canvas>
+
         </section>
 
 
+        <!-- The water image ends here. Everything below continues in
+             the exact near-black colour of its lower edge. -->
 
-        <!-- =====================================================
-             DARK DEPTH BELOW WATER IMAGE
-        ====================================================== -->
+        <div id="well-depth-content">
 
-        <section
-            id="deep-well"
-            aria-hidden="true"
-        >
-        </section>
+            <section id="message-from-well">
 
+                <h2>A Message From The Well</h2>
 
+                <div class="message-divider" aria-hidden="true">
+                    <span></span>
+                    <b>◆</b>
+                    <span></span>
+                </div>
 
-        <!-- =====================================================
-             FULL-WELL RIPPLE CANVAS
+                <p>
+                    This is a space for the waves of kindness,<br>
+                    strength, and hope to echo across time.
+                </p>
 
-             This is intentionally AFTER the water and deep-well
-             sections so it can cover the entire Ripple Well.
-        ====================================================== -->
+                <p>
+                    <strong>Leave your ripple.</strong>
+                    Be part of something<br>
+                    that will never fade.
+                </p>
 
-        <canvas
-            id="water-canvas"
-            aria-hidden="true"
-        ></canvas>
+            </section>
 
+        </div>
 
     </main>
 
 
-
-    <!-- =========================================================
+    <!-- =====================================================
          FIXED LOWER INTERACTION BANNER
 
-         The message remains mathematically centered.
-         Make a Ripple sits in the top-right corner.
-    ========================================================== -->
+         This remains stationary while the page scrolls.
+    ====================================================== -->
 
-    <aside
-        id="well-interaction-bar"
-        aria-label="Ripple Well controls"
-    >
-
-        <div id="well-message-center">
-            <h2>A Message From The Well</h2>
-            <p>
-                This is a space for the waves of kindness, strength, and hope<br>
-                to echo across time. Leave your ripple. Be part of something<br>
-                that will never fade.
-            </p>
-        </div>
+    <aside id="well-interaction-bar" aria-label="Ripple Well controls">
 
         <div id="well-instruction">
             <div id="mouse-icon" aria-hidden="true">
                 <span></span>
             </div>
+
             <div>
                 Click anywhere on the pond<br>
                 to make a ripple.
             </div>
         </div>
 
+
+        <div id="impact-count-card" aria-live="polite">
+            <div id="impact-count-icon" aria-hidden="true">
+                <span></span>
+            </div>
+
+            <div>
+                <div id="impact-count">0</div>
+                <div id="impact-count-label">Impact Ripples</div>
+            </div>
+        </div>
+
+
         <button
             id="make-ripple-button"
             type="button"
         >
-            <span
-                id="make-ripple-button-icon"
-                aria-hidden="true"
-            >
+            <span id="make-ripple-button-icon" aria-hidden="true">
                 <span></span>
             </span>
             Make a Ripple
@@ -1454,10 +2487,9 @@
     </aside>
 
 
-
-    <!-- =========================================================
+    <!-- =====================================================
          MAKE YOUR RIPPLE MODAL
-    ========================================================== -->
+    ====================================================== -->
 
     <div
         id="make-ripple-modal"
@@ -1472,51 +2504,32 @@
             aria-labelledby="make-ripple-title"
         >
 
-
             <button
                 class="modal-close"
                 type="button"
                 aria-label="Close"
                 data-close-modal
-            >
-                ×
-            </button>
+            >×</button>
 
-
-            <h2 id="make-ripple-title">
-                Make Your Ripple
-            </h2>
-
+            <h2 id="make-ripple-title">Make Your Ripple</h2>
 
             <p class="modal-intro">
-
                 Every ripple starts somewhere.
-
                 <br><br>
-
                 Share a message of hope,
                 encouragement, support, kindness,
                 or something you want another person
                 to discover when they visit
                 The Ripple Well.
-
                 <br><br>
-
                 Your submission will be reviewed
                 before it can become an
                 <strong>Impact Ripple</strong>.
-
             </p>
-
-
 
             <form id="ripple-form">
 
-
-                <label for="ripple-message">
-                    Your Ripple
-                </label>
-
+                <label for="ripple-message">Your Ripple</label>
 
                 <textarea
                     id="ripple-message"
@@ -1526,21 +2539,10 @@
                     placeholder="What would you like someone to find in The Ripple Well?"
                 ></textarea>
 
-
-
-                <label
-                    for="ripple-name"
-                    class="optional-label"
-                >
-
+                <label for="ripple-name" class="optional-label">
                     Name or Display Name
-
-                    <span>
-                        Optional
-                    </span>
-
+                    <span>Optional</span>
                 </label>
-
 
                 <input
                     id="ripple-name"
@@ -1550,43 +2552,21 @@
                     placeholder="How would you like to be identified?"
                 >
 
-
-
                 <div class="location-intro">
-
-                    <strong>
-                        Where is your ripple coming from?
-                    </strong>
-
+                    <strong>Where is your ripple coming from?</strong>
                 </div>
 
-
                 <p class="location-note">
-
                     Optional — we'd love to know how far our ripples are reaching.
-
                 </p>
-
-
 
                 <div class="location-fields">
 
-
                     <div class="field-group">
-
-                        <label
-                            for="ripple-region"
-                            class="optional-label"
-                        >
-
+                        <label for="ripple-region" class="optional-label">
                             Province / State
-
-                            <span>
-                                Optional
-                            </span>
-
+                            <span>Optional</span>
                         </label>
-
 
                         <input
                             id="ripple-region"
@@ -1595,26 +2575,13 @@
                             maxlength="80"
                             placeholder="Province or State"
                         >
-
                     </div>
 
-
-
                     <div class="field-group">
-
-                        <label
-                            for="ripple-country"
-                            class="optional-label"
-                        >
-
+                        <label for="ripple-country" class="optional-label">
                             Country
-
-                            <span>
-                                Optional
-                            </span>
-
+                            <span>Optional</span>
                         </label>
-
 
                         <input
                             id="ripple-country"
@@ -1623,58 +2590,41 @@
                             maxlength="80"
                             placeholder="Country"
                         >
-
                     </div>
-
 
                 </div>
 
-
-
                 <div class="modal-actions">
-
-
                     <button
                         class="modal-button cancel"
                         type="button"
                         data-close-modal
-                    >
-                        Maybe Later
-                    </button>
-
+                    >Maybe Later</button>
 
                     <button
                         class="modal-button submit"
                         type="submit"
-                    >
-                        Send My Ripple
-                    </button>
-
-
+                    >Send My Ripple</button>
                 </div>
-
 
             </form>
 
-
         </div>
-
     </div>
 
 
-
-    <!-- =========================================================
+    <!-- =====================================================
          IMPACT RIPPLE MESSAGE MODAL
 
-         Retained for later when Impact Ripples are restored.
-    ========================================================== -->
+         Retained for the next design phase. No Impact Ripples are
+         rendered in this version, so this modal remains dormant.
+    ====================================================== -->
 
     <div
         id="impact-modal"
         class="modal-overlay"
         aria-hidden="true"
     >
-
         <div
             class="modal"
             id="impact-message"
@@ -1682,52 +2632,24 @@
             aria-modal="true"
             aria-labelledby="impact-title"
         >
-
-
             <button
                 class="modal-close"
                 type="button"
                 aria-label="Close"
                 data-close-modal
-            >
-                ×
-            </button>
+            >×</button>
 
+            <h2 id="impact-title">A Message From The Well</h2>
 
-            <h2 id="impact-title">
-                A Message From The Well
-            </h2>
+            <div class="quote" id="impact-quote"></div>
+            <div class="details" id="impact-details"></div>
 
-
-            <div
-                class="quote"
-                id="impact-quote"
-            ></div>
-
-
-            <div
-                class="details"
-                id="impact-details"
-            ></div>
-
-
-            <div class="impact-type">
-                Impact Ripple
-            </div>
-
-
+            <div class="impact-type">Impact Ripple</div>
         </div>
-
     </div>
 
 
-
-    <!-- =========================================================
-         WATER JAVASCRIPT
-    ========================================================== -->
-
     <script src="water.js"></script>
-
 
 </body>
 </html>
