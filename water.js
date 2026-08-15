@@ -1,17 +1,19 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 3.2 — IMAGE WATER FOUNDATION
+   VERSION 3.0 — IMAGE WATER FOUNDATION
 
    WATER DESIGN
-   - images/water.png is the actual visible water surface.
-   - This JavaScript does NOT generate a replacement water surface.
-   - The canvas is transparent and exists for interaction.
-   - The entire #ripple-well is clickable.
-   - Clicks create small, subtle ripple rings.
+   - Water(1).png is the actual water surface.
+   - This file does NOT generate a replacement water surface.
+   - The canvas is transparent and exists only for interaction.
+   - Clicks create small, subtle ripple rings on the image.
+   - Ripple interaction is physically restricted to the water image.
 
    IMPACT RIPPLES
-   - Temporarily disabled visually.
-   - Approved Impact Ripple count remains active.
+   - Temporarily disabled in the visual layer.
+   - Approved Impact Ripple count is still read from Supabase so
+     the lower banner can retain its live count.
+   - No Impact Ripple objects are created or displayed.
 
    SUBMISSIONS
    - "Make a Ripple" opens the submission window.
@@ -20,16 +22,14 @@
 ========================================================= */
 
 (() => {
-
     "use strict";
-
 
     /* =====================================================
        ELEMENTS
     ===================================================== */
 
     const waterWindow =
-        document.getElementById("ripple-well");
+        document.getElementById("water-window");
 
     const waterImage =
         document.getElementById("water-surface-image");
@@ -53,21 +53,13 @@
         document.getElementById("impact-count");
 
     const closeButtons =
-        document.querySelectorAll(
-            "[data-close-modal]"
-        );
+        document.querySelectorAll("[data-close-modal]");
 
 
-    if (
-        !waterWindow ||
-        !waterImage ||
-        !canvas
-    ) {
-
+    if (!waterWindow || !waterImage || !canvas) {
         console.error(
             "The Ripple Well: water image or interaction canvas was not found."
         );
-
         return;
     }
 
@@ -76,46 +68,25 @@
        TRANSPARENT 2D RIPPLE CANVAS
     ===================================================== */
 
-    const ctx =
-        canvas.getContext(
-            "2d",
-            {
-                alpha: true
-            }
-        );
-
+    const ctx = canvas.getContext("2d", {
+        alpha: true
+    });
 
     if (!ctx) {
-
         console.error(
             "The Ripple Well: 2D canvas is not available."
         );
-
         return;
     }
-
-
-    /*
-     * Explicitly establish a transparent drawing surface.
-     *
-     * This is important because the canvas covers the entire
-     * Ripple Well but must never become the visual background.
-     */
-
-    canvas.style.backgroundColor =
-        "transparent";
 
 
     let width = 1;
     let height = 1;
     let dpr = 1;
 
-
     const ripples = [];
 
-
     const RIPPLE_DURATION = 2200;
-
     const MAX_RIPPLES_ON_SCREEN = 12;
 
 
@@ -128,13 +99,11 @@
         const rect =
             waterWindow.getBoundingClientRect();
 
-
         width =
             Math.max(
                 1,
                 rect.width
             );
-
 
         height =
             Math.max(
@@ -142,33 +111,27 @@
                 rect.height
             );
 
-
         dpr =
             Math.min(
                 window.devicePixelRatio || 1,
                 2
             );
 
-
         canvas.width =
             Math.round(
                 width * dpr
             );
-
 
         canvas.height =
             Math.round(
                 height * dpr
             );
 
-
         canvas.style.width =
             `${width}px`;
 
-
         canvas.style.height =
             `${height}px`;
-
 
         ctx.setTransform(
             dpr,
@@ -177,19 +140,6 @@
             dpr,
             0,
             0
-        );
-
-
-        /*
-         * Clear the entire backing store immediately after resize.
-         * clearRect restores full transparency.
-         */
-
-        ctx.clearRect(
-            0,
-            0,
-            width,
-            height
         );
     }
 
@@ -200,9 +150,7 @@
 
     function waitForWaterImage() {
 
-        if (
-            waterImage.complete
-        ) {
+        if (waterImage.complete) {
 
             resizeCanvas();
 
@@ -238,7 +186,6 @@
                 resizeCanvas
             );
 
-
         observer.observe(
             waterWindow
         );
@@ -250,6 +197,10 @@
 
     /* =====================================================
        CREATE SMALL CLICK RIPPLE
+
+       The final footprint is deliberately small. The ripple
+       expands horizontally more than vertically so it feels
+       like a ring sitting on the surface of the lake.
     ===================================================== */
 
     function addRipple(
@@ -260,11 +211,6 @@
         const rect =
             waterWindow.getBoundingClientRect();
 
-
-        /*
-         * The entire Ripple Well is now the valid interaction
-         * region — not just water.png.
-         */
 
         if (
             clientX < rect.left ||
@@ -280,7 +226,6 @@
         const x =
             clientX -
             rect.left;
-
 
         const y =
             clientY -
@@ -306,7 +251,6 @@
                 Math.random() *
                 Math.PI *
                 2
-
         });
 
 
@@ -323,10 +267,8 @@
     /* =====================================================
        POINTER INTERACTION
 
-       The canvas covers the entire Ripple Well.
-
-       Because the canvas is transparent, the image remains
-       visible underneath it.
+       The listener is attached ONLY to the transparent canvas,
+       which itself exists ONLY over the water image.
     ===================================================== */
 
     canvas.addEventListener(
@@ -384,6 +326,9 @@
         }
 
 
+        /* Ease out gives the feeling of a disturbance spreading
+           quickly at first and then settling into the lake. */
+
         const eased =
             1 -
             Math.pow(
@@ -407,7 +352,8 @@
 
 
         const maxRadiusY =
-            maxRadiusX * 0.54;
+            maxRadiusX *
+            0.54;
 
 
         ctx.save();
@@ -425,8 +371,8 @@
 
 
         /*
-         * Three quiet rings create a more natural ripple
-         * than one perfect outline.
+         * Three quiet rings create a more natural ripple than one
+         * perfect outline.
          */
 
         const ringData = [
@@ -524,7 +470,8 @@
 
             ctx.strokeStyle =
                 `rgba(177, 231, 246, ${
-                    ring.alpha * fade
+                    ring.alpha *
+                    fade
                 })`;
 
 
@@ -537,7 +484,8 @@
 
 
         /*
-         * Subtle center disturbance.
+         * A very subtle inner disturbance remains near the point
+         * of impact before disappearing.
          */
 
         const centerFade =
@@ -588,12 +536,6 @@
     ===================================================== */
 
     function render() {
-
-        /*
-         * IMPORTANT:
-         * clearRect makes the canvas transparent again.
-         * It does not paint the canvas black.
-         */
 
         ctx.clearRect(
             0,
@@ -716,7 +658,6 @@
                 event.preventDefault();
 
                 event.stopPropagation();
-
 
                 openModal(
                     makeRippleModal
@@ -1184,7 +1125,11 @@
 
 
     /* =====================================================
-       APPROVED IMPACT RIPPLE COUNT
+       APPROVED IMPACT RIPPLE COUNT ONLY
+
+       The visual Impact Ripple objects are intentionally disabled.
+       We still retrieve the approved count so the existing lower
+       banner remains useful and can continue to show the live total.
     ===================================================== */
 
     async function loadImpactRippleCount() {
@@ -1244,8 +1189,7 @@
             ) {
 
                 impactCount.textContent =
-                    submissions.length
-                        .toLocaleString();
+                    submissions.length.toLocaleString();
             }
 
 
@@ -1269,31 +1213,33 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v3.2 initialized."
+        "The Ripple Well v3.0 initialized."
     );
+
 
     console.log(
         "Image Water Surface: active"
     );
 
-    console.log(
-        "Full Well Click Ripple Interaction: active"
-    );
 
     console.log(
-        "Transparent Ripple Canvas: active"
+        "Click Ripple Interaction: active"
     );
+
 
     console.log(
         "Impact Ripple Visual Layer: temporarily disabled"
     );
 
+
     console.log(
         "Stationary Lower Interaction Banner: active"
     );
 
+
     console.log(
         "Supabase Submission: active"
     );
+
 
 })();
