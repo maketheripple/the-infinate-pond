@@ -15,7 +15,7 @@
 
         /* =====================================================
            THE RIPPLE WELL
-           VERSION 2.7
+           VERSION 2.7 — DESIGN FOUNDATION
 
            THREE-LAYER WATER EXPERIENCE
 
@@ -43,6 +43,9 @@
             padding: 0;
             background: #02070d;
             scroll-behavior: smooth;
+
+            /* Visual height of the complete sky + mountain horizon. */
+            --sky-height: clamp(520px, 45vh, 700px);
         }
 
         body {
@@ -75,7 +78,7 @@
             left: 0;
 
             width: 100%;
-            height: 470px;
+            height: var(--sky-height);
 
             overflow: hidden;
 
@@ -182,6 +185,136 @@
                 opacity: calc(var(--opacity) + 0.18);
                 transform: scale(1.18);
             }
+        }
+
+
+        /* =====================================================
+           ATMOSPHERIC MOUNTAIN LAYERS
+
+           These are deliberately built from several shades of
+           the existing blue palette.  They establish the depth
+           language of The Ripple Well before we touch the water
+           descent itself.
+        ===================================================== */
+
+        #mountain-layers {
+
+            position: absolute;
+            z-index: 2;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 55%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .mountain-layer {
+
+            position: absolute;
+            left: -6%;
+            width: 112%;
+            bottom: 0;
+            transform-origin: center bottom;
+        }
+
+        /* Furthest range: lighter, softer and more atmospheric. */
+        .mountain-far {
+            z-index: 1;
+            height: 70%;
+            opacity: 0.58;
+            filter: blur(2px);
+            background: linear-gradient(
+                to bottom,
+                rgba(35, 76, 103, 0.78),
+                rgba(18, 48, 69, 0.96)
+            );
+            clip-path: polygon(
+                0 72%, 6% 65%, 12% 70%, 18% 58%,
+                24% 66%, 31% 47%, 37% 61%, 43% 52%,
+                49% 67%, 55% 50%, 61% 61%, 68% 44%,
+                74% 58%, 80% 49%, 87% 64%, 94% 53%,
+                100% 61%, 100% 100%, 0 100%
+            );
+        }
+
+        /* Middle range: stronger blue, still separated by haze. */
+        .mountain-mid {
+            z-index: 2;
+            height: 64%;
+            opacity: 0.78;
+            filter: blur(0.8px);
+            background: linear-gradient(
+                to bottom,
+                #183e5b 0%,
+                #102e47 52%,
+                #0a2236 100%
+            );
+            clip-path: polygon(
+                0 63%, 7% 52%, 13% 61%, 20% 43%,
+                26% 56%, 33% 35%, 39% 53%, 45% 45%,
+                51% 60%, 57% 41%, 63% 51%, 70% 34%,
+                77% 54%, 84% 39%, 91% 55%, 100% 45%,
+                100% 100%, 0 100%
+            );
+        }
+
+        /* Near range: darker and more substantial. */
+        .mountain-near {
+            z-index: 3;
+            height: 58%;
+            opacity: 0.93;
+            background: linear-gradient(
+                to bottom,
+                #0d2a42 0%,
+                #082039 48%,
+                #061727 100%
+            );
+            clip-path: polygon(
+                0 52%, 8% 39%, 15% 54%, 23% 31%,
+                30% 48%, 37% 25%, 44% 43%, 50% 34%,
+                57% 50%, 64% 28%, 71% 44%, 78% 22%,
+                85% 45%, 92% 30%, 100% 40%,
+                100% 100%, 0 100%
+            );
+        }
+
+        /* Foreground range: deepest blue, framing the lake entrance. */
+        .mountain-front {
+            z-index: 4;
+            height: 50%;
+            opacity: 0.98;
+            background: linear-gradient(
+                to bottom,
+                #071b2e 0%,
+                #041321 54%,
+                #020c16 100%
+            );
+            clip-path: polygon(
+                0 38%, 7% 24%, 14% 40%, 22% 17%,
+                29% 34%, 36% 13%, 43% 30%, 50% 39%,
+                57% 27%, 64% 11%, 71% 32%, 78% 18%,
+                85% 37%, 92% 20%, 100% 31%,
+                100% 100%, 0 100%
+            );
+        }
+
+        /* A soft atmospheric veil prevents the layers from looking
+           like graphic cut-outs and helps them dissolve into the sky. */
+        #mountain-layers::after {
+            content: "";
+            position: absolute;
+            z-index: 10;
+            left: 0;
+            right: 0;
+            bottom: 20%;
+            height: 42%;
+            background: linear-gradient(
+                to bottom,
+                rgba(21, 54, 76, 0.18),
+                rgba(7, 22, 35, 0) 72%
+            );
+            pointer-events: none;
         }
 
 
@@ -557,7 +690,8 @@
 
             min-height: 300vh;
 
-            margin-top: 470px;
+            /* The Well begins exactly where the fixed horizon ends. */
+            margin-top: var(--sky-height);
 
             background:
                 linear-gradient(
@@ -2023,8 +2157,12 @@
 
         @media (max-width: 700px) {
 
-            #sky-banner {
-                height: 410px;
+            html {
+                --sky-height: 500px;
+            }
+
+            #mountain-layers {
+                height: 49%;
             }
 
             #branding {
@@ -2162,6 +2300,13 @@
     <header id="sky-banner">
 
         <div id="stars"></div>
+
+        <div id="mountain-layers" aria-hidden="true">
+            <div class="mountain-layer mountain-far"></div>
+            <div class="mountain-layer mountain-mid"></div>
+            <div class="mountain-layer mountain-near"></div>
+            <div class="mountain-layer mountain-front"></div>
+        </div>
 
         <div id="branding">
 
