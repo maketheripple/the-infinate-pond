@@ -65,8 +65,30 @@
 
 
         /* =====================================================
-           FIXED NIGHT SKY BANNER
+           IMAGE-BASED TOP BANNER
+
+           The approved Top Banner.png contains everything above
+           the water line: stars, moon, Make the Ripple branding,
+           The Ripple Well title, and the layered blue mountains.
+
+           The lower edge is deliberately cropped at the actual
+           water line so the live WebGL water begins immediately
+           beneath the artwork.
         ===================================================== */
+
+        :root {
+
+            /*
+             * Top Banner.png is 1717 x 916.
+             * The water line begins at approximately y = 714.
+             * This ratio preserves the artwork's natural crop
+             * when the banner scales with the viewport width.
+             */
+            --banner-waterline-ratio: 0.4158;
+            --sky-height:
+                calc(100vw * var(--banner-waterline-ratio));
+        }
+
 
         #sky-banner {
 
@@ -82,607 +104,50 @@
 
             overflow: hidden;
 
-            background:
-                radial-gradient(
-                    ellipse at 50% 120%,
-                    rgba(76, 148, 180, 0.16),
-                    transparent 52%
-                ),
-                linear-gradient(
-                    to bottom,
-                    #020711 0%,
-                    #06121d 55%,
-                    #081b27 100%
-                );
+            background: #020b15;
 
             box-shadow:
-                0 14px 35px rgba(0, 0, 0, 0.55);
+                0 14px 35px
+                rgba(0, 0, 0, 0.48);
         }
 
 
-        #sky-banner::after {
-
-            content: "";
-
-            position: absolute;
-
-            z-index: 20;
-
-            left: -5%;
-            bottom: -5px;
-
-            width: 110%;
-            height: 24px;
-
-            background:
-                radial-gradient(
-                    ellipse at 18% 45%,
-                    rgba(5, 17, 26, 0.96) 0 18%,
-                    transparent 19%
-                ),
-                radial-gradient(
-                    ellipse at 51% 65%,
-                    rgba(5, 17, 26, 0.96) 0 22%,
-                    transparent 23%
-                ),
-                radial-gradient(
-                    ellipse at 83% 40%,
-                    rgba(5, 17, 26, 0.96) 0 20%,
-                    transparent 21%
-                );
-
-            transform: rotate(-0.3deg);
-
-            pointer-events: none;
-        }
-
-
-        /* =====================================================
-           STARS
-        ===================================================== */
-
-        #stars {
+        #sky-banner-image {
 
             position: absolute;
 
             inset: 0;
 
-            pointer-events: none;
-        }
-
-
-        .star {
-
-            position: absolute;
-
-            border-radius: 50%;
-
-            background: #ffffff;
-
-            animation:
-                starPulse
-                var(--duration)
-                ease-in-out
-                infinite
-                alternate;
-
-            opacity: var(--opacity);
-
-            box-shadow:
-                0 0 var(--glow)
-                rgba(255, 255, 255, 0.85);
-        }
-
-
-        @keyframes starPulse {
-
-            from {
-                opacity: var(--opacity);
-                transform: scale(0.8);
-            }
-
-            to {
-                opacity: calc(var(--opacity) + 0.18);
-                transform: scale(1.18);
-            }
-        }
-
-
-        /* =====================================================
-           ATMOSPHERIC MOUNTAIN LAYERS
-
-           These are deliberately built from several shades of
-           the existing blue palette.  They establish the depth
-           language of The Ripple Well before we touch the water
-           descent itself.
-        ===================================================== */
-
-        #mountain-layers {
-
-            position: absolute;
-            z-index: 2;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 55%;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .mountain-layer {
-
-            position: absolute;
-            left: -6%;
-            width: 112%;
-            bottom: 0;
-            transform-origin: center bottom;
-        }
-
-        /* Furthest range: lighter, softer and more atmospheric. */
-        .mountain-far {
-            z-index: 1;
-            height: 70%;
-            opacity: 0.58;
-            filter: blur(2px);
-            background: linear-gradient(
-                to bottom,
-                rgba(35, 76, 103, 0.78),
-                rgba(18, 48, 69, 0.96)
-            );
-            clip-path: polygon(
-                0 72%, 6% 65%, 12% 70%, 18% 58%,
-                24% 66%, 31% 47%, 37% 61%, 43% 52%,
-                49% 67%, 55% 50%, 61% 61%, 68% 44%,
-                74% 58%, 80% 49%, 87% 64%, 94% 53%,
-                100% 61%, 100% 100%, 0 100%
-            );
-        }
-
-        /* Middle range: stronger blue, still separated by haze. */
-        .mountain-mid {
-            z-index: 2;
-            height: 64%;
-            opacity: 0.78;
-            filter: blur(0.8px);
-            background: linear-gradient(
-                to bottom,
-                #183e5b 0%,
-                #102e47 52%,
-                #0a2236 100%
-            );
-            clip-path: polygon(
-                0 63%, 7% 52%, 13% 61%, 20% 43%,
-                26% 56%, 33% 35%, 39% 53%, 45% 45%,
-                51% 60%, 57% 41%, 63% 51%, 70% 34%,
-                77% 54%, 84% 39%, 91% 55%, 100% 45%,
-                100% 100%, 0 100%
-            );
-        }
-
-        /* Near range: darker and more substantial. */
-        .mountain-near {
-            z-index: 3;
-            height: 58%;
-            opacity: 0.93;
-            background: linear-gradient(
-                to bottom,
-                #0d2a42 0%,
-                #082039 48%,
-                #061727 100%
-            );
-            clip-path: polygon(
-                0 52%, 8% 39%, 15% 54%, 23% 31%,
-                30% 48%, 37% 25%, 44% 43%, 50% 34%,
-                57% 50%, 64% 28%, 71% 44%, 78% 22%,
-                85% 45%, 92% 30%, 100% 40%,
-                100% 100%, 0 100%
-            );
-        }
-
-        /* Foreground range: deepest blue, framing the lake entrance. */
-        .mountain-front {
-            z-index: 4;
-            height: 50%;
-            opacity: 0.98;
-            background: linear-gradient(
-                to bottom,
-                #071b2e 0%,
-                #041321 54%,
-                #020c16 100%
-            );
-            clip-path: polygon(
-                0 38%, 7% 24%, 14% 40%, 22% 17%,
-                29% 34%, 36% 13%, 43% 30%, 50% 39%,
-                57% 27%, 64% 11%, 71% 32%, 78% 18%,
-                85% 37%, 92% 20%, 100% 31%,
-                100% 100%, 0 100%
-            );
-        }
-
-        /* A soft atmospheric veil prevents the layers from looking
-           like graphic cut-outs and helps them dissolve into the sky. */
-        #mountain-layers::after {
-            content: "";
-            position: absolute;
-            z-index: 10;
-            left: 0;
-            right: 0;
-            bottom: 20%;
-            height: 42%;
-            background: linear-gradient(
-                to bottom,
-                rgba(21, 54, 76, 0.18),
-                rgba(7, 22, 35, 0) 72%
-            );
-            pointer-events: none;
-        }
-
-
-        /* =====================================================
-           BRANDING
-        ===================================================== */
-
-        #branding {
-
-            position: absolute;
-
-            z-index: 10;
-
-            top: 0;
-            left: 50%;
-
-            width: min(700px, 92%);
-            height: 100%;
-
-            transform: translateX(-50%);
-
-            text-align: center;
-
-            pointer-events: none;
-        }
-
-
-        #logo-wrap {
-
-            position: absolute;
-
-            top: 68px;
-
-            left: 50%;
-
-            width: 260px;
-            height: 150px;
-
-            transform: translateX(-50%);
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-        }
-
-
-        #logo-glow {
-
-            position: absolute;
-
-            width: 240px;
-            height: 130px;
-
-            border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    ellipse,
-                    rgba(210, 246, 255, 0.46) 0%,
-                    rgba(109, 205, 235, 0.18) 38%,
-                    transparent 72%
-                );
-
-            filter: blur(12px);
-
-            opacity: 0.85;
-        }
-
-
-        #brand-logo {
-
-            position: relative;
+            width: 100%;
+            height: auto;
 
             display: block;
 
-            width: 240px;
-            height: auto;
-
-            filter:
-                drop-shadow(
-                    0 0 5px
-                    rgba(194, 245, 255, 0.75)
-                )
-                drop-shadow(
-                    0 0 15px
-                    rgba(110, 207, 237, 0.55)
-                );
-        }
-
-
-        /* =====================================================
-           HEADER WORDING
-        ===================================================== */
-
-        #presents {
-
-            position: absolute;
-
-            top: 310px;
-
-            left: 0;
-
-            width: 100%;
-
-            margin: 0;
-
-            font-size: 18px;
-
-            line-height: 1;
-
-            letter-spacing: 0.24em;
-
-            text-transform: uppercase;
-
-            color:
-                rgba(230, 249, 255, 0.84);
-
-            text-shadow:
-                0 0 8px
-                rgba(151, 218, 240, 0.35);
-        }
-
-
-        #well-title {
-
-            position: absolute;
-
-            top: 338px;
-
-            left: 0;
-
-            width: 100%;
-
-            margin: 0;
-
-            font-size:
-                clamp(38px, 5vw, 62px);
-
-            line-height: 1.05;
-
-            font-weight: 400;
-
-            letter-spacing: 0.04em;
-
-            color: #f1fbff;
-
-            text-shadow:
-                0 0 7px
-                rgba(205, 244, 255, 0.65),
-
-                0 0 24px
-                rgba(98, 191, 224, 0.28);
-        }
-
-
-        #well-tagline {
-
-            position: absolute;
-
-            top: 412px;
-
-            left: 0;
-
-            width: 100%;
-
-            margin: 0;
-
-            font-size:
-                clamp(14px, 2vw, 19px);
-
-            line-height: 1.2;
-
-            letter-spacing: 0.20em;
-
-            color:
-                rgba(214, 242, 250, 0.76);
-
-            text-shadow:
-                0 0 8px
-                rgba(128, 204, 231, 0.25);
-        }
-
-
-        /* =====================================================
-           RECENT IMPACT RIPPLES
-           VERY SUBTLE LOWER-BANNER GLIMPSE
-
-           This is intentionally kept small.
-           The pond remains the primary interaction area.
-        ===================================================== */
-
-        #recent-impact-ripples {
-
-            position: absolute;
-
-            z-index: 12;
-
-            left: 0;
-            right: 0;
-            bottom: 2px;
-
-            height: 38px;
-
             pointer-events: none;
 
-            overflow: hidden;
-
-            opacity: 0.78;
+            user-select: none;
         }
 
 
-        .recent-impact-ripple {
+        /*
+         * The generated banner already contains its own stars,
+         * mountains, logo, moon and typography.  These legacy
+         * generated layers stay disabled so they cannot duplicate
+         * anything in the approved artwork.
+         */
 
-            position: absolute;
-
-            bottom: -3px;
-
-            width: var(--recent-width);
-            height: var(--recent-height);
-
-            border:
-                1px solid
-                rgba(143, 220, 239, 0.22);
-
-            border-radius:
-                58% 42%
-                67% 33%
-                /
-                48% 62%
-                38% 52%;
-
-            transform:
-                rotate(var(--recent-rotation));
-
-            filter:
-                blur(0.25px);
-
-            opacity:
-                var(--recent-opacity);
-
-            box-shadow:
-                0 0 8px
-                rgba(91, 194, 221, 0.08);
-
-            animation:
-                recentRippleDrift
-                var(--recent-duration)
-                ease-in-out
-                infinite
-                alternate;
-        }
-
-
-        .recent-impact-ripple::after {
-
-            content: "";
-
-            position: absolute;
-
-            inset:
-                22% 9%;
-
-            border:
-                1px solid
-                rgba(163, 228, 242, 0.10);
-
-            border-radius:
-                48% 52%
-                56% 44%
-                /
-                54% 46%
-                50% 50%;
-
-            transform:
-                rotate(var(--recent-inner-rotation));
-        }
-
-
-        @keyframes recentRippleDrift {
-
-            from {
-                transform:
-                    translateX(-3px)
-                    rotate(var(--recent-rotation))
-                    scale(0.96, 0.94);
-            }
-
-            to {
-                transform:
-                    translateX(4px)
-                    rotate(
-                        calc(
-                            var(--recent-rotation) + 2deg
-                        )
-                    )
-                    scale(1.04, 1.02);
-            }
-        }
-
-
-        /* =====================================================
-           MAKE A RIPPLE BUTTON
-        ===================================================== */
-
-        #make-ripple-button {
-
-            position: absolute;
-
-            z-index: 30;
-
-            top: 25px;
-            right: 28px;
-
-            padding: 11px 19px;
-
-            border:
-                1px solid
-                rgba(186, 236, 250, 0.62);
-
-            border-radius: 30px;
-
-            background:
-                rgba(2, 12, 20, 0.32);
-
-            color: #eefaff;
-
-            font-size: 14px;
-
-            letter-spacing: 0.12em;
-
-            text-transform: uppercase;
-
-            cursor: pointer;
-
-            transition:
-                border-color 0.35s ease,
-                box-shadow 0.35s ease,
-                background 0.35s ease,
-                transform 0.25s ease;
-
-            backdrop-filter: blur(5px);
-        }
-
-
-        #make-ripple-button:hover {
-
-            border-color:
-                rgba(218, 250, 255, 1);
-
-            background:
-                rgba(11, 42, 55, 0.58);
-
-            box-shadow:
-                0 0 7px
-                rgba(193, 242, 255, 0.75),
-
-                0 0 20px
-                rgba(85, 190, 226, 0.42);
-
-            transform:
-                translateY(-1px);
+        #stars,
+        #mountain-layers,
+        #branding,
+        #recent-impact-ripples {
+            display: none !important;
         }
 
 
         /* =====================================================
            RIPPLE WELL
         ===================================================== */
+
 
         #ripple-well {
 
@@ -2152,70 +1617,469 @@
 
 
         /* =====================================================
+           FIXED LOWER INTERACTION BANNER
+        ===================================================== */
+
+        #well-interaction-bar {
+
+            position: fixed;
+
+            z-index: 1200;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            min-height: 106px;
+
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 36px;
+
+            padding: 14px 5.2vw;
+
+            border-top:
+                1px solid
+                rgba(158, 219, 236, 0.28);
+
+            border-bottom:
+                1px solid
+                rgba(158, 219, 236, 0.18);
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(2, 15, 24, 0.94),
+                    rgba(1, 10, 17, 0.97)
+                );
+
+            box-shadow:
+                0 -10px 30px
+                rgba(0, 0, 0, 0.28);
+
+            backdrop-filter: blur(8px);
+        }
+
+
+        #well-instruction {
+
+            justify-self: start;
+
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            color: rgba(239, 250, 255, 0.92);
+
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+
+        #mouse-icon {
+
+            position: relative;
+
+            width: 30px;
+            height: 47px;
+
+            flex: 0 0 auto;
+
+            border:
+                1.5px solid
+                rgba(239, 250, 255, 0.94);
+
+            border-radius: 17px;
+        }
+
+
+        #mouse-icon::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 0;
+
+            width: 1px;
+            height: 16px;
+
+            background:
+                rgba(239, 250, 255, 0.75);
+
+            transform: translateX(-50%);
+        }
+
+
+        #mouse-icon span {
+
+            position: absolute;
+
+            left: 50%;
+            top: 7px;
+
+            width: 4px;
+            height: 7px;
+
+            border-radius: 3px;
+
+            background: #eefaff;
+
+            transform: translateX(-50%);
+        }
+
+
+        #impact-count-card {
+
+            justify-self: center;
+
+            min-width: 246px;
+
+            min-height: 78px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+
+            padding: 10px 22px;
+
+            border:
+                1px solid
+                rgba(58, 181, 216, 0.48);
+
+            border-radius: 18px;
+
+            background:
+                rgba(3, 22, 34, 0.62);
+
+            box-shadow:
+                inset 0 0 24px
+                rgba(20, 116, 150, 0.08);
+        }
+
+
+        #impact-count-icon,
+        #make-ripple-button-icon {
+
+            position: relative;
+
+            width: 44px;
+            height: 30px;
+
+            flex: 0 0 auto;
+        }
+
+
+        #impact-count-icon::before,
+        #impact-count-icon::after,
+        #make-ripple-button-icon::before,
+        #make-ripple-button-icon::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            border:
+                1.5px solid
+                rgba(54, 226, 246, 0.9);
+
+            border-radius: 50%;
+
+            transform: translate(-50%, -50%);
+        }
+
+
+        #impact-count-icon::before,
+        #make-ripple-button-icon::before {
+            width: 20px;
+            height: 9px;
+        }
+
+
+        #impact-count-icon::after,
+        #make-ripple-button-icon::after {
+            width: 31px;
+            height: 15px;
+            opacity: 0.62;
+        }
+
+
+        #impact-count-icon span,
+        #make-ripple-button-icon span {
+
+            position: absolute;
+
+            left: 50%;
+            top: 2px;
+
+            width: 5px;
+            height: 9px;
+
+            border-radius: 50% 50% 55% 55%;
+
+            background: #43e6fa;
+
+            transform: translateX(-50%);
+
+            box-shadow:
+                0 0 9px
+                rgba(67, 230, 250, 0.85);
+        }
+
+
+        #impact-count {
+
+            font-size: 28px;
+            line-height: 1;
+
+            color: #eefaff;
+        }
+
+
+        #impact-count-label {
+
+            margin-top: 5px;
+
+            font-size: 12px;
+            letter-spacing: 0.04em;
+
+            color: #35d8ee;
+        }
+
+
+        #make-ripple-button {
+
+            justify-self: end;
+
+            min-width: 235px;
+
+            min-height: 58px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+
+            padding: 12px 24px;
+
+            border:
+                1px solid
+                rgba(54, 226, 246, 0.86);
+
+            border-radius: 13px;
+
+            background:
+                rgba(3, 22, 34, 0.62);
+
+            color: #eefaff;
+
+            font-size: 17px;
+            letter-spacing: 0.01em;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease,
+                transform 0.25s ease;
+        }
+
+
+        #make-ripple-button:hover {
+
+            border-color: #70efff;
+
+            background:
+                rgba(8, 42, 55, 0.76);
+
+            box-shadow:
+                0 0 10px
+                rgba(74, 225, 246, 0.42),
+                0 0 25px
+                rgba(31, 157, 192, 0.22);
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           MESSAGE FROM THE WELL
+        ===================================================== */
+
+        #message-from-well {
+
+            position: relative;
+
+            z-index: 3;
+
+            min-height: 310px;
+
+            padding:
+                58px 20px
+                calc(58px + 120px);
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    #03121d 0%,
+                    #020c15 100%
+                );
+        }
+
+
+        #message-from-well h2 {
+
+            margin: 0;
+
+            font-size: clamp(17px, 2vw, 23px);
+            font-weight: 400;
+
+            letter-spacing: 0.38em;
+            text-transform: uppercase;
+
+            color: #3ed8ed;
+        }
+
+
+        .message-divider {
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+
+            margin: 14px auto 18px;
+        }
+
+
+        .message-divider span {
+
+            width: 54px;
+            height: 1px;
+
+            background:
+                rgba(224, 248, 255, 0.55);
+        }
+
+
+        .message-divider b {
+
+            color: #e9fbff;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+
+        #message-from-well p {
+
+            margin: 0 auto 15px;
+
+            max-width: 720px;
+
+            font-size: clamp(17px, 2vw, 21px);
+            line-height: 1.85;
+
+            color:
+                rgba(239, 250, 255, 0.88);
+        }
+
+
+        #message-from-well strong {
+            color: #3ed8ed;
+            font-weight: 400;
+        }
+
+
+        /* =====================================================
            MOBILE
         ===================================================== */
 
         @media (max-width: 700px) {
 
-            html {
-                --sky-height: 500px;
+            #sky-banner {
+                position: relative;
+                height: 58vw;
+                min-height: 280px;
+                max-height: 520px;
             }
 
-            #mountain-layers {
-                height: 49%;
-            }
-
-            #branding {
-                width: 94%;
-            }
-
-            #logo-wrap {
-                top: 44px;
-                width: 150px;
-                height: 100px;
-            }
-
-            #logo-glow {
-                width: 145px;
-                height: 80px;
-            }
-
-            #brand-logo {
-                width: 145px;
-            }
-
-            #presents {
-                top: 182px;
-                font-size: 13px;
-                letter-spacing: 0.18em;
-            }
-
-            #well-title {
-                top: 208px;
-                font-size: 36px;
-                line-height: 1.05;
-            }
-
-            #well-tagline {
-                top: 265px;
-                font-size: 12px;
-                letter-spacing: 0.12em;
-                line-height: 1.2;
-            }
-
-            #make-ripple-button {
-                top: 17px;
-                right: 14px;
-                padding: 8px 12px;
-                font-size: 11px;
+            #sky-banner-image {
+                width: auto;
+                height: 100%;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                max-width: none;
             }
 
             #ripple-well {
-                margin-top: 410px;
+                margin-top: 0;
             }
 
-            #recent-impact-ripples {
-                height: 30px;
+            #well-interaction-bar {
+                min-height: 118px;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 58px 48px;
+                gap: 6px 10px;
+                padding: 7px 12px;
+            }
+
+            #well-instruction {
+                gap: 10px;
+                font-size: 11px;
+            }
+
+            #mouse-icon {
+                width: 24px;
+                height: 38px;
+            }
+
+            #impact-count-card {
+                min-width: 0;
+                min-height: 58px;
+                padding: 7px 10px;
+                gap: 6px;
+            }
+
+            #impact-count-icon {
+                display: none;
+            }
+
+            #impact-count {
+                font-size: 22px;
+            }
+
+            #impact-count-label {
+                font-size: 9px;
+            }
+
+            #make-ripple-button {
+                position: static;
+                grid-column: 1 / -1;
+                width: 100%;
+                min-width: 0;
+                min-height: 42px;
+                padding: 7px 14px;
+                font-size: 13px;
+            }
+
+            #make-ripple-button-icon {
+                width: 31px;
+                transform: scale(0.82);
+                transform-origin: right center;
+            }
+
+            #message-from-well {
+                padding-bottom: 135px;
             }
 
             #reflection-layer {
@@ -2297,60 +2161,14 @@
          FIXED NIGHT SKY / BRANDING
     ====================================================== -->
 
-    <header id="sky-banner">
+    <header id="sky-banner" aria-label="The Ripple Well">
 
-        <div id="stars"></div>
-
-        <div id="mountain-layers" aria-hidden="true">
-            <div class="mountain-layer mountain-far"></div>
-            <div class="mountain-layer mountain-mid"></div>
-            <div class="mountain-layer mountain-near"></div>
-            <div class="mountain-layer mountain-front"></div>
-        </div>
-
-        <div id="branding">
-
-            <div id="logo-wrap">
-
-                <div id="logo-glow"></div>
-
-                <img
-                    id="brand-logo"
-                    src="images/Make the Ripple Large Logo.png"
-                    alt="Make the Ripple"
-                >
-
-            </div>
-
-            <div id="presents">
-                Presents
-            </div>
-
-            <div id="well-title">
-                The Ripple Well
-            </div>
-
-            <div id="well-tagline">
-                Every Ripple Starts Small
-            </div>
-
-        </div>
-
-
-        <!-- RECENT RIPPLE GLIMPSES -->
-
-        <div
-            id="recent-impact-ripples"
-            aria-hidden="true"
-        ></div>
-
-
-        <button
-            id="make-ripple-button"
-            type="button"
+        <img
+            id="sky-banner-image"
+            src="images/Top Banner.png"
+            alt="The Ripple Well — Make the Ripple"
+            draggable="false"
         >
-            Make a Ripple
-        </button>
 
     </header>
 
@@ -2438,6 +2256,84 @@
         </section>
 
     </main>
+
+
+    <!-- =====================================================
+         FIXED LOWER INTERACTION BANNER
+
+         The banner stays stationary while the Well scrolls.
+         It is deliberately outside the image-based top banner.
+    ====================================================== -->
+
+    <aside id="well-interaction-bar" aria-label="Ripple Well controls">
+
+        <div id="well-instruction">
+
+            <div id="mouse-icon" aria-hidden="true">
+                <span></span>
+            </div>
+
+            <div>
+                Click anywhere on the pond<br>
+                to make a ripple.
+            </div>
+
+        </div>
+
+
+        <div id="impact-count-card" aria-live="polite">
+
+            <div id="impact-count-icon" aria-hidden="true">
+                <span></span>
+            </div>
+
+            <div>
+                <div id="impact-count">0</div>
+                <div id="impact-count-label">Impact Ripples</div>
+            </div>
+
+        </div>
+
+
+        <button
+            id="make-ripple-button"
+            type="button"
+        >
+            <span id="make-ripple-button-icon" aria-hidden="true">
+                <span></span>
+            </span>
+            Make a Ripple
+        </button>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MESSAGE FROM THE WELL
+    ====================================================== -->
+
+    <section id="message-from-well">
+
+        <h2>A Message From The Well</h2>
+
+        <div class="message-divider" aria-hidden="true">
+            <span></span>
+            <b>◆</b>
+            <span></span>
+        </div>
+
+        <p>
+            This is a space for the waves of kindness,<br>
+            strength, and hope to echo across time.
+        </p>
+
+        <p>
+            <strong>Leave your ripple.</strong>
+            Be part of something<br>
+            that will never fade.
+        </p>
+
+    </section>
 
 
     <!-- =====================================================
@@ -2657,6 +2553,32 @@
 
     </div>
 
+
+    <script>
+        /* Keep the lower-banner count synchronized with the live
+           Impact Ripple layer created by water.js. */
+        (function () {
+
+            const countEl =
+                document.getElementById("impact-count");
+
+            const layer =
+                document.getElementById("impact-ripples-layer");
+
+            if (!countEl || !layer) return;
+
+            const updateCount = () => {
+                countEl.textContent =
+                    layer.querySelectorAll(".impact-ripple").length;
+            };
+
+            updateCount();
+
+            new MutationObserver(updateCount)
+                .observe(layer, { childList: true });
+
+        })();
+    </script>
 
     <script src="water.js"></script>
 
