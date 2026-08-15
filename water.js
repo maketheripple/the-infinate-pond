@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 2.5
+   VERSION 2.6
 
    THREE-LAYER WATER EXPERIENCE
 
@@ -25,6 +25,8 @@
    - Submissions are sent to Supabase.
    - New submissions receive status = "pending".
    - Water clicks do NOT open the submission window.
+   - Province/State from the submission form is saved
+     to the Supabase "region" column.
 
    IMPACT RIPPLE REVIEW
    - Approved submissions are loaded from Supabase.
@@ -1437,7 +1439,7 @@
 
 
     /* =====================================================
-       VISITOR LOCATION
+       VISITOR COUNTRY
     ===================================================== */
 
     function getVisitorLocation() {
@@ -1520,7 +1522,8 @@
 
     async function submitRippleToSupabase(
         message,
-        name
+        name,
+        region
     ) {
 
         const location =
@@ -1538,7 +1541,9 @@
                     : "",
 
             region:
-                location.region,
+                region
+                    ? region.trim()
+                    : "",
 
             country:
                 location.country,
@@ -1640,6 +1645,12 @@
                     );
 
 
+                const region =
+                    document.getElementById(
+                        "ripple-region"
+                    );
+
+
                 if (
                     !message ||
                     !message.value.trim()
@@ -1677,6 +1688,9 @@
                         message.value,
                         name
                             ? name.value
+                            : "",
+                        region
+                            ? region.value
                             : ""
                     );
 
@@ -1687,6 +1701,12 @@
                     if (name) {
 
                         name.value = "";
+                    }
+
+
+                    if (region) {
+
+                        region.value = "";
                     }
 
 
@@ -2523,7 +2543,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v2.5 initialized."
+        "The Ripple Well v2.6 initialized."
     );
 
 
@@ -2549,6 +2569,11 @@
 
     console.log(
         "Supabase Submission: active"
+    );
+
+
+    console.log(
+        "Province/State → region: active"
     );
 
 
