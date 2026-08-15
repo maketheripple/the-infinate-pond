@@ -986,23 +986,23 @@
         ===================================================== */
 
         .impact-size-small {
-            width: 72px;
-            height: 40px;
+            width: 126px;
+            height: 70px;
         }
 
         .impact-size-medium {
-            width: 105px;
-            height: 58px;
+            width: 184px;
+            height: 102px;
         }
 
         .impact-size-large {
-            width: 137px;
-            height: 76px;
+            width: 240px;
+            height: 133px;
         }
 
         .impact-size-extra-large {
-            width: 173px;
-            height: 96px;
+            width: 303px;
+            height: 168px;
         }
 
 
@@ -2299,10 +2299,14 @@
         #reflection-layer,
         #depth-layer,
         #depth-message,
-        #impact-ripples-layer,
-        #recent-impact-ripples,
         #reflection-distortion {
             display: none !important;
+        }
+
+        /* Impact Ripples are active again above Water.png. */
+        #impact-ripples-layer,
+        #recent-impact-ripples {
+            display: block;
         }
 
         /* The lower page continues seamlessly from the bottom of the
@@ -2426,7 +2430,7 @@
 
             <img
                 id="water-surface-image"
-                src="images/Water(1).png"
+                src="images/Water.png"
                 alt="Moonlit water fading into the depths of The Ripple Well"
                 draggable="false"
             >
@@ -2436,38 +2440,16 @@
                 aria-hidden="true"
             ></canvas>
 
+            <div
+                id="impact-ripples-layer"
+                aria-label="Impact Ripples"
+            ></div>
+
         </section>
 
 
         <!-- The water image ends here. Everything below continues in
              the exact near-black colour of its lower edge. -->
-
-        <div id="well-depth-content">
-
-            <section id="message-from-well">
-
-                <h2>A Message From The Well</h2>
-
-                <div class="message-divider" aria-hidden="true">
-                    <span></span>
-                    <b>◆</b>
-                    <span></span>
-                </div>
-
-                <p>
-                    This is a space for the waves of kindness,<br>
-                    strength, and hope to echo across time.
-                </p>
-
-                <p>
-                    <strong>Leave your ripple.</strong>
-                    Be part of something<br>
-                    that will never fade.
-                </p>
-
-            </section>
-
-        </div>
 
     </main>
 
