@@ -498,18 +498,27 @@
                     wobble
                 ),
                 0,
-                      ctx.strokeStyle =
+                0,
+                Math.PI *
+                2
+            );
+
+
+            ctx.strokeStyle =
                 `rgba(177, 231, 246, ${
                     ring.alpha *
                     fade
                 })`;
 
+
             ctx.lineWidth =
                 ring.width;
+
 
             ctx.stroke();
 
         }
+
 
         const centerFade =
             Math.max(
@@ -519,12 +528,14 @@
                 5
             );
 
+
         if (
             centerFade >
             0
         ) {
 
             ctx.beginPath();
+
 
             ctx.arc(
                 0,
@@ -537,17 +548,21 @@
                 2
             );
 
+
             ctx.fillStyle =
                 `rgba(202, 241, 250, ${
                     0.32 *
                     centerFade
                 })`;
 
+
             ctx.fill();
 
         }
 
+
         ctx.restore();
+
 
         return true;
 
@@ -567,8 +582,10 @@
             height
         );
 
+
         const now =
             performance.now();
+
 
         for (
             let i =
@@ -595,11 +612,13 @@
 
         }
 
+
         requestAnimationFrame(
             renderClickRipples
         );
 
     }
+
 
     renderClickRipples();
 
@@ -616,14 +635,17 @@
             return;
         }
 
+
         modal.classList.add(
             "open"
         );
+
 
         modal.setAttribute(
             "aria-hidden",
             "false"
         );
+
 
         document.body.style.overflow =
             "hidden";
@@ -639,14 +661,17 @@
             return;
         }
 
+
         modal.classList.remove(
             "open"
         );
+
 
         modal.setAttribute(
             "aria-hidden",
             "true"
         );
+
 
         if (
             !document.querySelector(
@@ -762,6 +787,7 @@
 
             }
 
+
             document
                 .querySelectorAll(
                     ".modal-overlay.open"
@@ -783,8 +809,10 @@
             "style"
         );
 
+
     impactStyle.id =
         "impact-ripple-runtime-styles";
+
 
     impactStyle.textContent = `
 
@@ -1466,6 +1494,7 @@
 
     `;
 
+
     document.head.appendChild(
         impactStyle
     );
@@ -1476,6 +1505,7 @@
     ===================================================== */
 
     const impactRipples = [];
+
 
     let impactLayer =
         null;
@@ -1491,8 +1521,10 @@
                 "impact"
             );
 
+
         let hash =
             2166136261;
+
 
         for (
             let i = 0;
@@ -1504,6 +1536,7 @@
                 text.charCodeAt(
                     i
                 );
+
 
             hash +=
                 (
@@ -1524,6 +1557,7 @@
 
         }
 
+
         return (
             (hash >>> 0) %
             100000
@@ -1535,12 +1569,14 @@
     /*
      * IMPACT RIPPLE VISUAL SIZE
      *
-     * Increased to 150% of the previous v3.1 dimensions.
+     * Increased to 500% of the previous v3.1 dimensions for the
+     * current build phase. We can reduce these later as the Well
+     * gains more approved Impact Ripples.
      *
-     * Small:       88 x 48  -> 132 x 72
-     * Medium:     120 x 66  -> 180 x 99
-     * Large:      150 x 82  -> 225 x 123
-     * Extra-Large:190 x 104 -> 285 x 156
+     * Small:       88 x 48  -> 440 x 240
+     * Medium:     120 x 66  -> 600 x 330
+     * Large:      150 x 82  -> 750 x 410
+     * Extra-Large:190 x 104 -> 950 x 520
      */
 
     function getSize(
@@ -1561,10 +1597,10 @@
                 return {
 
                     width:
-                        132,
+                        440,
 
                     height:
-                        72,
+                        240,
 
                     opacity:
                         .68
@@ -1577,10 +1613,10 @@
                 return {
 
                     width:
-                        225,
+                        750,
 
                     height:
-                        123,
+                        410,
 
                     opacity:
                         .78
@@ -1599,10 +1635,10 @@
                 return {
 
                     width:
-                        285,
+                        950,
 
                     height:
-                        156,
+                        520,
 
                     opacity:
                         .86
@@ -1615,10 +1651,10 @@
                 return {
 
                     width:
-                        180,
+                        600,
 
                     height:
-                        99,
+                        330,
 
                     opacity:
                         .74
@@ -1630,16 +1666,12 @@
     }
 
 
-    /*
-     * IMPACT RIPPLE PLACEMENT
-     *
-     * Ripples are randomly distributed, but placement is now
-     * collision-aware. Each new candidate position is checked
-     * against every ripple already placed.
-     */
+    /* =====================================================
+       IMPACT RIPPLE PLACEMENT
+    ===================================================== */
 
     const IMPACT_MIN_GAP =
-        28;
+        18;
 
 
     const IMPACT_PLACEMENT_ATTEMPTS =
@@ -1836,1076 +1868,6 @@
 
                 for (
                     let attempt = 0;
-                    attempt <
-                    IMPACT_PLACEMENT_ATTEMPTS;
-                    attempt++
-                ) {
-
-                    const candidate =
-                        getRandomPlacementCandidate(
-                            item.data,
-                            index,
-                            attempt,
-                            waterRect,
-                            wellRect,
-                            size
-                        );
-
-
-                    if (
-                        placementIsClear(
-                            candidate,
-                            size,
-                            placed
-                        )
-                    ) {
-
-                        chosen =
-                            candidate;
-
-                        break;
-
-                    }
-
-                }
-
-
-                if (!chosen) {
-
-                    let bestCandidate =
-                        null;
-
-                    let bestDistance =
-                        -Infinity;
-
-
-                    for (
-                        let attempt = 0;
-                        attempt < 80;
-                        attempt++
-                    ) {
-
-                        const candidate =
-                            getRandomPlacementCandidate(
-                                item.data,
-                                index,
-                                IMPACT_PLACEMENT_ATTEMPTS +
-                                attempt,
-                                waterRect,
-                                wellRect,
-                                size
-                            );
-
-
-                        let nearestDistance =
-                            Infinity;
-
-
-                        for (
-                            const existing of placed
-                        ) {
-
-                            const dx =
-                                candidate.x -
-                                existing.x;
-
-
-                            const dy =
-                                candidate.y -
-                                existing.y;
-
-
-                            nearestDistance =
-                                Math.min(
-                                    nearestDistance,
-                                    Math.sqrt(
-                                        dx * dx +
-                                        dy * dy
-                                    )
-                                );
-
-                        }
-
-
-                        if (
-                            placed.length ===
-                            0
-                        ) {
-
-                            nearestDistance =
-                                Infinity;
-
-                        }
-
-
-                        if (
-                            nearestDistance >
-                            bestDistance
-                        ) {
-
-                            bestDistance =
-                                nearestDistance;
-
-                            bestCandidate =
-                                candidate;
-
-                        }
-
-                    }
-
-
-                    chosen =
-                        bestCandidate;
-
-                }
-
-
-                if (!chosen) {
-
-                    return;
-
-                }
-
-
-                const radius =
-                    getImpactPlacementRadius(
-                        size
-                    );
-
-
-                placed.push({
-
-                    x:
-                        chosen.x,
-
-                    y:
-                        chosen.y,
-
-                    radius:
-                        radius
-
-                });
-
-
-                item.element.style.left =
-                    `${chosen.x}px`;
-
-
-                item.element.style.top =
-                    `${chosen.y}px`;
-
-            }
-        );
-
-    }
-
-
-    function repositionImpactRipples() {
-
-        findImpactPlacements();
-
-    }
-
-
-    window.addEventListener(
-        "resize",
-        repositionImpactRipples,
-        {
-            passive: true
-        }
-    );
-            box-shadow:
-
-                0 0 4px
-                rgba(
-                    220,
-                    250,
-                    255,
-                    .95
-                ),
-
-                0 0 12px
-                rgba(
-                    86,
-                    211,
-                    239,
-                    .60
-                ),
-
-                0 0 24px
-                rgba(
-                    62,
-                    186,
-                    219,
-                    .24
-                );
-
-            opacity:
-                .14;
-
-        }
-
-
-        .impact-ring {
-
-            width:
-                28%;
-
-            height:
-                23%;
-
-            transform:
-                translate(-50%, -50%)
-                scale(.10);
-
-            border:
-                1px solid
-                rgba(
-                    168,
-                    234,
-                    248,
-                    .74
-                );
-
-            border-radius:
-                50%;
-
-            box-shadow:
-                0 0 5px
-                rgba(
-                    92,
-                    206,
-                    233,
-                    .22
-                );
-
-            opacity:
-                0;
-
-        }
-
-
-        .ring-two {
-
-            width:
-                45%;
-
-            height:
-                36%;
-
-            border-color:
-                rgba(
-                    128,
-                    222,
-                    243,
-                    .48
-                );
-
-            filter:
-                blur(.25px);
-
-        }
-
-
-        .ring-three {
-
-            width:
-                66%;
-
-            height:
-                51%;
-
-            border-color:
-                rgba(
-                    107,
-                    211,
-                    237,
-                    .29
-                );
-
-            filter:
-                blur(.65px);
-
-        }
-
-
-        .runtime-impact-ripple.pulsing
-        .impact-glow {
-
-            animation:
-                impactGlowPulse
-                var(--pulse-duration)
-                ease-out
-                forwards;
-
-        }
-
-
-        .runtime-impact-ripple.pulsing
-        .impact-core {
-
-            animation:
-                impactCorePulse
-                var(--pulse-duration)
-                ease-out
-                forwards;
-
-        }
-
-
-        .runtime-impact-ripple.pulsing
-        .ring-one {
-
-            animation:
-                impactRingPulse
-                var(--pulse-duration)
-                ease-out
-                forwards;
-
-        }
-
-
-        .runtime-impact-ripple.pulsing
-        .ring-two {
-
-            animation:
-                impactRingPulseTwo
-                var(--pulse-duration)
-                ease-out
-                forwards;
-
-        }
-
-
-        .runtime-impact-ripple.pulsing
-        .ring-three {
-
-            animation:
-                impactRingPulseThree
-                var(--pulse-duration)
-                ease-out
-                forwards;
-
-        }
-
-
-        @keyframes impactGlowPulse {
-
-            0% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.55);
-
-            }
-
-
-            13% {
-
-                opacity:
-                    .92;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1);
-
-            }
-
-
-            32% {
-
-                opacity:
-                    .56;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.16);
-
-            }
-
-
-            65% {
-
-                opacity:
-                    .18;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.35);
-
-            }
-
-
-            100% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.55);
-
-            }
-
-        }
-
-
-        @keyframes impactCorePulse {
-
-            0% {
-
-                opacity:
-                    .10;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.70);
-
-            }
-
-
-            10% {
-
-                opacity:
-                    1;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.15);
-
-            }
-
-
-            26% {
-
-                opacity:
-                    .55;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.92);
-
-            }
-
-
-            50% {
-
-                opacity:
-                    .20;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.70);
-
-            }
-
-
-            100% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.45);
-
-            }
-
-        }
-
-
-        @keyframes impactRingPulse {
-
-            0% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.12);
-
-            }
-
-
-            10% {
-
-                opacity:
-                    .92;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.26);
-
-            }
-
-
-            42% {
-
-                opacity:
-                    .58;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.72);
-
-            }
-
-
-            72% {
-
-                opacity:
-                    .20;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.02);
-
-            }
-
-
-            100% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.18);
-
-            }
-
-        }
-
-
-        @keyframes impactRingPulseTwo {
-
-            0% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.08);
-
-            }
-
-
-            17% {
-
-                opacity:
-                    .44;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.24);
-
-            }
-
-
-            48% {
-
-                opacity:
-                    .30;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.68);
-
-            }
-
-
-            78% {
-
-                opacity:
-                    .11;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.03);
-
-            }
-
-
-            100% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.16);
-
-            }
-
-        }
-
-
-        @keyframes impactRingPulseThree {
-
-            0% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.06);
-
-            }
-
-
-            24% {
-
-                opacity:
-                    .24;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.22);
-
-            }
-
-
-            55% {
-
-                opacity:
-                    .18;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(.70);
-
-            }
-
-
-            82% {
-
-                opacity:
-                    .07;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.02);
-
-            }
-
-
-            100% {
-
-                opacity:
-                    0;
-
-                transform:
-                    translate(-50%,-50%)
-                    scale(1.14);
-
-            }
-
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        impactStyle
-    );
-
-
-    /* =====================================================
-       IMPACT RIPPLE DATA / PLACEMENT
-    ===================================================== */
-
-    const impactRipples = [];
-
-
-    let impactLayer =
-        null;
-
-
-    function seededNumber(
-        value
-    ) {
-
-        const text =
-            String(
-                value ||
-                "impact"
-            );
-
-
-        let hash =
-            2166136261;
-
-
-        for (
-            let i = 0;
-            i < text.length;
-            i++
-        ) {
-
-            hash ^=
-                text.charCodeAt(
-                    i
-                );
-
-
-            hash +=
-                (
-                    hash << 1
-                ) +
-                (
-                    hash << 4
-                ) +
-                (
-                    hash << 7
-                ) +
-                (
-                    hash << 8
-                ) +
-                (
-                    hash << 24
-                );
-
-        }
-
-
-        return (
-            (hash >>> 0) %
-            100000
-        ) / 100000;
-
-    }
-
-
-    /*
-     * IMPACT RIPPLE VISUAL SIZE
-     *
-     * Increased to 150% of the previous v3.1 dimensions.
-     *
-     * Small:       88 x 48  -> 440 x 240
-     * Medium:     120 x 66  -> 600 x 330
-     * Large:      150 x 82  -> 750 x 410
-     * Extra-Large:190 x 104 -> 950 x 520
-     */
-
-    function getSize(
-        size
-    ) {
-
-        switch (
-            String(
-                size ||
-                "medium"
-            )
-            .trim()
-            .toLowerCase()
-        ) {
-
-            case "small":
-
-                return {
-
-                    width:
-                        440,
-
-                    height:
-                        240,
-
-                    opacity:
-                        .68
-
-                };
-
-
-            case "large":
-
-                return {
-
-                    width:
-                        750,
-
-                    height:
-                        410,
-
-                    opacity:
-                        .78
-
-                };
-
-
-            case "extra-large":
-
-            case "extra large":
-
-            case "x-large":
-
-            case "xlarge":
-
-                return {
-
-                    width:
-                        950,
-
-                    height:
-                        520,
-
-                    opacity:
-                        .86
-
-                };
-
-
-            default:
-
-                return {
-
-                    width:
-                        600,
-
-                    height:
-                        330,
-
-                    opacity:
-                        .74
-
-                };
-
-        }
-
-    }
-
-
-    /*
-     * IMPACT RIPPLE PLACEMENT
-     *
-     * Ripples are still randomly distributed, but placement is now
-     * collision-aware. Each new candidate position is checked against
-     * every ripple already placed. The required separation is based on
-     * the actual size of the two ripples, plus a small amount of breathing
-     * room. The visual sizes are intentionally large during this build
-     * phase so we can judge the Well at a higher Impact Ripple density.
-     *
-     * The random sequence is seeded by each ripple's id, so the layout
-     * remains stable instead of jumping around on every page refresh.
-     */
-
-    const IMPACT_MIN_GAP =
-        18;
-
-
-    const IMPACT_PLACEMENT_ATTEMPTS =
-        180;
-
-
-    function getImpactPlacementRadius(
-        size
-    ) {
-
-        /*
-         * Use the half-diagonal as a conservative footprint so that
-         * rotated elliptical ripples do not end up visually touching.
-         */
-
-        return Math.sqrt(
-            Math.pow(size.width / 2, 2) +
-            Math.pow(size.height / 2, 2)
-        );
-
-    }
-
-
-    function getRandomPlacementCandidate(
-        data,
-        index,
-        attempt,
-        waterRect,
-        wellRect,
-        size
-    ) {
-
-        /*
-         * Multiple deterministic pseudo-random streams give every
-         * ripple many different candidate positions without making
-         * the final layout truly grid-like.
-         */
-
-        const xSeed =
-            seededNumber(
-                `${data.id}-${index}-placement-x-${attempt}`
-            );
-
-
-        const ySeed =
-            seededNumber(
-                `${data.id}-${index}-placement-y-${attempt}`
-            );
-
-
-        /*
-         * Keep the centre away from the very edge of the water image.
-         * The margins are based partly on the ripple dimensions so the
-         * larger 150% ripples have room to breathe.
-         */
-
-        const horizontalMargin =
-            Math.min(
-                0.12,
-                Math.max(
-                    0.06,
-                    (size.width / waterRect.width) * 0.70
-                )
-            );
-
-
-        const verticalMargin =
-            Math.min(
-                0.18,
-                Math.max(
-                    0.10,
-                    (size.height / waterRect.height) * 0.70
-                )
-            );
-
-
-        return {
-
-            x:
-
-                waterRect.left -
-                wellRect.left +
-                waterRect.width *
-                (
-                    horizontalMargin +
-                    xSeed *
-                    (
-                        1 -
-                        horizontalMargin * 2
-                    )
-                ),
-
-
-            y:
-
-                waterRect.top -
-                wellRect.top +
-                waterRect.height *
-                (
-                    verticalMargin +
-                    ySeed *
-                    (
-                        1 -
-                        verticalMargin * 2
-                    )
-                )
-
-        };
-
-    }
-
-
-    function placementIsClear(
-        candidate,
-        candidateSize,
-        placed
-    ) {
-
-        const candidateRadius =
-            getImpactPlacementRadius(
-                candidateSize
-            );
-
-
-        for (
-            const existing of placed
-        ) {
-
-            const dx =
-                candidate.x -
-                existing.x;
-
-
-            const dy =
-                candidate.y -
-                existing.y;
-
-
-            const distance =
-                Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                );
-
-
-            const requiredDistance =
-                candidateRadius +
-                existing.radius +
-                IMPACT_MIN_GAP;
-
-
-            if (
-                distance <
-                requiredDistance
-            ) {
-
-                return false;
-
-            }
-
-        }
-
-
-        return true;
-
-    }
-
-
-    function findImpactPlacements() {
-
-        const waterRect =
-            waterImage.getBoundingClientRect();
-
-
-        const wellRect =
-            rippleWell.getBoundingClientRect();
-
-
-        const placed = [];
-
-
-        /*
-         * Clear the old positions first. We then place ripples in
-         * their existing Supabase order. Every later ripple must find
-         * a location that is safely separated from earlier ripples.
-         */
-
-        impactRipples.forEach(
-            (
-                item,
-                index
-            ) => {
-
-                const size =
-                    getSize(
-                        item.data.size
-                    );
-
-
-                let chosen =
-                    null;
-
-
-                /*
-                 * Try many random candidates. This preserves the
-                 * organic/random feel while making collisions unlikely.
-                 */
-
-                for (
-                    let attempt = 0;
                     attempt < IMPACT_PLACEMENT_ATTEMPTS;
                     attempt++
                 ) {
@@ -2938,13 +1900,6 @@
 
                 }
 
-
-                /*
-                 * If the Well becomes unusually crowded, choose the
-                 * candidate that is farthest from its nearest neighbour
-                 * rather than allowing two ripples to stack directly
-                 * on top of one another.
-                 */
 
                 if (!chosen) {
 
@@ -3315,6 +2270,13 @@
             );
 
 
+        const pos =
+            getImpactPosition(
+                data,
+                index
+            );
+
+
         const element =
             document.createElement(
                 "button"
@@ -3335,17 +2297,12 @@
         );
 
 
-        /*
-         * Initial position is assigned by the collision-aware layout
-         * pass after all approved ripples have been created.
-         */
-
         element.style.left =
-            "0px";
+            `${pos.x}px`;
 
 
         element.style.top =
-            "0px";
+            `${pos.y}px`;
 
 
         element.style.setProperty(
@@ -3715,16 +2672,6 @@
 
 
             repositionImpactRipples();
-
-
-            /*
-             * Run one more layout pass on the next frame so the placement
-             * uses the final rendered Water.png dimensions.
-             */
-
-            requestAnimationFrame(
-                repositionImpactRipples
-            );
 
 
             console.log(
@@ -4181,7 +3128,7 @@
     ===================================================== */
 
     console.log(
-        "The Ripple Well v3.1 initialized."
+        "The Ripple Well v3.2 initialized."
     );
 
 
