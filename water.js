@@ -1566,6 +1566,17 @@
     }
 
 
+    /*
+     * IMPACT RIPPLE VISUAL SIZE
+     *
+     * Increased to 150% of the previous v3.1 dimensions.
+     *
+     * Small:       88 x 48  -> 132 x 72
+     * Medium:     120 x 66  -> 180 x 99
+     * Large:      150 x 82  -> 225 x 123
+     * Extra-Large:190 x 104 -> 285 x 156
+     */
+
     function getSize(
         size
     ) {
@@ -1584,10 +1595,10 @@
                 return {
 
                     width:
-                        88,
+                        132,
 
                     height:
-                        48,
+                        72,
 
                     opacity:
                         .68
@@ -1600,10 +1611,10 @@
                 return {
 
                     width:
-                        150,
+                        225,
 
                     height:
-                        82,
+                        123,
 
                     opacity:
                         .78
@@ -1622,10 +1633,10 @@
                 return {
 
                     width:
-                        190,
+                        285,
 
                     height:
-                        104,
+                        156,
 
                     opacity:
                         .86
@@ -1638,10 +1649,10 @@
                 return {
 
                     width:
-                        120,
+                        180,
 
                     height:
-                        66,
+                        99,
 
                     opacity:
                         .74
@@ -1653,28 +1664,94 @@
     }
 
 
-    function getImpactPosition(
-        data,
-        index
+    /*
+     * IMPACT RIPPLE PLACEMENT
+     *
+     * Ripples are still randomly distributed, but placement is now
+     * collision-aware. Each new candidate position is checked against
+     * every ripple already placed. The required separation is based on
+     * the actual size of the two ripples, plus a little extra breathing
+     * room.
+     *
+     * The random sequence is seeded by each ripple's id, so the layout
+     * remains stable instead of jumping around on every page refresh.
+     */
+
+    const IMPACT_MIN_GAP =
+        28;
+
+
+    const IMPACT_PLACEMENT_ATTEMPTS =
+        180;
+
+
+    function getImpactPlacementRadius(
+        size
     ) {
 
-        const waterRect =
-            waterImage.getBoundingClientRect();
+        /*
+         * Use the half-diagonal as a conservative footprint so that
+         * rotated elliptical ripples do not end up visually touching.
+         */
+
+        return Math.sqrt(
+            Math.pow(size.width / 2, 2) +
+            Math.pow(size.height / 2, 2)
+        );
+
+    }
 
 
-        const wellRect =
-            rippleWell.getBoundingClientRect();
+    function getRandomPlacementCandidate(
+        data,
+        index,
+        attempt,
+        waterRect,
+        wellRect,
+        size
+    ) {
 
+        /*
+         * Multiple deterministic pseudo-random streams give every
+         * ripple many different candidate positions without making
+         * the final layout truly grid-like.
+         */
 
         const xSeed =
             seededNumber(
-                `${data.id}-${index}-x`
+                `${data.id}-${index}-placement-x-${attempt}`
             );
 
 
         const ySeed =
             seededNumber(
-                `${data.id}-${index}-y`
+                `${data.id}-${index}-placement-y-${attempt}`
+            );
+
+
+        /*
+         * Keep the centre away from the very edge of the water image.
+         * The margins are based partly on the ripple dimensions so the
+         * larger 150% ripples have room to breathe.
+         */
+
+        const horizontalMargin =
+            Math.min(
+                0.12,
+                Math.max(
+                    0.06,
+                    (size.width / waterRect.width) * 0.70
+                )
+            );
+
+
+        const verticalMargin =
+            Math.min(
+                0.18,
+                Math.max(
+                    0.10,
+                    (size.height / waterRect.height) * 0.70
+                )
             );
 
 
@@ -1686,9 +1763,12 @@
                 wellRect.left +
                 waterRect.width *
                 (
-                    .08 +
+                    horizontalMargin +
                     xSeed *
-                    .84
+                    (
+                        1 -
+                        horizontalMargin * 2
+                    )
                 ),
 
 
@@ -1698,9 +1778,12 @@
                 wellRect.top +
                 waterRect.height *
                 (
-                    .16 +
+                    verticalMargin +
                     ySeed *
-                    .70
+                    (
+                        1 -
+                        verticalMargin * 2
+                    )
                 )
 
         };
@@ -1708,7 +1791,80 @@
     }
 
 
-    function repositionImpactRipples() {
+    function placementIsClear(
+        candidate,
+        candidateSize,
+        placed
+    ) {
+
+        const candidateRadius =
+            getImpactPlacementRadius(
+                candidateSize
+            );
+
+
+        for (
+            const existing of placed
+        ) {
+
+            const dx =
+                candidate.x -
+                existing.x;
+
+
+            const dy =
+                candidate.y -
+                existing.y;
+
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+
+            const requiredDistance =
+                candidateRadius +
+                existing.radius +
+                IMPACT_MIN_GAP;
+
+
+            if (
+                distance <
+                requiredDistance
+            ) {
+
+                return false;
+
+            }
+
+        }
+
+
+        return true;
+
+    }
+
+
+    function findImpactPlacements() {
+
+        const waterRect =
+            waterImage.getBoundingClientRect();
+
+
+        const wellRect =
+            rippleWell.getBoundingClientRect();
+
+
+        const placed = [];
+
+
+        /*
+         * Clear the old positions first. We then place ripples in
+         * their existing Supabase order. Every later ripple must find
+         * a location that is safely separated from earlier ripples.
+         */
 
         impactRipples.forEach(
             (
@@ -1716,22 +1872,195 @@
                 index
             ) => {
 
-                const pos =
-                    getImpactPosition(
-                        item.data,
-                        index
+                const size =
+                    getSize(
+                        item.data.size
                     );
 
 
+                let chosen =
+                    null;
+
+
+                /*
+                 * Try many random candidates. This preserves the
+                 * organic/random feel while making collisions unlikely.
+                 */
+
+                for (
+                    let attempt = 0;
+                    attempt < IMPACT_PLACEMENT_ATTEMPTS;
+                    attempt++
+                ) {
+
+                    const candidate =
+                        getRandomPlacementCandidate(
+                            item.data,
+                            index,
+                            attempt,
+                            waterRect,
+                            wellRect,
+                            size
+                        );
+
+
+                    if (
+                        placementIsClear(
+                            candidate,
+                            size,
+                            placed
+                        )
+                    ) {
+
+                        chosen =
+                            candidate;
+
+                        break;
+
+                    }
+
+                }
+
+
+                /*
+                 * If the Well becomes unusually crowded, choose the
+                 * candidate that is farthest from its nearest neighbour
+                 * rather than allowing two ripples to stack directly
+                 * on top of one another.
+                 */
+
+                if (!chosen) {
+
+                    let bestCandidate =
+                        null;
+
+                    let bestDistance =
+                        -Infinity;
+
+
+                    for (
+                        let attempt = 0;
+                        attempt < 80;
+                        attempt++
+                    ) {
+
+                        const candidate =
+                            getRandomPlacementCandidate(
+                                item.data,
+                                index,
+                                IMPACT_PLACEMENT_ATTEMPTS +
+                                attempt,
+                                waterRect,
+                                wellRect,
+                                size
+                            );
+
+
+                        let nearestDistance =
+                            Infinity;
+
+
+                        for (
+                            const existing of placed
+                        ) {
+
+                            const dx =
+                                candidate.x -
+                                existing.x;
+
+
+                            const dy =
+                                candidate.y -
+                                existing.y;
+
+
+                            nearestDistance =
+                                Math.min(
+                                    nearestDistance,
+                                    Math.sqrt(
+                                        dx * dx +
+                                        dy * dy
+                                    )
+                                );
+
+                        }
+
+
+                        if (
+                            placed.length === 0
+                        ) {
+
+                            nearestDistance =
+                                Infinity;
+
+                        }
+
+
+                        if (
+                            nearestDistance >
+                            bestDistance
+                        ) {
+
+                            bestDistance =
+                                nearestDistance;
+
+                            bestCandidate =
+                                candidate;
+
+                        }
+
+                    }
+
+
+                    chosen =
+                        bestCandidate;
+
+                }
+
+
+                if (!chosen) {
+
+                    return;
+
+                }
+
+
+                const radius =
+                    getImpactPlacementRadius(
+                        size
+                    );
+
+
+                placed.push({
+
+                    x:
+                        chosen.x,
+
+                    y:
+                        chosen.y,
+
+                    radius:
+                        radius
+
+                });
+
+
                 item.element.style.left =
-                    `${pos.x}px`;
+                    `${chosen.x}px`;
 
 
                 item.element.style.top =
-                    `${pos.y}px`;
+                    `${chosen.y}px`;
 
             }
         );
+
+    }
+
+
+    function repositionImpactRipples() {
+
+        findImpactPlacements();
 
     }
 
@@ -1969,13 +2298,6 @@
             );
 
 
-        const pos =
-            getImpactPosition(
-                data,
-                index
-            );
-
-
         const element =
             document.createElement(
                 "button"
@@ -1996,12 +2318,17 @@
         );
 
 
+        /*
+         * Initial position is assigned by the collision-aware layout
+         * pass after all approved ripples have been created.
+         */
+
         element.style.left =
-            `${pos.x}px`;
+            "0px";
 
 
         element.style.top =
-            `${pos.y}px`;
+            "0px";
 
 
         element.style.setProperty(
@@ -2371,6 +2698,16 @@
 
 
             repositionImpactRipples();
+
+
+            /*
+             * Run one more layout pass on the next frame so the placement
+             * uses the final rendered Water.png dimensions.
+             */
+
+            requestAnimationFrame(
+                repositionImpactRipples
+            );
 
 
             console.log(
