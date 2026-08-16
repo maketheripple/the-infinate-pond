@@ -1,6 +1,6 @@
 /* =========================================================
    THE RIPPLE WELL
-   VERSION 3.1 — IMPACT RIPPLE PULSE SYSTEM
+   VERSION 3.2 — 500% IMPACT RIPPLE TEST
 
    - Water.png remains the visual water surface.
    - The transparent click canvas covers the entire Well,
@@ -825,7 +825,7 @@
                 0;
 
             z-index:
-                40;
+                60;
 
             pointer-events:
                 none;
@@ -1569,9 +1569,7 @@
     /*
      * IMPACT RIPPLE VISUAL SIZE
      *
-     * Increased to 500% of the previous v3.1 dimensions for the
-     * current build phase. We can reduce these later as the Well
-     * gains more approved Impact Ripples.
+     * Increased to 150% of the previous v3.1 dimensions.
      *
      * Small:       88 x 48  -> 440 x 240
      * Medium:     120 x 66  -> 600 x 330
@@ -1666,9 +1664,18 @@
     }
 
 
-    /* =====================================================
-       IMPACT RIPPLE PLACEMENT
-    ===================================================== */
+    /*
+     * IMPACT RIPPLE PLACEMENT
+     *
+     * Ripples are still randomly distributed, but placement is now
+     * collision-aware. Each new candidate position is checked against
+     * every ripple already placed. The required separation is based on
+     * the actual size of the two ripples, plus a little extra breathing
+     * room.
+     *
+     * The random sequence is seeded by each ripple's id, so the layout
+     * remains stable instead of jumping around on every page refresh.
+     */
 
     const IMPACT_MIN_GAP =
         18;
@@ -1682,15 +1689,14 @@
         size
     ) {
 
+        /*
+         * Use the half-diagonal as a conservative footprint so that
+         * rotated elliptical ripples do not end up visually touching.
+         */
+
         return Math.sqrt(
-            Math.pow(
-                size.width / 2,
-                2
-            ) +
-            Math.pow(
-                size.height / 2,
-                2
-            )
+            Math.pow(size.width / 2, 2) +
+            Math.pow(size.height / 2, 2)
         );
 
     }
@@ -1705,6 +1711,12 @@
         size
     ) {
 
+        /*
+         * Multiple deterministic pseudo-random streams give every
+         * ripple many different candidate positions without making
+         * the final layout truly grid-like.
+         */
+
         const xSeed =
             seededNumber(
                 `${data.id}-${index}-placement-x-${attempt}`
@@ -1717,16 +1729,18 @@
             );
 
 
+        /*
+         * Keep the centre away from the very edge of the water image.
+         * The margins are based partly on the ripple dimensions so the
+         * larger 500% ripples have room to breathe.
+         */
+
         const horizontalMargin =
             Math.min(
                 0.12,
                 Math.max(
                     0.06,
-                    (
-                        size.width /
-                        waterRect.width
-                    ) *
-                    0.70
+                    (size.width / waterRect.width) * 0.70
                 )
             );
 
@@ -1736,11 +1750,7 @@
                 0.18,
                 Math.max(
                     0.10,
-                    (
-                        size.height /
-                        waterRect.height
-                    ) *
-                    0.70
+                    (size.height / waterRect.height) * 0.70
                 )
             );
 
@@ -1850,6 +1860,12 @@
         const placed = [];
 
 
+        /*
+         * Clear the old positions first. We then place ripples in
+         * their existing Supabase order. Every later ripple must find
+         * a location that is safely separated from earlier ripples.
+         */
+
         impactRipples.forEach(
             (
                 item,
@@ -1865,6 +1881,11 @@
                 let chosen =
                     null;
 
+
+                /*
+                 * Try many random candidates. This preserves the
+                 * organic/random feel while making collisions unlikely.
+                 */
 
                 for (
                     let attempt = 0;
@@ -1900,6 +1921,13 @@
 
                 }
 
+
+                /*
+                 * If the Well becomes unusually crowded, choose the
+                 * candidate that is farthest from its nearest neighbour
+                 * rather than allowing two ripples to stack directly
+                 * on top of one another.
+                 */
 
                 if (!chosen) {
 
@@ -2270,13 +2298,6 @@
             );
 
 
-        const pos =
-            getImpactPosition(
-                data,
-                index
-            );
-
-
         const element =
             document.createElement(
                 "button"
@@ -2297,12 +2318,17 @@
         );
 
 
+        /*
+         * Initial position is assigned by the collision-aware layout
+         * pass after all approved ripples have been created.
+         */
+
         element.style.left =
-            `${pos.x}px`;
+            "0px";
 
 
         element.style.top =
-            `${pos.y}px`;
+            "0px";
 
 
         element.style.setProperty(
@@ -2422,13 +2448,13 @@
 
             initialDelay:
 
-                1200 +
+                350 +
 
                 Math.round(
                     seededNumber(
                         `${data.id}-delay`
                     ) *
-                    6500
+                    2500
                 ),
 
 
@@ -2672,6 +2698,16 @@
 
 
             repositionImpactRipples();
+
+
+            /*
+             * Run one more layout pass on the next frame so the placement
+             * uses the final rendered Water.png dimensions.
+             */
+
+            requestAnimationFrame(
+                repositionImpactRipples
+            );
 
 
             console.log(
