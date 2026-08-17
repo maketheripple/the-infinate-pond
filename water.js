@@ -946,6 +946,9 @@
          */
         .impact-hit-area {
 
+            display:
+                block;
+
             position:
                 absolute;
 
@@ -978,6 +981,9 @@
 
             cursor:
                 pointer;
+
+            touch-action:
+                manipulation;
 
             z-index:
                 20;
@@ -2545,11 +2551,17 @@
          * Stop the click from reaching the full-Well canvas.
          */
 
-        element.addEventListener(
+        /*
+         * The full visual container is not interactive.
+         * Only the smaller hit area below handles input.
+         *
+         * Do not call preventDefault() on pointerdown here:
+         * doing so can suppress the subsequent click event,
+         * which is what opens the Impact Ripple message.
+         */
+        hitArea.addEventListener(
             "pointerdown",
             event => {
-
-                event.preventDefault();
 
                 event.stopPropagation();
 
@@ -2557,7 +2569,7 @@
         );
 
 
-        element.addEventListener(
+        hitArea.addEventListener(
             "click",
             event => {
 
