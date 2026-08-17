@@ -2477,10 +2477,13 @@
          *
          * The largest visible ring is 66% x 51% of the ripple
          * container. Its animation grows to 1.14x, so the
-         * maximum visible footprint is:
+         * The previous beta hit radius used the maximum visible
+         * footprint. This version deliberately cuts that radius
+         * in half for all four Impact Ripple sizes.
          *
-         *     66% x 1.14 = 75.24%
-         *     51% x 1.14 = 58.14%
+         * Small / Medium / Large / Extra-Large all use the same
+         * proportional reduction because the hit test is based
+         * on each ripple's actual rendered dimensions.
          *
          * The placement/collision system is NOT changed.
          */
@@ -2543,14 +2546,23 @@
                 x * sin +
                 y * cos;
 
+            /*
+             * Beta hit-area adjustment:
+             * reduce the clickable radius by 50% for every
+             * Impact Ripple size (Small, Medium, Large,
+             * Extra-Large).
+             *
+             * The visual ripple itself is unchanged.
+             * Placement/collision spacing is unchanged.
+             */
             const radiusX =
                 rect.width *
-                0.7524 /
+                0.3762 /
                 2;
 
             const radiusY =
                 rect.height *
-                0.5814 /
+                0.2907 /
                 2;
 
             return (
