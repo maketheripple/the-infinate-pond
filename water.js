@@ -863,11 +863,16 @@
             appearance:
                 none;
 
+            /*
+             * The parent is visual-only.
+             * The smaller .impact-hit-area is the actual
+             * clickable/touchable region.
+             */
             pointer-events:
-                auto;
+                none;
 
             cursor:
-                pointer;
+                default;
 
             opacity:
                 var(--base-opacity);
@@ -926,7 +931,61 @@
         }
 
 
-        .impact-glow {
+                /*
+         * IMPACT RIPPLE HIT AREA
+         *
+         * The visible outer ring is 66% x 51% of the parent.
+         * Its animation finishes at scale 1.14, so the maximum
+         * visible footprint is 75.24% x 58.14%.
+         *
+         * The clickable/touchable area now matches that maximum
+         * visible ripple footprint instead of the full invisible
+         * parent box.
+         *
+         * The placement/collision radius is NOT changed.
+         */
+        .impact-hit-area {
+
+            position:
+                absolute;
+
+            left:
+                50%;
+
+            top:
+                50%;
+
+            width:
+                75.24%;
+
+            height:
+                58.14%;
+
+            transform:
+                translate(-50%, -50%);
+
+            border-radius:
+                50%;
+
+            clip-path:
+                ellipse(50% 50% at 50% 50%);
+
+            background:
+                transparent;
+
+            pointer-events:
+                auto;
+
+            cursor:
+                pointer;
+
+            z-index:
+                20;
+
+        }
+
+
+.impact-glow {
 
             width:
                 25%;
@@ -2361,7 +2420,20 @@
                 28
 
             }deg`
-        );
+        );        
+        /*
+         * The hit area is deliberately smaller than the full
+         * visual container and matches the maximum visible
+         * Impact Ripple footprint.
+         */
+        const hitArea =
+            document.createElement(
+                "span"
+            );
+
+
+        hitArea.className =
+            "impact-hit-area";
 
 
         const glow =
@@ -2415,6 +2487,7 @@
 
 
         element.append(
+            hitArea,
             glow,
             core,
             ringOne,
