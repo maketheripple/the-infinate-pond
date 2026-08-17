@@ -863,16 +863,11 @@
             appearance:
                 none;
 
-            /*
-             * The parent is visual-only.
-             * The smaller .impact-hit-area is the actual
-             * clickable/touchable region.
-             */
             pointer-events:
-                none;
+                auto;
 
             cursor:
-                default;
+                pointer;
 
             opacity:
                 var(--base-opacity);
@@ -931,67 +926,7 @@
         }
 
 
-                /*
-         * IMPACT RIPPLE HIT AREA
-         *
-         * The visible outer ring is 66% x 51% of the parent.
-         * Its animation finishes at scale 1.14, so the maximum
-         * visible footprint is 75.24% x 58.14%.
-         *
-         * The clickable/touchable area now matches that maximum
-         * visible ripple footprint instead of the full invisible
-         * parent box.
-         *
-         * The placement/collision radius is NOT changed.
-         */
-        .impact-hit-area {
-
-            display:
-                block;
-
-            position:
-                absolute;
-
-            left:
-                50%;
-
-            top:
-                50%;
-
-            width:
-                75.24%;
-
-            height:
-                58.14%;
-
-            transform:
-                translate(-50%, -50%);
-
-            border-radius:
-                50%;
-
-            clip-path:
-                ellipse(50% 50% at 50% 50%);
-
-            background:
-                transparent;
-
-            pointer-events:
-                auto;
-
-            cursor:
-                pointer;
-
-            touch-action:
-                manipulation;
-
-            z-index:
-                20;
-
-        }
-
-
-.impact-glow {
+        .impact-glow {
 
             width:
                 25%;
@@ -2426,20 +2361,7 @@
                 28
 
             }deg`
-        );        
-        /*
-         * The hit area is deliberately smaller than the full
-         * visual container and matches the maximum visible
-         * Impact Ripple footprint.
-         */
-        const hitArea =
-            document.createElement(
-                "span"
-            );
-
-
-        hitArea.className =
-            "impact-hit-area";
+        );
 
 
         const glow =
@@ -2493,7 +2415,6 @@
 
 
         element.append(
-            hitArea,
             glow,
             core,
             ringOne,
@@ -2548,40 +2469,137 @@
 
 
         /*
-         * Stop the click from reaching the full-Well canvas.
-         */
-
-        /*
-         * The full visual container is not interactive.
-         * Only the smaller hit area below handles input.
+         * IMPACT RIPPLE INTERACTION
          *
-         * Do not call preventDefault() on pointerdown here:
-         * doing so can suppress the subsequent click event,
-         * which is what opens the Impact Ripple message.
+         * The visual Impact Ripple keeps its original full-size
+         * button, but interaction is accepted only inside the
+         * same elliptical footprint as the visible ripple.
+         *
+         * The largest visible ring is 66% x 51% of the ripple
+         * container. Its animation grows to 1.14x, so the
+         * maximum visible footprint is:
+         *
+         *     66% x 1.14 = 75.24%
+         *     51% x 1.14 = 58.14%
+         *
+         * The placement/collision system is NOT changed.
          */
-        hitArea.addEventListener(
+        function isInsideImpactRipple(
+            event
+        ) {
+            const rect =
+                element.getBoundingClientRect();
+
+            if (
+                !rect.width ||
+                !rect.height
+            ) {
+                return false;
+            }
+
+            const x =
+                event.clientX -
+                (
+                    rect.left +
+                    rect.width / 2
+                );
+
+            const y =
+                event.clientY -
+                (
+                    rect.top +
+                    rect.height / 2
+                );
+
+            const rotation =
+                (
+                    parseFloat(
+                        getComputedStyle(
+                            element
+                        ).getPropertyValue(
+                            "--rotation"
+                        )
+                    ) ||
+                    0
+                ) *
+                Math.PI /
+                180;
+
+            const cos =
+                Math.cos(
+                    -rotation
+                );
+
+            const sin =
+                Math.sin(
+                    -rotation
+                );
+
+            const localX =
+                x * cos -
+                y * sin;
+
+            const localY =
+                x * sin +
+                y * cos;
+
+            const radiusX =
+                rect.width *
+                0.7524 /
+                2;
+
+            const radiusY =
+                rect.height *
+                0.5814 /
+                2;
+
+            return (
+                Math.pow(
+                    localX / radiusX,
+                    2
+                ) +
+                Math.pow(
+                    localY / radiusY,
+                    2
+                )
+            ) <= 1;
+        }
+
+
+        element.addEventListener(
             "pointerdown",
             event => {
+                if (
+                    !isInsideImpactRipple(
+                        event
+                    )
+                ) {
+                    return;
+                }
 
+                event.preventDefault();
                 event.stopPropagation();
-
             }
         );
 
 
-        hitArea.addEventListener(
+        element.addEventListener(
             "click",
             event => {
+                if (
+                    !isInsideImpactRipple(
+                        event
+                    )
+                ) {
+                    return;
+                }
 
                 event.preventDefault();
-
                 event.stopPropagation();
-
 
                 openImpactMessage(
                     data
                 );
-
             }
         );
 
