@@ -912,6 +912,32 @@
 
         }
 
+        /*
+         * MOBILE IMPACT RIPPLE SCALE
+         *
+         * Desktop dimensions remain completely unchanged.
+         *
+         * On phones/tablets, the entire Impact Ripple container
+         * is rendered at 25% of its normal size (75% reduction).
+         *
+         * Because the actual hit target is a child of this
+         * container and uses percentage dimensions, its physical
+         * clickable area scales down with the ripple automatically.
+         *
+         * The placement/collision calculations are intentionally
+         * untouched for this first mobile-size test.
+         */
+        @media (max-width: 768px) {
+
+            .runtime-impact-ripple {
+                transform:
+                    translate(-50%, -50%)
+                    rotate(var(--rotation))
+                    scale(0.25);
+            }
+
+        }
+
 
         /*
          * TRUE PHYSICAL HITBOX
