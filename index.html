@@ -2396,7 +2396,51 @@
             }
         }
 
-    </style>
+    
+        /* =====================================================
+           MOBILE BETA CLEANUP — V13
+
+           On mobile, the lower interaction banner contains only
+           the Make a Ripple button. Desktop is untouched.
+        ===================================================== */
+        @media (max-width: 768px) {
+
+            #well-interaction-bar {
+                min-height: 0 !important;
+                display: block !important;
+                padding: 10px 12px !important;
+            }
+
+            #well-instruction,
+            #banner-message {
+                display: none !important;
+            }
+
+            #make-ripple-button {
+                display: flex !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                min-height: 42px !important;
+                margin: 0 auto !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+
+        }
+
+
+        /* Mobile: no diagnostic hitbox styling should be visible. */
+        @media (max-width: 768px) {
+            #impact-ripples-layer button,
+            #impact-ripples-layer .impact-ripple-hit-target {
+                outline: none !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+        }
+
+</style>
 </head>
 <body>
 
