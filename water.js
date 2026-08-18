@@ -931,20 +931,20 @@
 
             .runtime-impact-ripple {
                 /*
-                 * V10 MOBILE SIZE
+                 * V11 MOBILE SIZE
                  *
-                 * V9 used 25% of the desktop size and was still
-                 * reported as too large.
+                 * V10 used 10% of the desktop size (90% reduction)
+                 * and was reported as too small.
                  *
-                 * V10 uses 10% of the desktop size:
-                 * a 90% reduction from the desktop dimensions.
+                 * V11 uses 20% of the desktop size:
+                 * an 80% reduction from the desktop dimensions.
                  *
                  * Desktop remains completely unchanged.
                  */
                 transform:
                     translate(-50%, -50%)
                     rotate(var(--rotation))
-                    scale(0.10);
+                    scale(0.20);
             }
 
         }
