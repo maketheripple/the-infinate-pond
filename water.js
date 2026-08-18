@@ -923,6 +923,16 @@
          * Because the dimensions are percentages, Small,
          * Medium, Large and Extra-Large all scale proportionally.
          */
+        /*
+         * DIAGNOSTIC HITBOX — BETA TEST ONLY
+         *
+         * This outline shows the EXACT physical button that
+         * receives mouse/touch input.
+         *
+         * Do not judge the visual ripple here; judge only
+         * whether this outlined ellipse is the boundary you
+         * want to be clickable.
+         */
         .impact-ripple-hit-target {
 
             position:
@@ -934,6 +944,13 @@
             top:
                 50%;
 
+            /*
+             * STARTING TEST SIZE:
+             * Match the visible ripple's maximum footprint.
+             *
+             * We will adjust ONLY these two values after
+             * seeing the boundary on the live site.
+             */
             width:
                 75.24%;
 
@@ -950,13 +967,25 @@
                 0;
 
             border:
-                0;
+                2px
+                dashed
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.85
+                );
 
             border-radius:
                 50%;
 
             background:
-                transparent;
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.035
+                );
 
             appearance:
                 none;
@@ -970,6 +999,8 @@
             z-index:
                 20;
 
+            box-sizing:
+                border-box;
         }
 
 
