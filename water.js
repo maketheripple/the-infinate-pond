@@ -930,10 +930,21 @@
         @media (max-width: 768px) {
 
             .runtime-impact-ripple {
+                /*
+                 * V10 MOBILE SIZE
+                 *
+                 * V9 used 25% of the desktop size and was still
+                 * reported as too large.
+                 *
+                 * V10 uses 10% of the desktop size:
+                 * a 90% reduction from the desktop dimensions.
+                 *
+                 * Desktop remains completely unchanged.
+                 */
                 transform:
                     translate(-50%, -50%)
                     rotate(var(--rotation))
-                    scale(0.25);
+                    scale(0.10);
             }
 
         }
