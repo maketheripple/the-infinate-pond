@@ -917,8 +917,8 @@
          * TRUE PHYSICAL HITBOX
          *
          * This button is the browser's actual clickable/touchable
-         * area. It is sized to the maximum visible outer ripple
-         * footprint, not to the full visual container.
+         * area. V8 is a diagnostic reduction to one-third of
+         * the V7 hitbox dimensions.
          *
          * Because the dimensions are percentages, Small,
          * Medium, Large and Extra-Large all scale proportionally.
@@ -951,11 +951,17 @@
              * We will adjust ONLY these two values after
              * seeing the boundary on the live site.
              */
+            /*
+             * V8 diagnostic adjustment:
+             * V7 was reported as approximately 3x too large.
+             * Reduce the V7 hitbox to one-third in both
+             * dimensions. The visible Impact Ripple is unchanged.
+             */
             width:
-                75.24%;
+                25.08%;
 
             height:
-                58.14%;
+                19.38%;
 
             transform:
                 translate(-50%, -50%);
