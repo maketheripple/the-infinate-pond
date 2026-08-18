@@ -961,14 +961,10 @@
          * Medium, Large and Extra-Large all scale proportionally.
          */
         /*
-         * DIAGNOSTIC HITBOX — BETA TEST ONLY
+         * PRODUCTION HITBOX
          *
-         * This outline shows the EXACT physical button that
-         * receives mouse/touch input.
-         *
-         * Do not judge the visual ripple here; judge only
-         * whether this outlined ellipse is the boundary you
-         * want to be clickable.
+         * The button is invisible but remains the exact physical
+         * mouse/touch target established during beta testing.
          */
         .impact-ripple-hit-target {
 
@@ -1009,26 +1005,18 @@
             padding:
                 0;
 
+            /*
+             * Production hitbox:
+             * invisible, but still fully interactive.
+             */
             border:
-                2px
-                dashed
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.85
-                );
+                0;
 
             border-radius:
                 50%;
 
             background:
-                rgba(
-                    255,
-                    255,
-                    255,
-                    0.035
-                );
+                transparent;
 
             appearance:
                 none;
