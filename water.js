@@ -2477,13 +2477,13 @@
          *
          * The largest visible ring is 66% x 51% of the ripple
          * container. Its animation grows to 1.14x, so the
-         * The previous beta hit radius used the maximum visible
-         * footprint. This version deliberately cuts that radius
-         * in half for all four Impact Ripple sizes.
+         * The hit radius is deliberately much tighter than the
+         * visible ripple footprint. V5 cuts the CURRENT V4
+         * clickable radius in half again.
          *
-         * Small / Medium / Large / Extra-Large all use the same
-         * proportional reduction because the hit test is based
-         * on each ripple's actual rendered dimensions.
+         * Small / Medium / Large / Extra-Large all receive the
+         * same proportional reduction because the hit test is
+         * based on each ripple's actual rendered dimensions.
          *
          * The placement/collision system is NOT changed.
          */
@@ -2555,14 +2555,30 @@
              * The visual ripple itself is unchanged.
              * Placement/collision spacing is unchanged.
              */
+            /*
+             * Second hit-area reduction:
+             * reduce the CURRENT clickable radius by another 50%.
+             *
+             * Current radius factors:
+             *     X = 0.3762
+             *     Y = 0.2907
+             *
+             * New radius factors:
+             *     X = 0.1881
+             *     Y = 0.14535
+             *
+             * This affects only click/touch detection.
+             * The visible Impact Ripple and its placement/
+             * collision spacing remain unchanged.
+             */
             const radiusX =
                 rect.width *
-                0.3762 /
+                0.1881 /
                 2;
 
             const radiusY =
                 rect.height *
-                0.2907 /
+                0.14535 /
                 2;
 
             return (
