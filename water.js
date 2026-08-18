@@ -863,11 +863,15 @@
             appearance:
                 none;
 
+            /*
+             * Visual wrapper only.
+             * The child hitTarget is the actual interactive element.
+             */
             pointer-events:
-                auto;
+                none;
 
             cursor:
-                pointer;
+                default;
 
             opacity:
                 var(--base-opacity);
@@ -890,7 +894,7 @@
         }
 
 
-        .runtime-impact-ripple:hover {
+        .runtime-impact-ripple.hit-hover {
 
             opacity:
                 1;
@@ -905,6 +909,66 @@
                         0.34
                     )
                 );
+
+        }
+
+
+        /*
+         * TRUE PHYSICAL HITBOX
+         *
+         * This button is the browser's actual clickable/touchable
+         * area. It is sized to the maximum visible outer ripple
+         * footprint, not to the full visual container.
+         *
+         * Because the dimensions are percentages, Small,
+         * Medium, Large and Extra-Large all scale proportionally.
+         */
+        .impact-ripple-hit-target {
+
+            position:
+                absolute;
+
+            left:
+                50%;
+
+            top:
+                50%;
+
+            width:
+                75.24%;
+
+            height:
+                58.14%;
+
+            transform:
+                translate(-50%, -50%);
+
+            margin:
+                0;
+
+            padding:
+                0;
+
+            border:
+                0;
+
+            border-radius:
+                50%;
+
+            background:
+                transparent;
+
+            appearance:
+                none;
+
+            pointer-events:
+                auto;
+
+            cursor:
+                pointer;
+
+            z-index:
+                20;
 
         }
 
@@ -2298,24 +2362,21 @@
             );
 
 
+        /*
+         * VISUAL WRAPPER
+         *
+         * The outer element is visual-only.
+         * A separate, smaller button below is the actual
+         * browser hitbox.
+         */
         const element =
             document.createElement(
-                "button"
+                "div"
             );
-
-
-        element.type =
-            "button";
 
 
         element.className =
             "runtime-impact-ripple";
-
-
-        element.setAttribute(
-            "aria-label",
-            "Open Impact Ripple message"
-        );
 
 
         /*
@@ -2361,6 +2422,40 @@
                 28
 
             }deg`
+        );
+
+
+        /*
+         * TRUE PHYSICAL HIT TARGET
+         *
+         * The visible outer ring is 66% x 51% of the full
+         * visual container and expands to 1.14x at its largest.
+         *
+         * Therefore the browser's actual clickable button is
+         * 75.24% x 58.14% of the visual container.
+         */
+        const hitTarget =
+            document.createElement(
+                "button"
+            );
+
+
+        hitTarget.type =
+            "button";
+
+
+        hitTarget.className =
+            "impact-ripple-hit-target";
+
+
+        hitTarget.setAttribute(
+            "aria-label",
+            "Open Impact Ripple message"
+        );
+
+
+        element.append(
+            hitTarget
         );
 
 
@@ -2471,162 +2566,46 @@
         /*
          * IMPACT RIPPLE INTERACTION
          *
-         * The visual Impact Ripple keeps its original full-size
-         * button, but interaction is accepted only inside the
-         * same elliptical footprint as the visible ripple.
-         *
-         * The largest visible ring is 66% x 51% of the ripple
-         * container. Its animation grows to 1.14x, so the
-         * The hit radius is deliberately much tighter than the
-         * visible ripple footprint. V5 cuts the CURRENT V4
-         * clickable radius in half again.
-         *
-         * Small / Medium / Large / Extra-Large all receive the
-         * same proportional reduction because the hit test is
-         * based on each ripple's actual rendered dimensions.
-         *
-         * The placement/collision system is NOT changed.
+         * hitTarget is the ONLY clickable/touchable element.
+         * The visual wrapper itself is pointer-transparent.
          */
-        function isInsideImpactRipple(
-            event
-        ) {
-            const rect =
-                element.getBoundingClientRect();
-
-            if (
-                !rect.width ||
-                !rect.height
-            ) {
-                return false;
-            }
-
-            const x =
-                event.clientX -
-                (
-                    rect.left +
-                    rect.width / 2
-                );
-
-            const y =
-                event.clientY -
-                (
-                    rect.top +
-                    rect.height / 2
-                );
-
-            const rotation =
-                (
-                    parseFloat(
-                        getComputedStyle(
-                            element
-                        ).getPropertyValue(
-                            "--rotation"
-                        )
-                    ) ||
-                    0
-                ) *
-                Math.PI /
-                180;
-
-            const cos =
-                Math.cos(
-                    -rotation
-                );
-
-            const sin =
-                Math.sin(
-                    -rotation
-                );
-
-            const localX =
-                x * cos -
-                y * sin;
-
-            const localY =
-                x * sin +
-                y * cos;
-
-            /*
-             * Beta hit-area adjustment:
-             * reduce the clickable radius by 50% for every
-             * Impact Ripple size (Small, Medium, Large,
-             * Extra-Large).
-             *
-             * The visual ripple itself is unchanged.
-             * Placement/collision spacing is unchanged.
-             */
-            /*
-             * Second hit-area reduction:
-             * reduce the CURRENT clickable radius by another 50%.
-             *
-             * Current radius factors:
-             *     X = 0.3762
-             *     Y = 0.2907
-             *
-             * New radius factors:
-             *     X = 0.1881
-             *     Y = 0.14535
-             *
-             * This affects only click/touch detection.
-             * The visible Impact Ripple and its placement/
-             * collision spacing remain unchanged.
-             */
-            const radiusX =
-                rect.width *
-                0.1881 /
-                2;
-
-            const radiusY =
-                rect.height *
-                0.14535 /
-                2;
-
-            return (
-                Math.pow(
-                    localX / radiusX,
-                    2
-                ) +
-                Math.pow(
-                    localY / radiusY,
-                    2
-                )
-            ) <= 1;
-        }
-
-
-        element.addEventListener(
+        hitTarget.addEventListener(
             "pointerdown",
             event => {
-                if (
-                    !isInsideImpactRipple(
-                        event
-                    )
-                ) {
-                    return;
-                }
-
                 event.preventDefault();
                 event.stopPropagation();
             }
         );
 
 
-        element.addEventListener(
+        hitTarget.addEventListener(
             "click",
             event => {
-                if (
-                    !isInsideImpactRipple(
-                        event
-                    )
-                ) {
-                    return;
-                }
-
                 event.preventDefault();
                 event.stopPropagation();
 
                 openImpactMessage(
                     data
+                );
+            }
+        );
+
+
+        hitTarget.addEventListener(
+            "pointerenter",
+            () => {
+                element.classList.add(
+                    "hit-hover"
+                );
+            }
+        );
+
+
+        hitTarget.addEventListener(
+            "pointerleave",
+            () => {
+                element.classList.remove(
+                    "hit-hover"
                 );
             }
         );
